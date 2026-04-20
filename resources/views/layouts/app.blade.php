@@ -10,7 +10,7 @@
     <link href="https://fonts.bunny.net/css?family=noto-serif:400,400i,600,700|noto-sans:300,400,500,600&display=swap" rel="stylesheet">
 
     @vite(['resources/css/app.css'])
-    @vite(['resources/css/professional-admin.css', 'resources/js/app.js'])
+    @vite(['resources/css/app.css', 'resources/js/app.js'])
 
     <!-- jQuery and DataTables -->
     <script src="https://code.jquery.com/jquery-3.7.0.min.js"></script>
@@ -141,8 +141,10 @@
         <span class="gt-right">Official portal</span>
     </div>
 
-    {{-- Fixed nav --}}
-    @include('navigation-menu')
+    {{-- Fixed nav (your existing navigation partial) --}}
+    <div class="fixed w-full z-50" style="top:41px">
+        @include('navigation-menu')
+    </div>
 
     {{-- Spacer for fixed header (stripe + gov-top + nav) --}}
     <div class="header-offset"></div>
