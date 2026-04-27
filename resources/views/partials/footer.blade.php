@@ -197,6 +197,18 @@
             grid-template-columns: 1fr;
         }
     }
+    .stld-footer .footer-mict {
+        text-align: center;
+        font-size: 11px;
+        color: rgba(133, 183, 235, 0.4);
+        padding: 0.6rem 0 1rem 0;
+        border-top: 0.5px solid rgba(181, 212, 244, 0.08);
+        letter-spacing: 0.03em;
+    }
+    .stld-footer .footer-mict strong {
+        color: rgba(133, 183, 235, 0.6);
+        font-weight: 500;
+    }
 </style>
 
 {{-- Google Fonts (recommended to add in <head>) --}}
@@ -307,6 +319,9 @@
                 <a href="#">Terms of Use</a>
                 <a href="#">Accessibility</a>
             </div>
+        </div>
+        <div class="footer-mict">
+            Developed in partnership with <strong>MICT DTO Division</strong> &middot; Tarawa, Gilbert Islands
         </div>
     </div><!-- /.footer-inner -->
 </footer>

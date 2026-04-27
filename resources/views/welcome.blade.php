@@ -79,6 +79,7 @@ nav{
 .nb-sub{font-size:10px;font-weight:400;color:var(--muted);letter-spacing:.04em;margin-top:1px}
 .nav-sep{width:1px;height:24px;background:var(--border2)}
 .nav-ministry{font-size:11px;font-weight:400;color:var(--muted);letter-spacing:.02em;font-style:italic}
+.nav-mict{font-size:10px;font-weight:400;color:var(--subtle);letter-spacing:.03em;font-style:normal;padding-left:1rem;border-left:1px solid var(--border2)}
 .nav-right{display:flex;align-items:center;gap:6px}
 .nav-in{
     font-size:12px;font-weight:400;color:var(--muted);
@@ -345,7 +346,7 @@ footer{
 }
 @media(max-width:780px){
     nav{padding:0 1.25rem}
-    .nav-sep,.nav-ministry{display:none}
+    .nav-sep,.nav-ministry,.nav-mict{display:none}
     .page-header{padding:2rem 1.5rem}
     .action-grid{grid-template-columns:1fr}
     .process-grid{grid-template-columns:1fr 1fr}
@@ -399,6 +400,7 @@ footer{
     <div style="display:flex;align-items:center;gap:14px">
         <div class="nav-sep"></div>
         <span class="nav-ministry">Ministry of Fisheries &amp; Ocean Resources</span>
+        <span class="nav-mict">Developed with MICT DTO Division &middot; Tarawa</span>
     </div>
     @if(Route::has('login'))
     <div class="nav-right">
