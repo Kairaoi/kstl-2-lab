@@ -7,7 +7,7 @@ Route::middleware([
     'auth:sanctum',
     config('jetstream.auth_session'),
     'verified',
-    'is.reception',
+    'role:reception|analyst|admin|super_admin',
 ])->prefix('reception')->name('reception.')->group(function () {
 
     Route::get('/dashboard', [ReceptionController::class, 'dashboard'])

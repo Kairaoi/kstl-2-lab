@@ -2,15 +2,37 @@
 
 <x-app-layout>
     <x-slot name="header">
-        <h2 class="font-semibold text-xl text-gray-800 leading-tight">
-            Welcome back, {{ $user->first_name }}
-        </h2>
+        <div>
+            <p class="cl-eyebrow">Client Portal</p>
+            <h2 class="cl-title text-xl font-bold leading-tight mt-0.5">
+                Welcome back, {{ $user->first_name }}
+            </h2>
+        </div>
     </x-slot>
+
+    @push('styles')
+    <style>
+        .cl-eyebrow { letter-spacing: .16em; text-transform: uppercase; font-size: 10px; color: var(--gold); font-weight: 700; }
+        .cl-title { font-family: 'Noto Serif', serif; color: var(--navy); letter-spacing: .01em; }
+        .cl-section-title {
+            font-family: 'Noto Serif', serif; color: var(--navy);
+            font-size: 14px; font-weight: 700; letter-spacing: .01em;
+            display: flex; align-items: center; gap: 8px;
+        }
+        .cl-section-title::before {
+            content: ''; width: 3px; height: 15px; background: var(--gold); border-radius: 2px; display: inline-block;
+        }
+        .cl-stat-num { font-family: 'Noto Serif', serif; color: var(--navy); }
+        .cl-meta-label { letter-spacing: .07em; text-transform: uppercase; font-size: 10px; color: var(--subtle); font-weight: 600; }
+        .cl-card { border-top: 2px solid transparent; }
+        .cl-card:hover { border-top-color: var(--gold); }
+    </style>
+    @endpush
 
     <div class="py-8">
         <div class="max-w-7xl mx-auto sm:px-6 lg:px-8 space-y-6">
 
-            {{-- Flash: Success (e.g. after signing agreement) --}}
+            {{-- Flash: Success --}}
             @if(session('success'))
                 <div class="bg-green-50 border-l-4 border-green-400 p-4 rounded-lg flex items-center gap-3">
                     <svg class="w-5 h-5 text-green-400 shrink-0" fill="currentColor" viewBox="0 0 20 20">
@@ -107,307 +129,308 @@
                 </div>
             @endif
 
-            {{-- Summary Cards --}}
-            <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-5 gap-4">
+            {{-- ── Summary Cards ─────────────────────────────────────────────── --}}
+            <div>
+                <p class="cl-section-title mb-4">Overview</p>
+                <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-5 gap-4">
 
-                {{-- Total Submissions --}}
-                <a href="{{ route('client.submissions.index') }}"
-                   class="bg-white rounded-xl shadow-sm border border-gray-100 p-5 hover:shadow-md transition group
-                          {{ !$client || !$client->service_agreement_signed_at ? 'pointer-events-none opacity-50' : '' }}">
-                    <div class="flex items-center justify-between mb-3">
-                        <span class="text-xs font-medium text-gray-500 uppercase tracking-wide">Submissions</span>
-                        <div class="w-9 h-9 bg-blue-50 rounded-lg flex items-center justify-center group-hover:bg-blue-100 transition">
-                            <svg class="w-5 h-5 text-blue-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"/>
-                            </svg>
-                        </div>
-                    </div>
-                    <p class="text-3xl font-bold text-gray-800">{{ $summary['total_submissions'] }}</p>
-                    <p class="text-xs text-gray-400 mt-1">Total submitted</p>
-                </a>
-
-                {{-- Pending --}}
-                <a href="{{ route('client.submissions.index') }}"
-                   class="bg-white rounded-xl shadow-sm border border-gray-100 p-5 hover:shadow-md transition group
-                          {{ !$client || !$client->service_agreement_signed_at ? 'pointer-events-none opacity-50' : '' }}">
-                    <div class="flex items-center justify-between mb-3">
-                        <span class="text-xs font-medium text-gray-500 uppercase tracking-wide">Pending</span>
-                        <div class="w-9 h-9 bg-amber-50 rounded-lg flex items-center justify-center group-hover:bg-amber-100 transition">
-                            <svg class="w-5 h-5 text-amber-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"/>
-                            </svg>
-                        </div>
-                    </div>
-                    <p class="text-3xl font-bold text-gray-800">{{ $summary['pending_submissions'] }}</p>
-                    <p class="text-xs text-gray-400 mt-1">Awaiting processing</p>
-                </a>
-
-                {{-- Results Ready --}}
-                <a href="{{ route('client.results.index') }}"
-                   class="bg-white rounded-xl shadow-sm border border-gray-100 p-5 hover:shadow-md transition group
-                          {{ !$client || !$client->service_agreement_signed_at ? 'pointer-events-none opacity-50' : '' }}">
-                    <div class="flex items-center justify-between mb-3">
-                        <span class="text-xs font-medium text-gray-500 uppercase tracking-wide">Results</span>
-                        <div class="w-9 h-9 bg-green-50 rounded-lg flex items-center justify-center group-hover:bg-green-100 transition">
-                            <svg class="w-5 h-5 text-green-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"/>
-                            </svg>
-                        </div>
-                    </div>
-                    <p class="text-3xl font-bold text-gray-800">{{ $summary['results_ready'] }}</p>
-                    <p class="text-xs text-gray-400 mt-1">Ready to view</p>
-                </a>
-
-                {{-- Unpaid Invoices --}}
-                <a href="{{ route('client.invoices.index') }}"
-                   class="bg-white rounded-xl shadow-sm border border-gray-100 p-5 hover:shadow-md transition group
-                          {{ !$client || !$client->service_agreement_signed_at ? 'pointer-events-none opacity-50' : '' }}">
-                    <div class="flex items-center justify-between mb-3">
-                        <span class="text-xs font-medium text-gray-500 uppercase tracking-wide">Invoices</span>
-                        <div class="w-9 h-9 bg-red-50 rounded-lg flex items-center justify-center group-hover:bg-red-100 transition">
-                            <svg class="w-5 h-5 text-red-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 9V7a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2m2 4h10a2 2 0 002-2v-6a2 2 0 00-2-2H9a2 2 0 00-2 2v6a2 2 0 002 2zm7-5a2 2 0 11-4 0 2 2 0 014 0z"/>
-                            </svg>
-                        </div>
-                    </div>
-                    <p class="text-3xl font-bold text-gray-800">{{ $summary['unpaid_invoices'] }}</p>
-                    <p class="text-xs text-gray-400 mt-1">Unpaid</p>
-                </a>
-
-                {{-- Open Complaints --}}
-                <a href="{{ route('client.complaints.index') }}"
-                   class="bg-white rounded-xl shadow-sm border border-gray-100 p-5 hover:shadow-md transition group
-                          {{ !$client || !$client->service_agreement_signed_at ? 'pointer-events-none opacity-50' : '' }}">
-                    <div class="flex items-center justify-between mb-3">
-                        <span class="text-xs font-medium text-gray-500 uppercase tracking-wide">Complaints</span>
-                        <div class="w-9 h-9 bg-purple-50 rounded-lg flex items-center justify-center group-hover:bg-purple-100 transition">
-                            <svg class="w-5 h-5 text-purple-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 8h10M7 12h4m1 8l-4-4H5a2 2 0 01-2-2V6a2 2 0 012-2h14a2 2 0 012 2v8a2 2 0 01-2 2h-3l-4 4z"/>
-                            </svg>
-                        </div>
-                    </div>
-                    <p class="text-3xl font-bold text-gray-800">{{ $summary['open_complaints'] }}</p>
-                    <p class="text-xs text-gray-400 mt-1">Open</p>
-                </a>
-
-            </div>
-
-            {{-- Main Content Row --}}
-            <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
-
-                {{-- Quick Actions + Client Info --}}
-                <div class="space-y-6">
-                    <div class="bg-white rounded-xl shadow-sm border border-gray-100">
-                        <div class="px-6 py-4 border-b border-gray-100">
-                            <h3 class="font-semibold text-gray-800">Quick Actions</h3>
-                        </div>
-                        <div class="p-4 space-y-2">
-
-                            @if(! $client)
-                                {{-- Step 1: No profile — complete profile first --}}
-                                <a href="{{ route('client.profile.company.show') }}"
-                                   class="flex items-center gap-3 w-full px-4 py-3 rounded-lg bg-blue-600 text-white text-sm font-medium hover:bg-blue-700 transition">
-                                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"/>
-                                    </svg>
-                                    Complete Company Profile
-                                </a>
-                                <div class="flex items-center gap-3 w-full px-4 py-3 rounded-lg bg-gray-50 text-gray-300 text-sm font-medium cursor-not-allowed">
-                                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"/>
-                                    </svg>
-                                    New Submission
-                                </div>
-                                <div class="flex items-center gap-3 w-full px-4 py-3 rounded-lg bg-gray-50 text-gray-300 text-sm font-medium cursor-not-allowed">
-                                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"/>
-                                    </svg>
-                                    View Results
-                                </div>
-                                <div class="flex items-center gap-3 w-full px-4 py-3 rounded-lg bg-gray-50 text-gray-300 text-sm font-medium cursor-not-allowed">
-                                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 9V7a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2m2 4h10a2 2 0 002-2v-6a2 2 0 00-2-2H9a2 2 0 00-2 2v6a2 2 0 002 2zm7-5a2 2 0 11-4 0 2 2 0 014 0z"/>
-                                    </svg>
-                                    Pay Invoice
-                                </div>
-                            @elseif(! $client->service_agreement_signed_at)
-                                {{-- Step 2: Profile done, sign agreement --}}
-                                <a href="{{ route('client.agreement.show') }}"
-                                   class="flex items-center gap-3 w-full px-4 py-3 rounded-lg bg-yellow-400 text-yellow-900 text-sm font-medium hover:bg-yellow-500 transition">
-                                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                                              d="M15.232 5.232l3.536 3.536M9 13l6.586-6.586a2 2 0 112.828 2.828L11.828 15.828a2 2 0 01-1.414.586H9v-2a2 2 0 01.586-1.414z"/>
-                                    </svg>
-                                    Sign Service Agreement
-                                </a>
-                                <a href="{{ route('client.profile.company.show') }}"
-                                   class="flex items-center gap-3 w-full px-4 py-3 rounded-lg bg-gray-50 text-gray-600 text-sm font-medium hover:bg-gray-100 transition">
-                                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"/>
-                                    </svg>
-                                    Edit Company Details
-                                </a>
-                                <div class="flex items-center gap-3 w-full px-4 py-3 rounded-lg bg-gray-50 text-gray-300 text-sm font-medium cursor-not-allowed">
-                                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"/>
-                                    </svg>
-                                    New Submission
-                                </div>
-                                <div class="flex items-center gap-3 w-full px-4 py-3 rounded-lg bg-gray-50 text-gray-300 text-sm font-medium cursor-not-allowed">
-                                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 9V7a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2m2 4h10a2 2 0 002-2v-6a2 2 0 00-2-2H9a2 2 0 00-2 2v6a2 2 0 002 2zm7-5a2 2 0 11-4 0 2 2 0 014 0z"/>
-                                    </svg>
-                                    Pay Invoice
-                                </div>
-                            @else
-                                {{-- Agreement signed — all actions available --}}
-                                <a href="{{ route('client.submissions.create') }}"
-                                   class="flex items-center gap-3 w-full px-4 py-3 rounded-lg bg-blue-600 text-white text-sm font-medium hover:bg-blue-700 transition">
-                                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"/>
-                                    </svg>
-                                    New Submission
-                                </a>
-                                <a href="{{ route('client.results.index') }}"
-                                   class="flex items-center gap-3 w-full px-4 py-3 rounded-lg bg-gray-50 text-gray-700 text-sm font-medium hover:bg-gray-100 transition">
-                                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"/>
-                                    </svg>
-                                    View Results
-                                </a>
-                                <a href="{{ route('client.invoices.index') }}"
-                                   class="flex items-center gap-3 w-full px-4 py-3 rounded-lg bg-gray-50 text-gray-700 text-sm font-medium hover:bg-gray-100 transition">
-                                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 9V7a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2m2 4h10a2 2 0 002-2v-6a2 2 0 00-2-2H9a2 2 0 00-2 2v6a2 2 0 002 2zm7-5a2 2 0 11-4 0 2 2 0 014 0z"/>
-                                    </svg>
-                                    Pay Invoice
-                                </a>
-                                <a href="{{ route('client.complaints.create') }}"
-                                   class="flex items-center gap-3 w-full px-4 py-3 rounded-lg bg-gray-50 text-gray-700 text-sm font-medium hover:bg-gray-100 transition">
-                                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 8h10M7 12h4m1 8l-4-4H5a2 2 0 01-2-2V6a2 2 0 012-2h14a2 2 0 012 2v8a2 2 0 01-2 2h-3l-4 4z"/>
-                                    </svg>
-                                    Lodge Complaint
-                                </a>
-                            @endif
-
-                        </div>
-                    </div>
-
-                    {{-- Client Info --}}
-                    @if($client)
-                    <div class="bg-white rounded-xl shadow-sm border border-gray-100">
-                        <div class="px-6 py-4 border-b border-gray-100 flex items-center justify-between">
-                            <h3 class="font-semibold text-gray-800">Company Details</h3>
-                            <a href="{{ route('client.profile.company.show') }}"
-                               class="text-xs text-gray-400 hover:text-gray-600 hover:underline transition">
-                                Edit
-                            </a>
-                        </div>
-                        <div class="px-6 py-4 space-y-3 text-sm">
-                            <div>
-                                <p class="text-xs text-gray-400 uppercase tracking-wide">Company</p>
-                                <p class="text-gray-700 font-medium">{{ $client->company_name }}</p>
+                    {{-- Total Submissions --}}
+                    <a href="{{ route('client.submissions.index') }}"
+                       class="cl-card bg-white rounded-xl shadow-sm border border-gray-100 p-5 hover:shadow-md transition group
+                              {{ !$client || !$client->service_agreement_signed_at ? 'pointer-events-none opacity-50' : '' }}">
+                        <div class="flex items-center justify-between mb-3">
+                            <span class="cl-meta-label">Submissions</span>
+                            <div class="w-9 h-9 bg-blue-50 rounded-lg flex items-center justify-center group-hover:bg-blue-100 transition">
+                                <svg class="w-5 h-5 text-blue-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"/>
+                                </svg>
                             </div>
-                            <div>
-                                <p class="text-xs text-gray-400 uppercase tracking-wide">Address</p>
-                                <p class="text-gray-700">{{ $client->address }}</p>
-                            </div>
-                            @if($client->company_phone)
-                            <div>
-                                <p class="text-xs text-gray-400 uppercase tracking-wide">Phone</p>
-                                <p class="text-gray-700">{{ $client->company_phone }}</p>
-                            </div>
-                            @endif
-
-                            {{-- Service Agreement Status --}}
-                            <div class="pt-2 border-t border-gray-50">
-                                <p class="text-xs text-gray-400 uppercase tracking-wide mb-2">Service Agreement</p>
-                                @if($client->service_agreement_signed_at)
-                                    <div class="flex items-center justify-between">
-                                        <span class="inline-flex items-center gap-1.5 text-xs text-green-700 bg-green-50 px-2.5 py-1 rounded-full">
-                                            <svg class="w-3 h-3" fill="currentColor" viewBox="0 0 20 20">
-                                                <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.857-9.809a.75.75 0 00-1.214-.882l-3.483 4.79-1.88-1.88a.75.75 0 10-1.06 1.061l2.5 2.5a.75.75 0 001.137-.089l4-5.5z" clip-rule="evenodd"/>
-                                            </svg>
-                                            Signed
-                                        </span>
-                                        <span class="text-xs text-gray-400">
-                                            {{ $client->service_agreement_signed_at->format('d M Y') }}
-                                        </span>
-                                    </div>
-                                    {{-- Expiry notice (1 year from signing) --}}
-                                    @php
-                                        $expiresAt = $client->service_agreement_signed_at->addYear();
-                                        $daysLeft  = now()->diffInDays($expiresAt, false);
-                                    @endphp
-                                    @if($daysLeft <= 30 && $daysLeft > 0)
-                                        <p class="text-xs text-amber-600 mt-1">
-                                            ⚠ Agreement expires in {{ $daysLeft }} day{{ $daysLeft === 1 ? '' : 's' }}.
-                                            Contact the lab to renew.
-                                        </p>
-                                    @elseif($daysLeft <= 0)
-                                        <p class="text-xs text-red-600 mt-1">
-                                            Agreement has expired. Please contact the lab.
-                                        </p>
-                                    @else
-                                        <p class="text-xs text-gray-400 mt-1">
-                                            Valid until {{ $expiresAt->format('d M Y') }}
-                                        </p>
-                                    @endif
-
-                                    {{-- Download & View links --}}
-                                    <div class="mt-2 flex items-center gap-2">
-                                        <a href="{{ route('client.agreement.download') }}"
-                                           class="inline-flex items-center gap-1 text-xs text-blue-600 hover:text-blue-800 font-medium hover:underline transition">
-                                            <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                                                      d="M12 10v6m0 0l-3-3m3 3l3-3m2 8H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"/>
-                                            </svg>
-                                            Download PDF
-                                        </a>
-                                        <span class="text-gray-200 text-xs">|</span>
-                                        <a href="{{ route('client.agreement.show') }}"
-                                           class="text-xs text-gray-400 hover:text-gray-600 hover:underline transition">
-                                            View Agreement
-                                        </a>
-                                    </div>
-                                    {{-- Director countersign status --}}
-                                    @if($client->director_signed_at)
-                                        <div class="mt-3 flex items-center gap-2 text-xs text-green-700">
-                                            <svg class="w-3.5 h-3.5" fill="currentColor" viewBox="0 0 20 20">
-                                                <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.857-9.809a.75.75 0 00-1.214-.882l-3.483 4.79-1.88-1.88a.75.75 0 10-1.06 1.061l2.5 2.5a.75.75 0 001.137-.089l4-5.5z" clip-rule="evenodd"/>
-                                            </svg>
-                                            Countersigned by Director on {{ $client->director_signed_at->format('d M Y') }}
-                                        </div>
-                                    @else
-                                        <div class="mt-3 flex items-center gap-2 text-xs text-amber-600">
-                                            <svg class="w-3.5 h-3.5" fill="currentColor" viewBox="0 0 20 20">
-                                                <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm-1-9a1 1 0 112 0v4a1 1 0 11-2 0V9zm1-5a1 1 0 100 2 1 1 0 000-2z" clip-rule="evenodd"/>
-                                            </svg>
-                                            Awaiting Director countersignature
-                                        </div>
-                                    @endif
-                                @else
-                                    <div class="flex items-center justify-between">
-                                        <span class="inline-flex items-center gap-1.5 text-xs text-yellow-700 bg-yellow-50 px-2.5 py-1 rounded-full">
-                                            <svg class="w-3 h-3" fill="currentColor" viewBox="0 0 20 20">
-                                                <path fill-rule="evenodd" d="M8.485 2.495c.673-1.167 2.357-1.167 3.03 0l6.28 10.875c.673 1.167-.17 2.625-1.516 2.625H3.72c-1.347 0-2.189-1.458-1.515-2.625L8.485 2.495zM10 5a.75.75 0 01.75.75v3.5a.75.75 0 01-1.5 0v-3.5A.75.75 0 0110 5zm0 9a1 1 0 100-2 1 1 0 000 2z" clip-rule="evenodd"/>
-                                            </svg>
-                                            Not signed
-                                        </span>
-                                        <a href="{{ route('client.agreement.show') }}"
-                                           class="text-xs text-yellow-600 hover:underline font-medium">
-                                            Sign now →
-                                        </a>
-                                    </div>
-                                @endif
-                            </div>
-
                         </div>
-                    </div>
-                    @endif
+                        <p class="cl-stat-num text-3xl font-bold">{{ $summary['total_submissions'] }}</p>
+                        <p class="text-xs text-gray-400 mt-1">Total submitted</p>
+                    </a>
+
+                    {{-- Pending --}}
+                    <a href="{{ route('client.submissions.index') }}"
+                       class="cl-card bg-white rounded-xl shadow-sm border border-gray-100 p-5 hover:shadow-md transition group
+                              {{ !$client || !$client->service_agreement_signed_at ? 'pointer-events-none opacity-50' : '' }}">
+                        <div class="flex items-center justify-between mb-3">
+                            <span class="cl-meta-label">Pending</span>
+                            <div class="w-9 h-9 bg-amber-50 rounded-lg flex items-center justify-center group-hover:bg-amber-100 transition">
+                                <svg class="w-5 h-5 text-amber-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"/>
+                                </svg>
+                            </div>
+                        </div>
+                        <p class="cl-stat-num text-3xl font-bold">{{ $summary['pending_submissions'] }}</p>
+                        <p class="text-xs text-gray-400 mt-1">Awaiting processing</p>
+                    </a>
+
+                    {{-- Results Ready --}}
+                    <a href="{{ route('client.results.index') }}"
+                       class="cl-card bg-white rounded-xl shadow-sm border border-gray-100 p-5 hover:shadow-md transition group
+                              {{ !$client || !$client->service_agreement_signed_at ? 'pointer-events-none opacity-50' : '' }}">
+                        <div class="flex items-center justify-between mb-3">
+                            <span class="cl-meta-label">Results</span>
+                            <div class="w-9 h-9 bg-green-50 rounded-lg flex items-center justify-center group-hover:bg-green-100 transition">
+                                <svg class="w-5 h-5 text-green-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"/>
+                                </svg>
+                            </div>
+                        </div>
+                        <p class="cl-stat-num text-3xl font-bold">{{ $summary['results_ready'] }}</p>
+                        <p class="text-xs text-gray-400 mt-1">Ready to view</p>
+                    </a>
+
+                    {{-- Unpaid Invoices --}}
+                    <a href="{{ route('client.invoices.index') }}"
+                       class="cl-card bg-white rounded-xl shadow-sm border border-gray-100 p-5 hover:shadow-md transition group
+                              {{ !$client || !$client->service_agreement_signed_at ? 'pointer-events-none opacity-50' : '' }}">
+                        <div class="flex items-center justify-between mb-3">
+                            <span class="cl-meta-label">Invoices</span>
+                            <div class="w-9 h-9 bg-red-50 rounded-lg flex items-center justify-center group-hover:bg-red-100 transition">
+                                <svg class="w-5 h-5 text-red-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 9V7a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2m2 4h10a2 2 0 002-2v-6a2 2 0 00-2-2H9a2 2 0 00-2 2v6a2 2 0 002 2zm7-5a2 2 0 11-4 0 2 2 0 014 0z"/>
+                                </svg>
+                            </div>
+                        </div>
+                        <p class="cl-stat-num text-3xl font-bold">{{ $summary['unpaid_invoices'] }}</p>
+                        <p class="text-xs text-gray-400 mt-1">Unpaid</p>
+                    </a>
+
+                    {{-- Open Complaints --}}
+                    <a href="{{ route('client.complaints.index') }}"
+                       class="cl-card bg-white rounded-xl shadow-sm border border-gray-100 p-5 hover:shadow-md transition group
+                              {{ !$client || !$client->service_agreement_signed_at ? 'pointer-events-none opacity-50' : '' }}">
+                        <div class="flex items-center justify-between mb-3">
+                            <span class="cl-meta-label">Complaints</span>
+                            <div class="w-9 h-9 bg-purple-50 rounded-lg flex items-center justify-center group-hover:bg-purple-100 transition">
+                                <svg class="w-5 h-5 text-purple-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 8h10M7 12h4m1 8l-4-4H5a2 2 0 01-2-2V6a2 2 0 012-2h14a2 2 0 012 2v8a2 2 0 01-2 2h-3l-4 4z"/>
+                                </svg>
+                            </div>
+                        </div>
+                        <p class="cl-stat-num text-3xl font-bold">{{ $summary['open_complaints'] }}</p>
+                        <p class="text-xs text-gray-400 mt-1">Open</p>
+                    </a>
 
                 </div>
+            </div>
+
+            {{-- Main Content Row — Quick Actions + Company Details side by side --}}
+            <div class="grid grid-cols-1 lg:grid-cols-2 gap-6 items-start">
+
+                {{-- Quick Actions --}}
+                <div class="bg-white rounded-xl shadow-sm border border-gray-100">
+                    <div class="px-6 py-4 border-b border-gray-100">
+                        <h3 class="cl-section-title">Quick Actions</h3>
+                    </div>
+                    <div class="p-4 space-y-2">
+
+                        @if(! $client)
+                            {{-- Step 1: No profile — complete profile first --}}
+                            <a href="{{ route('client.profile.company.show') }}"
+                               class="flex items-center gap-3 w-full px-4 py-3 rounded-lg bg-blue-600 text-white text-sm font-medium hover:bg-blue-700 transition">
+                                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"/>
+                                </svg>
+                                Complete Company Profile
+                            </a>
+                            <div class="flex items-center gap-3 w-full px-4 py-3 rounded-lg bg-gray-50 text-gray-300 text-sm font-medium cursor-not-allowed">
+                                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"/>
+                                </svg>
+                                New Submission
+                            </div>
+                            <div class="flex items-center gap-3 w-full px-4 py-3 rounded-lg bg-gray-50 text-gray-300 text-sm font-medium cursor-not-allowed">
+                                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"/>
+                                </svg>
+                                View Results
+                            </div>
+                            <div class="flex items-center gap-3 w-full px-4 py-3 rounded-lg bg-gray-50 text-gray-300 text-sm font-medium cursor-not-allowed">
+                                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 9V7a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2m2 4h10a2 2 0 002-2v-6a2 2 0 00-2-2H9a2 2 0 00-2 2v6a2 2 0 002 2zm7-5a2 2 0 11-4 0 2 2 0 014 0z"/>
+                                </svg>
+                                Pay Invoice
+                            </div>
+                        @elseif(! $client->service_agreement_signed_at)
+                            {{-- Step 2: Profile done, sign agreement --}}
+                            <a href="{{ route('client.agreement.show') }}"
+                               class="flex items-center gap-3 w-full px-4 py-3 rounded-lg bg-yellow-400 text-yellow-900 text-sm font-medium hover:bg-yellow-500 transition">
+                                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                          d="M15.232 5.232l3.536 3.536M9 13l6.586-6.586a2 2 0 112.828 2.828L11.828 15.828a2 2 0 01-1.414.586H9v-2a2 2 0 01.586-1.414z"/>
+                                </svg>
+                                Sign Service Agreement
+                            </a>
+                            <a href="{{ route('client.profile.company.show') }}"
+                               class="flex items-center gap-3 w-full px-4 py-3 rounded-lg bg-gray-50 text-gray-600 text-sm font-medium hover:bg-gray-100 transition">
+                                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"/>
+                                </svg>
+                                Edit Company Details
+                            </a>
+                            <div class="flex items-center gap-3 w-full px-4 py-3 rounded-lg bg-gray-50 text-gray-300 text-sm font-medium cursor-not-allowed">
+                                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"/>
+                                </svg>
+                                New Submission
+                            </div>
+                            <div class="flex items-center gap-3 w-full px-4 py-3 rounded-lg bg-gray-50 text-gray-300 text-sm font-medium cursor-not-allowed">
+                                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 9V7a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2m2 4h10a2 2 0 002-2v-6a2 2 0 00-2-2H9a2 2 0 00-2 2v6a2 2 0 002 2zm7-5a2 2 0 11-4 0 2 2 0 014 0z"/>
+                                </svg>
+                                Pay Invoice
+                            </div>
+                        @else
+                            {{-- Agreement signed — all actions available --}}
+                            <a href="{{ route('client.submissions.create') }}"
+                               class="flex items-center gap-3 w-full px-4 py-3 rounded-lg bg-blue-600 text-white text-sm font-medium hover:bg-blue-700 transition">
+                                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"/>
+                                </svg>
+                                New Submission
+                            </a>
+                            <a href="{{ route('client.results.index') }}"
+                               class="flex items-center gap-3 w-full px-4 py-3 rounded-lg bg-gray-50 text-gray-700 text-sm font-medium hover:bg-gray-100 transition">
+                                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"/>
+                                </svg>
+                                View Results
+                            </a>
+                            <a href="{{ route('client.invoices.index') }}"
+                               class="flex items-center gap-3 w-full px-4 py-3 rounded-lg bg-gray-50 text-gray-700 text-sm font-medium hover:bg-gray-100 transition">
+                                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 9V7a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2m2 4h10a2 2 0 002-2v-6a2 2 0 00-2-2H9a2 2 0 00-2 2v6a2 2 0 002 2zm7-5a2 2 0 11-4 0 2 2 0 014 0z"/>
+                                </svg>
+                                Pay Invoice
+                            </a>
+                            <a href="{{ route('client.complaints.create') }}"
+                               class="flex items-center gap-3 w-full px-4 py-3 rounded-lg bg-gray-50 text-gray-700 text-sm font-medium hover:bg-gray-100 transition">
+                                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 8h10M7 12h4m1 8l-4-4H5a2 2 0 01-2-2V6a2 2 0 012-2h14a2 2 0 012 2v8a2 2 0 01-2 2h-3l-4 4z"/>
+                                </svg>
+                                Lodge Complaint
+                            </a>
+                        @endif
+
+                    </div>
+                </div>
+
+                {{-- Company Details --}}
+                @if($client)
+                <div class="bg-white rounded-xl shadow-sm border border-gray-100">
+                    <div class="px-6 py-4 border-b border-gray-100 flex items-center justify-between">
+                        <h3 class="cl-section-title">Company Details</h3>
+                        <a href="{{ route('client.profile.company.show') }}"
+                           class="text-xs text-gray-400 hover:text-gray-600 hover:underline transition">
+                            Edit
+                        </a>
+                    </div>
+                    <div class="px-6 py-4 space-y-3 text-sm">
+                        <div>
+                            <p class="cl-meta-label">Company</p>
+                            <p class="text-gray-700 font-medium mt-0.5">{{ $client->company_name }}</p>
+                        </div>
+                        <div>
+                            <p class="cl-meta-label">Address</p>
+                            <p class="text-gray-700 mt-0.5">{{ $client->address }}</p>
+                        </div>
+                        @if($client->company_phone)
+                        <div>
+                            <p class="cl-meta-label">Phone</p>
+                            <p class="text-gray-700 mt-0.5">{{ $client->company_phone }}</p>
+                        </div>
+                        @endif
+
+                        {{-- Service Agreement Status --}}
+                        <div class="pt-2 border-t border-gray-50">
+                            <p class="cl-meta-label mb-2">Service Agreement</p>
+                            @if($client->service_agreement_signed_at)
+                                <div class="flex items-center justify-between">
+                                    <span class="inline-flex items-center gap-1.5 text-xs text-green-700 bg-green-50 px-2.5 py-1 rounded-full">
+                                        <svg class="w-3 h-3" fill="currentColor" viewBox="0 0 20 20">
+                                            <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.857-9.809a.75.75 0 00-1.214-.882l-3.483 4.79-1.88-1.88a.75.75 0 10-1.06 1.061l2.5 2.5a.75.75 0 001.137-.089l4-5.5z" clip-rule="evenodd"/>
+                                        </svg>
+                                        Signed
+                                    </span>
+                                    <span class="text-xs text-gray-400">
+                                        {{ $client->service_agreement_signed_at->format('d M Y') }}
+                                    </span>
+                                </div>
+                                {{-- Expiry notice (1 year from signing) --}}
+                                @php
+                                    $expiresAt = $client->service_agreement_signed_at->addYear();
+                                    $daysLeft  = now()->diffInDays($expiresAt, false);
+                                @endphp
+                                @if($daysLeft <= 30 && $daysLeft > 0)
+                                    <p class="text-xs text-amber-600 mt-1 flex items-center gap-1">
+                                        <svg class="w-3 h-3 shrink-0" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M12 9v2m0 4h.01M10.29 3.86L1.82 18a2 2 0 001.71 3h16.94a2 2 0 001.71-3L13.71 3.86a2 2 0 00-3.42 0z"/></svg>
+                                        Agreement expires in {{ $daysLeft }} day{{ $daysLeft === 1 ? '' : 's' }}. Contact the lab to renew.
+                                    </p>
+                                @elseif($daysLeft <= 0)
+                                    <p class="text-xs text-red-600 mt-1">
+                                        Agreement has expired. Please contact the lab.
+                                    </p>
+                                @else
+                                    <p class="text-xs text-gray-400 mt-1">
+                                        Valid until {{ $expiresAt->format('d M Y') }}
+                                    </p>
+                                @endif
+
+                                {{-- Download & View links --}}
+                                <div class="mt-2 flex items-center gap-2">
+                                    <a href="{{ route('client.agreement.download') }}"
+                                       class="inline-flex items-center gap-1 text-xs text-blue-600 hover:text-blue-800 font-medium hover:underline transition">
+                                        <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                                  d="M12 10v6m0 0l-3-3m3 3l3-3m2 8H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"/>
+                                        </svg>
+                                        Download PDF
+                                    </a>
+                                    <span class="text-gray-200 text-xs">|</span>
+                                    <a href="{{ route('client.agreement.show') }}"
+                                       class="text-xs text-gray-400 hover:text-gray-600 hover:underline transition">
+                                        View Agreement
+                                    </a>
+                                </div>
+                                {{-- Director countersign status --}}
+                                @if($client->director_signed_at)
+                                    <div class="mt-3 flex items-center gap-2 text-xs text-green-700">
+                                        <svg class="w-3.5 h-3.5" fill="currentColor" viewBox="0 0 20 20">
+                                            <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.857-9.809a.75.75 0 00-1.214-.882l-3.483 4.79-1.88-1.88a.75.75 0 10-1.06 1.061l2.5 2.5a.75.75 0 001.137-.089l4-5.5z" clip-rule="evenodd"/>
+                                        </svg>
+                                        Countersigned by Director on {{ $client->director_signed_at->format('d M Y') }}
+                                    </div>
+                                @else
+                                    <div class="mt-3 flex items-center gap-2 text-xs text-amber-600">
+                                        <svg class="w-3.5 h-3.5" fill="currentColor" viewBox="0 0 20 20">
+                                            <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm-1-9a1 1 0 112 0v4a1 1 0 11-2 0V9zm1-5a1 1 0 100 2 1 1 0 000-2z" clip-rule="evenodd"/>
+                                        </svg>
+                                        Awaiting Director countersignature
+                                    </div>
+                                @endif
+                            @else
+                                <div class="flex items-center justify-between">
+                                    <span class="inline-flex items-center gap-1.5 text-xs text-yellow-700 bg-yellow-50 px-2.5 py-1 rounded-full">
+                                        <svg class="w-3 h-3" fill="currentColor" viewBox="0 0 20 20">
+                                            <path fill-rule="evenodd" d="M8.485 2.495c.673-1.167 2.357-1.167 3.03 0l6.28 10.875c.673 1.167-.17 2.625-1.516 2.625H3.72c-1.347 0-2.189-1.458-1.515-2.625L8.485 2.495zM10 5a.75.75 0 01.75.75v3.5a.75.75 0 01-1.5 0v-3.5A.75.75 0 0110 5zm0 9a1 1 0 100-2 1 1 0 000 2z" clip-rule="evenodd"/>
+                                        </svg>
+                                        Not signed
+                                    </span>
+                                    <a href="{{ route('client.agreement.show') }}"
+                                       class="text-xs text-yellow-600 hover:underline font-medium">
+                                        Sign now →
+                                    </a>
+                                </div>
+                            @endif
+                        </div>
+
+                    </div>
+                </div>
+                @endif
+
             </div>
 
         </div>

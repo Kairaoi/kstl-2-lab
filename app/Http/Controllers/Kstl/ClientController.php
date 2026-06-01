@@ -98,6 +98,24 @@ class ClientController extends Controller
                 ->with('warning', 'You must sign the service agreement before submitting samples.');
         }
 
+        // ── Guard against duplicate submissions ───────────────────────
+        // Block an identical sample from the same client submitted within the
+        // last 24 hours (catches double-clicks and accidental re-posts) while
+        // still allowing genuinely different samples or re-submission later.
+        $recentDuplicate = Submission::where('client_id', $client->id)
+            ->where('sample_name', $request->input('sample_name'))
+            ->where('sample_type', $request->input('sample_type'))
+            ->where('collected_at', $request->input('collected_at'))
+            ->where('status', '!=', Submission::STATUS_CANCELLED)
+            ->where('created_at', '>=', now()->subDay())
+            ->first();
+
+        if ($recentDuplicate) {
+            return redirect()
+                ->route('client.submissions.show', $recentDuplicate->id)
+                ->with('warning', "A matching sample was already submitted recently as {$recentDuplicate->reference_number}. If this is a different sample, please adjust the name, type, or collection date.");
+        }
+
         try {
             $validated = $request->validate([
                 // Sample info (Schedule 1: Sample table)

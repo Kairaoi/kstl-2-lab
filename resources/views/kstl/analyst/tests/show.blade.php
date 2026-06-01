@@ -10,35 +10,71 @@
                 </svg>
             </a>
             <div>
-                <h2 class="font-semibold text-xl text-gray-800 leading-tight">
-                    Enter Result — {{ $test->getDisplayLabel() }}
+                <p class="at-eyebrow">Analyst &middot; Enter Result</p>
+                <h2 class="at-title text-xl font-bold leading-tight mt-0.5">
+                    {{ $test->getDisplayLabel() }}
                 </h2>
-                <p class="text-sm text-gray-500 mt-0.5">
-                    {{ $submission->reference_number }} · {{ $sample->sample_code }}
+                <p class="text-xs text-gray-400 mt-0.5">
+                    {{ $submission->reference_number }} &middot; {{ $sample->sample_code }}
                 </p>
             </div>
         </div>
     </x-slot>
 
+    @push('styles')
+    <style>
+        .at-eyebrow { letter-spacing: .16em; text-transform: uppercase; font-size: 10px; color: var(--gold); font-weight: 700; }
+        .at-title { font-family: 'Noto Serif', serif; color: var(--navy); letter-spacing: .01em; }
+        .at-section-title {
+            font-family: 'Noto Serif', serif; color: var(--navy);
+            font-size: 13px; font-weight: 700; letter-spacing: .02em;
+            display: flex; align-items: center; gap: 8px;
+        }
+        .at-section-title::before {
+            content: ''; width: 3px; height: 14px; background: var(--gold); border-radius: 2px; display: inline-block;
+        }
+        .at-meta-label { letter-spacing: .07em; text-transform: uppercase; font-size: 10px; color: var(--subtle); font-weight: 600; }
+    </style>
+    @endpush
+
     <div class="py-8">
-        <div class="max-w-7xl mx-auto sm:px-6 lg:px-8">
+        <div class="max-w-7xl mx-auto sm:px-6 lg:px-8 space-y-6">
+
+            {{-- Director query banner (when this test was flagged back for clarification) --}}
+            @if($test->status === 'flagged')
+                <div class="bg-orange-50 border border-orange-200 rounded-2xl p-5">
+                    <div class="flex items-start gap-3">
+                        <svg class="w-5 h-5 text-orange-500 shrink-0 mt-0.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 21v-4m0 0V5a2 2 0 012-2h6.5l1 1H21l-3 6 3 6h-8.5l-1-1H5a2 2 0 00-2 2z"/>
+                        </svg>
+                        <div>
+                            <p class="text-sm font-semibold text-orange-800">Queried by the Director</p>
+                            <p class="text-xs text-orange-700 mt-0.5">
+                                This test was returned for clarification. Review the Director's query in the result notes below,
+                                amend the result as needed, and save to send it back for authorisation.
+                            </p>
+                        </div>
+                    </div>
+                </div>
+            @endif
+
             <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
 
                 {{-- ── Left: Context ──────────────────────────────── --}}
                 <div class="space-y-5">
 
                     {{-- Test Info --}}
-                    <div class="bg-white rounded-xl border border-gray-100 overflow-hidden">
+                    <div class="bg-white rounded-2xl border border-gray-100 shadow-sm overflow-hidden">
                         <div class="px-5 py-3.5 border-b border-gray-100">
-                            <h3 class="text-sm font-medium text-gray-800">Test Details</h3>
+                            <h3 class="at-section-title">Test Details</h3>
                         </div>
                         <dl class="px-5 py-4 space-y-3 text-sm">
                             <div>
-                                <dt class="text-xs text-gray-400 uppercase tracking-wide">Test</dt>
+                                <dt class="at-meta-label">Test</dt>
                                 <dd class="font-medium text-gray-800 mt-0.5">{{ $test->getDisplayLabel() }}</dd>
                             </div>
                             <div>
-                                <dt class="text-xs text-gray-400 uppercase tracking-wide">Category</dt>
+                                <dt class="at-meta-label">Category</dt>
                                 <dd class="mt-0.5">
                                     <span class="inline-flex px-2 py-0.5 text-xs rounded-full capitalize
                                         {{ $test->getDisplayCategory() === 'microbiological' ? 'bg-purple-50 text-purple-700' : 'bg-blue-50 text-blue-700' }}">
@@ -47,16 +83,14 @@
                                 </dd>
                             </div>
                             <div>
-                                <dt class="text-xs text-gray-400 uppercase tracking-wide">Status</dt>
+                                <dt class="at-meta-label">Status</dt>
                                 <dd class="mt-0.5">
-                                    <span class="inline-flex px-2 py-0.5 text-xs bg-blue-50 text-blue-700 rounded-full capitalize">
-                                        {{ str_replace('_', ' ', $test->status) }}
-                                    </span>
+                                    <x-kstl.status-badge :status="$test->status" />
                                 </dd>
                             </div>
                             @if($test->started_at)
                             <div>
-                                <dt class="text-xs text-gray-400 uppercase tracking-wide">Started</dt>
+                                <dt class="at-meta-label">Started</dt>
                                 <dd class="text-gray-700 mt-0.5">{{ $test->started_at->format('d M Y H:i') }}</dd>
                             </div>
                             @endif
@@ -64,64 +98,59 @@
                     </div>
 
                     {{-- Sample Info --}}
-                    <div class="bg-white rounded-xl border border-gray-100 overflow-hidden">
+                    <div class="bg-white rounded-2xl border border-gray-100 shadow-sm overflow-hidden">
                         <div class="px-5 py-3.5 border-b border-gray-100">
-                            <h3 class="text-sm font-medium text-gray-800">Sample</h3>
+                            <h3 class="at-section-title">Sample</h3>
                         </div>
                         <dl class="px-5 py-4 space-y-3 text-sm">
                             <div>
-                                <dt class="text-xs text-gray-400 uppercase tracking-wide">Code</dt>
+                                <dt class="at-meta-label">Code</dt>
                                 <dd class="font-mono font-medium text-gray-800 mt-0.5">{{ $sample->sample_code }}</dd>
                             </div>
                             <div>
-                                <dt class="text-xs text-gray-400 uppercase tracking-wide">Common Name</dt>
+                                <dt class="at-meta-label">Common Name</dt>
                                 <dd class="font-medium text-gray-800 mt-0.5">{{ $sample->common_name }}</dd>
                             </div>
                             @if($sample->scientific_name)
                             <div>
-                                <dt class="text-xs text-gray-400 uppercase tracking-wide">Scientific Name</dt>
+                                <dt class="at-meta-label">Scientific Name</dt>
                                 <dd class="italic text-gray-600 mt-0.5">{{ $sample->scientific_name }}</dd>
                             </div>
                             @endif
                             <div>
-                                <dt class="text-xs text-gray-400 uppercase tracking-wide">Quantity</dt>
+                                <dt class="at-meta-label">Quantity</dt>
                                 <dd class="text-gray-700 mt-0.5">{{ $sample->quantity }} {{ $sample->quantity_unit }}</dd>
                             </div>
                             <div>
-                                <dt class="text-xs text-gray-400 uppercase tracking-wide">Sampling Date</dt>
+                                <dt class="at-meta-label">Sampling Date</dt>
                                 <dd class="text-gray-700 mt-0.5">{{ $sample->sampling_date->format('d M Y') }}</dd>
                             </div>
                         </dl>
                     </div>
 
                     {{-- Submission Info --}}
-                    <div class="bg-white rounded-xl border border-gray-100 overflow-hidden">
+                    <div class="bg-white rounded-2xl border border-gray-100 shadow-sm overflow-hidden">
                         <div class="px-5 py-3.5 border-b border-gray-100">
-                            <h3 class="text-sm font-medium text-gray-800">Submission</h3>
+                            <h3 class="at-section-title">Submission</h3>
                         </div>
                         <dl class="px-5 py-4 space-y-3 text-sm">
                             <div>
-                                <dt class="text-xs text-gray-400 uppercase tracking-wide">Reference</dt>
+                                <dt class="at-meta-label">Reference</dt>
                                 <dd class="font-mono text-xs font-medium text-gray-800 mt-0.5">{{ $submission->reference_number }}</dd>
                             </div>
                             <div>
-                                <dt class="text-xs text-gray-400 uppercase tracking-wide">Client</dt>
+                                <dt class="at-meta-label">Client</dt>
                                 <dd class="text-gray-700 mt-0.5">{{ $submission->client->company_name }}</dd>
                             </div>
                             <div>
-                                <dt class="text-xs text-gray-400 uppercase tracking-wide">Priority</dt>
+                                <dt class="at-meta-label">Priority</dt>
                                 <dd class="mt-0.5">
-                                    @php
-                                        $pc = ['routine' => 'bg-gray-100 text-gray-600', 'urgent' => 'bg-amber-50 text-amber-700', 'emergency' => 'bg-red-50 text-red-700'];
-                                    @endphp
-                                    <span class="inline-flex px-2 py-0.5 text-xs rounded-full capitalize {{ $pc[$submission->priority ?? 'routine'] }}">
-                                        {{ $submission->priority ?? 'Routine' }}
-                                    </span>
+                                    <x-kstl.priority-badge :priority="$submission->priority" />
                                 </dd>
                             </div>
                             @if($submission->results_required_by)
                             <div>
-                                <dt class="text-xs text-gray-400 uppercase tracking-wide">Required By</dt>
+                                <dt class="at-meta-label">Required By</dt>
                                 <dd class="text-gray-700 mt-0.5">{{ $submission->results_required_by->format('d M Y') }}</dd>
                             </div>
                             @endif
@@ -132,15 +161,57 @@
 
                 {{-- ── Right: Result Form ──────────────────────────── --}}
                 <div class="lg:col-span-2">
-                    <div class="bg-white rounded-xl border border-gray-100 overflow-hidden">
+                    @if(($locked ?? false) || $test->status === 'completed')
+                        {{-- ── LOCKED: read-only finalised result (audit view) ── --}}
+                        <div class="bg-white rounded-2xl border border-gray-100 shadow-sm overflow-hidden">
+                            <div class="px-6 py-4 border-b border-gray-100 flex items-center justify-between">
+                                <div>
+                                    <h3 class="at-section-title">Finalised Result</h3>
+                                    <p class="text-xs text-gray-400 mt-1">This result is locked for audit and can only be viewed.</p>
+                                </div>
+                                <span class="inline-flex items-center gap-1.5 px-3 py-1 bg-gray-100 text-gray-600 rounded-full text-xs font-medium">
+                                    <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z"/>
+                                    </svg>
+                                    Locked
+                                </span>
+                            </div>
+                            <dl class="px-6 py-5 grid grid-cols-1 sm:grid-cols-2 gap-x-6 gap-y-4">
+                                @php
+                                    $qlabels = ['pass'=>'Pass','fail'=>'Fail','detected'=>'Detected','not_detected'=>'Not Detected','less_than'=>'Less Than','greater_than'=>'Greater Than','equal_to'=>'Equal To','pending'=>'Pending'];
+                                @endphp
+                                <div>
+                                    <dt class="at-meta-label">Result Qualifier</dt>
+                                    <dd class="mt-1 text-sm font-semibold text-gray-800">{{ $qlabels[$test->result_qualifier] ?? ucfirst(str_replace('_',' ',$test->result_qualifier)) }}</dd>
+                                </div>
+                                <div>
+                                    <dt class="at-meta-label">Result Value</dt>
+                                    <dd class="mt-1 text-sm text-gray-800 font-mono">{{ $test->result_value ?: '—' }} <span class="text-gray-400 font-sans">{{ $test->result_unit }}</span></dd>
+                                </div>
+                                <div class="sm:col-span-2">
+                                    <dt class="at-meta-label">Result Notes</dt>
+                                    <dd class="mt-1 text-sm text-gray-700 whitespace-pre-line">{{ $test->result_notes ?: '—' }}</dd>
+                                </div>
+                                <div>
+                                    <dt class="at-meta-label">Finalised By</dt>
+                                    <dd class="mt-1 text-sm text-gray-800">{{ $test->assignedTo?->name ?? trim(($test->assignedTo->first_name ?? '') . ' ' . ($test->assignedTo->last_name ?? '')) ?: '—' }}</dd>
+                                </div>
+                                <div>
+                                    <dt class="at-meta-label">Completed At</dt>
+                                    <dd class="mt-1 text-sm text-gray-800">{{ $test->completed_at?->format('d M Y \a\t H:i') ?? '—' }}</dd>
+                                </div>
+                            </dl>
+                        </div>
+                    @else
+                    <div class="bg-white rounded-2xl border border-gray-100 shadow-sm overflow-hidden">
                         <div class="px-6 py-4 border-b border-gray-100">
-                            <h3 class="text-sm font-medium text-gray-800">Enter Test Result</h3>
-                            <p class="text-xs text-gray-400 mt-0.5">Record the result for this test. All fields except qualifier are optional.</p>
+                            <h3 class="at-section-title">Enter Test Result</h3>
+                            <p class="text-xs text-gray-400 mt-1">Record the result for this test. All fields except qualifier are optional.</p>
                         </div>
 
                         <form method="POST"
                               action="{{ route('analyst.tests.result', $test->id) }}"
-                              x-data="{ qualifier: '{{ $test->result_qualifier ?? 'pending' }}', flagged: false }">
+                              x-data="{ qualifier: '{{ $test->result_qualifier ?? 'pending' }}', flagged: {{ $test->status === 'flagged' ? 'true' : 'false' }} }">
                             @csrf
 
                             <div class="px-6 py-5 space-y-6">
@@ -211,6 +282,9 @@
                                 <div>
                                     <label class="block text-sm font-medium text-gray-700 mb-1">
                                         Result Notes
+                                        @if($test->status === 'flagged')
+                                            <span class="ml-1 text-xs font-normal text-orange-600">(includes the Director's query)</span>
+                                        @endif
                                     </label>
                                     <textarea name="result_notes"
                                               rows="3"
@@ -220,8 +294,7 @@
                                 </div>
 
                                 {{-- Flag for Director --}}
-                                <div class="bg-amber-50 border border-amber-200 rounded-lg p-4"
-                                     x-data>
+                                <div class="bg-amber-50 border border-amber-200 rounded-lg p-4">
                                     <label class="flex items-start gap-3 cursor-pointer">
                                         <input type="checkbox"
                                                name="flag"
@@ -255,6 +328,10 @@
 
                         </form>
                     </div>
+                    @endif
+
+                    {{-- ── Supporting Files (shown for both active and locked) ── --}}
+                    @include('kstl.analyst.tests._attachments', ['test' => $test, 'locked' => ($locked ?? false)])
                 </div>
 
             </div>

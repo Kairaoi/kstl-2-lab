@@ -191,15 +191,14 @@
                 <a href="{{ route('client.complaints.index') }}"  class="an-link {{ request()->routeIs('client.complaints.*')    ? 'active' : '' }}">Complaints</a>
             @endrole
 
-            @role('reception')
-                <a href="{{ route('reception.dashboard') }}"      class="an-link {{ request()->routeIs('reception.dashboard')    ? 'active' : '' }}">Dashboard</a>
+            {{-- Lab staff (reception + analyst) can reach both dashboards --}}
+            @hasanyrole('reception|analyst')
+                <a href="{{ route('reception.dashboard') }}"      class="an-link {{ request()->routeIs('reception.dashboard')    ? 'active' : '' }}">Reception</a>
                 <a href="{{ route('reception.dashboard') }}"      class="an-link {{ request()->routeIs('reception.submissions.*')? 'active' : '' }}">Submissions</a>
-            @endrole
-
-            @role('analyst')
-                <a href="{{ route('analyst.dashboard') }}"        class="an-link {{ request()->routeIs('analyst.dashboard')      ? 'active' : '' }}">Dashboard</a>
+                <a href="{{ route('analyst.dashboard') }}"        class="an-link {{ request()->routeIs('analyst.dashboard')      ? 'active' : '' }}">Analyst</a>
                 <a href="{{ route('analyst.tests.index') }}"      class="an-link {{ request()->routeIs('analyst.tests.*')        ? 'active' : '' }}">Test Queue</a>
-            @endrole
+                <a href="{{ route('analyst.results.index') }}"    class="an-link {{ request()->routeIs('analyst.results.*')      ? 'active' : '' }}">Results</a>
+            @endhasanyrole
 
             @role('director')
                 <a href="{{ route('director.dashboard') }}"       class="an-link {{ request()->routeIs('director.dashboard')     ? 'active' : '' }}">Dashboard</a>
@@ -303,15 +302,14 @@
             <a href="{{ route('client.complaints.index') }}"  class="an-mob-link {{ request()->routeIs('client.complaints.*')   ? 'active' : '' }}">Complaints</a>
         @endrole
 
-        @role('reception')
-            <a href="{{ route('reception.dashboard') }}"      class="an-mob-link {{ request()->routeIs('reception.dashboard')   ? 'active' : '' }}">Dashboard</a>
+        {{-- Lab staff (reception + analyst) can reach both dashboards --}}
+        @hasanyrole('reception|analyst')
+            <a href="{{ route('reception.dashboard') }}"      class="an-mob-link {{ request()->routeIs('reception.dashboard')   ? 'active' : '' }}">Reception</a>
             <a href="{{ route('reception.dashboard') }}"      class="an-mob-link {{ request()->routeIs('reception.submissions.*') ? 'active' : '' }}">Submissions</a>
-        @endrole
-
-        @role('analyst')
-            <a href="{{ route('analyst.dashboard') }}"        class="an-mob-link {{ request()->routeIs('analyst.dashboard')     ? 'active' : '' }}">Dashboard</a>
+            <a href="{{ route('analyst.dashboard') }}"        class="an-mob-link {{ request()->routeIs('analyst.dashboard')     ? 'active' : '' }}">Analyst</a>
             <a href="{{ route('analyst.tests.index') }}"      class="an-mob-link {{ request()->routeIs('analyst.tests.*')       ? 'active' : '' }}">Sample Tests</a>
-        @endrole
+            <a href="{{ route('analyst.results.index') }}"    class="an-mob-link {{ request()->routeIs('analyst.results.*')     ? 'active' : '' }}">Results</a>
+        @endhasanyrole
 
         @role('director')
             <a href="{{ route('director.dashboard') }}"       class="an-mob-link {{ request()->routeIs('director.dashboard')    ? 'active' : '' }}">Dashboard</a>

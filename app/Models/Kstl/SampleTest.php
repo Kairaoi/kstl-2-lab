@@ -6,6 +6,7 @@ use App\Models\User;
 use Illuminate\Database\Eloquent\Concerns\HasUuids;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use Illuminate\Database\Eloquent\Relations\HasMany;
 
 class SampleTest extends Model
 {
@@ -94,6 +95,12 @@ class SampleTest extends Model
     public function assignedTo(): BelongsTo
     {
         return $this->belongsTo(User::class, 'assigned_to');
+    }
+
+    public function attachments(): HasMany
+    {
+        return $this->hasMany(SampleTestAttachment::class, 'sample_test_id')
+                    ->latest();
     }
 
     // ── Helpers ────────────────────────────────────────────────────

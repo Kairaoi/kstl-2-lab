@@ -19,6 +19,7 @@ require __DIR__ . '/web/auditor.php';
 require __DIR__ . '/web/reception.php';
 require __DIR__ . '/web/analyst.php';
 require __DIR__ . '/web/director.php';
+require __DIR__ . '/web/staff.php';
 
 // ------------------------------------------------------------------
 // Forced password change (temp password issued by Director/admin)

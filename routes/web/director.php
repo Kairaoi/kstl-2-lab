@@ -24,6 +24,14 @@ Route::middleware([
     Route::post('/submissions/{id}/query', [DirectorController::class, 'queryAnalyst'])
         ->name('submissions.query');
 
+    // ── Test supporting documents (review, read-only) ─────────────
+    Route::get('/attachments/{attachment}/download', [DirectorController::class, 'downloadAttachment'])
+        ->name('attachments.download');
+
+    // ── Flagged tests (queued for Director attention) ─────────────
+    Route::get('/flagged', [DirectorController::class, 'flaggedIndex'])
+        ->name('flagged.index');
+
     // ── Invoices ──────────────────────────────────────────────────
     Route::get('/invoices', [InvoiceController::class, 'index'])
         ->name('invoices.index');

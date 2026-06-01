@@ -15,15 +15,21 @@ class SampleTestRepository extends BaseRepository
     }
 
     /**
-     * Get all queued/in-progress tests for the analyst queue.
+     * Get all queued/in-progress/completed/flagged tests for the analyst queue.
+     * Shows all tests assigned to or available to the analyst.
      */
     public function getQueue(string $analystId = null)
     {
         $query = $this->model->query()
             ->with(['sample.submission.client', 'assignedTo'])
-            ->whereIn('status', [SampleTest::STATUS_QUEUED, SampleTest::STATUS_IN_PROGRESS])
-            ->whereHas('sample', fn($q) => $q->whereIn('status', ['testing', 'consent_to_proceed']))
-            ->orderByRaw("FIELD(status, 'in_progress', 'queued')")
+            ->whereIn('status', [
+                SampleTest::STATUS_QUEUED, 
+                SampleTest::STATUS_IN_PROGRESS,
+                SampleTest::STATUS_COMPLETED,
+                SampleTest::STATUS_FLAGGED
+            ])
+            ->whereHas('sample', fn($q) => $q->whereIn('status', ['testing', 'consent_to_proceed', 'completed']))
+            ->orderByRaw("FIELD(status, 'in_progress', 'queued', 'flagged', 'completed')")
             ->orderBy('created_at');
 
         if ($analystId) {
@@ -78,6 +84,30 @@ class SampleTestRepository extends BaseRepository
     public function saveResult(string $id, array $input): SampleTest
     {
         $test = $this->getById($id);
+
+        // ── Lock finalised work ───────────────────────────────────────
+        // A completed test is finalised for audit and must not be re-edited.
+        // (Flagged tests stay editable so the analyst can answer a Director query.)
+        if ($test->status === SampleTest::STATUS_COMPLETED) {
+            Log::warning('Blocked edit attempt on a finalised test result', [
+                'test_id'    => $test->id,
+                'analyst_id' => Auth::id(),
+            ]);
+            abort(403, 'This test has been finalised and can no longer be edited.');
+        }
+
+        // Once the parent submission is authorised (or completed), the whole
+        // result is locked — no test under it may be changed, even via a
+        // direct request that bypasses the UI.
+        $submissionStatus = $test->sample?->submission?->status;
+        if (in_array($submissionStatus, ['authorised', 'completed'], true)) {
+            Log::warning('Blocked edit attempt on a test under an authorised submission', [
+                'test_id'           => $test->id,
+                'submission_status' => $submissionStatus,
+                'analyst_id'        => Auth::id(),
+            ]);
+            abort(403, 'This submission has been authorised and its results are locked.');
+        }
 
         $test->update([
             'result_value'     => $input['result_value']     ?? null,

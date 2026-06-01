@@ -204,6 +204,44 @@
                                                 @endif
                                             </td>
                                         </tr>
+
+                                        {{-- Supporting documents for this test (read-only review) --}}
+                                        @if($test->attachments->isNotEmpty())
+                                            <tr class="{{ $test->status === 'flagged' ? 'bg-red-50/20' : 'bg-gray-50/40' }}">
+                                                <td colspan="{{ $existingResult ? 7 : 8 }}" class="px-4 pb-3 pt-0">
+                                                    <div class="ml-1 rounded-lg border border-gray-100 bg-white px-3 py-2">
+                                                        <p class="text-xs font-medium text-gray-500 mb-1.5 flex items-center gap-1.5">
+                                                            <svg class="w-3.5 h-3.5 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15.172 7l-6.586 6.586a2 2 0 102.828 2.828l6.414-6.586a4 4 0 00-5.656-5.656l-6.415 6.585a6 6 0 108.486 8.486L20.5 13"/>
+                                                            </svg>
+                                                            Supporting documents ({{ $test->attachments->count() }})
+                                                        </p>
+                                                        <ul class="space-y-1">
+                                                            @foreach($test->attachments as $attachment)
+                                                                <li class="flex items-baseline gap-2">
+                                                                    <a href="{{ route('director.attachments.download', $attachment->id) }}"
+                                                                       class="text-xs font-medium text-indigo-600 hover:text-indigo-800 hover:underline inline-flex items-center gap-1">
+                                                                        <svg class="w-3 h-3 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4"/>
+                                                                        </svg>
+                                                                        {{ $attachment->original_filename }}
+                                                                    </a>
+                                                                    <span class="text-xs text-gray-400">
+                                                                        ({{ $attachment->human_size }})
+                                                                        @if($attachment->uploadedBy)
+                                                                            &middot; {{ $attachment->uploadedBy->name ?? trim(($attachment->uploadedBy->first_name ?? '') . ' ' . ($attachment->uploadedBy->last_name ?? '')) }}
+                                                                        @endif
+                                                                    </span>
+                                                                    @if($attachment->description)
+                                                                        <span class="text-xs text-gray-500">— {{ $attachment->description }}</span>
+                                                                    @endif
+                                                                </li>
+                                                            @endforeach
+                                                        </ul>
+                                                    </div>
+                                                </td>
+                                            </tr>
+                                        @endif
                                     @endforeach
                                 </tbody>
                             </table>

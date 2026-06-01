@@ -13,10 +13,12 @@ use App\Repositories\Kstl\SampleTestRepository;
 use App\Repositories\Kstl\ResultRepository;
 use App\Models\Kstl\Submission;
 use App\Models\Kstl\SampleTest;
+use App\Models\Kstl\SampleTestAttachment;   // ← Added
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
+use Illuminate\Support\Facades\Storage;    // ← Added
 
 class DirectorController extends Controller
 {
@@ -37,8 +39,11 @@ class DirectorController extends Controller
         $flagged          = $this->getFlaggedCount();
         $authorised_today = $this->getAuthorisedToday();
 
+        // Ensure the relationships the dashboard view reads are loaded
+        $pending->loadMissing(['client.user', 'samples.sampleTests']);
+
         // Historical — authorised and completed submissions
-        $history = \App\Models\Kstl\Submission::with(['client', 'result.authorisedBy'])
+        $history = \App\Models\Kstl\Submission::with(['client.user', 'result.authorisedBy', 'samples.sampleTests'])
             ->whereIn('status', [
                 \App\Models\Kstl\Submission::STATUS_AUTHORISED,
                 \App\Models\Kstl\Submission::STATUS_COMPLETED,
@@ -47,8 +52,11 @@ class DirectorController extends Controller
             ->limit(20)
             ->get();
 
+        // Agreements awaiting the Director's countersignature
+        $unsigned_agreements = $this->clientRepo->getPendingCountersign()->count();
+
         return view('kstl.director.dashboard',
-            compact('pending', 'flagged', 'authorised_today', 'history'));
+            compact('pending', 'flagged', 'authorised_today', 'history', 'unsigned_agreements'));
     }
 
     // ── Show submission for review ─────────────────────────────────
@@ -57,10 +65,12 @@ class DirectorController extends Controller
         $submission = $this->submissionRepo->getById($id);
         $samples    = $this->sampleRepo->getBySubmissionId($id);
 
-        // Load tests per sample
+        // Load tests per sample, with their supporting documents for review.
         $testsBySample = [];
         foreach ($samples as $sample) {
-            $testsBySample[$sample->id] = $this->testRepo->getBySampleId($sample->id);
+            $tests = $this->testRepo->getBySampleId($sample->id);
+            $tests->loadMissing('attachments.uploadedBy');   // ← Improved: avoids N+1
+            $testsBySample[$sample->id] = $tests;
         }
 
         $existingResult = $this->resultRepo->findBySubmissionId($id);
@@ -91,27 +101,24 @@ class DirectorController extends Controller
         ]);
 
         DB::transaction(function () use ($submission, $validated) {
-            // Create result record
             $this->resultRepo->authorise($submission->id, $validated);
 
-            // Advance submission status
             $this->submissionRepo->updateStatus(
                 $submission->id,
                 Submission::STATUS_AUTHORISED
             );
 
-            // Audit status change
             $this->auditService->logStatusChange(
                 $submission->fresh(),
                 Submission::STATUS_AWAITING_AUTHORISATION,
                 Submission::STATUS_AUTHORISED
             );
 
-            // Audit log
             $result = $this->resultRepo->findBySubmissionId($submission->id);
-            if ($result) { $this->auditService->logResultAuthorised($result->load('submission')); }
+            if ($result) { 
+                $this->auditService->logResultAuthorised($result->load('submission')); 
+            }
 
-            // Notify client results are ready
             if ($result) {
                 $this->notifyService->notifyResultsReady($submission, $result);
             }
@@ -124,6 +131,14 @@ class DirectorController extends Controller
     // ── Query analyst — flag tests back for clarification ──────────
     public function queryAnalyst(Request $request, string $id)
     {
+        $submission = $this->submissionRepo->getById($id);
+
+        // A submission can only be queried while it is awaiting authorisation.
+        if ($submission->status !== Submission::STATUS_AWAITING_AUTHORISATION) {
+            return redirect()->back()
+                ->with('error', 'This submission can no longer be queried — it is not awaiting authorisation.');
+        }
+
         $validated = $request->validate([
             'test_ids'     => ['required', 'array', 'min:1'],
             'test_ids.*'   => ['string'],
@@ -131,7 +146,6 @@ class DirectorController extends Controller
         ]);
 
         DB::transaction(function () use ($validated, $id) {
-            // Flag selected tests back to analyst
             foreach ($validated['test_ids'] as $testId) {
                 $test = $this->testRepo->getById($testId);
                 $test->update([
@@ -141,7 +155,6 @@ class DirectorController extends Controller
                 ]);
             }
 
-            // Move submission back to testing so analyst sees it
             $this->submissionRepo->updateStatus($id, Submission::STATUS_TESTING);
         });
 
@@ -158,13 +171,29 @@ class DirectorController extends Controller
             'director_id'   => Auth::id(),
         ]);
 
-        $submission = $this->submissionRepo->getById($id);
-
         return redirect()->route('director.dashboard')
             ->with('warning', "Query sent. {$submission->reference_number} returned to analyst for clarification.");
     }
 
-        // ── Download agreement PDF ────────────────────────────────────
+    // ── Flagged tests — everything awaiting/needing Director attention ─
+    public function flaggedIndex()
+    {
+        $flaggedTests = \App\Models\Kstl\SampleTest::where('status', SampleTest::STATUS_FLAGGED)
+            ->with([
+                'assignedTo',
+                'attachments.uploadedBy',
+                'sample.submission.client.user',
+            ])
+            ->orderByDesc('updated_at')
+            ->get();
+
+        // Group by submission for better context
+        $grouped = $flaggedTests->groupBy(fn($test) => $test->sample->submission->id ?? 'unknown');
+
+        return view('kstl.director.flagged.index', compact('flaggedTests', 'grouped'));
+    }
+
+    // ── Download agreement PDF ────────────────────────────────────
     public function agreementDownload(string $clientId)
     {
         $client = \App\Models\Kstl\Client::with('user')
@@ -174,7 +203,6 @@ class DirectorController extends Controller
 
         $director = \Auth::user();
 
-        // PDF blade needs $user (the client's user account)
         $user = $client->user;
 
         $pdf = \Barryvdh\DomPDF\Facade\Pdf::loadView(
@@ -195,7 +223,27 @@ class DirectorController extends Controller
         return $pdf->download($filename);
     }
 
-// ── Helpers ────────────────────────────────────────────────────
+    // ── Download a test's supporting document (review, read-only) ──
+    public function downloadAttachment(string $attachment)
+    {
+        $att = SampleTestAttachment::findOrFail($attachment);
+
+        abort_unless(
+            Storage::disk('private')->exists($att->file_path),
+            404,
+            'File not found.'
+        );
+
+        Log::info('Director downloaded test attachment for review', [
+            'attachment_id' => $att->id,
+            'test_id'       => $att->sample_test_id,
+            'user_id'       => Auth::id(),
+        ]);
+
+        return Storage::disk('private')->download($att->file_path, $att->original_filename);
+    }
+
+    // ── Helpers ────────────────────────────────────────────────────
     private function getFlaggedCount(): int
     {
         return \App\Models\Kstl\SampleTest::where('status', SampleTest::STATUS_FLAGGED)->count();
@@ -212,7 +260,6 @@ class DirectorController extends Controller
         $pending     = $this->clientRepo->getPendingCountersign();
         $totalSigned = \App\Models\Kstl\Client::whereNotNull('director_signed_at')->count();
 
-        // Fully executed — both client and director signed
         $executed = \App\Models\Kstl\Client::with('user')
             ->whereNotNull('service_agreement_signed_at')
             ->whereNotNull('director_signed_at')
@@ -232,8 +279,7 @@ class DirectorController extends Controller
         abort_if(is_null($client->service_agreement_signed_at), 403,
             'Client has not signed the agreement yet.');
 
-        return view('kstl.director.agreements.sign',
-            compact('client'));
+        return view('kstl.director.agreements.sign', compact('client'));
     }
 
     // ── Countersign agreement ──────────────────────────────────────
@@ -261,7 +307,6 @@ class DirectorController extends Controller
 
         $signatureData = null;
         $signatureType = $validated['signature_type'];
-        // Normalise 'draw' → 'drawn'
         if ($signatureType === 'draw') {
             $signatureType = 'drawn';
         }
@@ -312,7 +357,6 @@ class DirectorController extends Controller
         return redirect()->route('director.agreements.index')
             ->with('success', "Agreement for {$client->company_name} has been countersigned.");
     }
-
 
     // ── Audit Log ──────────────────────────────────────────────────
     public function auditIndex(Request $request)

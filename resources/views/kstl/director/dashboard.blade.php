@@ -1,296 +1,430 @@
 {{-- resources/views/kstl/director/dashboard.blade.php --}}
-
 <x-app-layout>
     <x-slot name="header">
         <div class="flex items-center justify-between">
             <div>
                 <h2 class="font-semibold text-xl text-gray-800 leading-tight">Director Dashboard</h2>
-                <p class="text-sm text-gray-500 mt-0.5">{{ now()->format('l, d F Y') }}</p>
+                <p class="text-sm text-gray-600 mt-1">Authorise results and monitor laboratory operations</p>
             </div>
-            <span class="inline-flex items-center gap-1.5 text-xs font-medium text-teal-700 bg-teal-50 px-3 py-1.5 rounded-full">
-                <span class="w-1.5 h-1.5 bg-teal-500 rounded-full animate-pulse"></span>
-                Director
-            </span>
         </div>
     </x-slot>
 
-    <div class="py-8">
-        <div class="max-w-7xl mx-auto sm:px-6 lg:px-8 space-y-6">
-
-            @if(session('success'))
-                <div class="bg-green-50 border-l-4 border-green-400 p-4 rounded-lg flex items-center gap-3">
-                    <svg class="w-4 h-4 text-green-500 shrink-0" fill="currentColor" viewBox="0 0 20 20">
-                        <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.857-9.809a.75.75 0 00-1.214-.882l-3.483 4.79-1.88-1.88a.75.75 0 10-1.06 1.061l2.5 2.5a.75.75 0 001.137-.089l4-5.5z" clip-rule="evenodd"/>
+    {{-- Audit Search Bar --}}
+    <div class="bg-gradient-to-r from-blue-500 to-indigo-600 rounded-xl shadow-lg border-2 border-blue-400 p-6 mb-6" x-data="{ reference: '' }">
+        <div class="flex items-start justify-between mb-4">
+            <div class="flex items-center gap-3">
+                <div class="p-3 bg-white bg-opacity-20 rounded-lg">
+                    <svg class="w-6 h-6 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"/>
                     </svg>
-                    <p class="text-sm text-green-800">{{ session('success') }}</p>
                 </div>
-            @endif
-
-            @if(session('warning'))
-                <div class="bg-amber-50 border-l-4 border-amber-400 p-4 rounded-lg flex items-center gap-3">
-                    <svg class="w-4 h-4 text-amber-500 shrink-0" fill="currentColor" viewBox="0 0 20 20">
-                        <path fill-rule="evenodd" d="M8.485 2.495c.673-1.167 2.357-1.167 3.03 0l6.28 10.875c.673 1.167-.17 2.625-1.516 2.625H3.72c-1.347 0-2.189-1.458-1.515-2.625L8.485 2.495zM10 5a.75.75 0 01.75.75v3.5a.75.75 0 01-1.5 0v-3.5A.75.75 0 0110 5zm0 9a1 1 0 100-2 1 1 0 000 2z" clip-rule="evenodd"/>
-                    </svg>
-                    <p class="text-sm text-amber-800">{{ session('warning') }}</p>
+                <div>
+                    <h3 class="text-xl font-bold text-white">Audit Search</h3>
+                    <p class="text-blue-100 text-sm">Search submissions by reference number for audit sessions</p>
                 </div>
-            @endif
-
-            {{-- ── Summary Cards ─────────────────────────────────── --}}
-            <div class="grid grid-cols-1 sm:grid-cols-3 gap-4">
-
-                <div class="bg-white rounded-xl border border-gray-100 p-5">
-                    <div class="flex items-start justify-between mb-3">
-                        <span class="text-xs font-medium text-gray-500 uppercase tracking-wider">Awaiting Authorisation</span>
-                        <div class="w-8 h-8 rounded-lg bg-amber-100 flex items-center justify-center">
-                            <svg class="w-4 h-4 text-amber-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z"/>
-                            </svg>
-                        </div>
-                    </div>
-                    <p class="text-3xl font-bold text-gray-900">{{ $pending->count() }}</p>
-                    <p class="text-xs text-gray-400 mt-1">Need your sign-off</p>
-                </div>
-
-                <div class="bg-white rounded-xl border border-gray-100 p-5">
-                    <div class="flex items-start justify-between mb-3">
-                        <span class="text-xs font-medium text-gray-500 uppercase tracking-wider">Flagged Tests</span>
-                        <div class="w-8 h-8 rounded-lg bg-red-100 flex items-center justify-center">
-                            <svg class="w-4 h-4 text-red-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 21v-4m0 0V5a2 2 0 012-2h6.5l1 1H21l-3 6 3 6h-8.5l-1-1H5a2 2 0 00-2 2zm9-13.5V9"/>
-                            </svg>
-                        </div>
-                    </div>
-                    <p class="text-3xl font-bold text-gray-900">{{ $flagged }}</p>
-                    <p class="text-xs text-gray-400 mt-1">Anomalous results</p>
-                </div>
-
-                <div class="bg-white rounded-xl border border-gray-100 p-5">
-                    <div class="flex items-start justify-between mb-3">
-                        <span class="text-xs font-medium text-gray-500 uppercase tracking-wider">Authorised Today</span>
-                        <div class="w-8 h-8 rounded-lg bg-green-100 flex items-center justify-center">
-                            <svg class="w-4 h-4 text-green-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"/>
-                            </svg>
-                        </div>
-                    </div>
-                    <p class="text-3xl font-bold text-gray-900">{{ $authorised_today }}</p>
-                    <p class="text-xs text-gray-400 mt-1">Signed off today</p>
-                </div>
-
             </div>
-
-            {{-- ── Pending Agreements ─────────────────────────────── --}}
-            @php
-                $pendingAgreements = \App\Models\Kstl\Client::whereNotNull('service_agreement_signed_at')
-                    ->whereNull('director_signed_at')->count();
-            @endphp
-            @if($pendingAgreements > 0)
-                <div class="bg-amber-50 border border-amber-200 rounded-xl p-4 flex items-center justify-between">
-                    <div class="flex items-center gap-3">
-                        <svg class="w-5 h-5 text-amber-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15.232 5.232l3.536 3.536m-2.036-5.036a2.5 2.5 0 113.536 3.536L6.5 21.036H3v-3.572L16.732 3.732z"/>
-                        </svg>
-                        <p class="text-sm font-medium text-amber-800">
-                            {{ $pendingAgreements }} service agreement{{ $pendingAgreements !== 1 ? 's' : '' }} awaiting your countersignature
-                        </p>
-                    </div>
-                    <a href="{{ route('director.agreements.index') }}"
-                       class="inline-flex items-center gap-1.5 px-3 py-1.5 bg-amber-600 text-white text-xs font-medium rounded-lg hover:bg-amber-700 transition">
-                        Review →
-                    </a>
+        </div>
+        
+        <div class="space-y-4">
+            <div class="flex gap-3">
+                <div class="flex-1">
+                    <input type="text" 
+                           x-model="reference"
+                           placeholder="Enter reference number (e.g., KSTL-2026-00001)" 
+                           class="w-full px-4 py-3 rounded-lg border-2 border-white bg-white bg-opacity-90 text-gray-900 placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-white focus:border-white transition-all font-mono"
+                           @keydown.enter="searchByReference()"
+                           pattern="KSTL-\d{4}-\d{5}"
+                           title="Format: KSTL-YYYY-NNNNN">
                 </div>
-            @endif
-
-            {{-- ── Pending Authorisation Queue ───────────────────── --}}
-            <div class="bg-white rounded-xl border border-gray-100 overflow-hidden">
-                <div class="px-6 py-4 border-b border-gray-100">
-                    <h3 class="text-sm font-medium text-gray-800">Awaiting Your Authorisation</h3>
-                    <p class="text-xs text-gray-400 mt-0.5">Review test results and sign off each submission</p>
-                </div>
-
-                @if($pending->isEmpty())
-                    <div class="px-6 py-16 text-center">
-                        <svg class="w-10 h-10 text-gray-200 mx-auto mb-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"/>
-                        </svg>
-                        <p class="text-sm font-medium text-gray-400">No submissions pending authorisation</p>
-                        <p class="text-xs text-gray-300 mt-1">All results have been signed off.</p>
-                    </div>
-                @else
-                    <div class="overflow-x-auto">
-                        <table class="w-full text-sm">
-                            <thead>
-                                <tr class="bg-gray-50 border-b border-gray-100">
-                                    <th class="text-left px-6 py-3 text-xs font-medium text-gray-500 uppercase tracking-wide">Reference</th>
-                                    <th class="text-left px-6 py-3 text-xs font-medium text-gray-500 uppercase tracking-wide">Client</th>
-                                    <th class="text-left px-6 py-3 text-xs font-medium text-gray-500 uppercase tracking-wide">Sample</th>
-                                    <th class="text-left px-6 py-3 text-xs font-medium text-gray-500 uppercase tracking-wide">Tests</th>
-                                    <th class="text-left px-6 py-3 text-xs font-medium text-gray-500 uppercase tracking-wide">Priority</th>
-                                    <th class="text-left px-6 py-3 text-xs font-medium text-gray-500 uppercase tracking-wide">Flagged</th>
-                                    <th class="px-6 py-3"></th>
-                                </tr>
-                            </thead>
-                            <tbody class="divide-y divide-gray-50">
-                                @foreach($pending as $submission)
-                                    @php
-                                        $hasFlagged = $submission->samples
-                                            ->flatMap->sampleTests
-                                            ->where('status', 'flagged')
-                                            ->count();
-                                        $testCount = $submission->samples
-                                            ->flatMap->sampleTests
-                                            ->count();
-                                    @endphp
-                                    <tr class="hover:bg-gray-50 transition {{ $hasFlagged ? 'bg-red-50/20' : '' }}">
-                                        <td class="px-6 py-4">
-                                            <span class="font-mono text-xs font-medium text-gray-700">
-                                                {{ $submission->reference_number }}
-                                            </span>
-                                        </td>
-                                        <td class="px-6 py-4">
-                                            <p class="font-medium text-gray-800 text-sm">{{ $submission->client->company_name ?? '—' }}</p>
-                                            <p class="text-xs text-gray-400 mt-0.5">{{ $submission->client->responsible_officer_name ?? '' }}</p>
-                                        </td>
-                                        <td class="px-6 py-4 text-sm text-gray-700">
-                                            {{ $submission->sample_name }}
-                                        </td>
-                                        <td class="px-6 py-4">
-                                            <span class="text-sm text-gray-700">{{ $testCount }} test{{ $testCount !== 1 ? 's' : '' }}</span>
-                                        </td>
-                                        <td class="px-6 py-4">
-                                            @php
-                                                $pc = ['routine' => 'bg-gray-100 text-gray-600', 'urgent' => 'bg-amber-50 text-amber-700', 'emergency' => 'bg-red-50 text-red-700'];
-                                            @endphp
-                                            <span class="inline-flex px-2 py-0.5 text-xs font-medium rounded-full capitalize {{ $pc[$submission->priority ?? 'routine'] }}">
-                                                {{ $submission->priority ?? 'Routine' }}
-                                            </span>
-                                        </td>
-                                        <td class="px-6 py-4">
-                                            @if($hasFlagged)
-                                                <span class="inline-flex items-center gap-1 px-2 py-0.5 text-xs bg-red-50 text-red-700 rounded-full font-medium">
-                                                    ⚑ {{ $hasFlagged }} flagged
-                                                </span>
-                                            @else
-                                                <span class="text-xs text-gray-400">—</span>
-                                            @endif
-                                        </td>
-                                        <td class="px-6 py-4 text-right">
-                                            <a href="{{ route('director.submissions.show', $submission->id) }}"
-                                               class="inline-flex items-center gap-1.5 px-3 py-1.5 bg-teal-600 text-white text-xs font-medium rounded-lg hover:bg-teal-700 transition">
-                                                Review →
-                                            </a>
-                                        </td>
-                                    </tr>
-                                @endforeach
-                            </tbody>
-                        </table>
-                    </div>
+                <button type="button" 
+                        @click="searchByReference()"
+                        class="px-6 py-3 bg-white text-blue-600 rounded-lg hover:bg-blue-50 transition-all shadow-md hover:shadow-lg font-semibold flex items-center gap-2 hover:scale-105">
+                    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"/>
+                    </svg>
+                    Search
+                </button>
+            </div>
+            
+            {{-- Quick Access Buttons --}}
+            <div class="flex flex-wrap gap-2 items-center">
+                <span class="text-white text-sm font-medium">Quick access:</span>
+                <a href="{{ route('director.dashboard') }}" 
+                   class="px-3 py-1 bg-white bg-opacity-20 text-white rounded-full text-sm hover:bg-opacity-30 transition-all">
+                    🏠 Dashboard
+                </a>
+                <a href="{{ route('director.agreements.index') }}" 
+                   class="px-3 py-1 bg-white bg-opacity-20 text-white rounded-full text-sm hover:bg-opacity-30 transition-all">
+                    📄 Agreements
+                </a>
+                <a href="{{ route('director.invoices.index') }}" 
+                   class="px-3 py-1 bg-white bg-opacity-20 text-white rounded-full text-sm hover:bg-opacity-30 transition-all">
+                    💰 Invoices
+                </a>
+                <a href="{{ route('director.audit.index') }}" 
+                   class="px-3 py-1 bg-white bg-opacity-20 text-white rounded-full text-sm hover:bg-opacity-30 transition-all">
+                    📋 Audit Log
+                </a>
+                <a href="{{ route('director.complaints.index') }}" 
+                   class="px-3 py-1 bg-white bg-opacity-20 text-white rounded-full text-sm hover:bg-opacity-30 transition-all">
+                    📧 Complaints
+                </a>
+                @if($flagged > 0)
+                <a href="{{ route('director.flagged.index') }}" 
+                        class="px-3 py-1 bg-red-500 bg-opacity-80 text-white rounded-full text-sm hover:bg-opacity-100 transition-all">
+                    🚩 View Flagged ({{ $flagged }})
+                </a>
                 @endif
             </div>
-
-
-            {{-- ── Recently Authorised History ─────────────────────── --}}
-            <div class="mt-2 bg-white rounded-xl border border-gray-100 overflow-hidden">
-                <div class="px-6 py-4 border-b border-gray-100 flex items-center justify-between">
-                    <div>
-                        <h3 class="text-sm font-medium text-gray-800">Authorisation History</h3>
-                        <p class="text-xs text-gray-400 mt-0.5">Recently authorised and completed submissions — last 20</p>
-                    </div>
-                    <span class="text-xs text-gray-400 bg-gray-50 px-3 py-1 rounded-full border border-gray-100">
-                        {{ $history->count() }} records
-                    </span>
-                </div>
-
-                @if($history->isEmpty())
-                    <div class="px-6 py-12 text-center">
-                        <svg class="w-8 h-8 text-gray-200 mx-auto mb-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5"
-                                  d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"/>
-                        </svg>
-                        <p class="text-sm text-gray-400">No authorised results yet</p>
-                    </div>
-                @else
-                    <div class="overflow-x-auto">
-                        <table class="w-full text-sm">
-                            <thead class="bg-gray-50 border-b border-gray-100">
-                                <tr>
-                                    <th class="text-left px-6 py-3 text-xs font-medium text-gray-500 uppercase">Reference</th>
-                                    <th class="text-left px-6 py-3 text-xs font-medium text-gray-500 uppercase">Client</th>
-                                    <th class="text-left px-6 py-3 text-xs font-medium text-gray-500 uppercase">Sample</th>
-                                    <th class="text-left px-6 py-3 text-xs font-medium text-gray-500 uppercase">Outcome</th>
-                                    <th class="text-left px-6 py-3 text-xs font-medium text-gray-500 uppercase">Authorised By</th>
-                                    <th class="text-left px-6 py-3 text-xs font-medium text-gray-500 uppercase">Status</th>
-                                    <th class="text-left px-6 py-3 text-xs font-medium text-gray-500 uppercase">When</th>
-                                    <th class="px-6 py-3"></th>
-                                </tr>
-                            </thead>
-                            <tbody class="divide-y divide-gray-50">
-                                @foreach($history as $submission)
-                                    @php
-                                        $result  = $submission->result;
-                                        $outcome = $result?->overall_outcome ?? 'pending';
-                                        $outcomeColors = [
-                                            'pass'         => 'bg-green-50 text-green-700',
-                                            'fail'         => 'bg-red-50 text-red-700',
-                                            'inconclusive' => 'bg-yellow-50 text-yellow-700',
-                                        ];
-                                        $outcomeColor = $outcomeColors[$outcome] ?? 'bg-gray-100 text-gray-400';
-                                        $statusColors = [
-                                            'authorised' => 'bg-green-50 text-green-700',
-                                            'completed'  => 'bg-green-100 text-green-800',
-                                        ];
-                                        $statusColor = $statusColors[$submission->status] ?? 'bg-gray-100 text-gray-500';
-                                    @endphp
-                                    <tr class="hover:bg-gray-50 transition">
-                                        <td class="px-6 py-3.5 font-mono text-xs font-semibold text-gray-700">
-                                            {{ $submission->reference_number }}
-                                        </td>
-                                        <td class="px-6 py-3.5 text-xs">
-                                            <p class="font-medium text-gray-800">{{ $submission->client->company_name ?? '—' }}</p>
-                                            <p class="text-gray-400">{{ $submission->client->responsible_officer_name ?? '' }}</p>
-                                        </td>
-                                        <td class="px-6 py-3.5 text-xs text-gray-700">
-                                            {{ $submission->sample_name }}
-                                            <span class="text-gray-400 capitalize">· {{ $submission->sample_type }}</span>
-                                        </td>
-                                        <td class="px-6 py-3.5">
-                                            @if($result)
-                                                <span class="inline-flex px-2 py-0.5 text-xs font-semibold rounded-full capitalize {{ $outcomeColor }}">
-                                                    {{ $outcome === 'pass' ? '✓ Pass' : ($outcome === 'fail' ? '✗ Fail' : ucfirst($outcome)) }}
-                                                </span>
-                                            @else
-                                                <span class="text-xs text-gray-400">—</span>
-                                            @endif
-                                        </td>
-                                        <td class="px-6 py-3.5 text-xs text-gray-600">
-                                            {{ $result?->authorisedBy?->name ?? '—' }}
-                                            @if($result?->authorised_at)
-                                                <p class="text-gray-400">{{ $result->authorised_at->format('d M Y') }}</p>
-                                            @endif
-                                        </td>
-                                        <td class="px-6 py-3.5">
-                                            <span class="inline-flex px-2 py-0.5 text-xs font-medium rounded-full capitalize {{ $statusColor }}">
-                                                {{ ucfirst($submission->status) }}
-                                            </span>
-                                        </td>
-                                        <td class="px-6 py-3.5 text-xs text-gray-400">
-                                            {{ $submission->updated_at->diffForHumans() }}
-                                            <p class="text-gray-300">{{ $submission->updated_at->format('d M Y H:i') }}</p>
-                                        </td>
-                                        <td class="px-6 py-3.5 text-right">
-                                            <a href="{{ route('director.submissions.show', $submission->id) }}"
-                                               class="text-xs text-gray-500 px-3 py-1.5 border border-gray-200 rounded-lg hover:bg-gray-50 transition">
-                                                View
-                                            </a>
-                                        </td>
-                                    </tr>
-                                @endforeach
-                            </tbody>
-                        </table>
-                    </div>
-                @endif
-            </div>
-
-        <div class="pb-12"></div>
+        </div>
     </div>
+
+    {{-- Summary Cards --}}
+    <div class="grid grid-cols-1 md:grid-cols-4 gap-6 mb-6">
+        {{-- Awaiting Authorisation --}}
+        <div class="bg-gradient-to-br from-amber-400 to-orange-500 rounded-xl shadow-lg p-6 text-white transform hover:scale-105 transition-all border-2 border-amber-300">
+            <div class="flex items-center justify-between mb-4">
+                <div class="p-3 bg-white bg-opacity-20 rounded-lg">
+                    <svg class="w-8 h-8 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"/>
+                    </svg>
+                </div>
+            </div>
+            <h3 class="text-3xl font-bold mb-1">{{ $pending->count() }}</h3>
+            <p class="text-amber-100 text-sm font-medium">Awaiting Authorisation</p>
+            @if($pending->isNotEmpty())
+                <p class="text-xs text-amber-100 mt-2">
+                    Oldest pending: {{ $pending->sortBy('created_at')->first()->created_at->diffForHumans() }}
+                </p>
+            @else
+                <p class="text-xs text-amber-100 mt-2">All caught up! 🎉</p>
+            @endif
+        </div>
+
+        {{-- Flagged Tests --}}
+        <div class="bg-gradient-to-br from-red-500 to-pink-600 rounded-xl shadow-lg p-6 text-white transform hover:scale-105 transition-all border-2 border-red-400">
+            <div class="flex items-center justify-between mb-4">
+                <div class="p-3 bg-white bg-opacity-20 rounded-lg">
+                    <svg class="w-8 h-8 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 21v-4m0 0V5a2 2 0 012-2h6.5l1 1H21l-3 6 3 6h-8.5l-1-1H5a2 2 0 00-2 2zm9-13.5V9"/>
+                    </svg>
+                </div>
+            </div>
+            <h3 class="text-3xl font-bold mb-1">{{ $flagged }}</h3>
+            <p class="text-red-100 text-sm font-medium">Flagged Tests</p>
+            @if($flagged > 0)
+                <p class="text-xs text-red-100 mt-2">Needs immediate review</p>
+            @else
+                <p class="text-xs text-red-100 mt-2">No issues flagged</p>
+            @endif
+        </div>
+
+        {{-- Authorised Today --}}
+        <div class="bg-gradient-to-br from-green-500 to-emerald-600 rounded-xl shadow-lg p-6 text-white transform hover:scale-105 transition-all border-2 border-green-400">
+            <div class="flex items-center justify-between mb-4">
+                <div class="p-3 bg-white bg-opacity-20 rounded-lg">
+                    <svg class="w-8 h-8 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"/>
+                    </svg>
+                </div>
+            </div>
+            <h3 class="text-3xl font-bold mb-1">{{ $authorised_today }}</h3>
+            <p class="text-green-100 text-sm font-medium">Authorised Today</p>
+            <p class="text-xs text-green-100 mt-2">{{ now()->format('l, F j, Y') }}</p>
+        </div>
+
+        {{-- This Week Performance --}}
+        <div class="bg-gradient-to-br from-blue-500 to-indigo-600 rounded-xl shadow-lg p-6 text-white transform hover:scale-105 transition-all border-2 border-blue-400">
+            <div class="flex items-center justify-between mb-4">
+                <div class="p-3 bg-white bg-opacity-20 rounded-lg">
+                    <svg class="w-8 h-8 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z"/>
+                    </svg>
+                </div>
+            </div>
+            @php
+                $thisWeekCount = $history->where('created_at', '>=', now()->startOfWeek())->count();
+                $dailyAverage = $thisWeekCount > 0 ? round($thisWeekCount / max(1, now()->dayOfWeek ?: 1), 1) : 0;
+            @endphp
+            <h3 class="text-3xl font-bold mb-1">{{ $thisWeekCount }}</h3>
+            <p class="text-blue-100 text-sm font-medium">This Week</p>
+            <p class="text-xs text-blue-100 mt-2">Avg {{ $dailyAverage }}/day</p>
+        </div>
+    </div>
+
+    {{-- Quick Actions Bar --}}
+    <div class="bg-white rounded-lg shadow-md border border-gray-200 p-4 mb-6">
+        <div class="flex items-center justify-between">
+            <div class="flex items-center gap-3">
+                <div class="p-2 bg-gradient-to-r from-indigo-500 to-purple-500 rounded-lg">
+                    <svg class="w-5 h-5 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z"/>
+                    </svg>
+                </div>
+                <h3 class="text-lg font-semibold text-gray-900">Quick Actions</h3>
+            </div>
+            <div class="flex gap-2">
+                @if($pending->isNotEmpty())
+                    <a href="{{ route('director.submissions.show', $pending->first()->id) }}" 
+                       class="px-4 py-2 bg-gradient-to-r from-teal-500 to-teal-600 text-white rounded-lg hover:from-teal-600 hover:to-teal-700 transition-all shadow-md hover:shadow-lg flex items-center gap-2">
+                        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z"/>
+                        </svg>
+                        Authorise Next
+                    </a>
+                @endif
+                <a href="{{ route('director.agreements.index') }}" 
+                   class="px-4 py-2 bg-white text-gray-700 border-2 border-gray-300 rounded-lg hover:bg-gray-50 hover:border-gray-400 transition-all flex items-center gap-2">
+                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"/>
+                    </svg>
+                    Agreements
+                </a>
+                @if($flagged > 0)
+                    <a href="{{ route('director.flagged.index') }}" 
+                            class="px-4 py-2 bg-red-50 text-red-700 border-2 border-red-200 rounded-lg hover:bg-red-100 hover:border-red-300 transition-all flex items-center gap-2">
+                        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 21v-4m0 0V5a2 2 0 012-2h6.5l1 1H21l-3 6 3 6h-8.5l-1-1H5a2 2 0 00-2 2zm9-13.5V9"/>
+                        </svg>
+                        View Flagged ({{ $flagged }})
+                    </a>
+                @endif
+            </div>
+        </div>
+    </div>
+
+    @if(isset($unsigned_agreements) && $unsigned_agreements > 0)
+    {{-- Service Agreements Alert --}}
+    <div class="bg-gradient-to-r from-amber-50 to-orange-50 border-2 border-amber-400 rounded-xl shadow-md p-6 mb-6">
+        <div class="flex items-start gap-4">
+            <div class="flex-shrink-0">
+                <div class="p-4 bg-gradient-to-br from-amber-400 to-orange-500 rounded-full">
+                    <svg class="w-8 h-8 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"/>
+                    </svg>
+                </div>
+            </div>
+            <div class="flex-1">
+                <h3 class="text-xl font-bold text-gray-900 mb-2">Service Agreements Awaiting Signature</h3>
+                <p class="text-gray-700 mb-4">
+                    You have <span class="font-bold text-amber-600">{{ $unsigned_agreements }}</span> service agreement(s) awaiting your countersignature
+                </p>
+                <a href="{{ route('director.agreements.index') }}" 
+                   class="inline-flex items-center gap-2 px-4 py-2 bg-gradient-to-r from-amber-500 to-orange-600 text-white rounded-lg hover:from-amber-600 hover:to-orange-700 transition-all shadow-md hover:shadow-lg hover:scale-105">
+                    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 15l-2 5L9 9l11 4-5 2zm0 0l5 5M7.188 2.239l.777 2.897M5.136 7.965l-2.898-.777M13.95 4.05l-2.122 2.122m-5.657 5.656l-2.12 2.122"/>
+                    </svg>
+                    Review & Sign
+                </a>
+            </div>
+        </div>
+    </div>
+    @endif
+
+    <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
+        {{-- Pending Authorisations --}}
+        <div class="bg-white rounded-xl shadow-md border border-gray-200 p-6">
+            <div class="flex items-center justify-between mb-6">
+                <h3 class="text-xl font-bold text-gray-900 flex items-center gap-2">
+                    <div class="p-2 bg-amber-100 rounded-lg">
+                        <svg class="w-5 h-5 text-amber-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2"/>
+                        </svg>
+                    </div>
+                    Awaiting Your Authorisation
+                </h3>
+            </div>
+
+            @if($pending->isEmpty())
+                <div class="text-center py-8">
+                    <svg class="w-16 h-16 text-gray-300 mx-auto mb-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"/>
+                    </svg>
+                    <p class="text-gray-500 font-medium">No pending authorisations</p>
+                    <p class="text-gray-400 text-sm">All submissions have been reviewed</p>
+                </div>
+            @else
+                <div class="space-y-3 max-h-96 overflow-y-auto">
+                    @foreach($pending as $submission)
+                        <div class="border border-gray-200 rounded-lg p-4 hover:bg-gray-50 transition-all">
+                            <div class="flex items-start justify-between mb-3">
+                                <div class="flex-1">
+                                    <div class="flex items-center gap-2 mb-1">
+                                        <span class="font-mono text-sm font-semibold text-indigo-600">{{ $submission->reference_number }}</span>
+                                        @php
+                                            $flaggedCount = $submission->samples->sum(function($s) {
+                                                return $s->sampleTests ? $s->sampleTests->where('status', 'flagged')->count() : 0;
+                                            });
+                                        @endphp
+                                        @if($flaggedCount > 0)
+                                            <span class="inline-flex items-center gap-1 px-2 py-1 bg-red-100 text-red-700 rounded-full text-xs font-semibold">
+                                                <svg class="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 21v-4m0 0V5a2 2 0 012-2h6.5l1 1H21l-3 6 3 6h-8.5l-1-1H5a2 2 0 00-2 2zm9-13.5V9"/>
+                                                </svg>
+                                                {{ $flaggedCount }} Flagged
+                                            </span>
+                                        @else
+                                            <span class="inline-flex items-center gap-1 px-2 py-1 bg-green-100 text-green-700 rounded-full text-xs font-semibold">
+                                                <svg class="w-3 h-3" fill="currentColor" viewBox="0 0 20 20">
+                                                    <path fill-rule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clip-rule="evenodd"/>
+                                                </svg>
+                                                All Clear
+                                            </span>
+                                        @endif
+                                    </div>
+                                    <p class="text-gray-700 text-sm font-medium">{{ $submission->client->user->name }}</p>
+                                    <p class="text-gray-500 text-xs">{{ $submission->client->company_name }}</p>
+                                </div>
+                                <div class="text-right text-xs text-gray-500">
+                                    <p>{{ $submission->created_at->diffForHumans() }}</p>
+                                    @php
+                                        $totalTests = $submission->samples->sum(function($s) {
+                                            return $s->sampleTests ? $s->sampleTests->count() : 0;
+                                        });
+                                        $completedTests = $submission->samples->sum(function($s) {
+                                            return $s->sampleTests ? $s->sampleTests->whereIn('status', ['completed', 'flagged'])->count() : 0;
+                                        });
+                                        $progress = $totalTests > 0 ? round(($completedTests / $totalTests) * 100) : 0;
+                                    @endphp
+                                    <div class="mt-1 w-24">
+                                        <div class="flex items-center gap-1">
+                                            <div class="flex-1 bg-gray-200 rounded-full h-2">
+                                                <div class="bg-green-500 h-2 rounded-full" style="width: {{ $progress }}%"></div>
+                                            </div>
+                                            <span class="text-xs font-medium">{{ $completedTests }}/{{ $totalTests }}</span>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            
+                            <div class="flex items-center gap-2">
+                                <a href="{{ route('director.submissions.show', $submission->id) }}" 
+                                   class="flex-1 px-3 py-2 bg-gradient-to-r from-teal-500 to-teal-600 text-white rounded-lg hover:from-teal-600 hover:to-teal-700 transition-all text-sm font-medium flex items-center justify-center gap-1 shadow-md">
+                                    Review & Authorise
+                                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"/>
+                                    </svg>
+                                </a>
+                            </div>
+                        </div>
+                    @endforeach
+                </div>
+            @endif
+        </div>
+
+        {{-- Authorisation History --}}
+        <div class="bg-white rounded-xl shadow-md border border-gray-200 p-6" id="flagged-section">
+            <h3 class="text-xl font-bold text-gray-900 mb-6 flex items-center gap-2">
+                <div class="p-2 bg-green-100 rounded-lg">
+                    <svg class="w-5 h-5 text-green-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4M7.835 4.697a3.42 3.42 0 001.946-.806 3.42 3.42 0 014.438 0 3.42 3.42 0 001.946.806 3.42 3.42 0 013.138 3.138 3.42 3.42 0 00.806 1.946 3.42 3.42 0 010 4.438 3.42 3.42 0 00-.806 1.946 3.42 3.42 0 01-3.138 3.138 3.42 3.42 0 00-1.946.806 3.42 3.42 0 01-4.438 0 3.42 3.42 0 00-1.946-.806 3.42 3.42 0 01-3.138-3.138 3.42 3.42 0 00-.806-1.946 3.42 3.42 0 010-4.438 3.42 3.42 0 00.806-1.946 3.42 3.42 0 013.138-3.138z"/>
+                    </svg>
+                </div>
+                Authorisation History
+            </h3>
+
+            @if($history->isEmpty())
+                <div class="text-center py-8">
+                    <svg class="w-16 h-16 text-gray-300 mx-auto mb-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2"/>
+                    </svg>
+                    <p class="text-gray-500 font-medium">No history yet</p>
+                    <p class="text-gray-400 text-sm">Authorised submissions will appear here</p>
+                </div>
+            @else
+                <div class="space-y-3 max-h-96 overflow-y-auto">
+                    @foreach($history->take(20) as $submission)
+                        <div class="border border-gray-200 rounded-lg p-4 hover:bg-gray-50 transition-all">
+                            <div class="flex items-center justify-between mb-2">
+                                <div class="flex items-center gap-2">
+                                    <span class="font-mono text-sm font-semibold text-indigo-600">{{ $submission->reference_number }}</span>
+                                    @if($submission->result)
+                                        @if($submission->result->overall_outcome === 'pass')
+                                            <span class="inline-flex items-center gap-1 px-2 py-1 bg-green-100 text-green-700 rounded-full text-xs font-semibold">
+                                                <svg class="w-3 h-3" fill="currentColor" viewBox="0 0 20 20">
+                                                    <path fill-rule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clip-rule="evenodd"/>
+                                                </svg>
+                                                Pass
+                                            </span>
+                                        @else
+                                            <span class="inline-flex items-center gap-1 px-2 py-1 bg-red-100 text-red-700 rounded-full text-xs font-semibold">
+                                                <svg class="w-3 h-3" fill="currentColor" viewBox="0 0 20 20">
+                                                    <path fill-rule="evenodd" d="M4.293 4.293a1 1 0 011.414 0L10 8.586l4.293-4.293a1 1 0 111.414 1.414L11.414 10l4.293 4.293a1 1 0 01-1.414 1.414L10 11.414l-4.293 4.293a1 1 0 01-1.414-1.414L8.586 10 4.293 5.707a1 1 0 010-1.414z" clip-rule="evenodd"/>
+                                                </svg>
+                                                Fail
+                                            </span>
+                                        @endif
+                                    @endif
+                                </div>
+                                <span class="text-xs text-gray-500">{{ $submission->updated_at->format('M j, Y • g:i A') }}</span>
+                            </div>
+                            <p class="text-gray-700 text-sm font-medium">{{ $submission->client->user->name }}</p>
+                            <p class="text-gray-500 text-xs">
+                                {{ $submission->client->company_name }} • 
+                                {{ $submission->samples->first()->sample_type ?? 'N/A' }}
+                            </p>
+                            <div class="mt-2">
+                                <a href="{{ route('director.submissions.show', $submission->id) }}" 
+                                   class="text-indigo-600 hover:text-indigo-800 text-xs font-medium inline-flex items-center gap-1">
+                                    View Details
+                                    <svg class="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"/>
+                                    </svg>
+                                </a>
+                            </div>
+                        </div>
+                    @endforeach
+                </div>
+            @endif
+        </div>
+    </div>
+
+    {{-- Search Results Area (populated when search is performed) --}}
+    <div id="search-results" class="mt-6 hidden">
+        <div class="bg-white rounded-xl shadow-md border border-gray-200 p-6">
+            <h3 class="text-xl font-bold text-gray-900 mb-4">Search Results</h3>
+            <div id="search-results-content"></div>
+        </div>
+    </div>
+
+    <script>
+        function searchByReference() {
+            const reference = document.querySelector('[x-model="reference"]').value.trim();
+            
+            if (!reference) {
+                alert('Please enter a reference number');
+                return;
+            }
+            
+            // Validate format
+            const pattern = /^KSTL-\d{4}-\d{5}$/;
+            if (!pattern.test(reference)) {
+                alert('Invalid reference format. Use: KSTL-YYYY-NNNNN');
+                return;
+            }
+            
+            // Search in pending submissions
+            const pendingSubmissions = @json($pending);
+            const foundPending = pendingSubmissions.find(s => s.reference === reference);
+            
+            if (foundPending) {
+                // Found in pending - redirect to submission
+                window.location.href = `{{ url('director/submissions') }}/${foundPending.id}`;
+                return;
+            }
+            
+            // Search in history
+            const historySubmissions = @json($history);
+            const foundHistory = historySubmissions.find(s => s.reference === reference);
+            
+            if (foundHistory) {
+                // Found in history - redirect to submission
+                window.location.href = `{{ url('director/submissions') }}/${foundHistory.id}`;
+                return;
+            }
+            
+            // Not found
+            alert(`Submission ${reference} not found in your accessible records. The submission may not exist or may still be in earlier processing stages (reception/testing).`);
+        }
+    </script>
 </x-app-layout>

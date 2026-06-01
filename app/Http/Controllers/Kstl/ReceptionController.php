@@ -42,7 +42,13 @@ class ReceptionController extends Controller
             ->limit(20)
             ->get();
 
-        return view('kstl.reception.dashboard', compact('pending', 'processed'));
+        // Accurate "received today" count (the $pending queue is, by definition,
+        // not-yet-received, so it can't supply this number).
+        $receivedToday = \App\Models\Kstl\Submission::whereNotNull('received_at')
+            ->whereDate('received_at', today())
+            ->count();
+
+        return view('kstl.reception.dashboard', compact('pending', 'processed', 'receivedToday'));
     }
 
     // ── Show a submission detail ───────────────────────────────────
