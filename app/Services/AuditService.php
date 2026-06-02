@@ -62,6 +62,37 @@ class AuditService
         );
     }
 
+    /**
+     * Record a failed login attempt.
+     * $userId is the matched user's id when the email exists but the password
+     * was wrong; null when the email is unknown. Does not rely on Auth::user()
+     * because there is no authenticated user on a failed attempt.
+     */
+    public function logFailedLogin(?string $attemptedEmail, ?string $userId = null): void
+    {
+        $this->log(
+            event:       'login_failed',
+            description: $attemptedEmail
+                ? "Failed login attempt for {$attemptedEmail}"
+                : 'Failed login attempt (no email supplied)',
+            userId:      $userId,
+            userName:    $attemptedEmail ?? 'Unknown',
+        );
+    }
+
+    /**
+     * Record a logout.
+     */
+    public function logLogout(string $userId, string $userName): void
+    {
+        $this->log(
+            event:       'logout',
+            description: "{$userName} logged out",
+            userId:      $userId,
+            userName:    $userName,
+        );
+    }
+
     public function logSubmissionCreated(\App\Models\Kstl\Submission $submission): void
     {
         $this->log(

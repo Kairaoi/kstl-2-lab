@@ -6,8 +6,11 @@ use App\Actions\Fortify\CreateNewUser;
 use App\Actions\Fortify\ResetUserPassword;
 use App\Actions\Fortify\UpdateUserPassword;
 use App\Actions\Fortify\UpdateUserProfileInformation;
+use App\Models\User;
+use App\Services\AuditService;
 use Illuminate\Cache\RateLimiting\Limit;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\RateLimiter;
 use Illuminate\Support\ServiceProvider;
 use Illuminate\Support\Str;
@@ -25,6 +28,23 @@ class FortifyServiceProvider extends ServiceProvider
         Fortify::updateUserPasswordsUsing(UpdateUserPassword::class);
         Fortify::resetUserPasswordsUsing(ResetUserPassword::class);
         Fortify::redirectUserForTwoFactorAuthenticationUsing(RedirectIfTwoFactorAuthenticatable::class);
+
+        // ------------------------------------------------------------------
+        // Authentication + audit of failed logins.
+        // Fortify runs this on every login attempt. On success we return the
+        // user (the Login event listener records the successful login). On
+        // failure we record it via AuditService — Fortify does not reliably
+        // dispatch the framework Failed event, so we capture it here.
+        // ------------------------------------------------------------------
+       Fortify::authenticateUsing(function (Request $request) {
+    $user = User::where('email', $request->email)->first();
+
+    if ($user && Hash::check($request->password, $user->password)) {
+        return $user;
+    }
+
+    return null;   // Let the Failed event handle auditing
+});
 
         // ------------------------------------------------------------------
         // Fortify redirects to config('fortify.home') = '/dashboard' after

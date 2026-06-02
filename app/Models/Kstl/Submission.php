@@ -6,6 +6,7 @@ use App\Models\Kstl\Invoice;
 use App\Models\Kstl\Result;
 use App\Models\Kstl\Sample;
 use App\Models\User;
+use App\Traits\HasAuditLogs;
 use Illuminate\Database\Eloquent\Concerns\HasUuids;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
@@ -13,7 +14,7 @@ use Illuminate\Database\Eloquent\SoftDeletes;
 
 class Submission extends Model
 {
-    use HasUuids, SoftDeletes, HasFactory;
+   use HasUuids, SoftDeletes, HasFactory, HasAuditLogs;
 
     protected $table = 'submissions';
 

@@ -198,6 +198,7 @@
                 <a href="{{ route('analyst.dashboard') }}"        class="an-link {{ request()->routeIs('analyst.dashboard')      ? 'active' : '' }}">Analyst</a>
                 <a href="{{ route('analyst.tests.index') }}"      class="an-link {{ request()->routeIs('analyst.tests.*')        ? 'active' : '' }}">Test Queue</a>
                 <a href="{{ route('analyst.results.index') }}"    class="an-link {{ request()->routeIs('analyst.results.*')      ? 'active' : '' }}">Results</a>
+                <a href="{{ route('staff.documents.index') }}"    class="an-link {{ request()->routeIs('staff.documents.*')      ? 'active' : '' }}">Documents</a>
             @endhasanyrole
 
             @role('director')
@@ -206,6 +207,7 @@
                 <a href="{{ route('director.invoices.index') }}"  class="an-link {{ request()->routeIs('director.invoices.*')    ? 'active' : '' }}">Invoices</a>
                 <a href="{{ route('director.agreements.index') }}" class="an-link {{ request()->routeIs('director.agreements.*') ? 'active' : '' }}">Agreements</a>
                 <a href="{{ route('director.complaints.index') }}" class="an-link {{ request()->routeIs('director.complaints.*') ? 'active' : '' }}">Complaints</a>
+                <a href="{{ route('staff.documents.index') }}"    class="an-link {{ request()->routeIs('staff.documents.*')       ? 'active' : '' }}">Documents</a>
             @endrole
 
             @role('auditor')
@@ -309,6 +311,7 @@
             <a href="{{ route('analyst.dashboard') }}"        class="an-mob-link {{ request()->routeIs('analyst.dashboard')     ? 'active' : '' }}">Analyst</a>
             <a href="{{ route('analyst.tests.index') }}"      class="an-mob-link {{ request()->routeIs('analyst.tests.*')       ? 'active' : '' }}">Sample Tests</a>
             <a href="{{ route('analyst.results.index') }}"    class="an-mob-link {{ request()->routeIs('analyst.results.*')     ? 'active' : '' }}">Results</a>
+            <a href="{{ route('staff.documents.index') }}"    class="an-mob-link {{ request()->routeIs('staff.documents.*')     ? 'active' : '' }}">Documents</a>
         @endhasanyrole
 
         @role('director')
@@ -317,6 +320,7 @@
             <a href="{{ route('director.invoices.index') }}"  class="an-mob-link {{ request()->routeIs('director.invoices.*')   ? 'active' : '' }}">Invoices</a>
             <a href="{{ route('director.agreements.index') }}" class="an-mob-link {{ request()->routeIs('director.agreements.*') ? 'active' : '' }}">Agreements</a>
             <a href="{{ route('director.complaints.index') }}" class="an-mob-link {{ request()->routeIs('director.complaints.*') ? 'active' : '' }}">Complaints</a>
+            <a href="{{ route('staff.documents.index') }}"    class="an-mob-link {{ request()->routeIs('staff.documents.*')     ? 'active' : '' }}">Documents</a>
         @endrole
 
         @role('auditor')

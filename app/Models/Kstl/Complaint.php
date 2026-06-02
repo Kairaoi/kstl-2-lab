@@ -3,6 +3,7 @@
 namespace App\Models\Kstl;
 
 use App\Models\User;
+use App\Traits\HasAuditLogs;
 use Illuminate\Database\Eloquent\Concerns\HasUuids;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\SoftDeletes;
@@ -10,7 +11,7 @@ use Illuminate\Database\Eloquent\Relations\BelongsTo;
 
 class Complaint extends Model
 {
-    use HasUuids, SoftDeletes;
+   use HasUuids, HasAuditLogs, SoftDeletes;
 
     protected $table = 'complaints';
 

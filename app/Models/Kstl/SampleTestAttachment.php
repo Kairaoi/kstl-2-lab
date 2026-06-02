@@ -6,10 +6,11 @@ use Illuminate\Database\Eloquent\Concerns\HasUuids;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use App\Models\User;
+use App\Traits\HasAuditLogs;
 
 class SampleTestAttachment extends Model
 {
-    use HasUuids;
+    use HasUuids, HasAuditLogs;
 
     protected $fillable = [
         'sample_test_id',

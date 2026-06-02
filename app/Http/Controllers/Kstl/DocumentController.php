@@ -15,7 +15,7 @@ use Illuminate\Support\Str;
 class DocumentController extends Controller
 {
     /** Roles permitted to manage (create/upload/delete) controlled documents. */
-    private const MANAGER_ROLES = ['director', 'admin', 'super_admin'];
+    private const MANAGER_ROLES = ['reception', 'analyst', 'director', 'admin', 'super_admin'];
 
     private function canManage(): bool
     {
@@ -25,7 +25,7 @@ class DocumentController extends Controller
     private function abortUnlessManager(): void
     {
         abort_unless($this->canManage(), 403,
-            'Only the Director or an administrator may manage controlled documents.');
+            'You do not have permission to manage controlled documents.');
     }
 
     // ── Repository index — categories + documents (all staff) ──────

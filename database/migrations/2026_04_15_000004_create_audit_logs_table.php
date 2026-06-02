@@ -28,7 +28,10 @@ return new class extends Migration
             $table->string('description')->nullable(); // Human-readable summary
 
             // ── Which entity ──────────────────────────────────────────
-            $table->uuidMorphs('auditable');           // auditable_type + auditable_id
+            // Made nullable so login_failed, logout (in some cases), etc. can be logged
+            $table->string('auditable_type')->nullable();
+            $table->uuid('auditable_id')->nullable();
+            $table->index(['auditable_type', 'auditable_id']);
 
             // ── Data snapshot ─────────────────────────────────────────
             $table->json('old_values')->nullable();

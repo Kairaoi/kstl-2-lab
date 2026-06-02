@@ -5,10 +5,11 @@ namespace App\Models\Kstl;
 use Illuminate\Database\Eloquent\Concerns\HasUuids;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use App\Traits\HasAuditLogs;
 
 class InvoiceItem extends Model
 {
-    use HasUuids;
+    use HasUuids, HasAuditLogs;
 
     protected $table = 'invoice_items';
 
