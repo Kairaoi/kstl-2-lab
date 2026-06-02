@@ -78,6 +78,30 @@
 
     <div class="shell">
 
+        @php
+            // A report is chartable only when the SECOND column is numeric across
+            // the rows (the chart treats col1 as labels, col2 as values). Listings
+            // (dates, text, references in col2) are table-only.
+            $chartable = false;
+            if (! empty($results) && count($results) > 0) {
+                $firstRow = (array) $results[0];
+                $keys     = array_keys($firstRow);
+                if (count($keys) >= 2) {
+                    $valCol  = $keys[1];
+                    $sample  = array_slice($results, 0, 20);
+                    $numeric = 0; $checked = 0;
+                    foreach ($sample as $r) {
+                        $v = ((array) $r)[$valCol] ?? null;
+                        if ($v === null || $v === '') { continue; }
+                        $checked++;
+                        if (is_numeric($v)) { $numeric++; }
+                    }
+                    // chartable if we saw values and most of them are numeric
+                    $chartable = $checked > 0 && ($numeric / $checked) >= 0.6;
+                }
+            }
+        @endphp
+
         <div class="page-header">
             <div class="page-header-left">
                 <div class="badge">
@@ -91,10 +115,12 @@
                 </div>
             </div>
             <div style="display:flex;gap:.5rem;flex-wrap:wrap;align-items:center">
+                @if($chartable)
                 <div class="view-toggle">
                     <button class="view-btn active" onclick="switchView('chart')">📊 Charts</button>
                     <button class="view-btn" onclick="switchView('table')">📋 Table</button>
                 </div>
+                @endif
                 
                 <a href="{{ route('reports.index') }}" class="btn btn-secondary btn-sm">
                     ← Back to Reports
@@ -126,6 +152,7 @@
 
         @if(!empty($results) && count($results) > 0)
             {{-- CHART VIEW --}}
+            @if($chartable)
             <div id="chartView" class="view-section active">
                 <div class="chart-selector">
                     <div class="selector-label">Select Chart Type</div>
@@ -143,8 +170,10 @@
                 </div>
             </div>
 
+            @endif
+
             {{-- TABLE VIEW --}}
-            <div id="tableView" class="view-section">
+            <div id="tableView" class="view-section {{ $chartable ? '' : 'active' }}">
                 <div class="table-card">
                     <div class="table-wrap">
                         <table>
@@ -190,7 +219,7 @@
         document.getElementById(view + 'View').classList.add('active');
     }
 
-    @if(!empty($results) && count($results) > 0)
+    @if($chartable)
     const reportData = @json($results);
     const categories = reportData.map(row => String(Object.values(row)[0]));
     const values = reportData.map(row => parseFloat(Object.values(row)[1]) || 0);

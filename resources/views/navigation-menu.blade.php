@@ -215,9 +215,6 @@
                 <a href="{{ route('staff.documents.index') }}"    class="an-link {{ request()->routeIs('staff.documents.*')       ? 'active' : '' }}">Documents</a>
             @endrole
 
-            @role('auditor')
-                <a href="{{ route('auditor.audit.index') }}"      class="an-link {{ request()->routeIs('auditor.audit.*')        ? 'active' : '' }}">Audit Log</a>
-            @endrole
 
         </div>
 
@@ -236,7 +233,7 @@
                 $bellRoute = auth()->user()->hasAnyRole(['director','admin','super_admin'])
                     ? route('director.complaints.index')
                     : (auth()->user()->hasRole('auditor')
-                        ? route('auditor.audit.index')
+                        ? route('reports.index')
                         : route('client.notifications.index'));
             @endphp
             <a href="{{ $bellRoute }}" class="an-bell" title="Notifications">
@@ -332,9 +329,6 @@
             <a href="{{ route('staff.documents.index') }}"    class="an-mob-link {{ request()->routeIs('staff.documents.*')     ? 'active' : '' }}">Documents</a>
         @endrole
 
-        @role('auditor')
-            <a href="{{ route('auditor.audit.index') }}"      class="an-mob-link {{ request()->routeIs('auditor.audit.*')       ? 'active' : '' }}">Audit Log</a>
-        @endrole
 
         @if(auth()->user()->hasAnyRole(['super_admin', 'admin']))
             <a href="/admin" class="an-mob-link {{ request()->is('admin*') ? 'active' : '' }}">Admin Panel</a>
