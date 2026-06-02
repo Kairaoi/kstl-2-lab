@@ -191,7 +191,7 @@
                 <a href="{{ route('client.complaints.index') }}"  class="an-link {{ request()->routeIs('client.complaints.*')    ? 'active' : '' }}">Complaints</a>
             @endrole
 
-            {{-- Lab staff (reception + analyst) can reach both dashboards --}}
+            {{-- Lab staff --}}
             @hasanyrole('reception|analyst')
                 <a href="{{ route('reception.dashboard') }}"      class="an-link {{ request()->routeIs('reception.dashboard')    ? 'active' : '' }}">Reception</a>
                 <a href="{{ route('reception.dashboard') }}"      class="an-link {{ request()->routeIs('reception.submissions.*')? 'active' : '' }}">Submissions</a>
@@ -199,6 +199,11 @@
                 <a href="{{ route('analyst.tests.index') }}"      class="an-link {{ request()->routeIs('analyst.tests.*')        ? 'active' : '' }}">Test Queue</a>
                 <a href="{{ route('analyst.results.index') }}"    class="an-link {{ request()->routeIs('analyst.results.*')      ? 'active' : '' }}">Results</a>
                 <a href="{{ route('staff.documents.index') }}"    class="an-link {{ request()->routeIs('staff.documents.*')      ? 'active' : '' }}">Documents</a>
+            @endhasanyrole
+
+            {{-- Director, Auditor, Admin, Super Admin --}}
+            @hasanyrole('director|auditor|admin|super_admin')
+                <a href="{{ route('reports.index') }}" class="an-link {{ request()->routeIs('reports.*') ? 'active' : '' }}">Reports</a>
             @endhasanyrole
 
             @role('director')
@@ -304,7 +309,6 @@
             <a href="{{ route('client.complaints.index') }}"  class="an-mob-link {{ request()->routeIs('client.complaints.*')   ? 'active' : '' }}">Complaints</a>
         @endrole
 
-        {{-- Lab staff (reception + analyst) can reach both dashboards --}}
         @hasanyrole('reception|analyst')
             <a href="{{ route('reception.dashboard') }}"      class="an-mob-link {{ request()->routeIs('reception.dashboard')   ? 'active' : '' }}">Reception</a>
             <a href="{{ route('reception.dashboard') }}"      class="an-mob-link {{ request()->routeIs('reception.submissions.*') ? 'active' : '' }}">Submissions</a>
@@ -312,6 +316,11 @@
             <a href="{{ route('analyst.tests.index') }}"      class="an-mob-link {{ request()->routeIs('analyst.tests.*')       ? 'active' : '' }}">Sample Tests</a>
             <a href="{{ route('analyst.results.index') }}"    class="an-mob-link {{ request()->routeIs('analyst.results.*')     ? 'active' : '' }}">Results</a>
             <a href="{{ route('staff.documents.index') }}"    class="an-mob-link {{ request()->routeIs('staff.documents.*')     ? 'active' : '' }}">Documents</a>
+        @endhasanyrole
+
+        {{-- Reports for oversight roles --}}
+        @hasanyrole('director|auditor|admin|super_admin')
+            <a href="{{ route('reports.index') }}" class="an-mob-link {{ request()->routeIs('reports.*') ? 'active' : '' }}">Reports</a>
         @endhasanyrole
 
         @role('director')
