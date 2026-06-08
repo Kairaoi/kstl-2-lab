@@ -71,6 +71,8 @@ Route::middleware([
         ->name('invoices.index');
     Route::get('/invoices/{id}', [ClientInvoiceController::class, 'show'])
         ->name('invoices.show');
+    Route::post('/invoices/{id}/payment-reference', [ClientInvoiceController::class, 'submitPaymentReference'])
+        ->name('invoices.payment-reference');
 
     // ── Results ────────────────────────────────────────────────────────────
     Route::get('/results', [ClientResultController::class, 'index'])
@@ -112,15 +114,11 @@ Route::middleware([
     Route::patch('/notifications/read-all', [ClientController::class, 'notificationMarkAllRead'])
         ->name('notifications.read-all');
 
-    // ── Complaints ─────────────────────────────────────────────────────────
-    Route::get('/complaints', [ComplaintController::class, 'index'])
-        ->name('complaints.index');
+    // ── Complaints (submit only — tracking is internal) ────────────────────
     Route::get('/complaints/create', [ComplaintController::class, 'create'])
         ->name('complaints.create');
     Route::post('/complaints', [ComplaintController::class, 'store'])
         ->name('complaints.store');
-    Route::get('/complaints/{id}', [ComplaintController::class, 'show'])
-        ->name('complaints.show');
 
     // ── Profile ────────────────────────────────────────────────────────────
     Route::get('/profile', [ClientController::class, 'profileShow'])

@@ -392,6 +392,20 @@
                 </div>
             @endif
 
+            {{-- ── Internal Report Link ─────────────────────────────── --}}
+            @if($existingResult)
+                <div class="bg-white rounded-xl border border-gray-100 p-5 flex items-center justify-between">
+                    <div>
+                        <p class="text-sm font-medium text-gray-800">Internal Report</p>
+                        <p class="text-xs text-gray-400 mt-0.5">Full result report with determination and analyst details — Director use only.</p>
+                    </div>
+                    <a href="{{ route('director.results.show', $submission->id) }}"
+                       class="inline-flex items-center gap-2 px-4 py-2 bg-indigo-600 text-white text-sm font-medium rounded-lg hover:bg-indigo-700 transition">
+                        View Internal Report →
+                    </a>
+                </div>
+            @endif
+
             {{-- ── Generate Invoice (if authorised) ──────────── --}}
             @if($existingResult && $submission->status === 'authorised')
                 @php $existingInvoice = $submission->invoice ?? null; @endphp

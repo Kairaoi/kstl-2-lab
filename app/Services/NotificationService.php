@@ -152,6 +152,44 @@ class NotificationService
     }
 
     /**
+     * Notify Director a client has submitted payment details (TT reference).
+     */
+    public function notifyPaymentSubmitted(Invoice $invoice): void
+    {
+        $directors = User::role('director')->get();
+
+        if ($directors->isEmpty()) {
+            Log::warning('[NOTIFY] No directors — payment_submitted skipped', [
+                'invoice_id' => $invoice->id,
+            ]);
+            return;
+        }
+
+        foreach ($directors as $director) {
+            try {
+                $this->createInAppNotification(
+                    userId:     $director->id,
+                    type:       'payment_submitted',
+                    subject:    "Payment details submitted — {$invoice->invoice_number}",
+                    message:    "{$invoice->bill_to_company} has submitted TT reference \"{$invoice->payment_submitted_reference}\" for invoice {$invoice->invoice_number} (A$ " . number_format($invoice->total_amount_aud, 2) . "). Please verify and confirm.",
+                    notifiable: $invoice,
+                );
+
+                Log::info('[NOTIFY] payment_submitted sent to Director', [
+                    'invoice_id'  => $invoice->id,
+                    'director_id' => $director->id,
+                ]);
+
+            } catch (\Exception $e) {
+                Log::error('[NOTIFY] payment_submitted FAILED', [
+                    'invoice_id' => $invoice->id,
+                    'error'      => $e->getMessage(),
+                ]);
+            }
+        }
+    }
+
+    /**
      * Notify Director a complaint has been lodged.
      * Called when a client submits a new complaint.
      */

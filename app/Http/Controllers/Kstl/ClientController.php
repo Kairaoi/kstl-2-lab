@@ -6,6 +6,7 @@ use Barryvdh\DomPDF\Facade\Pdf;
 
 use App\Http\Controllers\Controller;
 use App\Repositories\Kstl\ClientRepository;
+use App\Repositories\Kstl\InvoiceRepository;
 use App\Repositories\Kstl\SubmissionRepository;
 use App\Models\Kstl\Submission;
 use Illuminate\Http\Request;
@@ -18,11 +19,12 @@ use App\Services\AuditService;
 
 class ClientController extends Controller
 {
-   public function __construct(
-    protected ClientRepository     $clientRepo,
-    protected SubmissionRepository $submissionRepo,
-    protected AuditService         $auditService,
-) {}
+    public function __construct(
+        protected ClientRepository     $clientRepo,
+        protected SubmissionRepository $submissionRepo,
+        protected InvoiceRepository    $invoiceRepo,
+        protected AuditService         $auditService,
+    ) {}
     // ── Dashboard ──────────────────────────────────────────────────────────────
 
     public function dashboard(Request $request)
@@ -38,8 +40,7 @@ class ClientController extends Controller
             'total_submissions'   => $counts['total'],
             'pending_submissions' => $counts['pending'],
             'results_ready'       => $counts['results_ready'],
-            'unpaid_invoices'     => 0, // InvoiceRepository::countUnpaidByClientId($client->id)
-            'open_complaints'     => 0, // ComplaintRepository::countOpenByClientId($client->id)
+            'unpaid_invoices'     => $client ? $this->invoiceRepo->countUnpaidByClientId($client->id) : 0,
         ];
 
         Log::info('Client accessed dashboard', [
@@ -134,10 +135,10 @@ class ClientController extends Controller
                 'tests_other'           => ['nullable', 'string', 'max:1000'],
 
                 // Transport method (Schedule 1: Frozen / Chill / Fresh)
-                'transport_method'      => ['required', 'in:frozen,chilled,fresh'],
+                'transport_method'      => ['required', 'in:frozen,chilled'],
 
                 // Special instructions
-                'priority'              => ['nullable', 'in:routine,urgent,emergency'],
+                'priority'              => ['nullable', 'in:routine,urgent'],
                 'special_instructions'  => ['nullable', 'string', 'max:2000'],
                 'results_required_by'   => ['nullable', 'date', 'after:today'],
 
@@ -279,8 +280,8 @@ class ClientController extends Controller
                 'tests_requested'       => ['nullable', 'array'],
                 'tests_requested.*'     => ['string'],
                 'tests_other'           => ['nullable', 'string', 'max:1000'],
-                'transport_method'      => ['required', 'in:frozen,chilled,fresh'],
-                'priority'              => ['nullable', 'in:routine,urgent,emergency'],
+                'transport_method'      => ['required', 'in:frozen,chilled'],
+                'priority'              => ['nullable', 'in:routine,urgent'],
                 'special_instructions'  => ['nullable', 'string', 'max:2000'],
                 'results_required_by'   => ['nullable', 'date', 'after:today'],
                 'submitter_name'        => ['required', 'string', 'max:255'],

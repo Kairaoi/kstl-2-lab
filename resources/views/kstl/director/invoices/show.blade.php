@@ -153,11 +153,22 @@
                 @if($invoice->isPaid())
                     <div class="px-8 py-4 border-t border-gray-100 bg-green-50 flex items-center justify-between">
                         <div>
-                            <p class="text-sm font-semibold text-green-800">✓ Payment Received</p>
+                            <p class="text-sm font-semibold text-green-800">✓ Payment Confirmed</p>
                             <p class="text-xs text-green-600 mt-0.5">
                                 Ref: {{ $invoice->payment_reference }}
                                 · {{ $invoice->payment_received_at?->format('d M Y \a\t H:i') }}
-                                · Verified by {{ $invoice->paymentVerifiedBy?->name }}
+                                · Confirmed by {{ $invoice->paymentVerifiedBy?->name }}
+                            </p>
+                        </div>
+                    </div>
+                @elseif($invoice->hasSubmittedPayment())
+                    <div class="px-8 py-4 border-t border-gray-100 bg-blue-50 flex items-center justify-between">
+                        <div>
+                            <p class="text-sm font-semibold text-blue-800">⏳ Client Submitted Payment Details</p>
+                            <p class="text-xs text-blue-600 mt-0.5">
+                                TT Reference: <span class="font-mono font-semibold">{{ $invoice->payment_submitted_reference }}</span>
+                                · Submitted by {{ $invoice->paymentSubmittedBy?->name }}
+                                on {{ $invoice->payment_submitted_at?->format('d M Y \a\t H:i') }}
                             </p>
                         </div>
                     </div>
@@ -165,12 +176,51 @@
 
             </div>
 
-            {{-- ── Mark as Paid Form ────────────────────────────── --}}
-            @if($invoice->isUnpaid() || $invoice->isOverdue())
+            {{-- ── Confirm Payment (client submitted TT ref) ───────── --}}
+            @if(($invoice->isUnpaid() || $invoice->isOverdue()) && $invoice->hasSubmittedPayment())
+                <div class="bg-blue-50 rounded-xl border border-blue-200 overflow-hidden">
+                    <div class="px-6 py-4 border-b border-blue-100">
+                        <h3 class="text-sm font-semibold text-blue-800">Confirm Client Payment</h3>
+                        <p class="text-xs text-blue-600 mt-0.5">
+                            {{ $invoice->bill_to_company }} has submitted TT reference
+                            <span class="font-mono font-semibold">{{ $invoice->payment_submitted_reference }}</span>.
+                            Verify this against your bank records, then confirm below.
+                        </p>
+                    </div>
+                    <form method="POST"
+                          action="{{ route('director.invoices.paid', $invoice->id) }}"
+                          class="px-6 py-5">
+                        @csrf
+                        <div class="flex gap-3 items-end">
+                            <div class="flex-1">
+                                <label class="block text-xs font-medium text-gray-600 mb-1">TT Reference (pre-filled from client)</label>
+                                <input type="text"
+                                       name="payment_reference"
+                                       value="{{ $invoice->payment_submitted_reference }}"
+                                       class="w-full border-blue-300 rounded-lg text-sm font-mono focus:border-teal-500 focus:ring-teal-500"
+                                       required/>
+                                @error('payment_reference')
+                                    <p class="text-xs text-red-600 mt-1">{{ $message }}</p>
+                                @enderror
+                            </div>
+                            <button type="submit"
+                                    onclick="return confirm('Confirm payment for {{ $invoice->invoice_number }}? This will mark the invoice as paid.')"
+                                    class="inline-flex items-center gap-2 px-5 py-2.5 bg-green-600 text-white text-sm font-medium rounded-lg hover:bg-green-700 transition">
+                                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"/>
+                                </svg>
+                                Confirm Payment
+                            </button>
+                        </div>
+                    </form>
+                </div>
+
+            {{-- ── Manual payment entry (no client submission yet) ──── --}}
+            @elseif($invoice->isUnpaid() || $invoice->isOverdue())
                 <div class="bg-white rounded-xl border border-gray-100 overflow-hidden">
                     <div class="px-6 py-4 border-b border-gray-100">
-                        <h3 class="text-sm font-medium text-gray-800">Record Payment</h3>
-                        <p class="text-xs text-gray-400 mt-0.5">Enter the client's bank transfer reference to mark as paid.</p>
+                        <h3 class="text-sm font-medium text-gray-800">Record Payment Manually</h3>
+                        <p class="text-xs text-gray-400 mt-0.5">Client has not yet submitted payment details. You may record payment manually if received outside the portal.</p>
                     </div>
                     <form method="POST"
                           action="{{ route('director.invoices.paid', $invoice->id) }}"
@@ -178,12 +228,14 @@
                         @csrf
                         <div class="flex gap-3">
                             <div class="flex-1">
-                                <x-input type="text"
-                                         name="payment_reference"
-                                         placeholder="e.g. TT-20260414-001"
-                                         class="w-full"
-                                         required/>
-                                <x-input-error for="payment_reference" class="mt-1"/>
+                                <input type="text"
+                                       name="payment_reference"
+                                       placeholder="e.g. TT-20260608-001"
+                                       class="w-full border-gray-300 rounded-lg text-sm font-mono focus:border-teal-500 focus:ring-teal-500"
+                                       required/>
+                                @error('payment_reference')
+                                    <p class="text-xs text-red-600 mt-1">{{ $message }}</p>
+                                @enderror
                             </div>
                             <button type="submit"
                                     onclick="return confirm('Mark this invoice as paid?')"

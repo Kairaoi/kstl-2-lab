@@ -111,46 +111,24 @@
                     </div>
                 </div>
 
-                {{-- ── Outcome seal ───────────────────────────────────────── --}}
-                @php
-                    $outcome = $result?->overall_outcome ?? 'pending';
-                    $sealColor = match($outcome) {
-                        'pass'         => '#1a6b45',
-                        'fail'         => '#a0241c',
-                        'inconclusive' => '#8a6d1a',
-                        default        => '#6b6760',
-                    };
-                    $sealText = match($outcome) {
-                        'pass'         => 'Pass',
-                        'fail'         => 'Fail',
-                        'inconclusive' => 'Inconclusive',
-                        default        => 'Pending Authorisation',
-                    };
-                @endphp
-                <div class="px-8 py-6 flex items-center justify-between gap-6 border-b border-gray-100">
+                {{-- ── Authorisation strip ────────────────────────────────────── --}}
+                <div class="px-8 py-5 flex items-center justify-between gap-6 border-b border-gray-100">
                     <div>
-                        <p class="coa-meta-label">Overall Determination</p>
-                        <div class="coa-seal mt-2" style="color: {{ $sealColor }};">
-                            @if($outcome === 'pass')
-                                <svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M5 13l4 4L19 7"/></svg>
-                            @elseif($outcome === 'fail')
-                                <svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12"/></svg>
-                            @elseif($outcome === 'inconclusive')
-                                <svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M12 9v2m0 4h.01M10.29 3.86L1.82 18a2 2 0 001.71 3h16.94a2 2 0 001.71-3L13.71 3.86a2 2 0 00-3.42 0z"/></svg>
-                            @endif
-                            {{ $sealText }}
-                        </div>
-                    </div>
-                    <div class="text-right">
+                        <p class="coa-meta-label">Authorisation Status</p>
                         @if($result?->authorised_at)
+                            <p class="text-sm font-semibold text-green-700 mt-1">Authorised</p>
+                        @else
+                            <p class="text-sm text-gray-400 italic mt-1">Awaiting Director authorisation</p>
+                        @endif
+                    </div>
+                    @if($result?->authorised_at)
+                        <div class="text-right">
                             <p class="coa-meta-label">Authorised By</p>
                             <p class="text-sm font-medium text-gray-800 mt-1">{{ $result->authorisedBy?->name ?? 'Laboratory Director' }}</p>
                             <p class="text-xs text-gray-500">Laboratory Director</p>
                             <p class="text-xs text-gray-400 mt-1">{{ $result->authorised_at->format('d M Y \a\t H:i') }}</p>
-                        @else
-                            <p class="text-xs text-gray-400 italic">Awaiting Director authorisation</p>
-                        @endif
-                    </div>
+                        </div>
+                    @endif
                 </div>
 
                 {{-- ── Submission particulars ─────────────────────────────── --}}
@@ -207,21 +185,11 @@
                                             <th class="text-left px-3 py-2.5">Category</th>
                                             <th class="text-left px-3 py-2.5">Result</th>
                                             <th class="text-left px-3 py-2.5">Unit</th>
-                                            <th class="text-left px-3 py-2.5">Determination</th>
+                                            <th class="text-left px-3 py-2.5">Reference Range</th>
                                         </tr>
                                     </thead>
                                     <tbody>
                                         @foreach($sample->sampleTests as $test)
-                                            @php
-                                                $qualColors = [
-                                                    'pass'         => 'bg-green-50 text-green-700',
-                                                    'fail'         => 'bg-red-50 text-red-700',
-                                                    'detected'     => 'bg-red-50 text-red-700',
-                                                    'not_detected' => 'bg-green-50 text-green-700',
-                                                    'pending'      => 'bg-gray-100 text-gray-400',
-                                                ];
-                                                $qColor = $qualColors[$test->result_qualifier] ?? 'bg-gray-100 text-gray-500';
-                                            @endphp
                                             <tr>
                                                 <td class="px-3 py-2.5 text-gray-800 font-medium">
                                                     {{ $test->getDisplayLabel() }}
@@ -235,10 +203,8 @@
                                                 <td class="px-3 py-2.5 text-xs text-gray-400">
                                                     {{ $test->result_unit ?? '—' }}
                                                 </td>
-                                                <td class="px-3 py-2.5">
-                                                    <span class="inline-flex px-2 py-0.5 text-xs font-medium rounded-full capitalize {{ $qColor }}">
-                                                        {{ str_replace('_', ' ', $test->result_qualifier ?? 'pending') }}
-                                                    </span>
+                                                <td class="px-3 py-2.5 text-sm text-gray-500">
+                                                    {{ $test->reference_range ?? '—' }}
                                                 </td>
                                             </tr>
                                         @endforeach

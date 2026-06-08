@@ -100,6 +100,16 @@
                     $chartable = $checked > 0 && ($numeric / $checked) >= 0.6;
                 }
             }
+
+            // 2-letter country code -> flag emoji (regional indicator letters).
+            $flagEmoji = function ($code) {
+                $code = strtoupper(trim((string) $code));
+                if (strlen($code) !== 2 || ! ctype_alpha($code)) { return ''; }
+                $base = 0x1F1E6;
+                $a = $base + ord($code[0]) - 65;
+                $b = $base + ord($code[1]) - 65;
+                return mb_chr($a, 'UTF-8') . mb_chr($b, 'UTF-8');
+            };
         @endphp
 
         <div class="page-header">
@@ -187,8 +197,12 @@
                             <tbody>
                                 @foreach($results as $row)
                                     <tr>
-                                        @foreach((array)$row as $value)
-                                            <td>{{ $value ?? '—' }}</td>
+                                        @foreach((array)$row as $col => $value)
+                                            @if($col === 'country_code' && $value)
+                                                <td>{{ $flagEmoji($value) }} {{ $value }}</td>
+                                            @else
+                                                <td>{{ $value ?? '—' }}</td>
+                                            @endif
                                         @endforeach
                                     </tr>
                                 @endforeach

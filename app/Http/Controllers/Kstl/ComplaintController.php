@@ -80,8 +80,8 @@ class ComplaintController extends Controller
         $complaint->load('submission');
         $this->notifyService->notifyComplaintReceived($complaint);
 
-        return redirect()->route('client.complaints.show', $complaint->id)
-            ->with('success', 'Your complaint has been submitted and the Laboratory Director has been notified. We will respond within 5 working days.');
+        return redirect()->route('client.dashboard')
+            ->with('success', 'Your complaint has been received. Our team will be in touch within 5 working days.');
     }
 
     public function index()

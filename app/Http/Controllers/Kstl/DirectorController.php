@@ -55,8 +55,11 @@ class DirectorController extends Controller
         // Agreements awaiting the Director's countersignature
         $unsigned_agreements = $this->clientRepo->getPendingCountersign()->count();
 
+        // Unpaid + overdue invoices
+        $unpaid_invoices = \App\Models\Kstl\Invoice::whereIn('payment_status', ['unpaid', 'overdue'])->count();
+
         return view('kstl.director.dashboard',
-            compact('pending', 'flagged', 'authorised_today', 'history', 'unsigned_agreements'));
+            compact('pending', 'flagged', 'authorised_today', 'history', 'unsigned_agreements', 'unpaid_invoices'));
     }
 
     // ── Show submission for review ─────────────────────────────────
@@ -356,6 +359,45 @@ class DirectorController extends Controller
 
         return redirect()->route('director.agreements.index')
             ->with('success', "Agreement for {$client->company_name} has been countersigned.");
+    }
+
+    // ── Internal result report (director only) ─────────────────────
+    public function resultShow(string $id)
+    {
+        $submission = $this->submissionRepo->getById($id);
+        $submission->loadMissing(['client.user', 'samples.sampleTests.assignedTo', 'result.authorisedBy']);
+
+        $result = $submission->result ?? $this->resultRepo->findBySubmissionId($id);
+
+        return view('kstl.director.results.show', compact('submission', 'result'));
+    }
+
+    // ── All submissions pipeline (full process view) ────────────────
+    public function submissionsIndex(Request $request)
+    {
+        $query = \App\Models\Kstl\Submission::with(['client.user', 'samples', 'result.authorisedBy'])
+            ->orderByDesc('created_at');
+
+        if ($request->filled('status')) {
+            $query->where('status', $request->status);
+        }
+
+        if ($request->filled('search')) {
+            $term = '%' . $request->search . '%';
+            $query->where(function ($q) use ($term) {
+                $q->where('reference_number', 'like', $term)
+                  ->orWhere('sample_name', 'like', $term)
+                  ->orWhereHas('client', fn($c) => $c->where('company_name', 'like', $term));
+            });
+        }
+
+        $submissions = $query->paginate(30)->withQueryString();
+
+        $statusCounts = \App\Models\Kstl\Submission::selectRaw('status, count(*) as total')
+            ->groupBy('status')
+            ->pluck('total', 'status');
+
+        return view('kstl.director.submissions.index', compact('submissions', 'statusCounts'));
     }
 
     // ── Audit Log ──────────────────────────────────────────────────

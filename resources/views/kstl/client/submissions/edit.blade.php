@@ -160,7 +160,7 @@
                                 <div>
                                     <x-label for="priority" value="Priority Level"/>
                                     <div class="mt-2 flex gap-3 flex-wrap">
-                                        @foreach(['routine' => 'Routine', 'urgent' => 'Urgent', 'emergency' => 'Emergency'] as $value => $label)
+                                        @foreach(['routine' => 'Routine', 'urgent' => 'Urgent'] as $value => $label)
                                             <label class="flex items-center gap-2 cursor-pointer">
                                                 <input type="radio"
                                                        name="priority"

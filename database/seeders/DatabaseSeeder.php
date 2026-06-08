@@ -15,6 +15,7 @@ class DatabaseSeeder extends Seeder
     {
         $this->call(RolesAndPermissionsSeeder::class);
         $this->call(AuditReportsSeeder::class);
+        $this->call(AnalyticsReportsSeeder::class);
 
         // Super Admin
         $admin = User::factory()->create([
@@ -78,5 +79,7 @@ class DatabaseSeeder extends Seeder
             'password'   => Hash::make('1'),
         ]);
         $auditor->assignRole('auditor');
+
+        $this->call(DemoDataSeeder::class);
     }
 }

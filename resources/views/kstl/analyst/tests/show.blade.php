@@ -210,6 +210,7 @@
                         </div>
 
                         <form method="POST"
+                              id="result-form"
                               action="{{ route('analyst.tests.result', $test->id) }}"
                               x-data="{ qualifier: '{{ $test->result_qualifier ?? 'pending' }}', flagged: {{ $test->status === 'flagged' ? 'true' : 'false' }} }">
                             @csrf
@@ -293,13 +294,27 @@
                                     <x-input-error for="result_notes" class="mt-1"/>
                                 </div>
 
-                                {{-- Flag for Director --}}
+                                {{-- Flag for Director and Save are rendered below, after Supporting Files --}}
+
+                            </div>
+                        </form>
+                    </div>
+                    @endif
+
+                    {{-- ── Supporting Files (shown for both active and locked) ── --}}
+                    @include('kstl.analyst.tests._attachments', ['test' => $test, 'locked' => ($locked ?? false)])
+
+                    {{-- ── Flag for Director Review + Save (placed after Supporting Files) ── --}}
+                    @unless(($locked ?? false) || $test->status === 'completed')
+                        <div class="bg-white rounded-2xl border border-gray-100 shadow-sm overflow-hidden mt-5">
+                            <div class="px-6 py-5">
                                 <div class="bg-amber-50 border border-amber-200 rounded-lg p-4">
                                     <label class="flex items-start gap-3 cursor-pointer">
                                         <input type="checkbox"
                                                name="flag"
                                                value="1"
-                                               x-model="flagged"
+                                               form="result-form"
+                                               @checked($test->status === 'flagged')
                                                class="mt-0.5 text-amber-600 focus:ring-amber-500 rounded"/>
                                         <div>
                                             <p class="text-sm font-medium text-amber-800">Flag for Director Review</p>
@@ -309,15 +324,14 @@
                                         </div>
                                     </label>
                                 </div>
-
                             </div>
-
                             {{-- Actions --}}
                             <div class="px-6 py-4 border-t border-gray-100 flex items-center justify-between bg-gray-50">
                                 <a href="{{ route('analyst.tests.index') }}">
                                     <x-secondary-button type="button">Cancel</x-secondary-button>
                                 </a>
                                 <button type="submit"
+                                        form="result-form"
                                         class="inline-flex items-center gap-2 px-6 py-2.5 bg-indigo-600 text-white text-sm font-medium rounded-lg hover:bg-indigo-700 transition">
                                     <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"/>
@@ -325,13 +339,8 @@
                                     Save Result
                                 </button>
                             </div>
-
-                        </form>
-                    </div>
-                    @endif
-
-                    {{-- ── Supporting Files (shown for both active and locked) ── --}}
-                    @include('kstl.analyst.tests._attachments', ['test' => $test, 'locked' => ($locked ?? false)])
+                        </div>
+                    @endunless
                 </div>
 
             </div>

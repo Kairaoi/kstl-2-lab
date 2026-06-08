@@ -188,7 +188,7 @@
                 <a href="{{ route('client.submissions.index') }}" class="an-link {{ request()->routeIs('client.submissions.*')   ? 'active' : '' }}">Submissions</a>
                 <a href="{{ route('client.results.index') }}"     class="an-link {{ request()->routeIs('client.results.*')       ? 'active' : '' }}">Results</a>
                 <a href="{{ route('client.invoices.index') }}"    class="an-link {{ request()->routeIs('client.invoices.*')      ? 'active' : '' }}">Invoices</a>
-                <a href="{{ route('client.complaints.index') }}"  class="an-link {{ request()->routeIs('client.complaints.*')    ? 'active' : '' }}">Complaints</a>
+                <a href="{{ route('client.complaints.create') }}" class="an-link {{ request()->routeIs('client.complaints.*')    ? 'active' : '' }}">Complaints</a>
             @endrole
 
             {{-- Lab staff --}}
@@ -201,8 +201,14 @@
                 <a href="{{ route('staff.documents.index') }}"    class="an-link {{ request()->routeIs('staff.documents.*')      ? 'active' : '' }}">Documents</a>
             @endhasanyrole
 
-            {{-- Director, Auditor, Admin, Super Admin --}}
-            @hasanyrole('director|auditor|admin|super_admin')
+            {{-- Auditor --}}
+            @role('auditor')
+                <a href="{{ route('auditor.audit.index') }}" class="an-link {{ request()->routeIs('auditor.*') ? 'active' : '' }}">Audit Log</a>
+                <a href="{{ route('reports.index') }}"       class="an-link {{ request()->routeIs('reports.*') ? 'active' : '' }}">Reports</a>
+            @endrole
+
+            {{-- Admin / Super Admin --}}
+            @hasanyrole('admin|super_admin')
                 <a href="{{ route('reports.index') }}" class="an-link {{ request()->routeIs('reports.*') ? 'active' : '' }}">Reports</a>
             @endhasanyrole
 
@@ -213,6 +219,7 @@
                 <a href="{{ route('director.agreements.index') }}" class="an-link {{ request()->routeIs('director.agreements.*') ? 'active' : '' }}">Agreements</a>
                 <a href="{{ route('director.complaints.index') }}" class="an-link {{ request()->routeIs('director.complaints.*') ? 'active' : '' }}">Complaints</a>
                 <a href="{{ route('staff.documents.index') }}"    class="an-link {{ request()->routeIs('staff.documents.*')       ? 'active' : '' }}">Documents</a>
+                <a href="{{ route('reports.index') }}"            class="an-link {{ request()->routeIs('reports.*')              ? 'active' : '' }}">Analytics</a>
             @endrole
 
 
@@ -303,7 +310,7 @@
             <a href="{{ route('client.submissions.index') }}" class="an-mob-link {{ request()->routeIs('client.submissions.*')  ? 'active' : '' }}">Submissions</a>
             <a href="{{ route('client.results.index') }}"     class="an-mob-link {{ request()->routeIs('client.results.*')      ? 'active' : '' }}">Results</a>
             <a href="{{ route('client.invoices.index') }}"    class="an-mob-link {{ request()->routeIs('client.invoices.*')     ? 'active' : '' }}">Invoices</a>
-            <a href="{{ route('client.complaints.index') }}"  class="an-mob-link {{ request()->routeIs('client.complaints.*')   ? 'active' : '' }}">Complaints</a>
+            <a href="{{ route('client.complaints.create') }}" class="an-mob-link {{ request()->routeIs('client.complaints.*')   ? 'active' : '' }}">Complaints</a>
         @endrole
 
         @hasanyrole('reception|analyst')
@@ -315,8 +322,14 @@
             <a href="{{ route('staff.documents.index') }}"    class="an-mob-link {{ request()->routeIs('staff.documents.*')     ? 'active' : '' }}">Documents</a>
         @endhasanyrole
 
-        {{-- Reports for oversight roles --}}
-        @hasanyrole('director|auditor|admin|super_admin')
+        {{-- Auditor --}}
+        @role('auditor')
+            <a href="{{ route('auditor.audit.index') }}" class="an-mob-link {{ request()->routeIs('auditor.*') ? 'active' : '' }}">Audit Log</a>
+            <a href="{{ route('reports.index') }}"       class="an-mob-link {{ request()->routeIs('reports.*') ? 'active' : '' }}">Reports</a>
+        @endrole
+
+        {{-- Reports for admin / super admin --}}
+        @hasanyrole('admin|super_admin')
             <a href="{{ route('reports.index') }}" class="an-mob-link {{ request()->routeIs('reports.*') ? 'active' : '' }}">Reports</a>
         @endhasanyrole
 
@@ -327,6 +340,7 @@
             <a href="{{ route('director.agreements.index') }}" class="an-mob-link {{ request()->routeIs('director.agreements.*') ? 'active' : '' }}">Agreements</a>
             <a href="{{ route('director.complaints.index') }}" class="an-mob-link {{ request()->routeIs('director.complaints.*') ? 'active' : '' }}">Complaints</a>
             <a href="{{ route('staff.documents.index') }}"    class="an-mob-link {{ request()->routeIs('staff.documents.*')     ? 'active' : '' }}">Documents</a>
+            <a href="{{ route('reports.index') }}"            class="an-mob-link {{ request()->routeIs('reports.*')             ? 'active' : '' }}">Analytics</a>
         @endrole
 
 

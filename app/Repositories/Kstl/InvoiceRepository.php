@@ -158,7 +158,7 @@ class InvoiceRepository extends BaseRepository
     {
         return $this->model->query()
             ->whereHas('submission', fn($q) => $q->where('client_id', $clientId))
-            ->where('payment_status', Invoice::STATUS_UNPAID)
+            ->whereIn('payment_status', [Invoice::STATUS_UNPAID, 'overdue'])
             ->count();
     }
 }

@@ -31,16 +31,20 @@ class Invoice extends Model
         'payment_reference',
         'payment_received_at',
         'payment_verified_by',
+        'payment_submitted_reference',
+        'payment_submitted_at',
+        'payment_submitted_by',
         'notes',
     ];
 
     protected function casts(): array
     {
         return [
-            'invoice_date'        => 'date',
-            'payment_due_date'    => 'date',
-            'payment_received_at' => 'datetime',
-            'total_amount_aud'    => 'decimal:2',
+            'invoice_date'             => 'date',
+            'payment_due_date'         => 'date',
+            'payment_received_at'      => 'datetime',
+            'payment_submitted_at'     => 'datetime',
+            'total_amount_aud'         => 'decimal:2',
         ];
     }
 
@@ -86,16 +90,22 @@ class Invoice extends Model
         return $this->belongsTo(User::class, 'payment_verified_by');
     }
 
+    public function paymentSubmittedBy(): BelongsTo
+    {
+        return $this->belongsTo(User::class, 'payment_submitted_by');
+    }
+
     public function items(): HasMany
     {
         return $this->hasMany(InvoiceItem::class);
     }
 
     // ── Helpers ────────────────────────────────────────────────────
-    public function isPaid(): bool    { return $this->payment_status === self::STATUS_PAID; }
-    public function isUnpaid(): bool  { return $this->payment_status === self::STATUS_UNPAID; }
-    public function isOverdue(): bool { return $this->payment_status === self::STATUS_OVERDUE; }
-    public function isWaived(): bool  { return $this->payment_status === self::STATUS_WAIVED; }
+    public function isPaid(): bool           { return $this->payment_status === self::STATUS_PAID; }
+    public function isUnpaid(): bool         { return $this->payment_status === self::STATUS_UNPAID; }
+    public function isOverdue(): bool        { return $this->payment_status === self::STATUS_OVERDUE; }
+    public function isWaived(): bool         { return $this->payment_status === self::STATUS_WAIVED; }
+    public function hasSubmittedPayment(): bool { return ! is_null($this->payment_submitted_reference); }
 
     public function isPaymentDue(): bool
     {

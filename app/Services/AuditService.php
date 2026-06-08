@@ -7,6 +7,8 @@ use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Request;
+use App\Services\GeoLocator;
+
 
 class AuditService
 {
@@ -27,6 +29,10 @@ class AuditService
             $userId   = $userId   ?? $user?->id;
             $userName = $userName ?? ($user ? trim($user->first_name . ' ' . $user->last_name) : 'System');
 
+            // Resolve country once, at write time, from the IP (offline GeoLite2).
+            $ip      = Request::ip();
+            $country = app(GeoLocator::class)->lookup($ip);
+
             AuditLog::create([
                 'user_id'        => $userId,
                 'user_name'      => $userName,
@@ -36,7 +42,9 @@ class AuditService
                 'auditable_id'   => $auditable?->id,
                 'old_values'     => empty($oldValues) ? null : $oldValues,
                 'new_values'     => empty($newValues) ? null : $newValues,
-                'ip_address'     => Request::ip(),
+                'ip_address'     => $ip,
+                'country_code'   => $country['code'],
+                'country_name'   => $country['name'],
                 'user_agent'     => Request::userAgent(),
             ]);
 

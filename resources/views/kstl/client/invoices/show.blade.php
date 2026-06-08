@@ -109,15 +109,78 @@
                 {{-- Paid notice --}}
                 @if($invoice->isPaid())
                     <div class="px-8 py-4 border-t border-gray-100 bg-green-50">
-                        <p class="text-sm font-semibold text-green-800">✓ Payment Received</p>
+                        <p class="text-sm font-semibold text-green-800">✓ Payment Confirmed</p>
                         <p class="text-xs text-green-600 mt-0.5">
                             Ref: {{ $invoice->payment_reference }}
                             · {{ $invoice->payment_received_at?->format('d M Y') }}
                         </p>
                     </div>
+                @elseif($invoice->hasSubmittedPayment())
+                    <div class="px-8 py-4 border-t border-gray-100 bg-blue-50">
+                        <p class="text-sm font-semibold text-blue-800">⏳ Payment Details Submitted — Awaiting Confirmation</p>
+                        <p class="text-xs text-blue-600 mt-0.5">
+                            TT Reference: <span class="font-mono font-semibold">{{ $invoice->payment_submitted_reference }}</span>
+                            · Submitted {{ $invoice->payment_submitted_at?->format('d M Y \a\t H:i') }}
+                        </p>
+                        <p class="text-xs text-blue-500 mt-1">The laboratory will verify your payment and confirm shortly.</p>
+                    </div>
                 @endif
 
             </div>
+
+            {{-- ── Submit Payment Details ──────────────────────────── --}}
+            @if(! $invoice->isPaid() && ! $invoice->hasSubmittedPayment())
+                <div class="bg-white rounded-xl border border-gray-200 overflow-hidden">
+                    <div class="px-6 py-4 border-b border-gray-100">
+                        <h3 class="text-sm font-semibold text-gray-800">Submit Payment Details</h3>
+                        <p class="text-xs text-gray-500 mt-0.5">
+                            After completing your bank transfer, enter your Telegraphic Transfer (TT) reference number below.
+                            The laboratory will verify and confirm receipt.
+                        </p>
+                    </div>
+
+                    @if(session('success'))
+                        <div class="mx-6 mt-4 bg-green-50 border-l-4 border-green-400 p-3 rounded text-sm text-green-800">
+                            {{ session('success') }}
+                        </div>
+                    @endif
+
+                    <form method="POST"
+                          action="{{ route('client.invoices.payment-reference', $invoice->id) }}"
+                          class="px-6 py-5">
+                        @csrf
+                        <div class="flex gap-3">
+                            <div class="flex-1">
+                                <label class="block text-xs font-medium text-gray-600 mb-1">
+                                    TT Reference Number <span class="text-red-500">*</span>
+                                </label>
+                                <input type="text"
+                                       name="tt_reference"
+                                       value="{{ old('tt_reference') }}"
+                                       placeholder="e.g. TT-20260608-001"
+                                       required
+                                       class="w-full border-gray-300 rounded-lg text-sm font-mono focus:border-teal-500 focus:ring-teal-500 @error('tt_reference') border-red-400 @enderror"/>
+                                @error('tt_reference')
+                                    <p class="text-xs text-red-600 mt-1">{{ $message }}</p>
+                                @enderror
+                                <p class="text-xs text-gray-400 mt-1">
+                                    Use the invoice number <strong>{{ $invoice->invoice_number }}</strong> as your payment reference when making the transfer.
+                                </p>
+                            </div>
+                            <div class="flex items-end">
+                                <button type="submit"
+                                        onclick="return confirm('Submit TT reference {{ $invoice->invoice_number }}?')"
+                                        class="inline-flex items-center gap-2 px-5 py-2.5 bg-teal-600 text-white text-sm font-medium rounded-lg hover:bg-teal-700 transition">
+                                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 19l9 2-9-18-9 18 9-2zm0 0v-8"/>
+                                    </svg>
+                                    Submit
+                                </button>
+                            </div>
+                        </div>
+                    </form>
+                </div>
+            @endif
 
             <div class="pb-8"></div>
 

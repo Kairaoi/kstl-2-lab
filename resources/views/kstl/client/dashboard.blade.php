@@ -132,7 +132,7 @@
             {{-- ── Summary Cards ─────────────────────────────────────────────── --}}
             <div>
                 <p class="cl-section-title mb-4">Overview</p>
-                <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-5 gap-4">
+                <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
 
                     {{-- Total Submissions --}}
                     <a href="{{ route('client.submissions.index') }}"
@@ -188,30 +188,24 @@
                               {{ !$client || !$client->service_agreement_signed_at ? 'pointer-events-none opacity-50' : '' }}">
                         <div class="flex items-center justify-between mb-3">
                             <span class="cl-meta-label">Invoices</span>
+                            @if($summary['unpaid_invoices'] > 0)
                             <div class="w-9 h-9 bg-red-50 rounded-lg flex items-center justify-center group-hover:bg-red-100 transition">
                                 <svg class="w-5 h-5 text-red-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 9V7a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2m2 4h10a2 2 0 002-2v-6a2 2 0 00-2-2H9a2 2 0 00-2 2v6a2 2 0 002 2zm7-5a2 2 0 11-4 0 2 2 0 014 0z"/>
                                 </svg>
                             </div>
-                        </div>
-                        <p class="cl-stat-num text-3xl font-bold">{{ $summary['unpaid_invoices'] }}</p>
-                        <p class="text-xs text-gray-400 mt-1">Unpaid</p>
-                    </a>
-
-                    {{-- Open Complaints --}}
-                    <a href="{{ route('client.complaints.index') }}"
-                       class="cl-card bg-white rounded-xl shadow-sm border border-gray-100 p-5 hover:shadow-md transition group
-                              {{ !$client || !$client->service_agreement_signed_at ? 'pointer-events-none opacity-50' : '' }}">
-                        <div class="flex items-center justify-between mb-3">
-                            <span class="cl-meta-label">Complaints</span>
-                            <div class="w-9 h-9 bg-purple-50 rounded-lg flex items-center justify-center group-hover:bg-purple-100 transition">
-                                <svg class="w-5 h-5 text-purple-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 8h10M7 12h4m1 8l-4-4H5a2 2 0 01-2-2V6a2 2 0 012-2h14a2 2 0 012 2v8a2 2 0 01-2 2h-3l-4 4z"/>
+                            @else
+                            <div class="w-9 h-9 bg-green-50 rounded-lg flex items-center justify-center group-hover:bg-green-100 transition">
+                                <svg class="w-5 h-5 text-green-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"/>
                                 </svg>
                             </div>
+                            @endif
                         </div>
-                        <p class="cl-stat-num text-3xl font-bold">{{ $summary['open_complaints'] }}</p>
-                        <p class="text-xs text-gray-400 mt-1">Open</p>
+                        <p class="cl-stat-num text-3xl font-bold">{{ $summary['unpaid_invoices'] }}</p>
+                        <p class="text-xs text-gray-400 mt-1">
+                            {{ $summary['unpaid_invoices'] > 0 ? 'Unpaid / Overdue' : 'All settled' }}
+                        </p>
                     </a>
 
                 </div>

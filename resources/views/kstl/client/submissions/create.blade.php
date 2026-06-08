@@ -302,7 +302,7 @@
                                     <div>
                                         <x-label value="Priority *"/>
                                         <div class="mt-2 flex gap-4 flex-wrap">
-                                            @foreach(['routine' => 'Routine', 'urgent' => 'Urgent', 'emergency' => 'Emergency'] as $value => $label)
+                                            @foreach(['routine' => 'Routine', 'urgent' => 'Urgent'] as $value => $label)
                                                 <label class="flex items-center gap-2 cursor-pointer">
                                                     <input type="radio" name="priority" value="{{ $value }}"
                                                            {{ old('priority', 'routine') === $value ? 'checked' : '' }}
@@ -318,7 +318,7 @@
                                         <x-label value="Sample Transport Method *"/>
                                         <p class="text-xs text-gray-400 mt-0.5 mb-2">Select the temperature category, then specify the exact transport method.</p>
                                         <div class="flex gap-4 flex-wrap mb-3">
-                                            @foreach(['frozen' => 'Frozen', 'chilled' => 'Chill', 'fresh' => 'Fresh'] as $value => $label)
+                                            @foreach(['frozen' => 'Frozen', 'chilled' => 'Chill'] as $value => $label)
                                                 <label class="flex items-center gap-2 cursor-pointer">
                                                     <input type="radio" name="transport_method" value="{{ $value }}"
                                                            x-model="method"
@@ -336,28 +336,15 @@
                                                     <option value="air_freight_frozen"  {{ old('transport_detail') === 'air_freight_frozen'  ? 'selected' : '' }}>Air Freight (Frozen)</option>
                                                     <option value="sea_freight_reefer"  {{ old('transport_detail') === 'sea_freight_reefer'  ? 'selected' : '' }}>Sea Freight (Reefer Container)</option>
                                                     <option value="road_frozen_truck"   {{ old('transport_detail') === 'road_frozen_truck'   ? 'selected' : '' }}>Road Transport (Frozen Truck)</option>
-                                                    <option value="courier_frozen"      {{ old('transport_detail') === 'courier_frozen'      ? 'selected' : '' }}>Courier / Express (e.g. DHL, FedEx)</option>
                                                     <option value="other_special"       {{ old('transport_detail') === 'other_special'       ? 'selected' : '' }}>Other / Special Arrangement</option>
                                                 </optgroup>
                                             </template>
                                             <template x-if="method === 'chilled'">
                                                 <optgroup label="Chilled Methods">
-                                                    <option value="air_freight_chilled" {{ old('transport_detail') === 'air_freight_chilled' ? 'selected' : '' }}>Air Freight (Chilled)</option>
-                                                    <option value="road_chilled_van"    {{ old('transport_detail') === 'road_chilled_van'    ? 'selected' : '' }}>Road Transport (Chilled Van)</option>
-                                                    <option value="sea_freight_dry"     {{ old('transport_detail') === 'sea_freight_dry'     ? 'selected' : '' }}>Sea Freight (Dry Container)</option>
-                                                    <option value="courier_express"     {{ old('transport_detail') === 'courier_express'     ? 'selected' : '' }}>Courier / Express (e.g. DHL, FedEx)</option>
-                                                    <option value="hand_carried"        {{ old('transport_detail') === 'hand_carried'        ? 'selected' : '' }}>Hand-Carried (Passenger Luggage)</option>
-                                                    <option value="local_courier"       {{ old('transport_detail') === 'local_courier'       ? 'selected' : '' }}>Local Courier (Same Island)</option>
-                                                    <option value="other_special"       {{ old('transport_detail') === 'other_special'       ? 'selected' : '' }}>Other / Special Arrangement</option>
-                                                </optgroup>
-                                            </template>
-                                            <template x-if="method === 'fresh'">
-                                                <optgroup label="Fresh Methods">
-                                                    <option value="hand_carried"        {{ old('transport_detail') === 'hand_carried'        ? 'selected' : '' }}>Hand-Carried (Passenger Luggage)</option>
-                                                    <option value="local_courier"       {{ old('transport_detail') === 'local_courier'       ? 'selected' : '' }}>Local Courier (Same Island)</option>
-                                                    <option value="road_transport"      {{ old('transport_detail') === 'road_transport'      ? 'selected' : '' }}>Road Transport</option>
-                                                    <option value="courier_express"     {{ old('transport_detail') === 'courier_express'     ? 'selected' : '' }}>Courier / Express (e.g. DHL, FedEx)</option>
-                                                    <option value="other_special"       {{ old('transport_detail') === 'other_special'       ? 'selected' : '' }}>Other / Special Arrangement</option>
+                                                    <option value="air_freight_chilled"   {{ old('transport_detail') === 'air_freight_chilled'   ? 'selected' : '' }}>Air Freight (Chilled)</option>
+                                                    <option value="road_chilled_van"      {{ old('transport_detail') === 'road_chilled_van'      ? 'selected' : '' }}>Road Transport (Chilled Van)</option>
+                                                    <option value="cooler_box_ice_packs"  {{ old('transport_detail') === 'cooler_box_ice_packs'  ? 'selected' : '' }}>Cooler Box with Ice Packs</option>
+                                                    <option value="other_special"         {{ old('transport_detail') === 'other_special'         ? 'selected' : '' }}>Other / Special Arrangement</option>
                                                 </optgroup>
                                             </template>
                                         </select>

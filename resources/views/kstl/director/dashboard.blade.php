@@ -65,9 +65,13 @@
                    class="px-3 py-1 bg-white bg-opacity-20 text-white rounded-full text-sm hover:bg-opacity-30 transition-all">
                     📋 Audit Log
                 </a>
-                <a href="{{ route('director.complaints.index') }}" 
+                <a href="{{ route('director.complaints.index') }}"
                    class="px-3 py-1 bg-white bg-opacity-20 text-white rounded-full text-sm hover:bg-opacity-30 transition-all">
                     📧 Complaints
+                </a>
+                <a href="{{ route('director.submissions.index') }}"
+                   class="px-3 py-1 bg-white bg-opacity-20 text-white rounded-full text-sm hover:bg-opacity-30 transition-all">
+                    🔬 Pipeline
                 </a>
                 @if($flagged > 0)
                 <a href="{{ route('director.flagged.index') }}" 
@@ -80,9 +84,10 @@
     </div>
 
     {{-- Summary Cards --}}
-    <div class="grid grid-cols-1 md:grid-cols-4 gap-6 mb-6">
-        {{-- Awaiting Authorisation --}}
-        <div class="bg-gradient-to-br from-amber-400 to-orange-500 rounded-xl shadow-lg p-6 text-white transform hover:scale-105 transition-all border-2 border-amber-300">
+    <div class="grid grid-cols-1 md:grid-cols-5 gap-6 mb-6">
+        {{-- Awaiting Authorisation (clickable) --}}
+        <a href="{{ route('director.submissions.index', ['status' => 'awaiting_authorisation']) }}"
+           class="block bg-gradient-to-br from-amber-400 to-orange-500 rounded-xl shadow-lg p-6 text-white transform hover:scale-105 transition-all border-2 border-amber-300">
             <div class="flex items-center justify-between mb-4">
                 <div class="p-3 bg-white bg-opacity-20 rounded-lg">
                     <svg class="w-8 h-8 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -94,15 +99,16 @@
             <p class="text-amber-100 text-sm font-medium">Awaiting Authorisation</p>
             @if($pending->isNotEmpty())
                 <p class="text-xs text-amber-100 mt-2">
-                    Oldest pending: {{ $pending->sortBy('created_at')->first()->created_at->diffForHumans() }}
+                    Oldest: {{ $pending->sortBy('created_at')->first()->created_at->diffForHumans() }}
                 </p>
             @else
-                <p class="text-xs text-amber-100 mt-2">All caught up! 🎉</p>
+                <p class="text-xs text-amber-100 mt-2">All caught up!</p>
             @endif
-        </div>
+        </a>
 
-        {{-- Flagged Tests --}}
-        <div class="bg-gradient-to-br from-red-500 to-pink-600 rounded-xl shadow-lg p-6 text-white transform hover:scale-105 transition-all border-2 border-red-400">
+        {{-- Flagged Tests (clickable) --}}
+        <a href="{{ route('director.flagged.index') }}"
+           class="block bg-gradient-to-br from-red-500 to-pink-600 rounded-xl shadow-lg p-6 text-white transform hover:scale-105 transition-all border-2 border-red-400">
             <div class="flex items-center justify-between mb-4">
                 <div class="p-3 bg-white bg-opacity-20 rounded-lg">
                     <svg class="w-8 h-8 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -117,7 +123,26 @@
             @else
                 <p class="text-xs text-red-100 mt-2">No issues flagged</p>
             @endif
-        </div>
+        </a>
+
+        {{-- Pending Payments (clickable) --}}
+        <a href="{{ route('director.invoices.index') }}"
+           class="block bg-gradient-to-br from-purple-500 to-violet-600 rounded-xl shadow-lg p-6 text-white transform hover:scale-105 transition-all border-2 border-purple-400">
+            <div class="flex items-center justify-between mb-4">
+                <div class="p-3 bg-white bg-opacity-20 rounded-lg">
+                    <svg class="w-8 h-8 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 9V7a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2m2 4h10a2 2 0 002-2v-6a2 2 0 00-2-2H9a2 2 0 00-2 2v6a2 2 0 002 2zm7-5a2 2 0 11-4 0 2 2 0 014 0z"/>
+                    </svg>
+                </div>
+            </div>
+            <h3 class="text-3xl font-bold mb-1">{{ $unpaid_invoices }}</h3>
+            <p class="text-purple-100 text-sm font-medium">Pending Payments</p>
+            @if($unpaid_invoices > 0)
+                <p class="text-xs text-purple-100 mt-2">Awaiting payment confirmation</p>
+            @else
+                <p class="text-xs text-purple-100 mt-2">All invoices settled</p>
+            @endif
+        </a>
 
         {{-- Authorised Today --}}
         <div class="bg-gradient-to-br from-green-500 to-emerald-600 rounded-xl shadow-lg p-6 text-white transform hover:scale-105 transition-all border-2 border-green-400">

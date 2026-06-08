@@ -20,7 +20,10 @@ use Illuminate\Database\Seeder;
  */
 class AuditReportsSeeder extends Seeder
 {
-    private const AUDIT_ROLES = ['director', 'auditor', 'admin', 'super_admin'];
+    // Audit trail & security reports — auditors only (directors are not auditing themselves)
+    private const AUDITOR_ROLES    = ['auditor', 'admin', 'super_admin'];
+    // Operational/compliance reports — directors also need visibility for lab management
+    private const COMPLIANCE_ROLES = ['director', 'auditor', 'admin', 'super_admin'];
 
     public function run(): void
     {
@@ -30,6 +33,10 @@ class AuditReportsSeeder extends Seeder
         );
 
         foreach ($reports as $r) {
+            $roles = in_array($r['category'], ['audit', 'security'])
+                ? self::AUDITOR_ROLES
+                : self::COMPLIANCE_ROLES;
+
             ReportQuery::updateOrCreate(
                 ['code' => $r['code']],
                 [
@@ -37,7 +44,7 @@ class AuditReportsSeeder extends Seeder
                     'description'   => $r['description'],
                     'category'      => $r['category'],
                     'sql_query'     => $r['sql_query'],
-                    'allowed_roles' => self::AUDIT_ROLES,
+                    'allowed_roles' => $roles,
                     'parameters'    => null,
                     'is_active'     => true,
                     'sort_order'    => $r['sort_order'],
@@ -357,6 +364,53 @@ class AuditReportsSeeder extends Seeder
                     LIMIT 2000
                 SQL,
             ],
+
+            // ── audit_failed_logins (now with country) ──────────────────────────────────
+[
+    'code' => 'audit_failed_logins', 'name' => 'Security — Failed Login Attempts',
+    'description' => 'All failed login attempts with attempted email, source IP and country.',
+    'category' => 'security', 'sort_order' => 2,
+    'sql_query' => <<<SQL
+        SELECT created_at AS attempted_at, user_name AS attempted_email,
+               ip_address, country_code, country_name
+        FROM audit_logs
+        WHERE event = 'login_failed'
+        ORDER BY created_at DESC
+        LIMIT 5000
+    SQL,
+],
+ 
+// ── audit_login_activity (now with country) ─────────────────────────────────
+[
+    'code' => 'audit_login_activity', 'name' => 'Security — Login Activity',
+    'description' => 'Successful logins and logouts by user, with IP and country.',
+    'category' => 'security', 'sort_order' => 3,
+    'sql_query' => <<<SQL
+        SELECT created_at AS occurred_at, event, user_name,
+               ip_address, country_code, country_name
+        FROM audit_logs
+        WHERE event IN ('login', 'logout')
+        ORDER BY created_at DESC
+        LIMIT 5000
+    SQL,
+],
+ 
+// ── NEW: logins grouped by country (this one IS chartable) ──────────────────
+[
+    'code' => 'audit_logins_by_country', 'name' => 'Security — Logins by Country',
+    'description' => 'Count of successful logins grouped by country — quickly spots logins from unexpected locations.',
+    'category' => 'security', 'sort_order' => 5,
+    'sql_query' => <<<SQL
+        SELECT
+            COALESCE(country_name, 'Local / Unknown') AS country,
+            COUNT(*)                                  AS login_count
+        FROM audit_logs
+        WHERE event = 'login'
+        GROUP BY country_name
+        ORDER BY login_count DESC
+        LIMIT 500
+    SQL,
+],
         ];
     }
 }

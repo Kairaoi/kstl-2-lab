@@ -15,6 +15,10 @@ Route::middleware([
     Route::get('/dashboard', [DirectorController::class, 'dashboard'])
         ->name('dashboard');
 
+    // ── Submissions pipeline ──────────────────────────────────────
+    Route::get('/submissions', [DirectorController::class, 'submissionsIndex'])
+        ->name('submissions.index');
+
     Route::get('/submissions/{id}', [DirectorController::class, 'show'])
         ->name('submissions.show');
 
@@ -23,6 +27,10 @@ Route::middleware([
 
     Route::post('/submissions/{id}/query', [DirectorController::class, 'queryAnalyst'])
         ->name('submissions.query');
+
+    // ── Internal result report ────────────────────────────────────
+    Route::get('/results/{id}', [DirectorController::class, 'resultShow'])
+        ->name('results.show');
 
     // ── Test supporting documents (review, read-only) ─────────────
     Route::get('/attachments/{attachment}/download', [DirectorController::class, 'downloadAttachment'])

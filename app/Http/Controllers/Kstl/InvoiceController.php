@@ -61,7 +61,7 @@ class InvoiceController extends Controller
     public function show(string $id)
     {
         $invoice = $this->invoiceRepo->getById($id);
-        $invoice->load(['items', 'issuedBy', 'paymentVerifiedBy', 'submission.client']);
+        $invoice->load(['items', 'issuedBy', 'paymentVerifiedBy', 'paymentSubmittedBy', 'submission.client']);
 
         return view('kstl.director.invoices.show', compact('invoice'));
     }
