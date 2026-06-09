@@ -34,9 +34,39 @@
                 </div>
             @endif
 
-            <form method="POST" action="{{ route('client.submissions.store') }}"
-                  x-data="submissionWizard()"
-                  >
+            <div x-data="submissionWizard({{ $errors->isNotEmpty() ? 'false' : 'true' }})">
+
+            {{-- Draft restore banner --}}
+            <div x-show="hasDraft"
+                 x-transition:enter="transition ease-out duration-200"
+                 x-transition:enter-start="opacity-0 -translate-y-2"
+                 x-transition:enter-end="opacity-100 translate-y-0"
+                 class="mb-6 bg-blue-50 border border-blue-200 rounded-xl px-5 py-4 flex items-center justify-between gap-4"
+                 style="display:none">
+                <div class="flex items-center gap-3 min-w-0">
+                    <svg class="w-5 h-5 text-blue-500 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7H5a2 2 0 00-2 2v9a2 2 0 002 2h14a2 2 0 002-2V9a2 2 0 00-2-2h-3m-1 4l-3 3m0 0l-3-3m3 3V4"/>
+                    </svg>
+                    <div>
+                        <p class="text-sm font-semibold text-blue-900">Unsaved draft found</p>
+                        <p class="text-xs text-blue-600 mt-0.5">You started filling out this form earlier. Resume where you left off?</p>
+                    </div>
+                </div>
+                <div class="flex items-center gap-2 shrink-0">
+                    <button type="button" @click="clearDraft()"
+                            class="text-xs text-gray-500 hover:text-gray-700 px-3 py-1.5 rounded-lg hover:bg-gray-100 transition">
+                        Discard
+                    </button>
+                    <button type="button" @click="resumeDraft()"
+                            class="text-xs font-medium text-white bg-blue-600 hover:bg-blue-700 px-4 py-1.5 rounded-lg transition">
+                        Resume Draft
+                    </button>
+                </div>
+            </div>
+
+            <form id="submission-form"
+                  method="POST" action="{{ route('client.submissions.store') }}"
+                  @submit="clearDraft()">
                 @csrf
 
                 @php $steps = ['Sample Info', 'Tests', 'Transport', 'Declaration']; @endphp
@@ -450,18 +480,119 @@
                 </div> {{-- end flex wrapper --}}
 
             </form>
+
+            {{-- Draft saved toast --}}
+            <div x-show="draftSaved"
+                 x-transition:enter="transition ease-out duration-150"
+                 x-transition:enter-start="opacity-0 translate-y-2"
+                 x-transition:enter-end="opacity-100 translate-y-0"
+                 x-transition:leave="transition ease-in duration-150"
+                 x-transition:leave-start="opacity-100"
+                 x-transition:leave-end="opacity-0"
+                 class="fixed bottom-6 right-6 z-50 bg-gray-900 text-white text-xs font-medium px-4 py-2.5 rounded-xl shadow-xl flex items-center gap-2"
+                 style="display:none">
+                <svg class="w-3.5 h-3.5 text-green-400 shrink-0" fill="currentColor" viewBox="0 0 20 20">
+                    <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.857-9.809a.75.75 0 00-1.214-.882l-3.483 4.79-1.88-1.88a.75.75 0 10-1.06 1.061l2.5 2.5a.75.75 0 001.137-.089l4-5.5z" clip-rule="evenodd"/>
+                </svg>
+                Draft saved
+            </div>
+
+            </div>{{-- end x-data wrapper --}}
         </div>
     </div>
 
     @push('scripts')
     <script>
-        function submissionWizard() {
+        function submissionWizard(checkDraft = true) {
             return {
                 currentStep: 0,
+                hasDraft: false,
+                draftSaved: false,
+                _draftTimer: null,
+
+                init() {
+                    if (checkDraft) {
+                        this.hasDraft = !!localStorage.getItem('kstl_submission_draft');
+                    }
+                    const form = document.getElementById('submission-form');
+                    form.addEventListener('input',  () => this.saveDraft());
+                    form.addEventListener('change', () => this.saveDraft());
+                },
+
+                saveDraft() {
+                    const form = document.getElementById('submission-form');
+                    const data = { _step: this.currentStep };
+
+                    form.querySelectorAll('[name]').forEach(el => {
+                        if (el.name === '_token' || el.name === 'submitter_name') return;
+                        if (el.type === 'checkbox') {
+                            if (!Array.isArray(data[el.name])) data[el.name] = [];
+                            if (el.checked) data[el.name].push(el.value);
+                        } else if (el.type === 'radio') {
+                            if (el.checked) data[el.name] = el.value;
+                        } else {
+                            data[el.name] = el.value;
+                        }
+                    });
+
+                    localStorage.setItem('kstl_submission_draft', JSON.stringify(data));
+                    this.draftSaved = true;
+                    clearTimeout(this._draftTimer);
+                    this._draftTimer = setTimeout(() => { this.draftSaved = false; }, 2000);
+                },
+
+                resumeDraft() {
+                    const raw = localStorage.getItem('kstl_submission_draft');
+                    if (!raw) return;
+                    const data = JSON.parse(raw);
+                    const form = document.getElementById('submission-form');
+
+                    form.querySelectorAll('[name]').forEach(el => {
+                        const name = el.name;
+                        if (name === '_token' || name === 'submitter_name') return;
+                        if (!(name in data)) return;
+                        const value = data[name];
+
+                        if (el.type === 'checkbox') {
+                            const vals = Array.isArray(value) ? value : (value ? [value] : []);
+                            el.checked = vals.includes(el.value);
+                        } else if (el.type === 'radio') {
+                            if (el.value === value) {
+                                el.checked = true;
+                                // Trigger Alpine reactivity for transport method toggle
+                                el.dispatchEvent(new Event('change', { bubbles: true }));
+                            }
+                        } else if (name !== 'transport_detail') {
+                            el.value = value;
+                        }
+                    });
+
+                    // transport_detail select is inside x-if so needs a tick after Alpine re-renders
+                    if (data.transport_detail) {
+                        const td = data.transport_detail;
+                        setTimeout(() => {
+                            const sel = form.querySelector('[name="transport_detail"]');
+                            if (sel) sel.value = td;
+                        }, 150);
+                    }
+
+                    if (data._step !== undefined) {
+                        this.currentStep = parseInt(data._step, 10);
+                    }
+
+                    this.hasDraft = false;
+                    window.scrollTo({ top: 0, behavior: 'smooth' });
+                },
+
+                clearDraft() {
+                    localStorage.removeItem('kstl_submission_draft');
+                    this.hasDraft = false;
+                },
 
                 nextStep() {
                     if (this.currentStep < 3) {
                         this.currentStep++;
+                        this.saveDraft();
                         window.scrollTo({ top: 0, behavior: 'smooth' });
                     }
                 },
@@ -469,13 +600,10 @@
                 prevStep() {
                     if (this.currentStep > 0) {
                         this.currentStep--;
+                        this.saveDraft();
                         window.scrollTo({ top: 0, behavior: 'smooth' });
                     }
                 },
-
-                submitForm(form) {
-                    form.submit();
-                }
             }
         }
     </script>

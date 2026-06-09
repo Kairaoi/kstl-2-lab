@@ -42,17 +42,29 @@
 
             {{-- Director query banner (when this test was flagged back for clarification) --}}
             @if($test->status === 'flagged')
-                <div class="bg-orange-50 border border-orange-200 rounded-2xl p-5">
+                @php
+                    $directorQueryNote = null;
+                    if ($test->result_notes) {
+                        preg_match('/\[Director query\]\s*(.+?)(?=\n\n|$)/s', $test->result_notes, $dqm);
+                        $directorQueryNote = isset($dqm[1]) ? trim($dqm[1]) : null;
+                    }
+                @endphp
+                <div class="bg-amber-50 border-2 border-amber-300 rounded-2xl p-5">
                     <div class="flex items-start gap-3">
-                        <svg class="w-5 h-5 text-orange-500 shrink-0 mt-0.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 21v-4m0 0V5a2 2 0 012-2h6.5l1 1H21l-3 6 3 6h-8.5l-1-1H5a2 2 0 00-2 2z"/>
+                        <svg class="w-5 h-5 text-amber-600 shrink-0 mt-0.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01M10.29 3.86L1.82 18a2 2 0 001.71 3h16.94a2 2 0 001.71-3L13.71 3.86a2 2 0 00-3.42 0z"/>
                         </svg>
-                        <div>
-                            <p class="text-sm font-semibold text-orange-800">Queried by the Director</p>
-                            <p class="text-xs text-orange-700 mt-0.5">
-                                This test was returned for clarification. Review the Director's query in the result notes below,
-                                amend the result as needed, and save to send it back for authorisation.
+                        <div class="flex-1">
+                            <p class="text-sm font-bold text-amber-900 uppercase tracking-wide">Returned — Action Required</p>
+                            <p class="text-xs text-amber-700 mt-0.5">
+                                The Director has returned this test. Review the query below, amend your result as needed, and save to resubmit for authorisation.
                             </p>
+                            @if($directorQueryNote)
+                                <div class="mt-3 bg-white border border-amber-200 rounded-lg px-4 py-3">
+                                    <p class="text-xs font-semibold text-amber-800 uppercase mb-1">Director's Query</p>
+                                    <p class="text-sm text-gray-800 leading-relaxed">{{ $directorQueryNote }}</p>
+                                </div>
+                            @endif
                         </div>
                     </div>
                 </div>

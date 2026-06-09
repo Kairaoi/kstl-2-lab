@@ -186,94 +186,144 @@
                     </dl>
                 </div>
 
-                {{-- ── Analytical Results (with determination + analyst) ──────── --}}
+                @php
+                    // Partition all tests across all samples into authorised vs returned
+                    $allTests = $submission->samples->flatMap(fn($s) => $s->sampleTests->map(fn($t) => ['sample' => $s, 'test' => $t]));
+                    $authorisedTests = $allTests->filter(fn($row) => $row['test']->status !== 'flagged');
+                    $returnedTests   = $allTests->filter(fn($row) => $row['test']->status === 'flagged');
+
+                    $qualColors = [
+                        'pass'         => 'bg-green-50 text-green-700',
+                        'fail'         => 'bg-red-50 text-red-700',
+                        'detected'     => 'bg-orange-50 text-orange-700',
+                        'not_detected' => 'bg-green-50 text-green-700',
+                        'less_than'    => 'bg-blue-50 text-blue-700',
+                        'greater_than' => 'bg-blue-50 text-blue-700',
+                        'equal_to'     => 'bg-blue-50 text-blue-700',
+                        'pending'      => 'bg-gray-100 text-gray-400',
+                    ];
+                @endphp
+
+                {{-- ── Authorised Results ─────────────────────────────────────── --}}
                 <div class="px-8 py-6 border-b border-gray-100">
-                    <p class="ir-section-title mb-4">Analytical Results</p>
+                    <div class="flex items-center justify-between mb-4">
+                        <p class="ir-section-title">Authorised Results</p>
+                        <span class="inline-flex items-center gap-1.5 px-2.5 py-1 text-xs font-semibold rounded-full bg-green-50 text-green-700 ring-1 ring-green-600/20">
+                            <svg class="w-3 h-3" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M5 13l4 4L19 7"/></svg>
+                            Authorised
+                        </span>
+                    </div>
 
-                    @foreach($submission->samples as $sample)
-                        <div class="mb-6 last:mb-0">
-                            <div class="flex items-baseline justify-between mb-2">
-                                <h4 class="text-sm font-semibold text-gray-800">
-                                    {{ $sample->common_name ?? $sample->sample_code }}
-                                </h4>
-                                <span class="font-mono text-xs text-gray-400">{{ $sample->sample_code }}</span>
-                            </div>
-
-                            @if($sample->sampleTests->isEmpty())
-                                <p class="text-sm text-gray-400 italic py-3">No test results available.</p>
-                            @else
-                                <table class="ir-table w-full text-sm">
-                                    <thead>
-                                        <tr>
-                                            <th class="text-left px-3 py-2.5">Determinand</th>
-                                            <th class="text-left px-3 py-2.5">Category</th>
-                                            <th class="text-left px-3 py-2.5">Result</th>
-                                            <th class="text-left px-3 py-2.5">Unit</th>
-                                            <th class="text-left px-3 py-2.5">Determination</th>
-                                            <th class="text-left px-3 py-2.5">Analyst</th>
-                                            <th class="text-left px-3 py-2.5">Status</th>
+                    @if($authorisedTests->isEmpty())
+                        <p class="text-sm text-gray-400 italic py-3">No authorised test results yet.</p>
+                    @else
+                        <table class="ir-table w-full text-sm">
+                            <thead>
+                                <tr>
+                                    <th class="text-left px-3 py-2.5">Sample</th>
+                                    <th class="text-left px-3 py-2.5">Determinand</th>
+                                    <th class="text-left px-3 py-2.5">Category</th>
+                                    <th class="text-left px-3 py-2.5">Result</th>
+                                    <th class="text-left px-3 py-2.5">Unit</th>
+                                    <th class="text-left px-3 py-2.5">Determination</th>
+                                    <th class="text-left px-3 py-2.5">Analyst</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                @foreach($authorisedTests as $row)
+                                    @php
+                                        $test   = $row['test'];
+                                        $sample = $row['sample'];
+                                        $qColor = $qualColors[$test->result_qualifier] ?? 'bg-gray-100 text-gray-500';
+                                    @endphp
+                                    <tr>
+                                        <td class="px-3 py-2.5 text-xs text-gray-500 font-mono">{{ $sample->sample_code }}</td>
+                                        <td class="px-3 py-2.5 text-gray-800 font-medium">{{ $test->getDisplayLabel() }}</td>
+                                        <td class="px-3 py-2.5 text-xs text-gray-500 capitalize">{{ $test->getDisplayCategory() }}</td>
+                                        <td class="px-3 py-2.5 font-mono text-gray-700">{{ $test->result_value ?? '—' }}</td>
+                                        <td class="px-3 py-2.5 text-xs text-gray-400">{{ $test->result_unit ?? '—' }}</td>
+                                        <td class="px-3 py-2.5">
+                                            <span class="inline-flex px-2 py-0.5 text-xs font-medium rounded-full capitalize {{ $qColor }}">
+                                                {{ str_replace('_', ' ', $test->result_qualifier ?? 'pending') }}
+                                            </span>
+                                        </td>
+                                        <td class="px-3 py-2.5 text-xs text-gray-500">{{ $test->assignedTo?->name ?? '—' }}</td>
+                                    </tr>
+                                    @if($test->result_notes)
+                                        <tr class="bg-gray-50/60">
+                                            <td colspan="7" class="px-3 pb-2 pt-0 text-xs text-gray-500 italic">Notes: {{ $test->result_notes }}</td>
                                         </tr>
-                                    </thead>
-                                    <tbody>
-                                        @foreach($sample->sampleTests as $test)
-                                            @php
-                                                $qualColors = [
-                                                    'pass'         => 'bg-green-50 text-green-700',
-                                                    'fail'         => 'bg-red-50 text-red-700',
-                                                    'detected'     => 'bg-orange-50 text-orange-700',
-                                                    'not_detected' => 'bg-green-50 text-green-700',
-                                                    'less_than'    => 'bg-blue-50 text-blue-700',
-                                                    'greater_than' => 'bg-blue-50 text-blue-700',
-                                                    'equal_to'     => 'bg-blue-50 text-blue-700',
-                                                    'pending'      => 'bg-gray-100 text-gray-400',
-                                                ];
-                                                $qColor = $qualColors[$test->result_qualifier] ?? 'bg-gray-100 text-gray-500';
-                                            @endphp
-                                            <tr class="{{ $test->status === 'flagged' ? 'bg-red-50/30' : '' }}">
-                                                <td class="px-3 py-2.5 text-gray-800 font-medium">
-                                                    {{ $test->getDisplayLabel() }}
-                                                </td>
-                                                <td class="px-3 py-2.5 text-xs text-gray-500 capitalize">
-                                                    {{ $test->getDisplayCategory() }}
-                                                </td>
-                                                <td class="px-3 py-2.5 font-mono text-gray-700">
-                                                    {{ $test->result_value ?? '—' }}
-                                                </td>
-                                                <td class="px-3 py-2.5 text-xs text-gray-400">
-                                                    {{ $test->result_unit ?? '—' }}
-                                                </td>
-                                                <td class="px-3 py-2.5">
-                                                    <span class="inline-flex px-2 py-0.5 text-xs font-medium rounded-full capitalize {{ $qColor }}">
-                                                        {{ str_replace('_', ' ', $test->result_qualifier ?? 'pending') }}
-                                                    </span>
-                                                </td>
-                                                <td class="px-3 py-2.5 text-xs text-gray-500">
-                                                    {{ $test->assignedTo?->name ?? '—' }}
-                                                </td>
-                                                <td class="px-3 py-2.5">
-                                                    @if($test->status === 'flagged')
-                                                        <span class="inline-flex px-1.5 py-0.5 text-xs bg-red-50 text-red-700 rounded font-medium">Flagged</span>
-                                                    @elseif($test->status === 'completed')
-                                                        <span class="inline-flex px-1.5 py-0.5 text-xs bg-green-50 text-green-700 rounded">Completed</span>
-                                                    @else
-                                                        <span class="inline-flex px-1.5 py-0.5 text-xs bg-gray-100 text-gray-500 rounded capitalize">{{ str_replace('_',' ',$test->status) }}</span>
-                                                    @endif
-                                                </td>
-                                            </tr>
-                                            @if($test->result_notes)
-                                                <tr class="bg-gray-50/60">
-                                                    <td colspan="7" class="px-3 pb-2 pt-0 text-xs text-gray-500 italic">
-                                                        Notes: {{ $test->result_notes }}
-                                                    </td>
-                                                </tr>
-                                            @endif
-                                        @endforeach
-                                    </tbody>
-                                </table>
-                            @endif
-                        </div>
-                    @endforeach
+                                    @endif
+                                @endforeach
+                            </tbody>
+                        </table>
+                    @endif
                 </div>
+
+                {{-- ── Analyst Section — Returned for Review ──────────────────── --}}
+                @if($returnedTests->isNotEmpty())
+                <div class="px-8 py-6 border-b border-gray-100">
+                    <div class="flex items-center justify-between mb-4">
+                        <p class="ir-section-title">Analyst Section</p>
+                        <span class="inline-flex items-center gap-1.5 px-2.5 py-1 text-xs font-semibold rounded-full bg-amber-50 text-amber-700 ring-1 ring-amber-500/30">
+                            <svg class="w-3 h-3" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"/></svg>
+                            Return — Pending Analyst Review
+                        </span>
+                    </div>
+
+                    <div class="mb-3 px-4 py-3 bg-amber-50 border border-amber-200 rounded-lg text-xs text-amber-800 leading-relaxed">
+                        The following tests have been returned to the analyst for clarification. Results will remain blank until the analyst re-submits.
+                    </div>
+
+                    <table class="ir-table w-full text-sm">
+                        <thead>
+                            <tr>
+                                <th class="text-left px-3 py-2.5">Sample</th>
+                                <th class="text-left px-3 py-2.5">Determinand</th>
+                                <th class="text-left px-3 py-2.5">Category</th>
+                                <th class="text-left px-3 py-2.5">Result</th>
+                                <th class="text-left px-3 py-2.5">Unit</th>
+                                <th class="text-left px-3 py-2.5">Analyst</th>
+                                <th class="text-left px-3 py-2.5">Status</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            @foreach($returnedTests as $row)
+                                @php
+                                    $test   = $row['test'];
+                                    $sample = $row['sample'];
+                                    // Extract director query note from result_notes
+                                    $queryNote = null;
+                                    if ($test->result_notes && str_contains($test->result_notes, '[Director query]')) {
+                                        preg_match('/\[Director query\]\s*(.+?)(?:\n\n|$)/s', $test->result_notes, $m);
+                                        $queryNote = trim($m[1] ?? '');
+                                    }
+                                @endphp
+                                <tr class="bg-amber-50/40">
+                                    <td class="px-3 py-2.5 text-xs text-gray-500 font-mono">{{ $sample->sample_code }}</td>
+                                    <td class="px-3 py-2.5 text-gray-800 font-medium">{{ $test->getDisplayLabel() }}</td>
+                                    <td class="px-3 py-2.5 text-xs text-gray-500 capitalize">{{ $test->getDisplayCategory() }}</td>
+                                    <td class="px-3 py-2.5 text-gray-300 italic text-xs">—</td>
+                                    <td class="px-3 py-2.5 text-gray-300 text-xs">—</td>
+                                    <td class="px-3 py-2.5 text-xs text-gray-500">{{ $test->assignedTo?->name ?? '—' }}</td>
+                                    <td class="px-3 py-2.5">
+                                        <span class="inline-flex items-center gap-1 px-1.5 py-0.5 text-xs bg-amber-100 text-amber-800 rounded font-semibold">
+                                            Return
+                                        </span>
+                                    </td>
+                                </tr>
+                                @if($queryNote)
+                                    <tr class="bg-amber-50/60">
+                                        <td colspan="7" class="px-3 pb-2.5 pt-0 text-xs text-amber-700 italic">
+                                            <span class="font-semibold not-italic">Director query:</span> {{ $queryNote }}
+                                        </td>
+                                    </tr>
+                                @endif
+                            @endforeach
+                        </tbody>
+                    </table>
+                </div>
+                @endif
 
                 {{-- ── Director's Comments ─────────────────────────────────── --}}
                 @if($result?->director_comments)

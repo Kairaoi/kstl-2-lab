@@ -170,7 +170,12 @@
                                             <tbody class="divide-y divide-gray-50">
                                                 @foreach($tests as $test)
                                                     @php
-                                                        $rowBg = $test->status === 'in_progress' ? 'bg-blue-50/30' : ($test->status === 'completed' ? 'bg-green-50/20' : '');
+                                                        $rowBg = $test->status === 'in_progress' ? 'bg-blue-50/30' : ($test->status === 'completed' ? 'bg-green-50/20' : ($test->status === 'flagged' ? 'bg-amber-50/50' : ''));
+                                                        $directorQuery = null;
+                                                        if ($test->status === 'flagged' && $test->result_notes) {
+                                                            preg_match('/\[Director query\]\s*(.+?)(?=\n\n|$)/s', $test->result_notes, $dqMatch);
+                                                            $directorQuery = isset($dqMatch[1]) ? trim($dqMatch[1]) : null;
+                                                        }
                                                     @endphp
                                                     <tr class="hover:bg-gray-50 transition {{ $rowBg }}" x-data="{ showModal: false }">
                                                         <td class="px-4 py-2.5">
@@ -191,6 +196,12 @@
                                                         </td>
                                                         <td class="px-4 py-2.5">
                                                             <x-kstl.status-badge :status="$test->status" />
+                                                            @if($test->status === 'flagged' && $directorQuery)
+                                                                <p class="mt-1.5 text-xs text-amber-700 leading-snug max-w-[200px]">
+                                                                    <span class="font-semibold">Director:</span>
+                                                                    {{ Str::limit($directorQuery, 80) }}
+                                                                </p>
+                                                            @endif
                                                         </td>
                                                         <td class="px-4 py-2.5 text-xs">
                                                             @if($test->status === 'completed' || $test->status === 'flagged')

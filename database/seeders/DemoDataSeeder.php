@@ -158,6 +158,9 @@ class DemoDataSeeder extends Seeder
         $testKeys    = $this->pickMany(array_merge(self::MICRO_TESTS, self::CHEM_TESTS), 3, 5);
         $status      = $scenario['status'];
 
+        $transportMethod = $this->pick(['frozen', 'chilled', 'fresh']);
+        $transportDetail = $this->pickTransportDetail($transportMethod);
+
         $submission = Submission::create([
             'reference_number'    => Submission::generateReference(),
             'client_id'           => $client->id,
@@ -171,7 +174,8 @@ class DemoDataSeeder extends Seeder
             'collected_at'        => $submittedAt->copy()->subDays(rand(1, 3))->toDateString(),
             'collection_location' => $this->pick(self::LOCATIONS),
             'tests_requested'     => $testKeys,
-            'transport_method'    => $this->pick(['frozen', 'chilled', 'fresh']),
+            'transport_method'    => $transportMethod,
+            'transport_detail'    => $transportDetail,
             'priority'            => $this->pick(['routine', 'routine', 'routine', 'urgent', 'emergency']),
             'results_required_by' => $submittedAt->copy()->addDays(14)->toDateString(),
             'service_mode'        => 'lab_to_client',
@@ -593,13 +597,34 @@ class DemoDataSeeder extends Seeder
 
     private function fakeQualifier(string $key): string
     {
-        if (in_array($key, ['total_coliforms', 'e_coli', 'e_coli_coliform', 'enterococci', 'staph_aureus'])) {
-            return $this->pick(['not_detected', 'not_detected', 'not_detected', 'detected']);
+        // Coliform/pathogen tests: mostly not_detected, occasionally a numeric count
+        if (in_array($key, ['total_coliforms', 'e_coli', 'e_coli_coliform'])) {
+            return $this->pick(['not_detected', 'not_detected', 'equal_to', 'equal_to']);
         }
+        if (in_array($key, ['enterococci', 'staph_aureus'])) {
+            return $this->pick(['not_detected', 'not_detected', 'not_detected', 'equal_to']);
+        }
+        // Plate counts: always numeric (CFU/g value)
         if (in_array($key, ['apc', 'yeast_mold'])) {
-            return $this->pick(['pass', 'pass', 'fail']);
+            return 'equal_to';
         }
-        return $this->pick(['less_than', 'equal_to', 'pass']);
+        // Chemical: moisture tends to be less_than, pH and water_activity equal_to
+        if ($key === 'moisture') {
+            return $this->pick(['less_than', 'less_than', 'equal_to']);
+        }
+        if ($key === 'ph') {
+            return $this->pick(['equal_to', 'equal_to', 'less_than']);
+        }
+        return $this->pick(['less_than', 'equal_to']);
+    }
+
+    private function pickTransportDetail(string $method): string
+    {
+        return match($method) {
+            'frozen'  => $this->pick(['Air freight (Frozen)', 'Road Transport (Frozen truck)', 'Sea freight (Frozen container)']),
+            'chilled' => $this->pick(['Air freight (Chilled)', 'Road transport (Chilled van)', 'Sea freight (Chilled)']),
+            default   => $this->pick(['Air freight', 'Road transport (Fresh/Iced)', 'Express courier (Iced)']),
+        };
     }
 
     // ── Helpers ───────────────────────────────────────────────────────────────

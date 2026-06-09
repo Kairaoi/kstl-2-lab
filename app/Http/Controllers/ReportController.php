@@ -31,11 +31,16 @@ class ReportController extends Controller
     public function execute(Request $request, string $code)
     {
         try {
-            $parameters = $request->only(['start_date', 'end_date', 'filter']);
+            $report = $this->reportService->findByCode($code);
+
+            $allowedParams = collect($report?->parameters ?? [])
+                ->pluck('name')
+                ->merge(['start_date', 'end_date', 'filter'])
+                ->all();
+
+            $parameters = $request->only($allowedParams);
 
             $result = $this->reportService->executeReport($code, $parameters);
-
-            $report = $this->reportService->findByCode($code);
 
             if ($request->wantsJson()) {
                 return response()->json($result);
@@ -78,7 +83,12 @@ class ReportController extends Controller
     public function export(Request $request, string $code, string $format = 'csv')
     {
         try {
-            $parameters = $request->only(['start_date', 'end_date', 'filter']);
+            $report = $this->reportService->findByCode($code);
+            $allowedParams = collect($report?->parameters ?? [])
+                ->pluck('name')
+                ->merge(['start_date', 'end_date', 'filter'])
+                ->all();
+            $parameters = $request->only($allowedParams);
 
             return $this->reportService->exportReport($code, $format, $parameters);
 

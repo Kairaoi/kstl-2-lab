@@ -41,7 +41,7 @@ class AnalyticsReportsSeeder extends Seeder
                     'category'      => 'analytics',
                     'sql_query'     => $r['sql_query'],
                     'allowed_roles' => $roles,
-                    'parameters'    => null,
+                    'parameters'    => $r['parameters'] ?? null,
                     'is_active'     => true,
                     'sort_order'    => $r['sort_order'],
                 ]
@@ -387,6 +387,98 @@ class AnalyticsReportsSeeder extends Seeder
                     ORDER BY FIELD(s.priority,'emergency','urgent'), days_open DESC
                     LIMIT 200
                 SQL,
+            ],
+
+            // ── Full Results Listing (flat denormalised export) ───────────────
+            [
+                'code'       => 'analytics_full_results_listing',
+                'name'       => 'Results — Full Test Results Listing',
+                'description'=> 'Flat export of all completed test results joined with submission and sample details: company, sampling date, reference, transport, collection location, sample ID, species, quantity, test name, and formatted result value.',
+                'sort_order' => 160,
+                'sql_query'  => <<<SQL
+                    SELECT
+                        c.company_name                                                                    AS `Company Name`,
+                        DATE_FORMAT(s.collected_at, '%d-%b-%y')                                          AS `Sampling Date`,
+                        s.reference_number                                                                AS `Reference ID`,
+                        CONCAT(UPPER(LEFT(s.transport_method, 1)), LOWER(SUBSTRING(s.transport_method, 2))) AS `Transport`,
+                        COALESCE(
+                            REPLACE(REPLACE(s.transport_detail, '_', ' '), '-', ' '),
+                            CONCAT(UPPER(LEFT(s.transport_method, 1)), LOWER(SUBSTRING(s.transport_method, 2)))
+                        )                                                                                 AS `Transport Methods`,
+                        s.collection_location                                                             AS `Collection Location`,
+                        sm.sample_code                                                                    AS `Sample ID`,
+                        sm.common_name                                                                    AS `Sample`,
+                        sm.scientific_name                                                                AS `Scientific Name`,
+                        CONCAT(TRIM(TRAILING '.' FROM TRIM(TRAILING '0' FROM CAST(sm.quantity AS CHAR))), sm.quantity_unit) AS `Quantity/Weight`,
+                        COALESCE(st.test_label, REPLACE(st.test_key, '_', ' '))                          AS `Test`,
+                        CASE
+                            WHEN st.result_qualifier = 'less_than'
+                                THEN CONCAT('<', st.result_value,
+                                     CASE WHEN st.result_unit = '%'      THEN '%'
+                                          WHEN st.result_unit IS NOT NULL THEN CONCAT(' ', st.result_unit)
+                                          ELSE '' END)
+                            WHEN st.result_qualifier = 'greater_than'
+                                THEN CONCAT('>', st.result_value,
+                                     CASE WHEN st.result_unit = '%'      THEN '%'
+                                          WHEN st.result_unit IS NOT NULL THEN CONCAT(' ', st.result_unit)
+                                          ELSE '' END)
+                            WHEN st.result_qualifier = 'not_detected'
+                                THEN 'Not Detected'
+                            WHEN st.result_qualifier = 'detected'
+                                THEN CASE
+                                    WHEN st.result_value IS NOT NULL AND st.result_unit = '%' THEN CONCAT(st.result_value, '%')
+                                    WHEN st.result_value IS NOT NULL AND st.result_unit IS NOT NULL THEN CONCAT(st.result_value, ' ', st.result_unit)
+                                    WHEN st.result_value IS NOT NULL THEN st.result_value
+                                    ELSE 'Detected'
+                                END
+                            WHEN st.result_qualifier IN ('pass', 'fail')
+                                THEN CONCAT(UPPER(LEFT(st.result_qualifier, 1)), LOWER(SUBSTRING(st.result_qualifier, 2)))
+                            WHEN st.result_value IS NOT NULL AND st.result_unit = '%'
+                                THEN CONCAT(st.result_value, '%')
+                            WHEN st.result_value IS NOT NULL AND st.result_unit IS NOT NULL
+                                THEN CONCAT(st.result_value, ' ', st.result_unit)
+                            WHEN st.result_value IS NOT NULL
+                                THEN st.result_value
+                            ELSE '—'
+                        END                                                                               AS `Result`
+                    FROM submissions s
+                    JOIN clients c   ON c.id  = s.client_id
+                    JOIN samples sm  ON sm.submission_id = s.id
+                    JOIN sample_tests st ON st.sample_id = sm.id
+                    WHERE st.status = 'completed'
+                      AND s.deleted_at IS NULL
+                      AND (NULLIF(:start_date,         '') IS NULL OR s.collected_at      >= :start_date)
+                      AND (NULLIF(:end_date,           '') IS NULL OR s.collected_at      <= :end_date)
+                      AND (NULLIF(:company,            '') IS NULL OR c.company_name       LIKE CONCAT('%', :company, '%'))
+                      AND (NULLIF(:reference_id,       '') IS NULL OR s.reference_number   LIKE CONCAT('%', :reference_id, '%'))
+                      AND (NULLIF(:transport,          '') IS NULL OR s.transport_method   LIKE CONCAT('%', :transport, '%'))
+                      AND (NULLIF(:transport_methods,  '') IS NULL OR COALESCE(s.transport_detail, s.transport_method) LIKE CONCAT('%', :transport_methods, '%'))
+                      AND (NULLIF(:collection_location,'') IS NULL OR s.collection_location LIKE CONCAT('%', :collection_location, '%'))
+                      AND (NULLIF(:sample_id,          '') IS NULL OR sm.sample_code        LIKE CONCAT('%', :sample_id, '%'))
+                      AND (NULLIF(:sample,             '') IS NULL OR sm.common_name        LIKE CONCAT('%', :sample, '%'))
+                      AND (NULLIF(:scientific_name,    '') IS NULL OR sm.scientific_name    LIKE CONCAT('%', :scientific_name, '%'))
+                      AND (NULLIF(:qty_min,            '') IS NULL OR sm.quantity           >= :qty_min)
+                      AND (NULLIF(:qty_max,            '') IS NULL OR sm.quantity           <= :qty_max)
+                      AND (NULLIF(:test,               '') IS NULL OR st.test_label         LIKE CONCAT('%', :test, '%')
+                                                                   OR REPLACE(st.test_key, '_', ' ') LIKE CONCAT('%', :test, '%'))
+                    ORDER BY s.collected_at DESC, s.reference_number, sm.sample_code, st.test_key
+                    LIMIT 2000
+                SQL,
+                'parameters' => [
+                    ['name' => 'start_date',         'label' => 'From Date',          'type' => 'date',   'placeholder' => ''],
+                    ['name' => 'end_date',            'label' => 'To Date',            'type' => 'date',   'placeholder' => ''],
+                    ['name' => 'company',             'label' => 'Company Name',       'type' => 'text',   'placeholder' => 'e.g. Pacific Fisheries'],
+                    ['name' => 'reference_id',        'label' => 'Reference ID',       'type' => 'text',   'placeholder' => 'e.g. KSTL-2026-00005'],
+                    ['name' => 'transport',           'label' => 'Transport',          'type' => 'text',   'placeholder' => 'frozen / chilled / fresh'],
+                    ['name' => 'transport_methods',   'label' => 'Transport Methods',  'type' => 'text',   'placeholder' => 'e.g. Air freight'],
+                    ['name' => 'collection_location', 'label' => 'Collection Location','type' => 'text',   'placeholder' => 'e.g. Abemama'],
+                    ['name' => 'sample_id',           'label' => 'Sample ID',          'type' => 'text',   'placeholder' => 'e.g. KSTL-S-00036'],
+                    ['name' => 'sample',              'label' => 'Sample',             'type' => 'text',   'placeholder' => 'e.g. Skipjack Tuna'],
+                    ['name' => 'scientific_name',     'label' => 'Scientific Name',    'type' => 'text',   'placeholder' => 'e.g. Katsuwonus'],
+                    ['name' => 'qty_min',             'label' => 'Min Weight (kg)',    'type' => 'number', 'placeholder' => ''],
+                    ['name' => 'qty_max',             'label' => 'Max Weight (kg)',    'type' => 'number', 'placeholder' => ''],
+                    ['name' => 'test',                'label' => 'Test',               'type' => 'text',   'placeholder' => 'e.g. Moisture'],
+                ],
             ],
 
         ];

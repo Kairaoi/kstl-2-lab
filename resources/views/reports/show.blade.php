@@ -135,11 +135,51 @@
                 <a href="{{ route('reports.index') }}" class="btn btn-secondary btn-sm">
                     ← Back to Reports
                 </a>
-                <a href="{{ route('reports.export', ['code' => $report->code, 'format' => 'csv']) }}" class="btn btn-primary btn-sm">
+                @php
+                    $exportParams = array_merge(
+                        ['code' => $report->code, 'format' => 'csv'],
+                        request()->only(collect($report->parameters ?? [])->pluck('name')->all())
+                    );
+                @endphp
+                <a href="{{ route('reports.export', $exportParams) }}" class="btn btn-primary btn-sm">
                     ⬇ Export CSV
                 </a>
             </div>
         </div>
+
+        {{-- Filter panel (only for reports with defined parameters) --}}
+        @if(!empty($report->parameters))
+        @php
+            $activeFilters = collect($report->parameters)
+                ->pluck('name')
+                ->filter(fn($n) => request()->filled($n))
+                ->isNotEmpty();
+        @endphp
+        <div style="background:var(--white);border-radius:var(--radius-lg);box-shadow:var(--shadow);border:1px solid var(--border);padding:1.5rem;margin-bottom:1.5rem">
+            <form method="GET" action="{{ route('reports.execute', $report->code) }}" style="display:flex;flex-wrap:wrap;gap:1rem;align-items:flex-end">
+                @foreach($report->parameters as $param)
+                <div style="display:flex;flex-direction:column;gap:.3rem;flex:1;min-width:160px">
+                    <label style="font-size:.75rem;font-weight:700;text-transform:uppercase;letter-spacing:.08em;color:var(--primary-mid)">{{ $param['label'] }}</label>
+                    <input
+                        type="{{ $param['type'] ?? 'text' }}"
+                        name="{{ $param['name'] }}"
+                        value="{{ request($param['name']) }}"
+                        placeholder="{{ $param['placeholder'] ?? '' }}"
+                        style="padding:.55rem .85rem;border:1.5px solid var(--border);border-radius:var(--radius);font-size:.875rem;color:var(--ink);background:var(--white);outline:none;transition:border-color .15s"
+                        onfocus="this.style.borderColor='var(--accent)'"
+                        onblur="this.style.borderColor='var(--border)'"
+                    >
+                </div>
+                @endforeach
+                <div style="display:flex;gap:.5rem;padding-bottom:.05rem">
+                    <button type="submit" class="btn btn-primary btn-sm">Apply</button>
+                    @if($activeFilters)
+                    <a href="{{ route('reports.execute', $report->code) }}" class="btn btn-secondary btn-sm">Clear</a>
+                    @endif
+                </div>
+            </form>
+        </div>
+        @endif
 
         {{-- Statistics --}}
         <div class="stats-row">

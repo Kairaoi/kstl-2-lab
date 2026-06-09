@@ -151,10 +151,14 @@ class ReportService implements ReportServiceInterface
     protected function prepareQuery(string $query, array $parameters = []): string
     {
         foreach ($parameters as $key => $value) {
-            if ($value === null || $value === '') continue;
-            $escaped = DB::connection()->getPdo()->quote($value);
-            $query = str_replace(":{$key}", $escaped, $query);
+            $replacement = ($value === null || $value === '')
+                ? 'NULL'
+                : DB::connection()->getPdo()->quote($value);
+            // \b ensures :transport never matches inside :transport_methods
+            $query = preg_replace('/:' . preg_quote($key, '/') . '\b/', $replacement, $query);
         }
+        // Any remaining :param tokens not supplied → NULL
+        $query = preg_replace('/:[a-z_]+/', 'NULL', $query);
         return $query;
     }
 
