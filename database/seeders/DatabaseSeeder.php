@@ -80,6 +80,6 @@ class DatabaseSeeder extends Seeder
         ]);
         $auditor->assignRole('auditor');
 
-        $this->call(DemoDataSeeder::class);
+        // $this->call(DemoDataSeeder::class);
     }
 }

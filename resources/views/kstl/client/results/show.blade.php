@@ -135,13 +135,18 @@
                 <div class="px-8 py-6 border-b border-gray-100">
                     <p class="coa-section-title mb-4">Submission Particulars</p>
                     <dl class="grid grid-cols-2 md:grid-cols-3 gap-x-6 gap-y-4 text-sm">
+                        @php $scientificName = $submission->samples->first()?->scientific_name; @endphp
                         <div>
                             <dt class="coa-meta-label">Reference</dt>
                             <dd class="font-mono text-gray-800 mt-1">{{ $submission->reference_number }}</dd>
                         </div>
                         <div>
-                            <dt class="coa-meta-label">Sample</dt>
+                            <dt class="coa-meta-label">Sample (Common Name)</dt>
                             <dd class="text-gray-800 mt-1">{{ $submission->sample_name }}</dd>
+                        </div>
+                        <div>
+                            <dt class="coa-meta-label">Scientific Name</dt>
+                            <dd class="text-gray-700 italic mt-1">{{ $scientificName ?? '—' }}</dd>
                         </div>
                         <div>
                             <dt class="coa-meta-label">Type</dt>
@@ -169,9 +174,14 @@
                     @foreach($submission->samples as $sample)
                         <div class="mb-6 last:mb-0">
                             <div class="flex items-baseline justify-between mb-2">
-                                <h4 class="text-sm font-semibold text-gray-800">
-                                    {{ $sample->common_name ?? $sample->sample_code }}
-                                </h4>
+                                <div>
+                                    <h4 class="text-sm font-semibold text-gray-800">
+                                        {{ $sample->common_name ?? $sample->sample_code }}
+                                    </h4>
+                                    @if($sample->scientific_name)
+                                        <p class="text-xs text-gray-400 italic mt-0.5">{{ $sample->scientific_name }}</p>
+                                    @endif
+                                </div>
                                 <span class="font-mono text-xs text-gray-400">{{ $sample->sample_code }}</span>
                             </div>
 
@@ -181,15 +191,28 @@
                                 <table class="coa-table w-full text-sm">
                                     <thead>
                                         <tr>
-                                            <th class="text-left px-3 py-2.5">Determinand</th>
+                                            <th class="text-left px-3 py-2.5">Test</th>
                                             <th class="text-left px-3 py-2.5">Category</th>
                                             <th class="text-left px-3 py-2.5">Result</th>
-                                            <th class="text-left px-3 py-2.5">Unit</th>
-                                            <th class="text-left px-3 py-2.5">Reference Range</th>
                                         </tr>
                                     </thead>
                                     <tbody>
                                         @foreach($sample->sampleTests as $test)
+                                            @php
+                                                $unit = $test->result_unit ? ' ' . $test->result_unit : '';
+                                                $resultText = match($test->result_qualifier) {
+                                                    'detected'     => 'Detected',
+                                                    'not_detected' => 'Not Detected',
+                                                    'pass'         => 'Tested',
+                                                    'fail'         => 'Fail',
+                                                    'less_than'    => '< ' . $test->result_value . $unit,
+                                                    'greater_than' => '> ' . $test->result_value . $unit,
+                                                    'equal_to'     => $test->result_value . $unit,
+                                                    default        => ($test->result_value ? $test->result_value . $unit : '—'),
+                                                };
+                                                $isDetected    = $test->result_qualifier === 'detected'  || $test->result_qualifier === 'fail';
+                                                $isNotDetected = $test->result_qualifier === 'not_detected' || $test->result_qualifier === 'pass';
+                                            @endphp
                                             <tr>
                                                 <td class="px-3 py-2.5 text-gray-800 font-medium">
                                                     {{ $test->getDisplayLabel() }}
@@ -197,14 +220,8 @@
                                                 <td class="px-3 py-2.5 text-xs text-gray-500 capitalize">
                                                     {{ $test->getDisplayCategory() }}
                                                 </td>
-                                                <td class="px-3 py-2.5 text-gray-700">
-                                                    {{ $test->result_value ?? '—' }}
-                                                </td>
-                                                <td class="px-3 py-2.5 text-xs text-gray-400">
-                                                    {{ $test->result_unit ?? '—' }}
-                                                </td>
-                                                <td class="px-3 py-2.5 text-sm text-gray-500">
-                                                    {{ $test->reference_range ?? '—' }}
+                                                <td class="px-3 py-2.5 font-medium {{ $isDetected ? 'text-red-600' : ($isNotDetected ? 'text-green-700' : 'text-gray-700') }}">
+                                                    {{ $resultText }}
                                                 </td>
                                             </tr>
                                         @endforeach

@@ -55,7 +55,8 @@ class ReceptionController extends Controller
     public function show(string $id)
     {
         $submission = $this->submissionRepo->getById($id);
-        $samples    = $this->sampleRepo->getBySubmissionId($id);
+        $samples    = $this->sampleRepo->getBySubmissionId($id)
+                          ->load('assessment.assessedBy');
 
         return view('kstl.reception.submissions.show',
             compact('submission', 'samples'));

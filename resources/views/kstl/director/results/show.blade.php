@@ -101,46 +101,24 @@
                     </div>
                 </div>
 
-                {{-- ── Overall Outcome (Director only) ───────────────────────── --}}
-                @php
-                    $outcome = $result?->overall_outcome ?? 'pending';
-                    $sealColor = match($outcome) {
-                        'pass'         => '#1a6b45',
-                        'fail'         => '#a0241c',
-                        'inconclusive' => '#8a6d1a',
-                        default        => '#6b6760',
-                    };
-                    $sealText = match($outcome) {
-                        'pass'         => 'Pass',
-                        'fail'         => 'Fail',
-                        'inconclusive' => 'Inconclusive',
-                        default        => 'Pending Authorisation',
-                    };
-                @endphp
-                <div class="px-8 py-6 flex items-center justify-between gap-6 border-b border-gray-100 bg-gray-50/40">
+                {{-- ── Authorisation strip ─────────────────────────────────── --}}
+                <div class="px-8 py-5 flex items-center justify-between gap-6 border-b border-gray-100 bg-gray-50/40">
                     <div>
-                        <p class="ir-meta-label">Overall Determination</p>
-                        <div class="ir-seal mt-2" style="color: {{ $sealColor }};">
-                            @if($outcome === 'pass')
-                                <svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M5 13l4 4L19 7"/></svg>
-                            @elseif($outcome === 'fail')
-                                <svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12"/></svg>
-                            @elseif($outcome === 'inconclusive')
-                                <svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M12 9v2m0 4h.01M10.29 3.86L1.82 18a2 2 0 001.71 3h16.94a2 2 0 001.71-3L13.71 3.86a2 2 0 00-3.42 0z"/></svg>
-                            @endif
-                            {{ $sealText }}
-                        </div>
-                    </div>
-                    <div class="text-right">
+                        <p class="ir-meta-label">Authorisation Status</p>
                         @if($result?->authorised_at)
+                            <p class="text-sm font-semibold text-green-700 mt-1">Authorised</p>
+                        @else
+                            <p class="text-sm text-gray-400 italic mt-1">Awaiting Director authorisation</p>
+                        @endif
+                    </div>
+                    @if($result?->authorised_at)
+                        <div class="text-right">
                             <p class="ir-meta-label">Authorised By</p>
                             <p class="text-sm font-medium text-gray-800 mt-1">{{ $result->authorisedBy?->name ?? 'Laboratory Director' }}</p>
                             <p class="text-xs text-gray-500">Laboratory Director</p>
                             <p class="text-xs text-gray-400 mt-1">{{ $result->authorised_at->format('d M Y \a\t H:i') }}</p>
-                        @else
-                            <p class="text-xs text-gray-400 italic">Awaiting Director authorisation</p>
-                        @endif
-                    </div>
+                        </div>
+                    @endif
                 </div>
 
                 {{-- ── Submission particulars ─────────────────────────────── --}}
@@ -187,21 +165,20 @@
                 </div>
 
                 @php
-                    // Partition all tests across all samples into authorised vs returned
-                    $allTests = $submission->samples->flatMap(fn($s) => $s->sampleTests->map(fn($t) => ['sample' => $s, 'test' => $t]));
-                    $authorisedTests = $allTests->filter(fn($row) => $row['test']->status !== 'flagged');
-                    $returnedTests   = $allTests->filter(fn($row) => $row['test']->status === 'flagged');
+                    // Partition tests: only director-queried (has [Director query] note) go to the
+                    // returned section. Analyst self-flagged tests appear in authorised results.
+                    $allTests        = $submission->samples->flatMap(fn($s) => $s->sampleTests->map(fn($t) => ['sample' => $s, 'test' => $t]));
+                    $returnedTests   = $allTests->filter(fn($row) =>
+                        $row['test']->status === 'flagged' &&
+                        str_contains($row['test']->result_notes ?? '', '[Director query]')
+                    );
+                    $authorisedTests = $allTests->filter(fn($row) => $row['test']->status === 'completed');
 
-                    $qualColors = [
-                        'pass'         => 'bg-green-50 text-green-700',
-                        'fail'         => 'bg-red-50 text-red-700',
-                        'detected'     => 'bg-orange-50 text-orange-700',
-                        'not_detected' => 'bg-green-50 text-green-700',
-                        'less_than'    => 'bg-blue-50 text-blue-700',
-                        'greater_than' => 'bg-blue-50 text-blue-700',
-                        'equal_to'     => 'bg-blue-50 text-blue-700',
-                        'pending'      => 'bg-gray-100 text-gray-400',
-                    ];
+                    $sopDocuments = \App\Models\Kstl\Document::where('category', 'sop')
+                        ->whereIn('reference_code', array_values(\App\Models\Kstl\SampleTest::TEST_SOPS))
+                        ->with('currentVersion')
+                        ->get()
+                        ->keyBy('reference_code');
                 @endphp
 
                 {{-- ── Authorised Results ─────────────────────────────────────── --}}
@@ -221,31 +198,49 @@
                             <thead>
                                 <tr>
                                     <th class="text-left px-3 py-2.5">Sample</th>
-                                    <th class="text-left px-3 py-2.5">Determinand</th>
+                                    <th class="text-left px-3 py-2.5">Test</th>
                                     <th class="text-left px-3 py-2.5">Category</th>
                                     <th class="text-left px-3 py-2.5">Result</th>
                                     <th class="text-left px-3 py-2.5">Unit</th>
-                                    <th class="text-left px-3 py-2.5">Determination</th>
+                                    <th class="text-left px-3 py-2.5">Methods</th>
                                     <th class="text-left px-3 py-2.5">Analyst</th>
                                 </tr>
                             </thead>
                             <tbody>
                                 @foreach($authorisedTests as $row)
                                     @php
-                                        $test   = $row['test'];
-                                        $sample = $row['sample'];
-                                        $qColor = $qualColors[$test->result_qualifier] ?? 'bg-gray-100 text-gray-500';
+                                        $test    = $row['test'];
+                                        $sample  = $row['sample'];
+                                        $sopCode = \App\Models\Kstl\SampleTest::TEST_SOPS[$test->test_key] ?? null;
+                                        $sopDoc  = $sopCode ? ($sopDocuments[$sopCode] ?? null) : null;
                                     @endphp
                                     <tr>
-                                        <td class="px-3 py-2.5 text-xs text-gray-500 font-mono">{{ $sample->sample_code }}</td>
+                                        <td class="px-3 py-2.5">
+                                            <p class="text-xs text-gray-700 font-medium">{{ $sample->common_name ?? $sample->sample_code }}</p>
+                                            @if($sample->scientific_name)
+                                                <p class="text-xs text-gray-400 italic">{{ $sample->scientific_name }}</p>
+                                            @endif
+                                            <p class="text-xs text-gray-400 font-mono">{{ $sample->sample_code }}</p>
+                                        </td>
                                         <td class="px-3 py-2.5 text-gray-800 font-medium">{{ $test->getDisplayLabel() }}</td>
                                         <td class="px-3 py-2.5 text-xs text-gray-500 capitalize">{{ $test->getDisplayCategory() }}</td>
                                         <td class="px-3 py-2.5 font-mono text-gray-700">{{ $test->result_value ?? '—' }}</td>
                                         <td class="px-3 py-2.5 text-xs text-gray-400">{{ $test->result_unit ?? '—' }}</td>
                                         <td class="px-3 py-2.5">
-                                            <span class="inline-flex px-2 py-0.5 text-xs font-medium rounded-full capitalize {{ $qColor }}">
-                                                {{ str_replace('_', ' ', $test->result_qualifier ?? 'pending') }}
-                                            </span>
+                                            @if($sopCode)
+                                                @if($sopDoc)
+                                                    <a href="{{ route('staff.documents.show', $sopDoc->id) }}"
+                                                       target="_blank"
+                                                       class="inline-flex items-center gap-1 font-mono text-xs text-blue-600 hover:text-blue-800 hover:underline">
+                                                        {{ $sopCode }}
+                                                        <svg class="w-3 h-3 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14"/></svg>
+                                                    </a>
+                                                @else
+                                                    <span class="font-mono text-xs text-gray-500">{{ $sopCode }}</span>
+                                                @endif
+                                            @else
+                                                <span class="text-gray-400">—</span>
+                                            @endif
                                         </td>
                                         <td class="px-3 py-2.5 text-xs text-gray-500">{{ $test->assignedTo?->name ?? '—' }}</td>
                                     </tr>
@@ -272,19 +267,17 @@
                     </div>
 
                     <div class="mb-3 px-4 py-3 bg-amber-50 border border-amber-200 rounded-lg text-xs text-amber-800 leading-relaxed">
-                        The following tests have been returned to the analyst for clarification. Results will remain blank until the analyst re-submits.
+                        The following tests have been queried. The analyst has been notified and will re-confirm results before resubmitting for authorisation. Results shown are from the analyst's last submission.
                     </div>
 
                     <table class="ir-table w-full text-sm">
                         <thead>
                             <tr>
                                 <th class="text-left px-3 py-2.5">Sample</th>
-                                <th class="text-left px-3 py-2.5">Determinand</th>
+                                <th class="text-left px-3 py-2.5">Test</th>
                                 <th class="text-left px-3 py-2.5">Category</th>
                                 <th class="text-left px-3 py-2.5">Result</th>
-                                <th class="text-left px-3 py-2.5">Unit</th>
                                 <th class="text-left px-3 py-2.5">Analyst</th>
-                                <th class="text-left px-3 py-2.5">Status</th>
                             </tr>
                         </thead>
                         <tbody>
@@ -292,29 +285,38 @@
                                 @php
                                     $test   = $row['test'];
                                     $sample = $row['sample'];
-                                    // Extract director query note from result_notes
                                     $queryNote = null;
                                     if ($test->result_notes && str_contains($test->result_notes, '[Director query]')) {
                                         preg_match('/\[Director query\]\s*(.+?)(?:\n\n|$)/s', $test->result_notes, $m);
                                         $queryNote = trim($m[1] ?? '');
                                     }
+                                    $qualifierLabels = [
+                                        'detected'     => 'Detected',
+                                        'not_detected' => 'Not Detected',
+                                        'pass'         => 'Pass',
+                                        'fail'         => 'Fail',
+                                        'less_than'    => '< ' . $test->result_value . ($test->result_unit ? ' ' . $test->result_unit : ''),
+                                        'greater_than' => '> ' . $test->result_value . ($test->result_unit ? ' ' . $test->result_unit : ''),
+                                        'equal_to'     => $test->result_value . ($test->result_unit ? ' ' . $test->result_unit : ''),
+                                    ];
+                                    $resultDisplay = $qualifierLabels[$test->result_qualifier] ?? ($test->result_value ? $test->result_value . ($test->result_unit ? ' ' . $test->result_unit : '') : '—');
                                 @endphp
                                 <tr class="bg-amber-50/40">
-                                    <td class="px-3 py-2.5 text-xs text-gray-500 font-mono">{{ $sample->sample_code }}</td>
+                                    <td class="px-3 py-2.5">
+                                        <p class="text-xs text-gray-700 font-medium">{{ $sample->common_name ?? $sample->sample_code }}</p>
+                                        @if($sample->scientific_name)
+                                            <p class="text-xs text-gray-400 italic">{{ $sample->scientific_name }}</p>
+                                        @endif
+                                        <p class="text-xs text-gray-400 font-mono">{{ $sample->sample_code }}</p>
+                                    </td>
                                     <td class="px-3 py-2.5 text-gray-800 font-medium">{{ $test->getDisplayLabel() }}</td>
                                     <td class="px-3 py-2.5 text-xs text-gray-500 capitalize">{{ $test->getDisplayCategory() }}</td>
-                                    <td class="px-3 py-2.5 text-gray-300 italic text-xs">—</td>
-                                    <td class="px-3 py-2.5 text-gray-300 text-xs">—</td>
+                                    <td class="px-3 py-2.5 text-sm text-gray-700">{{ $resultDisplay }}</td>
                                     <td class="px-3 py-2.5 text-xs text-gray-500">{{ $test->assignedTo?->name ?? '—' }}</td>
-                                    <td class="px-3 py-2.5">
-                                        <span class="inline-flex items-center gap-1 px-1.5 py-0.5 text-xs bg-amber-100 text-amber-800 rounded font-semibold">
-                                            Return
-                                        </span>
-                                    </td>
                                 </tr>
                                 @if($queryNote)
                                     <tr class="bg-amber-50/60">
-                                        <td colspan="7" class="px-3 pb-2.5 pt-0 text-xs text-amber-700 italic">
+                                        <td colspan="5" class="px-3 pb-2.5 pt-0 text-xs text-amber-700 italic">
                                             <span class="font-semibold not-italic">Director query:</span> {{ $queryNote }}
                                         </td>
                                     </tr>
@@ -322,6 +324,86 @@
                             @endforeach
                         </tbody>
                     </table>
+                </div>
+                @endif
+
+                {{-- ── Assessment Record ────────────────────────────────────── --}}
+                @php $assessedSamples = $submission->samples->filter(fn($s) => $s->assessment !== null); @endphp
+                @if($assessedSamples->isNotEmpty())
+                <div class="px-8 py-6 border-b border-gray-100">
+                    <div class="flex items-center justify-between mb-4">
+                        <p class="ir-section-title">Sample Assessment Record</p>
+                        @php
+                            $allAccepted = $assessedSamples->every(fn($s) => $s->assessment->outcome === 'accepted');
+                            $anyRejected = $assessedSamples->some(fn($s)  => $s->assessment->outcome === 'rejected');
+                        @endphp
+                        @if($allAccepted)
+                            <span class="inline-flex items-center gap-1.5 px-2.5 py-1 text-xs font-semibold rounded-full bg-green-50 text-green-700 ring-1 ring-green-600/20">
+                                <svg class="w-3 h-3" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M5 13l4 4L19 7"/></svg>
+                                All Accepted
+                            </span>
+                        @elseif($anyRejected)
+                            <span class="inline-flex items-center gap-1.5 px-2.5 py-1 text-xs font-semibold rounded-full bg-red-50 text-red-700 ring-1 ring-red-600/20">Rejected</span>
+                        @endif
+                    </div>
+
+                    @foreach($assessedSamples as $sample)
+                        @php $a = $sample->assessment; @endphp
+                        <div class="{{ !$loop->last ? 'mb-5 pb-5 border-b border-gray-100' : '' }}">
+                            <div class="flex items-center justify-between mb-3">
+                                <div>
+                                    <p class="text-sm font-semibold text-gray-800">{{ $sample->common_name }}</p>
+                                    <p class="text-xs font-mono text-gray-400 mt-0.5">{{ $sample->sample_code }}</p>
+                                </div>
+                                <div class="flex items-center gap-3">
+                                    <span class="inline-flex px-2 py-0.5 text-xs font-semibold rounded-full {{ $a->outcome === 'accepted' ? 'bg-green-50 text-green-700' : 'bg-red-50 text-red-700' }}">
+                                        {{ ucfirst($a->outcome) }}
+                                    </span>
+                                    @if($a->assessedBy)
+                                        <div class="text-right">
+                                            <p class="text-xs text-gray-500">{{ $a->assessedBy->name }}</p>
+                                            <p class="text-xs text-gray-400">{{ ($a->assessed_at ?? $a->created_at)->format('d M Y H:i') }}</p>
+                                        </div>
+                                    @endif
+                                </div>
+                            </div>
+                            @php
+                                $criteria = [
+                                    'Temperature'         => [$a->temperature_ok, $a->temperature_notes],
+                                    'Storage Condition'   => [$a->storage_ok,     $a->storage_notes],
+                                    'Transport Condition' => [$a->transport_ok,   $a->transport_notes],
+                                    'Packaging Integrity' => [$a->packaging_ok,   $a->packaging_notes],
+                                    'Colour / Appearance' => [$a->colour_ok,      $a->colour_notes],
+                                    'Weight / Quantity'   => [$a->weight_ok,      $a->weight_notes],
+                                ];
+                            @endphp
+                            <div class="grid grid-cols-2 md:grid-cols-3 gap-2">
+                                @foreach($criteria as $label => [$pass, $notes])
+                                    <div class="rounded-lg border {{ $pass ? 'border-green-100 bg-green-50/40' : 'border-red-100 bg-red-50/40' }} px-3 py-2">
+                                        <div class="flex items-center justify-between gap-2">
+                                            <span class="text-xs font-medium text-gray-700">{{ $label }}</span>
+                                            <span class="text-xs font-semibold {{ $pass ? 'text-green-600' : 'text-red-600' }}">
+                                                {{ $pass ? 'Pass' : 'Fail' }}
+                                            </span>
+                                        </div>
+                                        @if($notes)
+                                            <p class="text-xs text-gray-500 mt-1 leading-snug">{{ $notes }}</p>
+                                        @endif
+                                    </div>
+                                @endforeach
+                            </div>
+                            @if($a->additional_observations)
+                                <div class="mt-2 bg-gray-50 rounded px-3 py-2 text-xs text-gray-600">
+                                    <span class="font-medium">Observations:</span> {{ $a->additional_observations }}
+                                </div>
+                            @endif
+                            @if($a->rejection_reason)
+                                <div class="mt-2 bg-red-50 border border-red-100 rounded px-3 py-2 text-xs text-red-700">
+                                    <span class="font-semibold">Rejection reason:</span> {{ $a->rejection_reason }}
+                                </div>
+                            @endif
+                        </div>
+                    @endforeach
                 </div>
                 @endif
 

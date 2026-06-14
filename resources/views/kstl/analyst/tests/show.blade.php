@@ -40,15 +40,15 @@
     <div class="py-8">
         <div class="max-w-7xl mx-auto sm:px-6 lg:px-8 space-y-6">
 
-            {{-- Director query banner (when this test was flagged back for clarification) --}}
-            @if($test->status === 'flagged')
-                @php
-                    $directorQueryNote = null;
-                    if ($test->result_notes) {
-                        preg_match('/\[Director query\]\s*(.+?)(?=\n\n|$)/s', $test->result_notes, $dqm);
-                        $directorQueryNote = isset($dqm[1]) ? trim($dqm[1]) : null;
-                    }
-                @endphp
+            {{-- Director query banner (only when the director has explicitly queried) --}}
+            @php
+                $directorQueryNote = null;
+                if ($test->status === 'flagged' && $test->result_notes) {
+                    preg_match('/\[Director query\]\s*(.+?)(?=\n\n[^\[]|$)/s', $test->result_notes, $dqm);
+                    $directorQueryNote = isset($dqm[1]) ? trim($dqm[1]) : null;
+                }
+            @endphp
+            @if($directorQueryNote)
                 <div class="bg-amber-50 border-2 border-amber-300 rounded-2xl p-5">
                     <div class="flex items-start gap-3">
                         <svg class="w-5 h-5 text-amber-600 shrink-0 mt-0.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -59,12 +59,10 @@
                             <p class="text-xs text-amber-700 mt-0.5">
                                 The Director has returned this test. Review the query below, amend your result as needed, and save to resubmit for authorisation.
                             </p>
-                            @if($directorQueryNote)
                                 <div class="mt-3 bg-white border border-amber-200 rounded-lg px-4 py-3">
                                     <p class="text-xs font-semibold text-amber-800 uppercase mb-1">Director's Query</p>
                                     <p class="text-sm text-gray-800 leading-relaxed">{{ $directorQueryNote }}</p>
                                 </div>
-                            @endif
                         </div>
                     </div>
                 </div>
@@ -224,7 +222,9 @@
                         <form method="POST"
                               id="result-form"
                               action="{{ route('analyst.tests.result', $test->id) }}"
-                              x-data="{ qualifier: '{{ $test->result_qualifier ?? 'pending' }}', flagged: {{ $test->status === 'flagged' ? 'true' : 'false' }} }">
+                              x-data="resultForm()"
+                              x-init="init()"
+                              @submit="clearDraft()">
                             @csrf
 
                             <div class="px-6 py-5 space-y-6">
@@ -326,7 +326,7 @@
                                                name="flag"
                                                value="1"
                                                form="result-form"
-                                               @checked($test->status === 'flagged')
+                                               x-model="flagged"
                                                class="mt-0.5 text-amber-600 focus:ring-amber-500 rounded"/>
                                         <div>
                                             <p class="text-sm font-medium text-amber-800">Flag for Director Review</p>
@@ -358,4 +358,73 @@
             </div>
         </div>
     </div>
+
+    @push('scripts')
+    <script>
+    function resultForm() {
+        const DRAFT_KEY = 'result_draft_{{ $test->id }}';
+        const DB = {
+            qualifier : '{{ $test->result_qualifier ?? '' }}',
+            value     : @json($test->result_value ?? ''),
+            unit      : @json($test->result_unit  ?? ''),
+            notes     : @json($test->result_notes ?? ''),
+            flagged   : {{ ($test->status === 'flagged') ? 'true' : 'false' }},
+        };
+
+        return {
+            qualifier : DB.qualifier || '',
+            flagged   : DB.flagged,
+
+            init() {
+                const saved = this._load();
+                if (saved) {
+                    this.qualifier = saved.qualifier ?? DB.qualifier ?? '';
+                    this.flagged   = saved.flagged   ?? DB.flagged;
+
+                    if (saved.value !== undefined) {
+                        const vEl = document.querySelector('[name="result_value"]');
+                        if (vEl && saved.value !== DB.value) vEl.value = saved.value;
+                    }
+                    if (saved.unit !== undefined) {
+                        const uEl = document.querySelector('[name="result_unit"]');
+                        if (uEl && saved.unit !== DB.unit) uEl.value = saved.unit;
+                    }
+                    if (saved.notes !== undefined) {
+                        const nEl = document.querySelector('[name="result_notes"]');
+                        if (nEl && saved.notes !== DB.notes) nEl.value = saved.notes;
+                    }
+                }
+
+                // Auto-save on any input change
+                document.getElementById('result-form')
+                    ?.addEventListener('input',  () => this._save());
+                document.getElementById('result-form')
+                    ?.addEventListener('change', () => this._save());
+            },
+
+            _save() {
+                const vEl = document.querySelector('[name="result_value"]');
+                const uEl = document.querySelector('[name="result_unit"]');
+                const nEl = document.querySelector('[name="result_notes"]');
+                localStorage.setItem(DRAFT_KEY, JSON.stringify({
+                    qualifier : this.qualifier,
+                    flagged   : this.flagged,
+                    value     : vEl?.value ?? '',
+                    unit      : uEl?.value ?? '',
+                    notes     : nEl?.value ?? '',
+                }));
+            },
+
+            _load() {
+                try { return JSON.parse(localStorage.getItem(DRAFT_KEY)); }
+                catch { return null; }
+            },
+
+            clearDraft() {
+                localStorage.removeItem(DRAFT_KEY);
+            },
+        };
+    }
+    </script>
+    @endpush
 </x-app-layout>

@@ -247,21 +247,11 @@
                     @csrf
 
                     <div class="bg-white rounded-2xl border border-gray-100 shadow-sm overflow-hidden mb-5">
-                        <div class="px-6 py-4 border-b border-gray-100 flex items-center justify-between">
-                            <div>
-                                <h3 class="rs-section-title">Log Physical Sample Arrival</h3>
-                                <p class="text-xs text-gray-400 mt-1">
-                                    Enter details for each physical sample received. Add a row per specimen.
-                                </p>
-                            </div>
-                            <button type="button"
-                                    @click="addRow()"
-                                    class="inline-flex items-center gap-1.5 px-3 py-1.5 text-xs font-medium text-blue-600 border border-blue-200 rounded-lg hover:bg-blue-50 transition">
-                                <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"/>
-                                </svg>
-                                Add Sample
-                            </button>
+                        <div class="px-6 py-4 border-b border-gray-100">
+                            <h3 class="rs-section-title">Log Physical Sample Arrival</h3>
+                            <p class="text-xs text-gray-400 mt-1">
+                                Enter details for each physical sample received. Add a row per specimen.
+                            </p>
                         </div>
 
                         {{-- Sample Rows --}}
@@ -595,6 +585,115 @@
                         </div>
                     </div>
                 @endif
+            {{-- ════════ ASSESSMENT RECORD (shown once assessments exist) ════════ --}}
+            @php
+                $assessedSamples = $samples->filter(fn($s) => $s->assessment !== null);
+            @endphp
+            @if($assessedSamples->isNotEmpty())
+                <div class="bg-white rounded-2xl border border-gray-100 shadow-sm overflow-hidden">
+                    <div class="px-6 py-4 border-b border-gray-100 flex items-center justify-between">
+                        <div>
+                            <h3 class="rs-section-title">Assessment Record</h3>
+                            <p class="text-xs text-gray-400 mt-1">Physical sample inspection results logged by reception.</p>
+                        </div>
+                        @php
+                            $allPassed = $assessedSamples->every(fn($s) => $s->assessment->outcome === 'accepted');
+                            $anyFailed = $assessedSamples->some(fn($s)  => $s->assessment->outcome === 'rejected');
+                        @endphp
+                        @if($allPassed)
+                            <span class="inline-flex items-center gap-1.5 px-2.5 py-1 text-xs font-semibold rounded-full bg-green-50 text-green-700 ring-1 ring-green-600/20">
+                                <svg class="w-3 h-3" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M5 13l4 4L19 7"/></svg>
+                                All Accepted
+                            </span>
+                        @elseif($anyFailed)
+                            <span class="inline-flex items-center gap-1.5 px-2.5 py-1 text-xs font-semibold rounded-full bg-red-50 text-red-700 ring-1 ring-red-600/20">
+                                <svg class="w-3 h-3" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12"/></svg>
+                                Rejected
+                            </span>
+                        @endif
+                    </div>
+
+                    @foreach($assessedSamples as $sample)
+                        @php $a = $sample->assessment; @endphp
+                        <div class="px-6 py-5 {{ !$loop->last ? 'border-b border-gray-100' : '' }}">
+
+                            {{-- Sample header --}}
+                            <div class="flex items-center justify-between mb-4">
+                                <div>
+                                    <p class="text-sm font-semibold text-gray-800">{{ $sample->common_name }}</p>
+                                    <p class="text-xs text-gray-400 font-mono mt-0.5">{{ $sample->sample_code }}</p>
+                                </div>
+                                <div class="flex items-center gap-3 text-right">
+                                    @if($a->outcome === 'accepted')
+                                        <span class="inline-flex items-center gap-1 px-2 py-0.5 text-xs font-semibold bg-green-50 text-green-700 rounded-full">Accepted</span>
+                                    @else
+                                        <span class="inline-flex items-center gap-1 px-2 py-0.5 text-xs font-semibold bg-red-50 text-red-700 rounded-full">Rejected</span>
+                                    @endif
+                                    @if($a->assessedBy)
+                                        <div class="text-right">
+                                            <p class="text-xs text-gray-500">{{ $a->assessedBy->name }}</p>
+                                            <p class="text-xs text-gray-400">{{ $a->assessed_at?->format('d M Y H:i') ?? $a->created_at->format('d M Y H:i') }}</p>
+                                        </div>
+                                    @endif
+                                </div>
+                            </div>
+
+                            {{-- Criteria grid --}}
+                            @php
+                                $criteria = [
+                                    'Temperature'          => [$a->temperature_ok, $a->temperature_notes],
+                                    'Storage Condition'    => [$a->storage_ok,     $a->storage_notes],
+                                    'Transport Condition'  => [$a->transport_ok,   $a->transport_notes],
+                                    'Packaging Integrity'  => [$a->packaging_ok,   $a->packaging_notes],
+                                    'Colour / Appearance'  => [$a->colour_ok,      $a->colour_notes],
+                                    'Weight / Quantity'    => [$a->weight_ok,      $a->weight_notes],
+                                ];
+                            @endphp
+                            <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3">
+                                @foreach($criteria as $label => [$pass, $notes])
+                                    <div class="rounded-lg border {{ $pass ? 'border-green-100 bg-green-50/40' : 'border-red-100 bg-red-50/40' }} px-3 py-2.5">
+                                        <div class="flex items-center justify-between gap-2">
+                                            <span class="text-xs font-medium text-gray-700">{{ $label }}</span>
+                                            @if($pass)
+                                                <span class="text-xs font-semibold text-green-600 flex items-center gap-0.5">
+                                                    <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M5 13l4 4L19 7"/></svg>
+                                                    Pass
+                                                </span>
+                                            @else
+                                                <span class="text-xs font-semibold text-red-600 flex items-center gap-0.5">
+                                                    <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12"/></svg>
+                                                    Fail
+                                                </span>
+                                            @endif
+                                        </div>
+                                        @if($notes)
+                                            <p class="text-xs text-gray-500 mt-1 leading-snug">{{ $notes }}</p>
+                                        @endif
+                                    </div>
+                                @endforeach
+                            </div>
+
+                            {{-- Additional observations --}}
+                            @if($a->additional_observations)
+                                <div class="mt-3 bg-gray-50 rounded-lg px-3 py-2.5 text-xs text-gray-600">
+                                    <span class="font-medium text-gray-700">Additional Observations:</span>
+                                    {{ $a->additional_observations }}
+                                </div>
+                            @endif
+
+                            {{-- Rejection reason --}}
+                            @if($a->rejection_reason)
+                                <div class="mt-3 bg-red-50 border border-red-100 rounded-lg px-3 py-2.5 text-xs text-red-700">
+                                    <span class="font-semibold">Rejection Reason:</span>
+                                    {{ $a->rejection_reason }}
+                                </div>
+                            @endif
+
+                        </div>
+                    @endforeach
+                </div>
+            @endif
+
             @endif
 
         </div>

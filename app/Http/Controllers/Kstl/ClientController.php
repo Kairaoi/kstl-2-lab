@@ -131,7 +131,7 @@ class ClientController extends Controller
 
                 // Tests requested (Schedule 1: Chemical / Microbiology)
                 'tests_requested'       => ['nullable', 'array'],
-                'tests_requested.*'     => ['string', 'in:total_coliforms,e_coli,enterococci,yeast_mold,apc,e_coli_coliform,staph_aureus,histamine,moisture,ph,conductivity,water_activity'],
+                'tests_requested.*'     => ['string', 'in:total_coliforms,e_coli,enterococci,yeast_mold,apc,e_coli_coliform,staph_aureus,salmonella_spp,listeria_mono,listeria_spp,histamine,moisture,ph,conductivity,water_activity'],
                 'tests_other'           => ['nullable', 'string', 'max:1000'],
 
                 // Transport method (Schedule 1: Frozen / Chill / Fresh)

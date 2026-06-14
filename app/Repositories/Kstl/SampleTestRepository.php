@@ -109,11 +109,19 @@ class SampleTestRepository extends BaseRepository
             abort(403, 'This submission has been authorised and its results are locked.');
         }
 
+        // Preserve any [Director query] note so the audit trail is not lost
+        // when the analyst re-submits in response to a director query.
+        $analystNotes = $input['result_notes'] ?? null;
+        if (preg_match('/(\[Director query\].+?)(?:\n\n[^\[]|$)/s', $test->result_notes ?? '', $m)) {
+            $queryFragment = trim($m[1]);
+            $analystNotes  = ($analystNotes ? $analystNotes . "\n\n" : '') . $queryFragment;
+        }
+
         $test->update([
             'result_value'     => $input['result_value']     ?? null,
             'result_unit'      => $input['result_unit']      ?? null,
             'result_qualifier' => $input['result_qualifier'],
-            'result_notes'     => $input['result_notes']     ?? null,
+            'result_notes'     => $analystNotes,
             'completed_at'     => now(),
             'status'           => $input['flag']
                 ? SampleTest::STATUS_FLAGGED

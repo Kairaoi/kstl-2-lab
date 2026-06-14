@@ -365,7 +365,7 @@ class DirectorController extends Controller
     public function resultShow(string $id)
     {
         $submission = $this->submissionRepo->getById($id);
-        $submission->loadMissing(['client.user', 'samples.sampleTests.assignedTo', 'result.authorisedBy']);
+        $submission->loadMissing(['client.user', 'samples.sampleTests.assignedTo', 'samples.assessment.assessedBy', 'result.authorisedBy']);
 
         $result = $submission->result ?? $this->resultRepo->findBySubmissionId($id);
 

@@ -257,10 +257,26 @@
                                         <p class="text-xs font-medium text-gray-600 mb-2">2. Fish and Fishery Samples (Petrifilm)</p>
                                         <div class="grid grid-cols-1 sm:grid-cols-2 gap-2">
                                             @foreach([
-                                                'yeast_mold'      => 'Yeast &amp; Mold',
+                                                'yeast_mold'      => 'Yeast &amp; Mould',
                                                 'apc'             => 'APC (Aerobic Plate Count)',
                                                 'e_coli_coliform' => '<em>E. coli</em> &amp; Coliform',
-                                                'staph_aureus'    => '<em>Staph. aureus</em>',
+                                                'staph_aureus'    => '<em>Staphylococcus aureus</em>',
+                                            ] as $value => $label)
+                                                <label class="flex items-center gap-3 p-3 border border-gray-100 rounded-lg hover:bg-purple-50 cursor-pointer transition">
+                                                    <input type="checkbox" name="tests_requested[]" value="{{ $value }}"
+                                                           {{ in_array($value, old('tests_requested', [])) ? 'checked' : '' }}
+                                                           class="rounded border-gray-300 text-purple-600 shadow-sm focus:ring-purple-500"/>
+                                                    <span class="text-sm text-gray-700">{!! $label !!}</span>
+                                                </label>
+                                            @endforeach
+                                        </div>
+
+                                        <p class="text-xs font-medium text-gray-600 mt-4 mb-2">3. Rapid Kit Tests</p>
+                                        <div class="grid grid-cols-1 sm:grid-cols-2 gap-2">
+                                            @foreach([
+                                                'salmonella_spp' => '<em>Salmonella</em> species',
+                                                'listeria_mono'  => '<em>Listeria monocytogenes</em>',
+                                                'listeria_spp'   => '<em>Listeria</em> species',
                                             ] as $value => $label)
                                                 <label class="flex items-center gap-3 p-3 border border-gray-100 rounded-lg hover:bg-purple-50 cursor-pointer transition">
                                                     <input type="checkbox" name="tests_requested[]" value="{{ $value }}"
@@ -279,8 +295,8 @@
                                         <p class="text-xs text-gray-400 mb-3">Select the chemical tests.</p>
                                         <div class="grid grid-cols-1 sm:grid-cols-2 gap-2">
                                             @foreach([
-                                                'histamine'      => 'Histamine — Rapid Kit',
-                                                'moisture'       => 'Moisture',
+                                                'moisture'       => 'Moisture Content',
+                                                'histamine'      => 'ELISA Histamine Rapid Kit',
                                                 'ph'             => 'pH',
                                                 'conductivity'   => 'Conductivity',
                                                 'water_activity' => 'Water Activity',

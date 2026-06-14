@@ -111,46 +111,24 @@
                     </div>
                 </div>
 
-                {{-- ── Outcome seal ───────────────────────────────────────── --}}
-                @php
-                    $outcome = $result?->overall_outcome;
-                    $sealColor = match($outcome) {
-                        'pass'         => '#1a6b45',
-                        'fail'         => '#a0241c',
-                        'inconclusive' => '#8a6d1a',
-                        default        => '#6b6760',
-                    };
-                    $sealText = match($outcome) {
-                        'pass'         => 'Pass',
-                        'fail'         => 'Fail',
-                        'inconclusive' => 'Inconclusive',
-                        default        => 'Pending',
-                    };
-                @endphp
-                <div class="px-8 py-6 flex items-center justify-between gap-6 border-b border-gray-100">
+                {{-- ── Authorisation strip ─────────────────────────────────── --}}
+                <div class="px-8 py-5 flex items-center justify-between gap-6 border-b border-gray-100">
                     <div>
-                        <p class="ar-meta-label">Overall Outcome</p>
-                        <div class="ar-seal mt-2" style="color: {{ $sealColor }};">
-                            @if($outcome === 'pass')
-                                <svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M5 13l4 4L19 7"/></svg>
-                            @elseif($outcome === 'fail')
-                                <svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12"/></svg>
-                            @elseif($outcome === 'inconclusive')
-                                <svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M12 9v2m0 4h.01M10.29 3.86L1.82 18a2 2 0 001.71 3h16.94a2 2 0 001.71-3L13.71 3.86a2 2 0 00-3.42 0z"/></svg>
-                            @endif
-                            {{ $sealText }}
-                        </div>
-                    </div>
-                    <div class="text-right">
+                        <p class="ar-meta-label">Authorisation Status</p>
                         @if($result?->authorised_at)
+                            <p class="text-sm font-semibold text-green-700 mt-1">Authorised</p>
+                        @else
+                            <p class="text-sm text-gray-400 italic mt-1">Awaiting Director authorisation</p>
+                        @endif
+                    </div>
+                    @if($result?->authorised_at)
+                        <div class="text-right">
                             <p class="ar-meta-label">Authorised By</p>
                             <p class="text-sm font-medium text-gray-800 mt-1">{{ $result->authorisedBy?->name ?? 'Laboratory Director' }}</p>
                             <p class="text-xs text-gray-500">Laboratory Director</p>
                             <p class="text-xs text-gray-400 mt-1">{{ $result->authorised_at->format('d M Y \a\t H:i') }}</p>
-                        @else
-                            <p class="text-xs text-gray-400 italic">Awaiting Director authorisation</p>
-                        @endif
-                    </div>
+                        </div>
+                    @endif
                 </div>
 
                 {{-- ── Director's remarks ─────────────────────────────────── --}}
@@ -165,6 +143,14 @@
                 <div class="px-8 py-6">
                     <p class="ar-section-title mb-4">Analytical Results</p>
 
+                    @php
+                        $sopDocuments = \App\Models\Kstl\Document::where('category', 'sop')
+                            ->whereIn('reference_code', array_values(\App\Models\Kstl\SampleTest::TEST_SOPS))
+                            ->with('currentVersion')
+                            ->get()
+                            ->keyBy('reference_code');
+                    @endphp
+
                     @foreach($samples as $sample)
                         <div class="mb-6 last:mb-0">
                             <div class="flex items-center justify-between mb-2">
@@ -172,6 +158,9 @@
                                     <h4 class="text-sm font-semibold text-gray-800">
                                         {{ $sample->common_name ?? $sample->sample_code }}
                                     </h4>
+                                    @if($sample->scientific_name)
+                                        <p class="text-xs text-gray-400 italic mt-0.5">{{ $sample->scientific_name }}</p>
+                                    @endif
                                     <p class="text-xs text-gray-400 mt-0.5 font-mono">{{ $sample->sample_code }}</p>
                                 </div>
                                 <x-kstl.status-badge :status="$sample->status" />
@@ -184,49 +173,59 @@
                                 <table class="ar-table w-full text-sm">
                                     <thead>
                                         <tr>
-                                            <th class="text-left px-3 py-2.5">Determinand</th>
+                                            <th class="text-left px-3 py-2.5">Test</th>
                                             <th class="text-left px-3 py-2.5">Result</th>
-                                            <th class="text-left px-3 py-2.5">Determination</th>
-                                            <th class="text-left px-3 py-2.5">Status</th>
+                                            <th class="text-left px-3 py-2.5">Methods</th>
                                         </tr>
                                     </thead>
                                     <tbody>
                                         @foreach($tests as $test)
                                             @php
-                                                $qualifier = $test->result_qualifier;
-                                                $qualClasses = in_array($qualifier, ['pass', 'not_detected'])
-                                                    ? 'bg-green-50 text-green-700'
-                                                    : (in_array($qualifier, ['fail', 'detected'])
-                                                        ? 'bg-red-50 text-red-700'
-                                                        : 'bg-gray-100 text-gray-600');
+                                                $sopCode = \App\Models\Kstl\SampleTest::TEST_SOPS[$test->test_key] ?? null;
+                                                $sopDoc  = $sopCode ? ($sopDocuments[$sopCode] ?? null) : null;
+                                                $unit    = $test->result_unit ? ' ' . $test->result_unit : '';
+                                                $resultDisplay = match($test->result_qualifier) {
+                                                    'detected'     => 'Detected',
+                                                    'not_detected' => 'Not Detected',
+                                                    'pass'         => 'Pass',
+                                                    'fail'         => 'Fail',
+                                                    'less_than'    => '< ' . $test->result_value . $unit,
+                                                    'greater_than' => '> ' . $test->result_value . $unit,
+                                                    'equal_to'     => $test->result_value . $unit,
+                                                    default        => ($test->result_value ? $test->result_value . $unit : null),
+                                                };
                                             @endphp
                                             <tr>
                                                 <td class="px-3 py-2.5 font-medium text-gray-800">
                                                     {{ method_exists($test, 'getDisplayLabel') ? $test->getDisplayLabel() : $test->test_key }}
                                                 </td>
                                                 <td class="px-3 py-2.5 text-gray-700">
-                                                    @if($test->result_value)
-                                                        {{ $test->result_value }}{{ $test->result_unit ? ' ' . $test->result_unit : '' }}
+                                                    @if($resultDisplay)
+                                                        {{ $resultDisplay }}
                                                     @else
                                                         <span class="text-gray-400">—</span>
                                                     @endif
                                                 </td>
                                                 <td class="px-3 py-2.5">
-                                                    @if($qualifier)
-                                                        <span class="inline-flex px-2 py-0.5 text-xs font-medium rounded-full {{ $qualClasses }}">
-                                                            {{ ucfirst(str_replace('_', ' ', $qualifier)) }}
-                                                        </span>
+                                                    @if($sopCode)
+                                                        @if($sopDoc)
+                                                            <a href="{{ route('staff.documents.show', $sopDoc->id) }}"
+                                                               target="_blank"
+                                                               class="inline-flex items-center gap-1 font-mono text-xs text-blue-600 hover:text-blue-800 hover:underline">
+                                                                {{ $sopCode }}
+                                                                <svg class="w-3 h-3 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14"/></svg>
+                                                            </a>
+                                                        @else
+                                                            <span class="font-mono text-xs text-gray-500">{{ $sopCode }}</span>
+                                                        @endif
                                                     @else
-                                                        <span class="text-xs text-gray-400">—</span>
+                                                        <span class="text-gray-400">—</span>
                                                     @endif
-                                                </td>
-                                                <td class="px-3 py-2.5">
-                                                    <x-kstl.status-badge :status="$test->status" />
                                                 </td>
                                             </tr>
                                             @if($test->result_notes)
                                                 <tr>
-                                                    <td colspan="4" class="px-3 py-2 text-xs text-gray-500 bg-gray-50/50">
+                                                    <td colspan="3" class="px-3 py-2 text-xs text-gray-500 bg-gray-50/50">
                                                         <span class="font-medium text-gray-600">Notes:</span> {{ $test->result_notes }}
                                                     </td>
                                                 </tr>
