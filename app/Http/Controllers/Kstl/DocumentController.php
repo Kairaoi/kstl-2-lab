@@ -158,6 +158,34 @@ class DocumentController extends Controller
         return Storage::disk('private')->download($version->file_path, $version->original_filename);
     }
 
+    // ── Inline preview of the current version (all staff) ──────────
+    public function preview(string $id)
+    {
+        $document = Document::with('currentVersion')->findOrFail($id);
+
+        abort_if(! $document->currentVersion, 404, 'No file has been uploaded for this document yet.');
+
+        $version = $document->currentVersion;
+
+        abort_unless(Storage::disk('private')->exists($version->file_path), 404, 'File not found.');
+
+        Log::info('Document previewed', [
+            'document_id' => $document->id,
+            'version_id'  => $version->id,
+            'user_id'     => Auth::id(),
+        ]);
+
+        $mime = $version->mime_type ?? 'application/pdf';
+        $name = $version->original_filename;
+
+        return response()->stream(function () use ($version) {
+            echo Storage::disk('private')->get($version->file_path);
+        }, 200, [
+            'Content-Type'        => $mime,
+            'Content-Disposition' => 'inline; filename="' . addslashes($name) . '"',
+        ]);
+    }
+
     // ── Delete an entire document + all versions (managers) ────────
     public function destroy(string $id)
     {

@@ -171,9 +171,16 @@
                 <div class="px-8 py-6">
                     <p class="coa-section-title mb-4">Analytical Results</p>
 
+                    @php
+                        $sopDocuments = \App\Models\Kstl\Document::where('category', 'sop')
+                            ->whereIn('reference_code', array_values(\App\Models\Kstl\SampleTest::TEST_SOPS))
+                            ->get()
+                            ->keyBy('reference_code');
+                    @endphp
+
                     @foreach($submission->samples as $sample)
                         <div class="mb-6 last:mb-0">
-                            <div class="flex items-baseline justify-between mb-2">
+                            <div class="flex items-center justify-between mb-2">
                                 <div>
                                     <h4 class="text-sm font-semibold text-gray-800">
                                         {{ $sample->common_name ?? $sample->sample_code }}
@@ -181,8 +188,9 @@
                                     @if($sample->scientific_name)
                                         <p class="text-xs text-gray-400 italic mt-0.5">{{ $sample->scientific_name }}</p>
                                     @endif
+                                    <p class="text-xs text-gray-400 font-mono mt-0.5">{{ $sample->sample_code }}</p>
                                 </div>
-                                <span class="font-mono text-xs text-gray-400">{{ $sample->sample_code }}</span>
+                                <x-kstl.status-badge :status="$sample->status" />
                             </div>
 
                             @if($sample->sampleTests->isEmpty())
@@ -192,8 +200,8 @@
                                     <thead>
                                         <tr>
                                             <th class="text-left px-3 py-2.5">Test</th>
-                                            <th class="text-left px-3 py-2.5">Category</th>
                                             <th class="text-left px-3 py-2.5">Result</th>
+                                            <th class="text-left px-3 py-2.5">Methods</th>
                                         </tr>
                                     </thead>
                                     <tbody>
@@ -212,16 +220,29 @@
                                                 };
                                                 $isDetected    = $test->result_qualifier === 'detected'  || $test->result_qualifier === 'fail';
                                                 $isNotDetected = $test->result_qualifier === 'not_detected' || $test->result_qualifier === 'pass';
+                                                $sopCode = \App\Models\Kstl\SampleTest::TEST_SOPS[$test->test_key] ?? null;
+                                                $sopDoc  = $sopCode ? ($sopDocuments[$sopCode] ?? null) : null;
                                             @endphp
                                             <tr>
                                                 <td class="px-3 py-2.5 text-gray-800 font-medium">
                                                     {{ $test->getDisplayLabel() }}
                                                 </td>
-                                                <td class="px-3 py-2.5 text-xs text-gray-500 capitalize">
-                                                    {{ $test->getDisplayCategory() }}
-                                                </td>
                                                 <td class="px-3 py-2.5 font-medium {{ $isDetected ? 'text-red-600' : ($isNotDetected ? 'text-green-700' : 'text-gray-700') }}">
                                                     {{ $resultText }}
+                                                </td>
+                                                <td class="px-3 py-2.5">
+                                                    @if($sopCode && $sopDoc)
+                                                        <a href="{{ route('client.documents.download', $sopDoc->id) }}"
+                                                           target="_blank"
+                                                           class="inline-flex items-center gap-1 font-mono text-xs text-blue-600 hover:text-blue-800 hover:underline">
+                                                            {{ $sopCode }}
+                                                            <svg class="w-3 h-3 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4"/></svg>
+                                                        </a>
+                                                    @elseif($sopCode)
+                                                        <span class="font-mono text-xs text-gray-500">{{ $sopCode }}</span>
+                                                    @else
+                                                        <span class="text-gray-400">—</span>
+                                                    @endif
                                                 </td>
                                             </tr>
                                         @endforeach

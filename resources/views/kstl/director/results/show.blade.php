@@ -172,11 +172,12 @@
                         $row['test']->status === 'flagged' &&
                         str_contains($row['test']->result_notes ?? '', '[Director query]')
                     );
-                    $authorisedTests = $allTests->filter(fn($row) => $row['test']->status === 'completed');
+                    $returnedTestIds = $returnedTests->pluck('test.id')->all();
+                    $authorisedTests = $allTests->filter(fn($row) => ! in_array($row['test']->id, $returnedTestIds));
 
                     $sopDocuments = \App\Models\Kstl\Document::where('category', 'sop')
                         ->whereIn('reference_code', array_values(\App\Models\Kstl\SampleTest::TEST_SOPS))
-                        ->with('currentVersion')
+                        ->with(['currentVersion'])
                         ->get()
                         ->keyBy('reference_code');
                 @endphp
@@ -191,68 +192,95 @@
                         </span>
                     </div>
 
-                    @if($authorisedTests->isEmpty())
-                        <p class="text-sm text-gray-400 italic py-3">No authorised test results yet.</p>
-                    @else
-                        <table class="ir-table w-full text-sm">
-                            <thead>
-                                <tr>
-                                    <th class="text-left px-3 py-2.5">Sample</th>
-                                    <th class="text-left px-3 py-2.5">Test</th>
-                                    <th class="text-left px-3 py-2.5">Category</th>
-                                    <th class="text-left px-3 py-2.5">Result</th>
-                                    <th class="text-left px-3 py-2.5">Unit</th>
-                                    <th class="text-left px-3 py-2.5">Methods</th>
-                                    <th class="text-left px-3 py-2.5">Analyst</th>
-                                </tr>
-                            </thead>
-                            <tbody>
-                                @foreach($authorisedTests as $row)
-                                    @php
-                                        $test    = $row['test'];
-                                        $sample  = $row['sample'];
-                                        $sopCode = \App\Models\Kstl\SampleTest::TEST_SOPS[$test->test_key] ?? null;
-                                        $sopDoc  = $sopCode ? ($sopDocuments[$sopCode] ?? null) : null;
-                                    @endphp
-                                    <tr>
-                                        <td class="px-3 py-2.5">
-                                            <p class="text-xs text-gray-700 font-medium">{{ $sample->common_name ?? $sample->sample_code }}</p>
-                                            @if($sample->scientific_name)
-                                                <p class="text-xs text-gray-400 italic">{{ $sample->scientific_name }}</p>
-                                            @endif
-                                            <p class="text-xs text-gray-400 font-mono">{{ $sample->sample_code }}</p>
-                                        </td>
-                                        <td class="px-3 py-2.5 text-gray-800 font-medium">{{ $test->getDisplayLabel() }}</td>
-                                        <td class="px-3 py-2.5 text-xs text-gray-500 capitalize">{{ $test->getDisplayCategory() }}</td>
-                                        <td class="px-3 py-2.5 font-mono text-gray-700">{{ $test->result_value ?? '—' }}</td>
-                                        <td class="px-3 py-2.5 text-xs text-gray-400">{{ $test->result_unit ?? '—' }}</td>
-                                        <td class="px-3 py-2.5">
-                                            @if($sopCode)
-                                                @if($sopDoc)
-                                                    <a href="{{ route('staff.documents.show', $sopDoc->id) }}"
-                                                       target="_blank"
-                                                       class="inline-flex items-center gap-1 font-mono text-xs text-blue-600 hover:text-blue-800 hover:underline">
-                                                        {{ $sopCode }}
-                                                        <svg class="w-3 h-3 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14"/></svg>
-                                                    </a>
-                                                @else
-                                                    <span class="font-mono text-xs text-gray-500">{{ $sopCode }}</span>
-                                                @endif
-                                            @else
-                                                <span class="text-gray-400">—</span>
-                                            @endif
-                                        </td>
-                                        <td class="px-3 py-2.5 text-xs text-gray-500">{{ $test->assignedTo?->name ?? '—' }}</td>
-                                    </tr>
-                                    @if($test->result_notes)
-                                        <tr class="bg-gray-50/60">
-                                            <td colspan="7" class="px-3 pb-2 pt-0 text-xs text-gray-500 italic">Notes: {{ $test->result_notes }}</td>
-                                        </tr>
+                    @foreach($submission->samples as $sample)
+                        @php
+                            $sampleAuthorisedTests = $authorisedTests->filter(fn($r) => $r['sample']->id === $sample->id);
+                        @endphp
+                        <div class="mb-6 last:mb-0">
+                            <div class="flex items-center justify-between mb-2">
+                                <div>
+                                    <h4 class="text-sm font-semibold text-gray-800">{{ $sample->common_name ?? $sample->sample_code }}</h4>
+                                    @if($sample->scientific_name)
+                                        <p class="text-xs text-gray-400 italic mt-0.5">{{ $sample->scientific_name }}</p>
                                     @endif
-                                @endforeach
-                            </tbody>
-                        </table>
-                    @endif
+                                    <p class="text-xs text-gray-400 font-mono mt-0.5">{{ $sample->sample_code }}</p>
+                                </div>
+                                <x-kstl.status-badge :status="$sample->status" />
+                            </div>
+
+                            @if($sampleAuthorisedTests->isEmpty())
+                                <p class="text-sm text-gray-400 italic py-3">No test results available.</p>
+                            @else
+                                <table class="ir-table w-full text-sm">
+                                    <thead>
+                                        <tr>
+                                            <th class="text-left px-3 py-2.5">Test</th>
+                                            <th class="text-left px-3 py-2.5">Result</th>
+                                            <th class="text-left px-3 py-2.5">Methods</th>
+                                            <th class="text-left px-3 py-2.5">Analyst</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        @foreach($sampleAuthorisedTests as $row)
+                                            @php
+                                                $test    = $row['test'];
+                                                $sopCode = \App\Models\Kstl\SampleTest::TEST_SOPS[$test->test_key] ?? null;
+                                                $sopDoc  = $sopCode ? ($sopDocuments[$sopCode] ?? null) : null;
+                                                $unit = $test->result_unit ? ' ' . $test->result_unit : '';
+                                                $resultText = match($test->result_qualifier) {
+                                                    'detected'     => 'Detected',
+                                                    'not_detected' => 'Not Detected',
+                                                    'pass'         => 'Tested',
+                                                    'fail'         => 'Fail',
+                                                    'less_than'    => '< ' . $test->result_value . $unit,
+                                                    'greater_than' => '> ' . $test->result_value . $unit,
+                                                    'equal_to'     => $test->result_value . $unit,
+                                                    default        => ($test->result_value ? $test->result_value . $unit : '—'),
+                                                };
+                                                $isDetected    = $test->result_qualifier === 'detected' || $test->result_qualifier === 'fail';
+                                                $isNotDetected = $test->result_qualifier === 'not_detected' || $test->result_qualifier === 'pass';
+                                            @endphp
+                                            <tr>
+                                                <td class="px-3 py-2.5 text-gray-800 font-medium">{{ $test->getDisplayLabel() }}</td>
+                                                <td class="px-3 py-2.5 font-medium {{ $isDetected ? 'text-red-600' : ($isNotDetected ? 'text-green-700' : 'text-gray-700') }}">
+                                                    {{ $resultText }}
+                                                </td>
+                                                <td class="px-3 py-2.5">
+                                                    @if($sopCode && $sopDoc)
+                                                        @if($sopDoc->currentVersion)
+                                                            <a href="{{ route('staff.documents.preview', $sopDoc->id) }}"
+                                                               target="_blank"
+                                                               class="inline-flex items-center gap-1 font-mono text-xs text-blue-600 hover:text-blue-800 hover:underline">
+                                                                {{ $sopCode }}
+                                                                <svg class="w-3 h-3 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"/><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"/></svg>
+                                                            </a>
+                                                        @else
+                                                            <a href="{{ route('staff.documents.show', $sopDoc->id) }}"
+                                                               target="_blank"
+                                                               class="inline-flex items-center gap-1 font-mono text-xs text-blue-600 hover:text-blue-800 hover:underline">
+                                                                {{ $sopCode }}
+                                                                <svg class="w-3 h-3 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14"/></svg>
+                                                            </a>
+                                                        @endif
+                                                    @elseif($sopCode)
+                                                        <span class="font-mono text-xs text-gray-500">{{ $sopCode }}</span>
+                                                    @else
+                                                        <span class="text-gray-400">—</span>
+                                                    @endif
+                                                </td>
+                                                <td class="px-3 py-2.5 text-xs text-gray-500">{{ $test->assignedTo?->name ?? '—' }}</td>
+                                            </tr>
+                                            @if($test->result_notes)
+                                                <tr class="bg-gray-50/60">
+                                                    <td colspan="4" class="px-3 pb-2 pt-0 text-xs text-gray-500 italic">Notes: {{ $test->result_notes }}</td>
+                                                </tr>
+                                            @endif
+                                        @endforeach
+                                    </tbody>
+                                </table>
+                            @endif
+                        </div>
+                    @endforeach
                 </div>
 
                 {{-- ── Analyst Section — Returned for Review ──────────────────── --}}
@@ -270,60 +298,99 @@
                         The following tests have been queried. The analyst has been notified and will re-confirm results before resubmitting for authorisation. Results shown are from the analyst's last submission.
                     </div>
 
-                    <table class="ir-table w-full text-sm">
-                        <thead>
-                            <tr>
-                                <th class="text-left px-3 py-2.5">Sample</th>
-                                <th class="text-left px-3 py-2.5">Test</th>
-                                <th class="text-left px-3 py-2.5">Category</th>
-                                <th class="text-left px-3 py-2.5">Result</th>
-                                <th class="text-left px-3 py-2.5">Analyst</th>
-                            </tr>
-                        </thead>
-                        <tbody>
-                            @foreach($returnedTests as $row)
-                                @php
-                                    $test   = $row['test'];
-                                    $sample = $row['sample'];
-                                    $queryNote = null;
-                                    if ($test->result_notes && str_contains($test->result_notes, '[Director query]')) {
-                                        preg_match('/\[Director query\]\s*(.+?)(?:\n\n|$)/s', $test->result_notes, $m);
-                                        $queryNote = trim($m[1] ?? '');
-                                    }
-                                    $qualifierLabels = [
-                                        'detected'     => 'Detected',
-                                        'not_detected' => 'Not Detected',
-                                        'pass'         => 'Pass',
-                                        'fail'         => 'Fail',
-                                        'less_than'    => '< ' . $test->result_value . ($test->result_unit ? ' ' . $test->result_unit : ''),
-                                        'greater_than' => '> ' . $test->result_value . ($test->result_unit ? ' ' . $test->result_unit : ''),
-                                        'equal_to'     => $test->result_value . ($test->result_unit ? ' ' . $test->result_unit : ''),
-                                    ];
-                                    $resultDisplay = $qualifierLabels[$test->result_qualifier] ?? ($test->result_value ? $test->result_value . ($test->result_unit ? ' ' . $test->result_unit : '') : '—');
-                                @endphp
-                                <tr class="bg-amber-50/40">
-                                    <td class="px-3 py-2.5">
-                                        <p class="text-xs text-gray-700 font-medium">{{ $sample->common_name ?? $sample->sample_code }}</p>
+                    @foreach($submission->samples as $sample)
+                        @php
+                            $sampleReturnedTests = $returnedTests->filter(fn($r) => $r['sample']->id === $sample->id);
+                        @endphp
+                        @if($sampleReturnedTests->isNotEmpty())
+                            <div class="mb-6 last:mb-0">
+                                <div class="flex items-center justify-between mb-2">
+                                    <div>
+                                        <h4 class="text-sm font-semibold text-gray-800">{{ $sample->common_name ?? $sample->sample_code }}</h4>
                                         @if($sample->scientific_name)
-                                            <p class="text-xs text-gray-400 italic">{{ $sample->scientific_name }}</p>
+                                            <p class="text-xs text-gray-400 italic mt-0.5">{{ $sample->scientific_name }}</p>
                                         @endif
-                                        <p class="text-xs text-gray-400 font-mono">{{ $sample->sample_code }}</p>
-                                    </td>
-                                    <td class="px-3 py-2.5 text-gray-800 font-medium">{{ $test->getDisplayLabel() }}</td>
-                                    <td class="px-3 py-2.5 text-xs text-gray-500 capitalize">{{ $test->getDisplayCategory() }}</td>
-                                    <td class="px-3 py-2.5 text-sm text-gray-700">{{ $resultDisplay }}</td>
-                                    <td class="px-3 py-2.5 text-xs text-gray-500">{{ $test->assignedTo?->name ?? '—' }}</td>
-                                </tr>
-                                @if($queryNote)
-                                    <tr class="bg-amber-50/60">
-                                        <td colspan="5" class="px-3 pb-2.5 pt-0 text-xs text-amber-700 italic">
-                                            <span class="font-semibold not-italic">Director query:</span> {{ $queryNote }}
-                                        </td>
-                                    </tr>
-                                @endif
-                            @endforeach
-                        </tbody>
-                    </table>
+                                        <p class="text-xs text-gray-400 font-mono mt-0.5">{{ $sample->sample_code }}</p>
+                                    </div>
+                                    <x-kstl.status-badge :status="$sample->status" />
+                                </div>
+                                <table class="ir-table w-full text-sm">
+                                    <thead>
+                                        <tr>
+                                            <th class="text-left px-3 py-2.5">Test</th>
+                                            <th class="text-left px-3 py-2.5">Result</th>
+                                            <th class="text-left px-3 py-2.5">Methods</th>
+                                            <th class="text-left px-3 py-2.5">Analyst</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        @foreach($sampleReturnedTests as $row)
+                                            @php
+                                                $test   = $row['test'];
+                                                $queryNote = null;
+                                                if ($test->result_notes && str_contains($test->result_notes, '[Director query]')) {
+                                                    preg_match('/\[Director query\]\s*(.+?)(?:\n\n|$)/s', $test->result_notes, $m);
+                                                    $queryNote = trim($m[1] ?? '');
+                                                }
+                                                $unit = $test->result_unit ? ' ' . $test->result_unit : '';
+                                                $resultText = match($test->result_qualifier) {
+                                                    'detected'     => 'Detected',
+                                                    'not_detected' => 'Not Detected',
+                                                    'pass'         => 'Tested',
+                                                    'fail'         => 'Fail',
+                                                    'less_than'    => '< ' . $test->result_value . $unit,
+                                                    'greater_than' => '> ' . $test->result_value . $unit,
+                                                    'equal_to'     => $test->result_value . $unit,
+                                                    default        => ($test->result_value ? $test->result_value . $unit : '—'),
+                                                };
+                                                $isDetected    = $test->result_qualifier === 'detected' || $test->result_qualifier === 'fail';
+                                                $isNotDetected = $test->result_qualifier === 'not_detected' || $test->result_qualifier === 'pass';
+                                                $sopCode = \App\Models\Kstl\SampleTest::TEST_SOPS[$test->test_key] ?? null;
+                                                $sopDoc  = $sopCode ? ($sopDocuments[$sopCode] ?? null) : null;
+                                            @endphp
+                                            <tr class="bg-amber-50/40">
+                                                <td class="px-3 py-2.5 text-gray-800 font-medium">{{ $test->getDisplayLabel() }}</td>
+                                                <td class="px-3 py-2.5 font-medium {{ $isDetected ? 'text-red-600' : ($isNotDetected ? 'text-green-700' : 'text-gray-700') }}">
+                                                    {{ $resultText }}
+                                                </td>
+                                                <td class="px-3 py-2.5">
+                                                    @if($sopCode && $sopDoc)
+                                                        @if($sopDoc->currentVersion)
+                                                            <a href="{{ route('staff.documents.preview', $sopDoc->id) }}"
+                                                               target="_blank"
+                                                               class="inline-flex items-center gap-1 font-mono text-xs text-blue-600 hover:text-blue-800 hover:underline">
+                                                                {{ $sopCode }}
+                                                                <svg class="w-3 h-3 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"/><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"/></svg>
+                                                            </a>
+                                                        @else
+                                                            <a href="{{ route('staff.documents.show', $sopDoc->id) }}"
+                                                               target="_blank"
+                                                               class="inline-flex items-center gap-1 font-mono text-xs text-blue-600 hover:text-blue-800 hover:underline">
+                                                                {{ $sopCode }}
+                                                                <svg class="w-3 h-3 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14"/></svg>
+                                                            </a>
+                                                        @endif
+                                                    @elseif($sopCode)
+                                                        <span class="font-mono text-xs text-gray-500">{{ $sopCode }}</span>
+                                                    @else
+                                                        <span class="text-gray-400">—</span>
+                                                    @endif
+                                                </td>
+                                                <td class="px-3 py-2.5 text-xs text-gray-500">{{ $test->assignedTo?->name ?? '—' }}</td>
+                                            </tr>
+                                            @if($queryNote)
+                                                <tr class="bg-amber-50/60">
+                                                    <td colspan="4" class="px-3 pb-2.5 pt-0 text-xs text-amber-700 italic">
+                                                        <span class="font-semibold not-italic">Director query:</span> {{ $queryNote }}
+                                                    </td>
+                                                </tr>
+                                            @endif
+                                        @endforeach
+                                    </tbody>
+                                </table>
+                            </div>
+                        @endif
+                    @endforeach
                 </div>
                 @endif
 

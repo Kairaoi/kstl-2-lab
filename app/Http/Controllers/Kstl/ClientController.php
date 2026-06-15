@@ -67,12 +67,22 @@ class ClientController extends Controller
             )
             : collect();
 
+        // Samples awaiting the client's consent decision
+        $pendingConsents = $client
+            ? \App\Models\Kstl\SampleAssessment::whereHas('sample.submission',
+                fn($q) => $q->where('client_id', $client->id))
+                ->whereNotNull('consent_token')
+                ->whereNull('client_decision')
+                ->with(['sample.submission'])
+                ->get()
+            : collect();
+
         Log::info('Client viewed submissions list', [
             'user_id'   => $user->id,
             'client_id' => $client?->id,
         ]);
 
-        return view('kstl.client.submissions.index', compact('client', 'submissions'));
+        return view('kstl.client.submissions.index', compact('client', 'submissions', 'pendingConsents'));
     }
 
     public function submissionsCreate()
@@ -886,6 +896,27 @@ class ClientController extends Controller
         ]);
 
         // return Storage::disk('private')->download($document->file_path, $document->original_filename);
+    }
+
+    public function sopDownload(string $id)
+    {
+        $document = \App\Models\Kstl\Document::where('category', 'sop')
+            ->with('currentVersion')
+            ->findOrFail($id);
+
+        abort_if(! $document->currentVersion, 404, 'No file available for this document.');
+
+        $version = $document->currentVersion;
+
+        abort_unless(\Illuminate\Support\Facades\Storage::disk('private')->exists($version->file_path), 404, 'File not found.');
+
+        Log::info('Client downloaded SOP document', [
+            'user_id'     => Auth::id(),
+            'document_id' => $document->id,
+            'sop_code'    => $document->reference_code,
+        ]);
+
+        return \Illuminate\Support\Facades\Storage::disk('private')->download($version->file_path, $version->original_filename);
     }
 
     // ── Service Agreement ──────────────────────────────────────────────────────

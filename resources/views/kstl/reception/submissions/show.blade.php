@@ -413,6 +413,98 @@
                     </div>
                 @endif
 
+            @elseif($submission->status === 'rejected')
+                {{-- ── Consent pending — awaiting client decision ── --}}
+                <div class="bg-red-50 border border-red-200 rounded-2xl p-6">
+                    <div class="flex items-start gap-3 mb-5">
+                        <svg class="w-6 h-6 text-red-500 shrink-0 mt-0.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01M10.29 3.86L1.82 18a2 2 0 001.71 3h16.94a2 2 0 001.71-3L13.71 3.86a2 2 0 00-3.42 0z"/>
+                        </svg>
+                        <div>
+                            <p class="text-sm font-semibold text-red-800">Sample(s) Rejected — Awaiting Client Decision</p>
+                            <p class="text-sm text-red-700 mt-0.5">
+                                Send the client a consent request so they can choose to proceed with testing or cancel the submission.
+                            </p>
+                        </div>
+                    </div>
+
+                    @foreach($samples->filter(fn($s) => $s->assessment?->outcome === 'rejected') as $sample)
+                        @php $a = $sample->assessment; @endphp
+                        <div class="bg-white border border-red-100 rounded-xl p-4 mb-3 last:mb-0">
+                            <div class="flex items-center justify-between mb-3">
+                                <div>
+                                    <p class="text-sm font-semibold text-gray-800">{{ $sample->common_name }}</p>
+                                    <p class="text-xs font-mono text-gray-400">{{ $sample->sample_code }}</p>
+                                </div>
+                                @if($a->client_decision)
+                                    <span class="inline-flex items-center px-2.5 py-1 text-xs font-semibold rounded-full
+                                        {{ $a->client_decision === 'consent_to_proceed' ? 'bg-green-50 text-green-700' : 'bg-gray-100 text-gray-600' }}">
+                                        {{ $a->client_decision === 'consent_to_proceed' ? 'Client: Proceed' : 'Client: Cancelled' }}
+                                    </span>
+                                @elseif($a->consent_token)
+                                    <span class="inline-flex items-center px-2.5 py-1 text-xs font-semibold rounded-full bg-amber-50 text-amber-700">
+                                        Awaiting Response
+                                    </span>
+                                @else
+                                    <span class="inline-flex items-center px-2.5 py-1 text-xs font-semibold rounded-full bg-gray-100 text-gray-500">
+                                        Not Notified Yet
+                                    </span>
+                                @endif
+                            </div>
+
+                            @if($a->rejection_reason)
+                                <p class="text-xs text-red-600 mb-3 italic">Reason: {{ $a->rejection_reason }}</p>
+                            @endif
+
+                            @if(! $a->client_decision)
+                                @if($a->consent_token)
+                                    {{-- Consent link already generated — show copyable URL + resend --}}
+                                    <div class="mb-3">
+                                        <label class="block text-xs font-medium text-gray-500 mb-1">Consent Link (share with client)</label>
+                                        <div class="flex gap-2">
+                                            <input type="text"
+                                                   id="consent-link-{{ $a->id }}"
+                                                   readonly
+                                                   value="{{ route('client.consent.show', $a->consent_token) }}"
+                                                   class="flex-1 text-xs font-mono border border-gray-200 rounded-lg px-3 py-2 bg-gray-50 text-gray-700 focus:outline-none"/>
+                                            <button type="button"
+                                                    onclick="navigator.clipboard.writeText('{{ route('client.consent.show', $a->consent_token) }}'); this.textContent='Copied!'; setTimeout(()=>this.textContent='Copy',2000)"
+                                                    class="shrink-0 px-3 py-2 text-xs font-medium bg-gray-100 hover:bg-gray-200 rounded-lg transition">
+                                                Copy
+                                            </button>
+                                        </div>
+                                        @if($a->consent_token_expires_at)
+                                            <p class="text-xs text-gray-400 mt-1">Link expires {{ \Carbon\Carbon::parse($a->consent_token_expires_at)->format('d M Y') }}</p>
+                                        @endif
+                                    </div>
+                                    <form method="POST" action="{{ route('reception.assessments.notify', $a->id) }}" class="inline">
+                                        @csrf
+                                        <button type="submit"
+                                                class="inline-flex items-center gap-1.5 px-3 py-1.5 text-xs font-medium bg-amber-500 text-white rounded-lg hover:bg-amber-600 transition">
+                                            <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z"/>
+                                            </svg>
+                                            Resend Email
+                                        </button>
+                                    </form>
+                                @else
+                                    {{-- No token yet — send the first notification --}}
+                                    <form method="POST" action="{{ route('reception.assessments.notify', $a->id) }}">
+                                        @csrf
+                                        <button type="submit"
+                                                class="inline-flex items-center gap-2 px-4 py-2 text-sm font-medium bg-red-600 text-white rounded-lg hover:bg-red-700 transition">
+                                            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2H5a2 2 0 00-2 2v10a2 2 0 002 2z"/>
+                                            </svg>
+                                            Send Consent Request to Client
+                                        </button>
+                                    </form>
+                                @endif
+                            @endif
+                        </div>
+                    @endforeach
+                </div>
+
             @elseif($submission->status === 'accepted')
                 {{-- All samples passed — send to testing --}}
                 <div class="bg-green-50 border border-green-200 rounded-2xl p-6">

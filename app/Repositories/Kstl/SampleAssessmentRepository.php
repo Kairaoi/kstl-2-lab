@@ -39,6 +39,12 @@ class SampleAssessmentRepository extends BaseRepository
             'additional_observations' => $input['additional_observations'] ?? null,
             'outcome'                 => $input['outcome'],
             'rejection_reason'        => $input['rejection_reason']        ?? null,
+
+            // Auto-generate a token for rejected samples so the client portal
+            // can surface the consent step immediately, without waiting for
+            // reception to manually send the email.
+            'consent_token'            => $input['outcome'] === 'rejected' ? Str::random(64) : null,
+            'consent_token_expires_at' => null,
         ]);
 
         Log::info('Sample assessment recorded', [

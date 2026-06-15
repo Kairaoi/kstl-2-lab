@@ -29,6 +29,10 @@ Route::middleware([
     Route::get('/documents/versions/{versionId}/download', [DocumentController::class, 'download'])
         ->name('documents.download');
 
+    // Inline preview of the current version of a document (all staff)
+    Route::get('/documents/{id}/preview', [DocumentController::class, 'preview'])
+        ->name('documents.preview');
+
     // Manage — controller restricts these to director/admin/super_admin
     Route::post('/documents', [DocumentController::class, 'store'])
         ->name('documents.store');

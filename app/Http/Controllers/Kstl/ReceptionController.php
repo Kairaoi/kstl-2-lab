@@ -250,8 +250,11 @@ class ReceptionController extends Controller
 
         if (! $assessment->consent_token) {
             $this->assessmentRepo->generateConsentToken($assessmentId);
-            $assessment->refresh();
         }
+
+        // Refresh expiry each time email is sent so the link is valid for 7 days from now.
+        $assessment->update(['consent_token_expires_at' => now()->addDays(7)]);
+        $assessment->refresh();
 
         Mail::to($client->user->email)
             ->send(new SampleRejectedMail($sample, $assessment));

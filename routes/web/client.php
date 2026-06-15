@@ -131,4 +131,7 @@ Route::middleware([
     // ── Document Downloads ─────────────────────────────────────────────────
     Route::get('/submissions/{submission}/documents/{document}/download', [ClientController::class, 'documentDownload'])
         ->name('submissions.document.download');
+
+    Route::get('/documents/{id}/download', [ClientController::class, 'sopDownload'])
+        ->name('documents.download');
 });

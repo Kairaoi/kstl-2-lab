@@ -102,7 +102,7 @@ class SampleAssessment extends Model
     public function isTokenExpired(): bool
     {
         if (is_null($this->consent_token_expires_at)) {
-            return true;
+            return false;
         }
         return $this->consent_token_expires_at->isPast();
     }
