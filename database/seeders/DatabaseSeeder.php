@@ -17,68 +17,29 @@ class DatabaseSeeder extends Seeder
         $this->call(AuditReportsSeeder::class);
         $this->call(AnalyticsReportsSeeder::class);
 
-        // Super Admin
-        $admin = User::factory()->create([
-            'first_name' => 'Test',
-            'last_name'  => 'User',
-            'email'      => 'test@example.com',
-            'password'   => Hash::make('1'),
-        ]);
-        $admin->assignRole('super_admin');
+        $users = [
+            ['first_name' => 'Test',   'last_name' => 'User',  'email' => 'test@example.com',        'role' => 'super_admin'],
+            ['first_name' => 'John',   'last_name' => 'Smith', 'email' => 'client@example.com',       'role' => 'client'],
+            ['first_name' => 'Jane',   'last_name' => 'Doe',   'email' => 'clientmanager@example.com','role' => 'client_manager'],
+            ['first_name' => 'Tiam',   'last_name' => 'Senty', 'email' => 'reception@example.com',    'role' => 'reception'],
+            ['first_name' => 'Willy',  'last_name' => 'Senty', 'email' => 'analyst@example.com',      'role' => 'analyst'],
+            ['first_name' => 'Willy',  'last_name' => 'Senty', 'email' => 'director@example.com',     'role' => 'director'],
+            ['first_name' => 'Kaseba', 'last_name' => 'Senty', 'email' => 'auditor@example.com',      'role' => 'auditor'],
+        ];
 
-        // Client
-        $client = User::factory()->create([
-            'first_name' => 'John',
-            'last_name'  => 'Smith',
-            'email'      => 'client@example.com',
-            'password'   => Hash::make('1'),
-        ]);
-        $client->assignRole('client');
-
-        // Client Manager
-        $clientManager = User::factory()->create([
-            'first_name' => 'Jane',
-            'last_name'  => 'Doe',
-            'email'      => 'clientmanager@example.com',
-            'password'   => Hash::make('1'),
-        ]);
-        $clientManager->assignRole('client_manager');
-
-        // Client Manager
-        $reception = User::factory()->create([
-            'first_name' => 'Tiam',
-            'last_name'  => 'Senty',
-            'email'      => 'reception@example.com',
-            'password'   => Hash::make('1'),
-        ]);
-        $reception->assignRole('reception');
-
-          // Client Manager
-        $analyst = User::factory()->create([
-            'first_name' => 'Willy',
-            'last_name'  => 'Senty',
-            'email'      => 'analyst@example.com',
-            'password'   => Hash::make('1'),
-        ]);
-        $analyst->assignRole('analyst');
-
-         // Client Manager
-        $director = User::factory()->create([
-            'first_name' => 'Willy',
-            'last_name'  => 'Senty',
-            'email'      => 'director@example.com',
-            'password'   => Hash::make('1'),
-        ]);
-        $director->assignRole('director');
-
-         // Client Manager
-        $auditor = User::factory()->create([
-            'first_name' => 'Kaseba',
-            'last_name'  => 'Senty',
-            'email'      => 'auditor@example.com',
-            'password'   => Hash::make('1'),
-        ]);
-        $auditor->assignRole('auditor');
+        foreach ($users as $data) {
+            $user = User::firstOrCreate(
+                ['email' => $data['email']],
+                [
+                    'first_name' => $data['first_name'],
+                    'last_name'  => $data['last_name'],
+                    'password'   => Hash::make('1'),
+                ]
+            );
+            if (! $user->hasRole($data['role'])) {
+                $user->assignRole($data['role']);
+            }
+        }
 
         // $this->call(DemoDataSeeder::class);
     }
