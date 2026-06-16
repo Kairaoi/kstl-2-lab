@@ -43,12 +43,22 @@ class ClientController extends Controller
             'unpaid_invoices'     => $client ? $this->invoiceRepo->countUnpaidByClientId($client->id) : 0,
         ];
 
+        // Samples where reception rejected and client hasn't decided yet
+        $pendingConsents = $client
+            ? \App\Models\Kstl\SampleAssessment::whereHas('sample.submission',
+                fn($q) => $q->where('client_id', $client->id))
+                ->whereNotNull('consent_token')
+                ->whereNull('client_decision')
+                ->with(['sample.submission'])
+                ->get()
+            : collect();
+
         Log::info('Client accessed dashboard', [
             'user_id'   => $user->id,
             'client_id' => $client?->id,
         ]);
 
-        return view('kstl.client.dashboard', compact('user', 'client', 'summary'));
+        return view('kstl.client.dashboard', compact('user', 'client', 'summary', 'pendingConsents'));
     }
 
     // ── Submissions ────────────────────────────────────────────────────────────

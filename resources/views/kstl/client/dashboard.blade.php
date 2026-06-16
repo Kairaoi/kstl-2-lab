@@ -62,6 +62,60 @@
                 </div>
             @endif
 
+            {{-- ── Rejected Sample — Consent Required ──────────────────────── --}}
+            @if(isset($pendingConsents) && $pendingConsents->isNotEmpty())
+                <div class="rounded-xl border border-red-200 bg-red-50 overflow-hidden">
+                    <div class="px-5 py-4 flex items-start gap-3 border-b border-red-100">
+                        <svg class="w-5 h-5 text-red-500 shrink-0 mt-0.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01M10.29 3.86L1.82 18a2 2 0 001.71 3h16.94a2 2 0 001.71-3L13.71 3.86a2 2 0 00-3.42 0z"/>
+                        </svg>
+                        <div>
+                            <p class="text-sm font-semibold text-red-800">
+                                Action Required — Sample{{ $pendingConsents->count() > 1 ? 's' : '' }} Rejected by the Lab
+                            </p>
+                            <p class="text-xs text-red-700 mt-0.5">
+                                {{ $pendingConsents->count() > 1 ? 'Some of your samples' : 'One of your samples' }}
+                                did not pass the laboratory assessment. Your consent is required before any testing can proceed.
+                            </p>
+                        </div>
+                    </div>
+                    <div class="divide-y divide-red-100">
+                        @foreach($pendingConsents as $consent)
+                            @php
+                                $sample     = $consent->sample;
+                                $submission = $sample->submission;
+                            @endphp
+                            <div class="px-5 py-4 flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3">
+                                <div>
+                                    <p class="text-sm font-semibold text-red-900">{{ $sample->common_name }}</p>
+                                    <p class="text-xs text-red-600 mt-0.5">
+                                        Ref: <span class="font-mono">{{ $submission->reference_number }}</span>
+                                        @if($consent->assessed_at ?? $consent->created_at)
+                                            &middot; Assessed {{ ($consent->assessed_at ?? $consent->created_at)->format('d M Y') }}
+                                        @endif
+                                    </p>
+                                    @if($consent->rejection_reason)
+                                        <p class="text-xs text-red-700 mt-1 italic leading-snug max-w-lg">
+                                            "{{ $consent->rejection_reason }}"
+                                        </p>
+                                    @endif
+                                    <p class="text-xs text-red-600 mt-1.5 font-medium">
+                                        Please indicate whether you consent to proceed with testing despite this rejection, or wish to withdraw your application.
+                                    </p>
+                                </div>
+                                <a href="{{ route('client.consent.show', $consent->consent_token) }}"
+                                   class="shrink-0 inline-flex items-center gap-2 px-4 py-2.5 bg-red-600 text-white text-sm font-medium rounded-lg hover:bg-red-700 transition">
+                                    <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 7l5 5m0 0l-5 5m5-5H6"/>
+                                    </svg>
+                                    Review &amp; Decide
+                                </a>
+                            </div>
+                        @endforeach
+                    </div>
+                </div>
+            @endif
+
             {{-- ── Onboarding Steps ──────────────────────────────────────────── --}}
 
             {{-- Step 1 — No client profile yet --}}
