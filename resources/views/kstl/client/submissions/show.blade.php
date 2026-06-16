@@ -90,25 +90,128 @@
                 </div>
             @endif
 
-            {{-- Rejection Notice --}}
-            @if($submission->isRejected())
-                <div class="bg-red-50 border border-red-200 rounded-xl p-5">
-                    <div class="flex items-start gap-3">
-                        <svg class="w-5 h-5 text-red-500 shrink-0 mt-0.5" fill="currentColor" viewBox="0 0 20 20">
-                            <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm-1-9a1 1 0 112 0v4a1 1 0 11-2 0V9zm1-5a1 1 0 100 2 1 1 0 000-2z" clip-rule="evenodd"/>
-                        </svg>
-                        <div>
-                            <p class="text-sm font-semibold text-red-800">Sample Assessment — Not Accepted</p>
-                            <p class="text-sm text-red-700 mt-1">
-                                The lab has flagged an issue with this submission.
-                                @if($submission->lab_notes)
-                                    Lab note: <em>{{ $submission->lab_notes }}</em>
-                                @endif
-                                Please contact the lab for further details.
-                            </p>
+            {{-- ── Rejection Notice — one card per rejected sample ──────────── --}}
+            @if(isset($rejectedAssessments) && $rejectedAssessments->isNotEmpty())
+                @foreach($rejectedAssessments as $assessment)
+                    @php
+                        $assSample = $assessment->sample;
+                        $criteria  = [
+                            'Temperature' => [$assessment->temperature_ok, $assessment->temperature_notes],
+                            'Storage'     => [$assessment->storage_ok,     $assessment->storage_notes],
+                            'Transport'   => [$assessment->transport_ok,   $assessment->transport_notes],
+                            'Packaging'   => [$assessment->packaging_ok,   $assessment->packaging_notes],
+                            'Colour'      => [$assessment->colour_ok,      $assessment->colour_notes],
+                            'Odour'       => [$assessment->odour_ok,       $assessment->odour_notes],
+                            'Weight'      => [$assessment->weight_ok,      $assessment->weight_notes],
+                        ];
+                        $failedCriteria = array_filter($criteria, fn($c) => $c[0] === false);
+                        $needsDecision  = $assessment->consent_token && ! $assessment->client_decision;
+                        $alreadyDecided = $assessment->client_decision !== null;
+                    @endphp
+
+                    <div class="rounded-xl border border-red-200 bg-red-50 overflow-hidden">
+
+                        {{-- Header --}}
+                        <div class="px-5 py-4 border-b border-red-100 flex items-start justify-between gap-4">
+                            <div class="flex items-start gap-3">
+                                <svg class="w-5 h-5 text-red-500 shrink-0 mt-0.5" fill="currentColor" viewBox="0 0 20 20">
+                                    <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm-1-9a1 1 0 112 0v4a1 1 0 11-2 0V9zm1-5a1 1 0 100 2 1 1 0 000-2z" clip-rule="evenodd"/>
+                                </svg>
+                                <div>
+                                    <p class="text-sm font-semibold text-red-800">
+                                        Sample Not Accepted
+                                        @if($assSample)
+                                            — {{ $assSample->common_name }}
+                                            <span class="font-mono text-xs font-normal ml-1">({{ $assSample->sample_code }})</span>
+                                        @endif
+                                    </p>
+                                    <p class="text-xs text-red-600 mt-0.5">
+                                        Assessed {{ ($assessment->assessed_at ?? $assessment->created_at)->format('d M Y') }}
+                                        @if($assessment->assessedBy)
+                                            by {{ $assessment->assessedBy->name }}
+                                        @endif
+                                    </p>
+                                </div>
+                            </div>
+                            @if($alreadyDecided)
+                                <span class="shrink-0 inline-flex items-center px-2.5 py-1 rounded-full text-xs font-medium ring-1 ring-inset
+                                    {{ $assessment->client_decision === 'consent_to_proceed'
+                                        ? 'bg-amber-50 text-amber-700 ring-amber-600/20'
+                                        : 'bg-gray-100 text-gray-600 ring-gray-500/20' }}">
+                                    {{ $assessment->client_decision === 'consent_to_proceed' ? 'Proceeding with Testing' : 'Submission Withdrawn' }}
+                                </span>
+                            @endif
                         </div>
+
+                        {{-- Failed criteria --}}
+                        @if(count($failedCriteria) > 0)
+                            <div class="px-5 py-4 border-b border-red-100">
+                                <p class="text-xs font-semibold text-red-700 uppercase tracking-wide mb-2">Issues Found</p>
+                                <div class="grid grid-cols-1 sm:grid-cols-2 gap-1.5">
+                                    @foreach($failedCriteria as $label => [$ok, $notes])
+                                        <div class="flex items-start gap-2 text-sm">
+                                            <svg class="w-4 h-4 text-red-500 shrink-0 mt-0.5" fill="currentColor" viewBox="0 0 20 20">
+                                                <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm-1-9a1 1 0 112 0v4a1 1 0 11-2 0V9zm1-5a1 1 0 100 2 1 1 0 000-2z" clip-rule="evenodd"/>
+                                            </svg>
+                                            <span class="text-red-800 font-medium">{{ $label }} failed
+                                                @if($notes)
+                                                    <span class="font-normal text-red-600"> — {{ $notes }}</span>
+                                                @endif
+                                            </span>
+                                        </div>
+                                    @endforeach
+                                </div>
+                            </div>
+                        @endif
+
+                        {{-- Rejection reason --}}
+                        @if($assessment->rejection_reason)
+                            <div class="px-5 py-3 border-b border-red-100 bg-red-100/40">
+                                <p class="text-xs font-medium text-red-700 mb-0.5">Reason noted by the lab</p>
+                                <p class="text-sm text-red-800 italic">"{{ $assessment->rejection_reason }}"</p>
+                            </div>
+                        @endif
+
+                        {{-- Additional observations --}}
+                        @if($assessment->additional_observations)
+                            <div class="px-5 py-3 border-b border-red-100">
+                                <p class="text-xs font-medium text-red-700 mb-0.5">Additional observations</p>
+                                <p class="text-sm text-red-700">{{ $assessment->additional_observations }}</p>
+                            </div>
+                        @endif
+
+                        {{-- Call to action --}}
+                        <div class="px-5 py-4 flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3">
+                            @if($needsDecision)
+                                <p class="text-sm text-red-700">
+                                    <strong>Your consent is required.</strong>
+                                    Please indicate whether you wish to proceed with testing despite this rejection, or withdraw this submission.
+                                </p>
+                                <a href="{{ route('client.consent.show', $assessment->consent_token) }}"
+                                   class="shrink-0 inline-flex items-center gap-2 px-4 py-2.5 bg-red-600 text-white text-sm font-medium rounded-lg hover:bg-red-700 transition">
+                                    <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 7l5 5m0 0l-5 5m5-5H6"/>
+                                    </svg>
+                                    Review &amp; Decide
+                                </a>
+                            @elseif($alreadyDecided)
+                                <p class="text-sm text-red-600">
+                                    You responded on {{ $assessment->client_decision_at?->format('d M Y') }}.
+                                    @if($assessment->client_decision === 'consent_to_proceed')
+                                        Testing will proceed — the lab will be in touch.
+                                    @else
+                                        This submission has been withdrawn. You may submit a new sample at any time.
+                                    @endif
+                                </p>
+                            @else
+                                <p class="text-sm text-red-600">
+                                    Please contact the lab for further details.
+                                </p>
+                            @endif
+                        </div>
+
                     </div>
-                </div>
+                @endforeach
             @endif
 
             {{-- Result Available --}}

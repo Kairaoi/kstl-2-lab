@@ -235,6 +235,14 @@ class ClientController extends Controller
             abort(404, 'Submission not found.');
         }
 
+        // Load samples + their assessments so the view can show rejection details
+        $samples = $submission->samples()->with('assessment')->get();
+
+        // Assessments for rejected samples — used to drive consent notices
+        $rejectedAssessments = $samples
+            ->map(fn($s) => $s->assessment)
+            ->filter(fn($a) => $a && $a->outcome === 'rejected');
+
         Log::info('Client viewed submission', [
             'user_id'       => $user->id,
             'client_id'     => $client->id,
@@ -242,7 +250,8 @@ class ClientController extends Controller
             'reference'     => $submission->reference_number,
         ]);
 
-        return view('kstl.client.submissions.show', compact('client', 'submission'));
+        return view('kstl.client.submissions.show',
+            compact('client', 'submission', 'samples', 'rejectedAssessments'));
     }
 
     public function submissionsEdit(string $id)
