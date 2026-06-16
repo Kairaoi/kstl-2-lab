@@ -220,7 +220,13 @@ class ReceptionController extends Controller
                     foreach ($tests as $testKey) {
                         \App\Models\Kstl\SampleTest::firstOrCreate(
                             ['sample_id' => $sample->id, 'test_key' => $testKey],
-                            ['status' => 'queued']
+                            [
+                                'status'             => 'queued',
+                                'test_label'         => \App\Models\Kstl\SampleTest::TEST_LABELS[$testKey]      ?? ucfirst(str_replace('_', ' ', $testKey)),
+                                'test_category'      => \App\Models\Kstl\SampleTest::TEST_CATEGORIES[$testKey]  ?? 'microbiological',
+                                'price_aud_snapshot' => \App\Models\Kstl\Invoice::TEST_PRICES[$testKey]         ?? 75.00,
+                                'result_qualifier'   => 'pending',
+                            ]
                         );
                     }
 

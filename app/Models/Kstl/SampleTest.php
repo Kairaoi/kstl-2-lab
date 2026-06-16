@@ -30,13 +30,17 @@ class SampleTest extends Model
         'started_at',
         'completed_at',
         'status',
+        'director_outcome',
+        'director_authorised_at',
+        'director_authorised_by',
     ];
 
     protected function casts(): array
     {
         return [
-            'started_at'   => 'datetime',
-            'completed_at' => 'datetime',
+            'started_at'             => 'datetime',
+            'completed_at'           => 'datetime',
+            'director_authorised_at' => 'datetime',
         ];
     }
 

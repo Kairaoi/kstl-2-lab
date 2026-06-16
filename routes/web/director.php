@@ -25,6 +25,9 @@ Route::middleware([
     Route::post('/submissions/{id}/authorise', [DirectorController::class, 'authorise'])
         ->name('submissions.authorise');
 
+    Route::post('/submissions/{id}/authorise-tests', [DirectorController::class, 'authoriseTests'])
+        ->name('submissions.authorise-tests');
+
     Route::post('/submissions/{id}/query', [DirectorController::class, 'queryAnalyst'])
         ->name('submissions.query');
 

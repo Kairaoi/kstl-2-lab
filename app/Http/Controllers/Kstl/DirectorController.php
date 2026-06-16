@@ -127,8 +127,100 @@ class DirectorController extends Controller
             }
         });
 
-        return redirect()->route('director.dashboard')
-            ->with('success', "Submission {$submission->reference_number} has been authorised. Overall outcome: " . ucfirst($validated['overall_outcome']));
+        return redirect()->route('director.submissions.show', $submission->id)
+            ->with('success', "Submission {$submission->reference_number} has been authorised — " . ucfirst($validated['overall_outcome']) . '. All results are now viewable below.');
+    }
+
+    // ── Authorise tests individually ───────────────────────────────
+    public function authoriseTests(Request $request, string $id)
+    {
+        $submission = $this->submissionRepo->getById($id);
+
+        if ($submission->status !== Submission::STATUS_AWAITING_AUTHORISATION) {
+            return redirect()->back()
+                ->with('error', 'This submission is not awaiting authorisation.');
+        }
+
+        $request->validate([
+            'outcomes'          => ['sometimes', 'array'],
+            'outcomes.*'        => ['nullable', 'in:pass,fail,inconclusive'],
+            'director_comments' => ['nullable', 'string'],
+        ]);
+
+        // Only process rows where the director actually picked an outcome
+        $toAuthorise = array_filter($request->input('outcomes', []), fn($v) => !empty($v));
+
+        if (empty($toAuthorise)) {
+            return redirect()->back()
+                ->with('error', 'Set an outcome for at least one test before clicking Authorise.');
+        }
+
+        // Verify all test IDs belong to this submission
+        $submissionTestIds = SampleTest::whereHas('sample', fn($q) =>
+            $q->where('submission_id', $submission->id)
+        )->pluck('id')->all();
+
+        $unauthorised = array_diff(array_keys($toAuthorise), $submissionTestIds);
+        if (! empty($unauthorised)) {
+            return redirect()->back()->with('error', 'Invalid test selection.');
+        }
+
+        DB::transaction(function () use ($submission, $toAuthorise, $submissionTestIds) {
+            foreach ($toAuthorise as $testId => $outcome) {
+                SampleTest::where('id', $testId)->update([
+                    'director_outcome'       => $outcome,
+                    'director_authorised_at' => now(),
+                    'director_authorised_by' => Auth::id(),
+                ]);
+            }
+
+            // Check if ALL tests for this submission now have a director outcome
+            $pending = SampleTest::whereIn('id', $submissionTestIds)
+                ->whereNull('director_outcome')
+                ->count();
+
+            if ($pending === 0) {
+                // Derive overall outcome: fail > inconclusive > pass
+                $outcomes = SampleTest::whereIn('id', $submissionTestIds)->pluck('director_outcome');
+                $overall  = $outcomes->contains('fail') ? 'fail'
+                    : ($outcomes->contains('inconclusive') ? 'inconclusive' : 'pass');
+
+                $this->resultRepo->authorise($submission->id, [
+                    'overall_outcome'   => $overall,
+                    'director_comments' => request('director_comments'),
+                ]);
+
+                $this->submissionRepo->updateStatus($submission->id, Submission::STATUS_AUTHORISED);
+
+                $this->auditService->logStatusChange(
+                    $submission->fresh(),
+                    Submission::STATUS_AWAITING_AUTHORISATION,
+                    Submission::STATUS_AUTHORISED
+                );
+
+                $result = $this->resultRepo->findBySubmissionId($submission->id);
+                if ($result) {
+                    $this->auditService->logResultAuthorised($result->load('submission'));
+                    $this->notifyService->notifyResultsReady($submission, $result);
+                }
+            }
+        });
+
+        $remaining = SampleTest::whereIn('id', $submissionTestIds)->whereNull('director_outcome')->count();
+
+        $msg = $remaining > 0
+            ? count($toAuthorise) . ' test(s) authorised. ' . $remaining . ' test(s) still need authorisation.'
+            : 'All tests authorised. Submission is now complete.';
+
+        Log::info('Director authorised individual tests', [
+            'submission_id' => $id,
+            'test_count'    => count($toAuthorise),
+            'remaining'     => $remaining,
+            'director_id'   => Auth::id(),
+        ]);
+
+        return redirect()->route('director.submissions.show', $submission->id)
+            ->with('success', $msg);
     }
 
     // ── Query analyst — flag tests back for clarification ──────────

@@ -19,15 +19,27 @@
                     </p>
                 </div>
             </div>
-            <span class="inline-flex items-center px-3 py-1 rounded-full text-xs font-medium bg-amber-50 text-amber-700 ring-1 ring-inset ring-amber-600/20">
-                Awaiting Authorisation
-            </span>
+            @if($existingResult)
+                <span class="inline-flex items-center px-3 py-1 rounded-full text-xs font-medium bg-green-50 text-green-700 ring-1 ring-inset ring-green-600/20">
+                    Authorised
+                </span>
+            @else
+                <span class="inline-flex items-center px-3 py-1 rounded-full text-xs font-medium bg-amber-50 text-amber-700 ring-1 ring-inset ring-amber-600/20">
+                    Awaiting Authorisation
+                </span>
+            @endif
         </div>
     </x-slot>
 
     <div class="py-8">
         <div class="max-w-7xl mx-auto sm:px-6 lg:px-8 space-y-6"
              x-data="{ selectedTests: [], queryMode: false }">
+
+            @if(session('success'))
+                <div class="bg-green-50 border-l-4 border-green-400 p-4 rounded-lg text-sm text-green-800">
+                    {{ session('success') }}
+                </div>
+            @endif
 
             @if(session('error'))
                 <div class="bg-red-50 border-l-4 border-red-400 p-4 rounded-lg text-sm text-red-800">
@@ -37,18 +49,25 @@
 
             {{-- ── Already authorised notice ─────────────────────── --}}
             @if($existingResult)
-                <div class="bg-green-50 border border-green-200 rounded-xl p-5 flex items-center gap-3">
-                    <svg class="w-6 h-6 text-green-500 shrink-0" fill="currentColor" viewBox="0 0 20 20">
-                        <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.857-9.809a.75.75 0 00-1.214-.882l-3.483 4.79-1.88-1.88a.75.75 0 10-1.06 1.061l2.5 2.5a.75.75 0 001.137-.089l4-5.5z" clip-rule="evenodd"/>
-                    </svg>
-                    <div>
-                        <p class="text-sm font-semibold text-green-800">
-                            Authorised — {{ ucfirst($existingResult->overall_outcome) }}
-                        </p>
-                        <p class="text-xs text-green-600 mt-0.5">
-                            By {{ $existingResult->authorisedBy?->name }} on {{ $existingResult->authorised_at?->format('d M Y \a\t H:i') }}
-                        </p>
+                <div class="bg-green-50 border border-green-200 rounded-xl p-5 flex items-center justify-between gap-4">
+                    <div class="flex items-center gap-3">
+                        <svg class="w-6 h-6 text-green-500 shrink-0" fill="currentColor" viewBox="0 0 20 20">
+                            <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.857-9.809a.75.75 0 00-1.214-.882l-3.483 4.79-1.88-1.88a.75.75 0 10-1.06 1.061l2.5 2.5a.75.75 0 001.137-.089l4-5.5z" clip-rule="evenodd"/>
+                        </svg>
+                        <div>
+                            <p class="text-sm font-semibold text-green-800">
+                                Authorised — {{ ucfirst($existingResult->overall_outcome) }}
+                            </p>
+                            <p class="text-xs text-green-600 mt-0.5">
+                                By {{ $existingResult->authorisedBy?->name }} on {{ $existingResult->authorised_at?->format('d M Y \a\t H:i') }}
+                                &middot; All {{ $samples->sum(fn($s) => ($testsBySample[$s->id] ?? collect())->count()) }} test result{{ $samples->sum(fn($s) => ($testsBySample[$s->id] ?? collect())->count()) !== 1 ? 's' : '' }} are shown below.
+                            </p>
+                        </div>
                     </div>
+                    <a href="{{ route('director.results.show', $submission->id) }}"
+                       class="shrink-0 inline-flex items-center gap-2 px-4 py-2 bg-indigo-600 text-white text-sm font-medium rounded-lg hover:bg-indigo-700 transition">
+                        View Full Report →
+                    </a>
                 </div>
             @endif
 
@@ -81,6 +100,26 @@
                 </div>
             </div>
 
+            @php
+                $totalTestCount      = 0;
+                $pendingDirectorCount = 0;
+                foreach ($samples as $s) {
+                    foreach (($testsBySample[$s->id] ?? collect()) as $t) {
+                        $totalTestCount++;
+                        if (! $t->director_outcome) $pendingDirectorCount++;
+                    }
+                }
+                $authorisedCount = $totalTestCount - $pendingDirectorCount;
+            @endphp
+
+            {{-- ── Auth form wraps the test tables so outcome selects are submitted ── --}}
+            @if(!$existingResult)
+            <form id="auth-form"
+                  method="POST"
+                  action="{{ route('director.submissions.authorise-tests', $submission->id) }}">
+                @csrf
+            @endif
+
             {{-- ── Test Results per Sample ──────────────────────── --}}
             @foreach($samples as $sample)
                 @php $tests = $testsBySample[$sample->id] ?? collect(); @endphp
@@ -98,17 +137,31 @@
                                 @if($sample->scientific_name) · <em>{{ $sample->scientific_name }}</em> @endif
                             </p>
                         </div>
-                        @php
-                            $flaggedCount = $tests->where('status', 'flagged')->count();
-                        @endphp
-                        @if($flaggedCount)
-                            <span class="inline-flex items-center gap-1 px-2.5 py-1 text-xs bg-red-50 text-red-700 rounded-full font-medium">
-                                ⚑ {{ $flaggedCount }} flagged
-                            </span>
+                        @if(!$existingResult)
+                            @php
+                                $pendingThis = collect($testsBySample[$sample->id] ?? [])->filter(fn($t) => !$t->director_outcome)->count();
+                                $doneThis    = collect($testsBySample[$sample->id] ?? [])->filter(fn($t) =>  $t->director_outcome)->count();
+                            @endphp
+                            @if($pendingThis > 0)
+                                <span class="inline-flex items-center gap-1 px-2.5 py-1 text-xs bg-amber-50 text-amber-700 rounded-full font-medium">
+                                    {{ $pendingThis }} pending
+                                </span>
+                            @else
+                                <span class="inline-flex px-2.5 py-1 text-xs bg-green-50 text-green-700 rounded-full">
+                                    All authorised
+                                </span>
+                            @endif
                         @else
-                            <span class="inline-flex px-2.5 py-1 text-xs bg-green-50 text-green-700 rounded-full">
-                                All complete
-                            </span>
+                            @php $flaggedCount = $tests->where('status', 'flagged')->count(); @endphp
+                            @if($flaggedCount)
+                                <span class="inline-flex items-center gap-1 px-2.5 py-1 text-xs bg-red-50 text-red-700 rounded-full font-medium">
+                                    ⚑ {{ $flaggedCount }} flagged
+                                </span>
+                            @else
+                                <span class="inline-flex px-2.5 py-1 text-xs bg-green-50 text-green-700 rounded-full">
+                                    All complete
+                                </span>
+                            @endif
                         @endif
                     </div>
 
@@ -122,7 +175,7 @@
                                     <tr>
                                         @if(!$existingResult)
                                             <th class="px-4 py-3 w-10">
-                                                <span class="sr-only">Select</span>
+                                                <span class="sr-only">Select for query</span>
                                             </th>
                                         @endif
                                         <th class="text-left px-4 py-3 text-xs font-medium text-gray-500 uppercase">Test</th>
@@ -130,20 +183,36 @@
                                         <th class="text-left px-4 py-3 text-xs font-medium text-gray-500 uppercase">Value</th>
                                         <th class="text-left px-4 py-3 text-xs font-medium text-gray-500 uppercase">Notes</th>
                                         <th class="text-left px-4 py-3 text-xs font-medium text-gray-500 uppercase">Analyst</th>
-                                        <th class="text-left px-4 py-3 text-xs font-medium text-gray-500 uppercase">Status</th>
+                                        <th class="text-left px-4 py-3 text-xs font-medium text-gray-500 uppercase">
+                                            Director Outcome
+                                        </th>
                                     </tr>
                                 </thead>
                                 <tbody class="divide-y divide-gray-50">
                                     @foreach($tests as $test)
-                                        <tr class="{{ $test->status === 'flagged' ? 'bg-red-50/40' : '' }} hover:bg-gray-50 transition">
+                                        @php
+                                            $isDone = (bool) $test->director_outcome;
+                                            $rowBg  = $isDone ? 'bg-green-50/20' : ($test->status === 'flagged' ? 'bg-red-50/40' : '');
+                                        @endphp
+                                        <tr class="{{ $rowBg }} hover:bg-gray-50/50 transition">
+
+                                            {{-- Select checkbox (for query analyst) --}}
                                             @if(!$existingResult)
-                                                <td class="px-4 py-3">
-                                                    <input type="checkbox"
-                                                           value="{{ $test->id }}"
-                                                           x-model="selectedTests"
-                                                           class="rounded text-red-600 focus:ring-red-500">
+                                                <td class="px-4 py-3 text-center">
+                                                    @if(!$isDone)
+                                                        <input type="checkbox"
+                                                               :value="'{{ $test->id }}'"
+                                                               x-model="selectedTests"
+                                                               class="rounded text-amber-600 focus:ring-amber-500">
+                                                    @else
+                                                        <svg class="w-4 h-4 text-green-500 mx-auto" fill="currentColor" viewBox="0 0 20 20">
+                                                            <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.857-9.809a.75.75 0 00-1.214-.882l-3.483 4.79-1.88-1.88a.75.75 0 10-1.06 1.061l2.5 2.5a.75.75 0 001.137-.089l4-5.5z" clip-rule="evenodd"/>
+                                                        </svg>
+                                                    @endif
                                                 </td>
                                             @endif
+
+                                            {{-- Test name --}}
                                             <td class="px-4 py-3">
                                                 <p class="font-medium text-gray-800 text-xs">{{ $test->getDisplayLabel() }}</p>
                                                 <span class="inline-flex px-1.5 py-0.5 text-xs rounded capitalize mt-0.5
@@ -151,6 +220,8 @@
                                                     {{ $test->getDisplayCategory() }}
                                                 </span>
                                             </td>
+
+                                            {{-- Analyst result qualifier --}}
                                             <td class="px-4 py-3">
                                                 @php
                                                     $qc = [
@@ -178,6 +249,8 @@
                                                     {{ $ql[$test->result_qualifier] ?? ucfirst($test->result_qualifier) }}
                                                 </span>
                                             </td>
+
+                                            {{-- Value --}}
                                             <td class="px-4 py-3 text-sm text-gray-700">
                                                 @if($test->result_value)
                                                     <span class="font-mono">{{ $test->result_value }}</span>
@@ -188,27 +261,57 @@
                                                     <span class="text-gray-400">—</span>
                                                 @endif
                                             </td>
+
+                                            {{-- Notes --}}
                                             <td class="px-4 py-3 text-xs text-gray-500 max-w-xs">
                                                 {{ $test->result_notes ? \Illuminate\Support\Str::limit($test->result_notes, 80) : '—' }}
                                             </td>
+
+                                            {{-- Analyst --}}
                                             <td class="px-4 py-3 text-xs text-gray-500">
                                                 {{ $test->assignedTo?->name ?? '—' }}
                                             </td>
+
+                                            {{-- Director outcome: dropdown (pending) or badge (done) --}}
                                             <td class="px-4 py-3">
-                                                @if($test->status === 'flagged')
-                                                    <span class="inline-flex px-2 py-0.5 text-xs bg-red-50 text-red-700 rounded-full font-medium">⚑ Flagged</span>
-                                                @elseif($test->status === 'completed')
-                                                    <span class="inline-flex px-2 py-0.5 text-xs bg-green-50 text-green-700 rounded-full">Completed</span>
+                                                @if($isDone)
+                                                    @php
+                                                        $dc = [
+                                                            'pass'         => 'bg-green-50 text-green-700 ring-green-600/20',
+                                                            'fail'         => 'bg-red-50 text-red-700 ring-red-600/20',
+                                                            'inconclusive' => 'bg-amber-50 text-amber-700 ring-amber-600/20',
+                                                        ];
+                                                    @endphp
+                                                    <span class="inline-flex items-center px-2.5 py-1 rounded-full text-xs font-medium ring-1 ring-inset {{ $dc[$test->director_outcome] ?? 'bg-gray-100 text-gray-500' }}">
+                                                        {{ ucfirst($test->director_outcome) }}
+                                                    </span>
+                                                @elseif(!$existingResult)
+                                                    <select name="outcomes[{{ $test->id }}]"
+                                                            x-data="{ v: '' }"
+                                                            x-model="v"
+                                                            :class="{
+                                                                'border-green-300 bg-green-50 text-green-800': v === 'pass',
+                                                                'border-red-300 bg-red-50 text-red-800': v === 'fail',
+                                                                'border-amber-300 bg-amber-50 text-amber-800': v === 'inconclusive',
+                                                                'border-gray-200 text-gray-400': !v
+                                                            }"
+                                                            class="text-xs rounded-lg px-2 py-1.5 border focus:outline-none focus:ring-1 focus:ring-teal-400 transition w-36">
+                                                        <option value="">— decide later —</option>
+                                                        <option value="pass">Pass</option>
+                                                        <option value="fail">Fail</option>
+                                                        <option value="inconclusive">Inconclusive</option>
+                                                    </select>
                                                 @else
-                                                    <span class="inline-flex px-2 py-0.5 text-xs bg-gray-100 text-gray-500 rounded-full capitalize">{{ str_replace('_',' ',$test->status) }}</span>
+                                                    <span class="text-gray-400 text-xs">—</span>
                                                 @endif
                                             </td>
+
                                         </tr>
 
-                                        {{-- Supporting documents for this test (read-only review) --}}
+                                        {{-- Supporting documents --}}
                                         @if($test->attachments->isNotEmpty())
                                             <tr class="{{ $test->status === 'flagged' ? 'bg-red-50/20' : 'bg-gray-50/40' }}">
-                                                <td colspan="{{ $existingResult ? 7 : 8 }}" class="px-4 pb-3 pt-0">
+                                                <td colspan="{{ $existingResult ? 6 : 7 }}" class="px-4 pb-3 pt-0">
                                                     <div class="ml-1 rounded-lg border border-gray-100 bg-white px-3 py-2">
                                                         <p class="text-xs font-medium text-gray-500 mb-1.5 flex items-center gap-1.5">
                                                             <svg class="w-3.5 h-3.5 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -250,119 +353,83 @@
                 </div>
             @endforeach
 
-            {{-- ── Authorisation Panel ──────────────────────────── --}}
+            {{-- Close auth form (test tables + select inputs are now inside it) --}}
+            @if(!$existingResult)
+            </form>
+            @endif
+
+            {{-- ── Bottom panels ──────────────────────────────────── --}}
             @if(!$existingResult)
                 <div class="grid grid-cols-1 lg:grid-cols-2 gap-5">
 
-                    {{-- Authorise Form --}}
+                    {{-- Authorise panel (submit button uses form="auth-form" to associate externally) --}}
                     <div class="bg-white rounded-xl border border-gray-100 overflow-hidden"
                          x-show="!queryMode">
                         <div class="px-6 py-4 border-b border-gray-100">
-                            <h3 class="text-sm font-medium text-gray-800">Authorise Results</h3>
-                            <p class="text-xs text-gray-400 mt-0.5">Select the overall outcome and sign off.</p>
+                            <div class="flex items-center justify-between">
+                                <h3 class="text-sm font-medium text-gray-800">Authorise Tests</h3>
+                                @if($authorisedCount > 0)
+                                    <span class="text-xs text-green-600 font-medium">
+                                        {{ $authorisedCount }} of {{ $totalTestCount }} authorised
+                                    </span>
+                                @endif
+                            </div>
+                            <p class="text-xs text-gray-400 mt-0.5">
+                                Set an outcome in the table above for each test you want to authorise now.
+                                Tests left on "decide later" stay pending for your next visit.
+                            </p>
                         </div>
-                        <form method="POST"
-                              action="{{ route('director.submissions.authorise', $submission->id) }}"
-                              x-data="{ outcome: '' }">
-                            @csrf
-                            <div class="px-6 py-5 space-y-4">
-
-                                {{-- Overall Outcome --}}
-                                <div>
-                                    <label class="block text-sm font-medium text-gray-700 mb-3">Overall Outcome *</label>
-                                    <div class="space-y-2">
-                                        <label class="flex items-start gap-3 p-3 rounded-xl border-2 cursor-pointer transition"
-                                               :class="outcome === 'pass' ? 'border-green-400 bg-green-50' : 'border-gray-200 hover:border-gray-300'">
-                                            <input type="radio" name="overall_outcome" value="pass"
-                                                   x-model="outcome"
-                                                   class="mt-0.5 text-green-600 focus:ring-green-500">
-                                            <div>
-                                                <p class="text-sm font-semibold text-gray-800">Pass</p>
-                                                <p class="text-xs text-gray-500 mt-0.5">All results within acceptable limits.</p>
-                                            </div>
-                                        </label>
-                                        <label class="flex items-start gap-3 p-3 rounded-xl border-2 cursor-pointer transition"
-                                               :class="outcome === 'fail' ? 'border-red-400 bg-red-50' : 'border-gray-200 hover:border-gray-300'">
-                                            <input type="radio" name="overall_outcome" value="fail"
-                                                   x-model="outcome"
-                                                   class="mt-0.5 text-red-600 focus:ring-red-500">
-                                            <div>
-                                                <p class="text-sm font-semibold text-gray-800">Fail</p>
-                                                <p class="text-xs text-gray-500 mt-0.5">One or more results outside acceptable limits.</p>
-                                            </div>
-                                        </label>
-                                        <label class="flex items-start gap-3 p-3 rounded-xl border-2 cursor-pointer transition"
-                                               :class="outcome === 'inconclusive' ? 'border-amber-400 bg-amber-50' : 'border-gray-200 hover:border-gray-300'">
-                                            <input type="radio" name="overall_outcome" value="inconclusive"
-                                                   x-model="outcome"
-                                                   class="mt-0.5 text-amber-600 focus:ring-amber-500">
-                                            <div>
-                                                <p class="text-sm font-semibold text-gray-800">Inconclusive</p>
-                                                <p class="text-xs text-gray-500 mt-0.5">Results require further investigation.</p>
-                                            </div>
-                                        </label>
-                                    </div>
-                                </div>
-
-                                {{-- Director Comments --}}
-                                <div>
-                                    <label class="block text-sm font-medium text-gray-700 mb-1">Director Comments</label>
-                                    <textarea name="director_comments" rows="3"
-                                              class="w-full border-gray-300 rounded-lg text-sm focus:border-teal-500 focus:ring-teal-500"
-                                              placeholder="Optional comments to include in the result report..."></textarea>
-                                </div>
-
-                            </div>
-                            <div class="px-6 py-4 border-t border-gray-100 bg-gray-50 flex items-center justify-between">
-                                <button type="button"
-                                        @click="queryMode = true"
-                                        class="text-sm text-amber-600 hover:text-amber-800 font-medium">
-                                    Query analyst instead →
-                                </button>
-                                <button type="submit"
-                                        x-bind:disabled="!outcome"
-                                        x-bind:class="!outcome ? 'bg-gray-100 text-gray-400 cursor-not-allowed' : 'bg-teal-600 hover:bg-teal-700 text-white'"
-                                        onclick="return confirm('Authorise this submission? This action cannot be undone.')"
-                                        class="inline-flex items-center gap-2 px-6 py-2.5 text-sm font-medium rounded-lg transition">
-                                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z"/>
-                                    </svg>
-                                    Authorise
-                                </button>
-                            </div>
-                        </form>
+                        <div class="px-6 py-5">
+                            <label for="director_comments" class="block text-sm font-medium text-gray-700 mb-1">
+                                Director Comments <span class="text-gray-400 font-normal">(optional)</span>
+                            </label>
+                            <textarea id="director_comments"
+                                      name="director_comments"
+                                      form="auth-form"
+                                      rows="3"
+                                      class="w-full border-gray-300 rounded-lg text-sm focus:border-teal-500 focus:ring-teal-500"
+                                      placeholder="Comments to include in the final report..."></textarea>
+                        </div>
+                        <div class="px-6 py-4 border-t border-gray-100 bg-gray-50 flex items-center justify-between">
+                            <button type="button"
+                                    @click="queryMode = true"
+                                    x-show="selectedTests.length > 0"
+                                    x-cloak
+                                    class="text-sm text-amber-600 hover:text-amber-800 font-medium">
+                                Query analyst about selected →
+                            </button>
+                            <p class="text-xs text-gray-400"
+                               x-show="selectedTests.length === 0">
+                                Tick rows above to query the analyst
+                            </p>
+                            <button type="submit"
+                                    form="auth-form"
+                                    class="inline-flex items-center gap-2 px-6 py-2.5 text-sm font-medium rounded-lg transition bg-teal-600 hover:bg-teal-700 text-white">
+                                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z"/>
+                                </svg>
+                                Authorise
+                            </button>
+                        </div>
                     </div>
 
-                    {{-- Query Analyst Form --}}
+                    {{-- Query Analyst form --}}
                     <div class="bg-white rounded-xl border border-amber-200 overflow-hidden"
                          x-show="queryMode"
                          x-cloak>
                         <div class="px-6 py-4 border-b border-amber-100 bg-amber-50">
                             <h3 class="text-sm font-medium text-amber-800">Query Analyst</h3>
                             <p class="text-xs text-amber-600 mt-0.5">
-                                Select tests to query (tick checkboxes in table above) and describe your concern.
+                                <span x-text="selectedTests.length"></span> test(s) selected. Describe your concern.
                             </p>
                         </div>
                         <form method="POST"
                               action="{{ route('director.submissions.query', $submission->id) }}">
                             @csrf
+                            <template x-for="testId in selectedTests" :key="testId">
+                                <input type="hidden" name="test_ids[]" :value="testId">
+                            </template>
                             <div class="px-6 py-5 space-y-4">
-
-                                {{-- Selected tests --}}
-                                <div>
-                                    <p class="text-xs font-medium text-gray-600 mb-2">
-                                        Selected tests:
-                                        <span class="text-amber-600 font-semibold" x-text="selectedTests.length + ' selected'"></span>
-                                    </p>
-                                    <template x-for="testId in selectedTests" :key="testId">
-                                        <input type="hidden" name="test_ids[]" :value="testId">
-                                    </template>
-                                    <p x-show="selectedTests.length === 0" class="text-xs text-red-500">
-                                        Please select at least one test from the table above.
-                                    </p>
-                                </div>
-
-                                {{-- Query notes --}}
                                 <div>
                                     <label class="block text-sm font-medium text-gray-700 mb-1">
                                         Query / Concern <span class="text-red-500">*</span>
@@ -371,7 +438,6 @@
                                               class="w-full border-amber-300 rounded-lg text-sm focus:border-amber-500 focus:ring-amber-500"
                                               placeholder="Describe what needs clarification from the analyst..."></textarea>
                                 </div>
-
                             </div>
                             <div class="px-6 py-4 border-t border-amber-100 bg-amber-50 flex items-center justify-between">
                                 <button type="button"
@@ -406,7 +472,7 @@
                 </div>
             @endif
 
-            {{-- ── Generate Invoice (if authorised) ──────────── --}}
+            {{-- ── Generate Invoice (if authorised) ──────────────── --}}
             @if($existingResult && $submission->status === 'authorised')
                 @php $existingInvoice = $submission->invoice ?? null; @endphp
                 <div class="bg-white rounded-xl border border-gray-100 p-5 flex items-center justify-between">
