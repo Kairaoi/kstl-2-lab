@@ -110,11 +110,26 @@
                                                     </span>
                                                 @endif
                                             </div>
-                                            <p class="text-xs text-gray-400 mt-0.5">
-                                                {{ $client->company_name ?? '—' }}
-                                                &bull; {{ $submission->sample_name }}
-                                                &bull; {{ ucfirst($submission->sample_type) }}
-                                            </p>
+                                            <div class="mt-1.5 flex items-center gap-2 flex-wrap">
+                                                <span class="inline-flex items-center gap-1 px-2 py-0.5 rounded-md bg-gray-100 text-gray-700 text-xs font-semibold">
+                                                    {{ $client->company_name ?? '—' }}
+                                                </span>
+                                                <svg class="w-3 h-3 text-gray-300 flex-shrink-0" fill="currentColor" viewBox="0 0 6 6"><circle cx="3" cy="3" r="3"/></svg>
+                                                <span class="inline-flex items-center gap-1 px-2 py-0.5 rounded-md bg-teal-50 text-teal-700 text-xs font-semibold">
+                                                    {{ $submission->sample_name }}
+                                                </span>
+                                                <svg class="w-3 h-3 text-gray-300 flex-shrink-0" fill="currentColor" viewBox="0 0 6 6"><circle cx="3" cy="3" r="3"/></svg>
+                                                <span class="inline-flex items-center gap-1 px-2 py-0.5 rounded-md bg-sky-50 text-sky-700 text-xs font-semibold capitalize">
+                                                    {{ ucfirst($submission->sample_type) }}
+                                                </span>
+                                                <svg class="w-3 h-3 text-gray-300 flex-shrink-0" fill="currentColor" viewBox="0 0 6 6"><circle cx="3" cy="3" r="3"/></svg>
+                                                <span class="inline-flex items-center gap-1 px-2 py-0.5 rounded-full bg-indigo-50 text-indigo-700 font-semibold text-xs whitespace-nowrap">
+                                                    <svg class="w-3 h-3 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"/>
+                                                    </svg>
+                                                    Received {{ ($submission->received_at ?? $submission->created_at)->format('d M Y, H:i') }}
+                                                </span>
+                                            </div>
                                         </div>
                                     </div>
 
@@ -161,6 +176,7 @@
                                                     <th class="text-left px-4 py-2 text-xs font-medium text-gray-500 uppercase">Sample</th>
                                                     <th class="text-left px-4 py-2 text-xs font-medium text-gray-500 uppercase">Test</th>
                                                     <th class="text-left px-4 py-2 text-xs font-medium text-gray-500 uppercase">Category</th>
+                                                    <th class="text-left px-4 py-2 text-xs font-medium text-indigo-600 uppercase">Queued</th>
                                                     <th class="text-left px-4 py-2 text-xs font-medium text-gray-500 uppercase">Assigned To</th>
                                                     <th class="text-left px-4 py-2 text-xs font-medium text-gray-500 uppercase">Status</th>
                                                     <th class="text-left px-4 py-2 text-xs font-medium text-gray-500 uppercase">Result</th>
@@ -189,6 +205,15 @@
                                                             <span class="inline-flex px-2 py-0.5 text-xs rounded-full capitalize
                                                                 {{ $test->getDisplayCategory() === 'microbiological' ? 'bg-purple-50 text-purple-700' : 'bg-blue-50 text-blue-700' }}">
                                                                 {{ $test->getDisplayCategory() }}
+                                                            </span>
+                                                        </td>
+                                                        <td class="px-4 py-2.5">
+                                                            <span class="inline-flex items-center gap-1 px-2 py-1 rounded-md bg-indigo-50 text-indigo-700 text-xs font-semibold whitespace-nowrap">
+                                                                <svg class="w-3 h-3 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"/>
+                                                                </svg>
+                                                                {{ $test->created_at->format('d M Y') }}
+                                                                <span class="text-indigo-400 font-normal">{{ $test->created_at->format('H:i') }}</span>
                                                             </span>
                                                         </td>
                                                         <td class="px-4 py-2.5 text-xs text-gray-500">
