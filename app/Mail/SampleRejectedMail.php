@@ -28,7 +28,7 @@ class SampleRejectedMail extends Mailable
     public function envelope(): Envelope
     {
         return new Envelope(
-            subject: "Sample Assessment Result — {$this->sample->submission->reference_number}",
+            subject: "Action Required — Sample Not Accepted ({$this->sample->submission->reference_number})",
         );
     }
 

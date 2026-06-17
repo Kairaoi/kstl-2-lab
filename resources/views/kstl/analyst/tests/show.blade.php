@@ -364,11 +364,11 @@
     function resultForm() {
         const DRAFT_KEY = 'result_draft_{{ $test->id }}';
         const DB = {
-            qualifier : '{{ $test->result_qualifier ?? '' }}',
-            value     : @json($test->result_value ?? ''),
-            unit      : @json($test->result_unit  ?? ''),
-            notes     : @json($test->result_notes ?? ''),
-            flagged   : {{ ($test->status === 'flagged') ? 'true' : 'false' }},
+            qualifier : '{{ old("result_qualifier", $test->result_qualifier ?? "") }}',
+            value     : @json(old('result_value', $test->result_value ?? '')),
+            unit      : @json(old('result_unit',  $test->result_unit  ?? '')),
+            notes     : @json(old('result_notes', $test->result_notes ?? '')),
+            flagged   : {{ (old('flag') !== null ? (bool)old('flag') : ($test->status === 'flagged')) ? 'true' : 'false' }},
         };
 
         return {
@@ -376,7 +376,14 @@
             flagged   : DB.flagged,
 
             init() {
-                const saved = this._load();
+                // If Laravel redirected back with validation errors, old() values
+                // are already baked into DB — discard any stale localStorage draft.
+                const hasOld = {{ session()->has('_old_input') ? 'true' : 'false' }};
+                if (hasOld) {
+                    localStorage.removeItem(DRAFT_KEY);
+                }
+
+                const saved = hasOld ? null : this._load();
                 if (saved) {
                     this.qualifier = saved.qualifier ?? DB.qualifier ?? '';
                     this.flagged   = saved.flagged   ?? DB.flagged;
