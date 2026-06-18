@@ -96,7 +96,7 @@
                     <table class="w-full text-sm">
                         <thead class="bg-gray-50 border-b border-gray-100">
                             <tr>
-                                <th class="text-left px-8 py-3 text-xs font-medium text-gray-500 uppercase tracking-wide">Description</th>
+                                <th class="text-left px-8 py-3 text-xs font-medium text-gray-500 uppercase tracking-wide">Test Description</th>
                                 <th class="text-left px-4 py-3 text-xs font-medium text-gray-500 uppercase tracking-wide">Category</th>
                                 <th class="text-right px-4 py-3 text-xs font-medium text-gray-500 uppercase tracking-wide">Qty</th>
                                 <th class="text-right px-4 py-3 text-xs font-medium text-gray-500 uppercase tracking-wide">Unit Price</th>
@@ -104,24 +104,47 @@
                             </tr>
                         </thead>
                         <tbody class="divide-y divide-gray-50">
-                            @foreach($invoice->items->groupBy('category') as $category => $items)
-                                {{-- Category subheader --}}
-                                @if($category)
-                                    <tr class="bg-gray-50/50">
-                                        <td colspan="5" class="px-8 py-2 text-xs font-semibold text-gray-500 uppercase tracking-wide">
-                                            {{ $category }}
+                            @php
+                                $itemsBySample = $invoice->items->groupBy(fn($i) => $i->sampleTest?->sample_id ?? 'other');
+                                $multiSample   = $itemsBySample->count() > 1;
+                            @endphp
+                            @foreach($itemsBySample as $sampleId => $items)
+                                @php $sample = $items->first()->sampleTest?->sample; @endphp
+                                {{-- Sample header --}}
+                                <tr class="bg-gray-50 border-t border-gray-100">
+                                    <td colspan="5" class="px-8 py-2.5">
+                                        <div class="flex flex-wrap items-center gap-2">
+                                            <span class="font-semibold text-gray-800 text-sm">
+                                                {{ $sample?->common_name ?? 'Other Charges' }}
+                                            </span>
+                                            @if($sample?->scientific_name)
+                                                <span class="text-xs italic text-gray-500">{{ $sample->scientific_name }}</span>
+                                            @endif
+                                            @if($sample?->sample_code)
+                                                <span class="font-mono text-xs text-gray-400 bg-gray-100 px-1.5 py-0.5 rounded">{{ $sample->sample_code }}</span>
+                                            @endif
+                                        </div>
+                                    </td>
+                                </tr>
+                                @foreach($items as $item)
+                                    <tr class="hover:bg-gray-50">
+                                        <td class="px-8 py-2.5 pl-12 text-gray-700">{{ $item->item_description }}</td>
+                                        <td class="px-4 py-2.5 text-gray-500 text-xs">{{ $item->category ?? '—' }}</td>
+                                        <td class="px-4 py-2.5 text-right text-gray-700">{{ $item->quantity }}</td>
+                                        <td class="px-4 py-2.5 text-right text-gray-700">A$ {{ number_format($item->unit_price_aud, 2) }}</td>
+                                        <td class="px-8 py-2.5 text-right font-medium text-gray-800">A$ {{ number_format($item->total_price_aud, 2) }}</td>
+                                    </tr>
+                                @endforeach
+                                @if($multiSample)
+                                    <tr class="bg-blue-50/30">
+                                        <td colspan="4" class="px-8 py-1.5 text-xs text-gray-500 text-right italic">
+                                            Subtotal — {{ $sample?->common_name ?? 'Other' }}
+                                        </td>
+                                        <td class="px-8 py-1.5 text-right text-sm font-semibold text-gray-700">
+                                            A$ {{ number_format($items->sum('total_price_aud'), 2) }}
                                         </td>
                                     </tr>
                                 @endif
-                                @foreach($items as $item)
-                                    <tr class="hover:bg-gray-50">
-                                        <td class="px-8 py-3 text-gray-800">{{ $item->item_description }}</td>
-                                        <td class="px-4 py-3 text-gray-500 text-xs">{{ $item->category ?? '—' }}</td>
-                                        <td class="px-4 py-3 text-right text-gray-700">{{ $item->quantity }}</td>
-                                        <td class="px-4 py-3 text-right text-gray-700">A$ {{ number_format($item->unit_price_aud, 2) }}</td>
-                                        <td class="px-8 py-3 text-right font-medium text-gray-800">A$ {{ number_format($item->total_price_aud, 2) }}</td>
-                                    </tr>
-                                @endforeach
                             @endforeach
                         </tbody>
                         <tfoot class="border-t-2 border-gray-200">

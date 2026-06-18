@@ -232,7 +232,6 @@
                                     @endif
                                     <p class="text-xs text-gray-400 font-mono mt-0.5">{{ $sample->sample_code }}</p>
                                 </div>
-                                <x-kstl.status-badge :status="$sample->status" />
                             </div>
 
                             @if($sampleAuthorisedTests->isEmpty())
@@ -255,10 +254,10 @@
                                                 $sopDoc  = $sopCode ? ($sopDocuments[$sopCode] ?? null) : null;
                                                 $unit = $test->result_unit ? ' ' . $test->result_unit : '';
                                                 $resultText = match($test->result_qualifier) {
-                                                    'detected'     => 'Detected',
-                                                    'not_detected' => 'Not Detected',
-                                                    'pass'         => 'Pass',
-                                                    'fail'         => 'Fail',
+                                                    'detected'     => $test->result_value ? 'Detected · ' . $test->result_value . $unit : 'Detected',
+                                                    'not_detected' => $test->result_value ? 'Not Detected · ' . $test->result_value . $unit : 'Not Detected',
+                                                    'pass'         => $test->result_value ? 'Pass · ' . $test->result_value . $unit : 'Pass',
+                                                    'fail'         => $test->result_value ? 'Fail · ' . $test->result_value . $unit : 'Fail',
                                                     'less_than'    => '< ' . $test->result_value . $unit,
                                                     'greater_than' => '> ' . $test->result_value . $unit,
                                                     'equal_to'     => $test->result_value . $unit,
@@ -361,10 +360,10 @@
                                                 }
                                                 $unit = $test->result_unit ? ' ' . $test->result_unit : '';
                                                 $resultText = match($test->result_qualifier) {
-                                                    'detected'     => 'Detected',
-                                                    'not_detected' => 'Not Detected',
-                                                    'pass'         => 'Pass',
-                                                    'fail'         => 'Fail',
+                                                    'detected'     => $test->result_value ? 'Detected · ' . $test->result_value . $unit : 'Detected',
+                                                    'not_detected' => $test->result_value ? 'Not Detected · ' . $test->result_value . $unit : 'Not Detected',
+                                                    'pass'         => $test->result_value ? 'Pass · ' . $test->result_value . $unit : 'Pass',
+                                                    'fail'         => $test->result_value ? 'Fail · ' . $test->result_value . $unit : 'Fail',
                                                     'less_than'    => '< ' . $test->result_value . $unit,
                                                     'greater_than' => '> ' . $test->result_value . $unit,
                                                     'equal_to'     => $test->result_value . $unit,

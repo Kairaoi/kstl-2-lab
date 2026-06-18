@@ -42,7 +42,7 @@ class ClientInvoiceController extends Controller
 
         abort_if(! $client, 403);
 
-        $invoice = Invoice::with(['items', 'issuedBy', 'submission'])
+        $invoice = Invoice::with(['items.sampleTest.sample', 'issuedBy', 'submission'])
             ->findOrFail($id);
 
         // Security — only the owning client
