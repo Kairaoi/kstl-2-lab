@@ -233,7 +233,7 @@
                                                 $resultText = match($test->result_qualifier) {
                                                     'detected'     => 'Detected',
                                                     'not_detected' => 'Not Detected',
-                                                    'pass'         => 'Tested',
+                                                    'pass'         => 'Pass',
                                                     'fail'         => 'Fail',
                                                     'less_than'    => '< ' . $test->result_value . $unit,
                                                     'greater_than' => '> ' . $test->result_value . $unit,
