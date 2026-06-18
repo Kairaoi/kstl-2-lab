@@ -12,7 +12,7 @@
                 </a>
                 <div>
                     <h2 class="font-semibold text-xl text-gray-800 leading-tight">
-                        Certificate of Analysis
+                        Results
                     </h2>
                     <p class="text-xs text-gray-400 mt-0.5">{{ $submission->reference_number }} &middot; {{ $submission->sample_name }}</p>
                 </div>
@@ -98,11 +98,11 @@
                             <div>
                                 <p class="coa-eyebrow">Government of Kiribati &middot; Ministry of Fisheries &amp; Ocean Resources</p>
                                 <h1 class="coa-title text-2xl font-bold mt-1">Kiribati Seafood Toxicology Laboratory</h1>
-                                <p class="text-xs text-gray-500 mt-0.5">National Fisheries Division &middot; Laboratory Information Management System</p>
+                                <img src="{{ asset('images/mfor-logo.png') }}" alt="MFOR" class="h-6 mt-1 object-contain object-left">
                             </div>
                         </div>
                         <div class="text-right shrink-0">
-                            <p class="coa-eyebrow">Certificate of Analysis</p>
+                            <p class="coa-eyebrow">Results</p>
                             <p class="font-mono text-sm font-semibold text-gray-800 mt-1">{{ $submission->reference_number }}</p>
                             <p class="text-xs text-gray-400 mt-0.5">
                                 Issued {{ $result?->authorised_at?->format('d M Y') ?? now()->format('d M Y') }}
@@ -112,7 +112,7 @@
                 </div>
 
                 {{-- ── Authorisation strip ────────────────────────────────────── --}}
-                <div class="px-8 py-5 flex items-center justify-between gap-6 border-b border-gray-100">
+                <div class="px-8 py-5 flex items-center justify-between gap-6 border-b border-gray-100 bg-gray-50/40">
                     <div>
                         <p class="coa-meta-label">Authorisation Status</p>
                         @if($result?->authorised_at)
@@ -121,6 +121,14 @@
                             <p class="text-sm text-gray-400 italic mt-1">Awaiting Director authorisation</p>
                         @endif
                     </div>
+
+                    {{-- Client / Company --}}
+                    <div class="text-center">
+                        <p class="coa-meta-label">Prepared For</p>
+                        <p class="text-sm font-semibold text-gray-800 mt-1">{{ $submission->client->company_name }}</p>
+                        <p class="text-xs text-gray-500 mt-0.5">{{ $submission->client->user->email ?? '' }}</p>
+                    </div>
+
                     @if($result?->authorised_at)
                         <div class="text-right">
                             <p class="coa-meta-label">Authorised By</p>
@@ -134,23 +142,12 @@
                 {{-- ── Submission particulars ─────────────────────────────── --}}
                 <div class="px-8 py-6 border-b border-gray-100">
                     <p class="coa-section-title mb-4">Submission Particulars</p>
-                    <dl class="grid grid-cols-2 md:grid-cols-3 gap-x-6 gap-y-4 text-sm">
-                        @php $scientificName = $submission->samples->first()?->scientific_name; @endphp
+
+                    {{-- Reference / dates row --}}
+                    <dl class="grid grid-cols-2 md:grid-cols-3 gap-x-6 gap-y-4 text-sm mb-5">
                         <div>
                             <dt class="coa-meta-label">Reference</dt>
                             <dd class="font-mono text-gray-800 mt-1">{{ $submission->reference_number }}</dd>
-                        </div>
-                        <div>
-                            <dt class="coa-meta-label">Sample (Common Name)</dt>
-                            <dd class="text-gray-800 mt-1">{{ $submission->sample_name }}</dd>
-                        </div>
-                        <div>
-                            <dt class="coa-meta-label">Scientific Name</dt>
-                            <dd class="text-gray-700 italic mt-1">{{ $scientificName ?? '—' }}</dd>
-                        </div>
-                        <div>
-                            <dt class="coa-meta-label">Type</dt>
-                            <dd class="text-gray-700 mt-1 capitalize">{{ $submission->sample_type }}</dd>
                         </div>
                         <div>
                             <dt class="coa-meta-label">Collected</dt>
@@ -165,6 +162,31 @@
                             <dd class="text-gray-700 mt-1">{{ $result?->authorised_at?->format('d M Y') ?? '—' }}</dd>
                         </div>
                     </dl>
+
+                    {{-- Samples table --}}
+                    <dt class="coa-meta-label mb-2">Samples Submitted ({{ $submission->samples->count() }})</dt>
+                    <table class="w-full text-sm border border-gray-100 rounded-lg overflow-hidden">
+                        <thead class="bg-gray-50">
+                            <tr>
+                                <th class="text-left px-3 py-2 coa-meta-label">#</th>
+                                <th class="text-left px-3 py-2 coa-meta-label">Common Name</th>
+                                <th class="text-left px-3 py-2 coa-meta-label">Scientific Name</th>
+                                <th class="text-left px-3 py-2 coa-meta-label">Sample Code</th>
+                                <th class="text-left px-3 py-2 coa-meta-label">Qty</th>
+                            </tr>
+                        </thead>
+                        <tbody class="divide-y divide-gray-50">
+                            @foreach($submission->samples as $i => $sample)
+                                <tr>
+                                    <td class="px-3 py-2 text-gray-400 font-mono text-xs">{{ $i + 1 }}</td>
+                                    <td class="px-3 py-2 font-medium text-gray-800">{{ $sample->common_name ?? $submission->sample_name ?? '—' }}</td>
+                                    <td class="px-3 py-2 italic text-gray-500">{{ $sample->scientific_name ?? '—' }}</td>
+                                    <td class="px-3 py-2 font-mono text-xs text-gray-500">{{ $sample->sample_code }}</td>
+                                    <td class="px-3 py-2 text-gray-600 text-xs">{{ $sample->quantity ?? '—' }} {{ $sample->quantity_unit ?? '' }}</td>
+                                </tr>
+                            @endforeach
+                        </tbody>
+                    </table>
                 </div>
 
                 {{-- ── Analytical results ─────────────────────────────────── --}}

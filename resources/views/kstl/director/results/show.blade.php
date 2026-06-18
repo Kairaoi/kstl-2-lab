@@ -88,11 +88,11 @@
                             <div>
                                 <p class="ir-eyebrow">Government of Kiribati &middot; Ministry of Fisheries &amp; Ocean Resources</p>
                                 <h1 class="ir-title text-2xl font-bold mt-1">Kiribati Seafood Toxicology Laboratory</h1>
-                                <p class="text-xs text-gray-500 mt-0.5">National Fisheries Division &middot; INTERNAL REPORT</p>
+                                <img src="{{ asset('images/mfor-logo.png') }}" alt="MFOR" class="h-6 mt-1 object-contain object-left">
                             </div>
                         </div>
                         <div class="text-right shrink-0">
-                            <p class="ir-eyebrow">Internal Result Report</p>
+                            <p class="ir-eyebrow">Results</p>
                             <p class="font-mono text-sm font-semibold text-gray-800 mt-1">{{ $submission->reference_number }}</p>
                             <p class="text-xs text-gray-400 mt-0.5">
                                 Issued {{ $result?->authorised_at?->format('d M Y') ?? now()->format('d M Y') }}
@@ -111,6 +111,14 @@
                             <p class="text-sm text-gray-400 italic mt-1">Awaiting Director authorisation</p>
                         @endif
                     </div>
+
+                    {{-- Company --}}
+                    <div class="text-center">
+                        <p class="ir-meta-label">Prepared For</p>
+                        <p class="text-sm font-semibold text-gray-800 mt-1">{{ $submission->client->company_name }}</p>
+                        <p class="text-xs text-gray-500 mt-0.5">{{ $submission->client->user->email ?? '' }}</p>
+                    </div>
+
                     @if($result?->authorised_at)
                         <div class="text-right">
                             <p class="ir-meta-label">Authorised By</p>
@@ -124,7 +132,9 @@
                 {{-- ── Submission particulars ─────────────────────────────── --}}
                 <div class="px-8 py-6 border-b border-gray-100">
                     <p class="ir-section-title mb-4">Submission Particulars</p>
-                    <dl class="grid grid-cols-2 md:grid-cols-3 gap-x-6 gap-y-4 text-sm">
+
+                    {{-- Meta row --}}
+                    <dl class="grid grid-cols-2 md:grid-cols-3 gap-x-6 gap-y-4 text-sm mb-5">
                         <div>
                             <dt class="ir-meta-label">Client</dt>
                             <dd class="text-gray-800 mt-1 font-medium">{{ $submission->client->company_name }}</dd>
@@ -132,14 +142,6 @@
                         <div>
                             <dt class="ir-meta-label">Reference</dt>
                             <dd class="font-mono text-gray-800 mt-1">{{ $submission->reference_number }}</dd>
-                        </div>
-                        <div>
-                            <dt class="ir-meta-label">Sample</dt>
-                            <dd class="text-gray-800 mt-1">{{ $submission->sample_name }}</dd>
-                        </div>
-                        <div>
-                            <dt class="ir-meta-label">Type</dt>
-                            <dd class="text-gray-700 mt-1 capitalize">{{ $submission->sample_type }}</dd>
                         </div>
                         <div>
                             <dt class="ir-meta-label">Priority</dt>
@@ -162,6 +164,31 @@
                             <dd class="text-gray-700 mt-1">{{ $result?->authorised_at?->format('d M Y') ?? '—' }}</dd>
                         </div>
                     </dl>
+
+                    {{-- Samples table --}}
+                    <dt class="ir-meta-label mb-2">Samples Submitted ({{ $submission->samples->count() }})</dt>
+                    <table class="w-full text-sm border border-gray-100 rounded-lg overflow-hidden">
+                        <thead class="bg-gray-50">
+                            <tr>
+                                <th class="text-left px-3 py-2 ir-meta-label">#</th>
+                                <th class="text-left px-3 py-2 ir-meta-label">Common Name</th>
+                                <th class="text-left px-3 py-2 ir-meta-label">Scientific Name</th>
+                                <th class="text-left px-3 py-2 ir-meta-label">Sample Code</th>
+                                <th class="text-left px-3 py-2 ir-meta-label">Qty</th>
+                            </tr>
+                        </thead>
+                        <tbody class="divide-y divide-gray-50">
+                            @foreach($submission->samples as $i => $sample)
+                                <tr>
+                                    <td class="px-3 py-2 text-gray-400 font-mono text-xs">{{ $i + 1 }}</td>
+                                    <td class="px-3 py-2 font-medium text-gray-800">{{ $sample->common_name ?? '—' }}</td>
+                                    <td class="px-3 py-2 italic text-gray-500">{{ $sample->scientific_name ?? '—' }}</td>
+                                    <td class="px-3 py-2 font-mono text-xs text-gray-500">{{ $sample->sample_code }}</td>
+                                    <td class="px-3 py-2 text-gray-600 text-xs">{{ $sample->quantity ?? '—' }} {{ $sample->quantity_unit ?? '' }}</td>
+                                </tr>
+                            @endforeach
+                        </tbody>
+                    </table>
                 </div>
 
                 @php

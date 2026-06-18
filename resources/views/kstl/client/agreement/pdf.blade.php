@@ -218,7 +218,7 @@
     <h2>6. Fees and Payment</h2>
     <p>Testing fees are outlined in <strong>Schedule A (Pricing List)</strong>.</p>
     <div class="highlight-box">
-        <strong>Payment Terms:</strong> The Client agrees to pay all fees as outlined in Schedule A. Invoices will be issued after sample assessment. Payment is due within <strong>30 days</strong> from the invoice date. Payments shall be made via <strong>bank transfer, cash, or cheque</strong>. The Client must provide a transaction reference number for all payments.
+        <strong>Payment Terms:</strong> The Client agrees to pay all fees as outlined in Schedule A. Invoices will be issued after sample assessment. Payment is due within <strong>10 days</strong> from the invoice date. Payments shall be made via <strong>bank transfer, cash, or cheque</strong>. The Client must provide a transaction reference number for all payments.
     </div>
 
     {{-- 7. Reporting of Results --}}

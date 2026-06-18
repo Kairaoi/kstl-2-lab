@@ -158,7 +158,7 @@
                             <p>
                                 In the event that samples are rejected, the Client will be notified accordingly.
                                 Should the Client agree to proceed under the stated conditions, an invoice will be issued.
-                                <strong>Payment is due within 30 days</strong> from the invoice date.
+                                <strong>Payment is due within 10 days</strong> from the invoice date.
                             </p>
                             <p>
                                 Payments shall be made via <strong>bank transfer, cash, or cheque</strong>
