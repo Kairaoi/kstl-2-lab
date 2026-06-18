@@ -76,14 +76,16 @@
                 previewName: '',
                 previewMime: '',
                 previewAttachmentId: '',
+                previewNoteSaveUrl: '',
                 previewNote: '',
                 previewNoteSaved: false,
                 previewNoteSaving: false,
-                openPreview(url, name, mime, attachmentId, existingNote) {
+                openPreview(url, name, mime, attachmentId, existingNote, saveUrl) {
                     this.previewUrl          = url;
                     this.previewName         = name;
                     this.previewMime         = mime;
                     this.previewAttachmentId = attachmentId;
+                    this.previewNoteSaveUrl  = saveUrl || '';
                     this.previewNote         = existingNote || '';
                     this.previewNoteSaved    = false;
                     this.previewOpen         = true;
@@ -93,9 +95,9 @@
                     this.previewUrl  = '';
                 },
                 async savePreviewNote() {
-                    if (!this.previewAttachmentId) return;
+                    if (!this.previewNoteSaveUrl) return;
                     this.previewNoteSaving = true;
-                    await fetch('/director/attachments/' + this.previewAttachmentId + '/note', {
+                    await fetch(this.previewNoteSaveUrl, {
                         method: 'POST',
                         headers: {
                             'Content-Type': 'application/json',
@@ -435,7 +437,8 @@
                                                                                         '{{ addslashes($attachment->original_filename) }}',
                                                                                         '{{ $attachment->mime_type }}',
                                                                                         '{{ $attachment->id }}',
-                                                                                        {{ json_encode($attachment->director_note ?? '') }}
+                                                                                        {{ json_encode($attachment->director_note ?? '') }},
+                                                                                        '{{ route('director.attachments.note', $attachment->id) }}'
                                                                                     )"
                                                                                     class="inline-flex items-center gap-1 px-2 py-0.5 text-xs font-medium rounded bg-indigo-50 text-indigo-700 hover:bg-indigo-100 transition">
                                                                                 <svg class="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"/><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"/></svg>

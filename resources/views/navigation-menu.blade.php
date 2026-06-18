@@ -188,7 +188,6 @@
                 <a href="{{ route('client.submissions.index') }}" class="an-link {{ request()->routeIs('client.submissions.*')   ? 'active' : '' }}">Submissions</a>
                 <a href="{{ route('client.results.index') }}"     class="an-link {{ request()->routeIs('client.results.*')       ? 'active' : '' }}">Results</a>
                 <a href="{{ route('client.invoices.index') }}"    class="an-link {{ request()->routeIs('client.invoices.*')      ? 'active' : '' }}">Invoices</a>
-                <a href="{{ route('client.complaints.create') }}" class="an-link {{ request()->routeIs('client.complaints.*')    ? 'active' : '' }}">Complaints</a>
             @endrole
 
             {{-- Lab staff --}}
@@ -310,7 +309,6 @@
             <a href="{{ route('client.submissions.index') }}" class="an-mob-link {{ request()->routeIs('client.submissions.*')  ? 'active' : '' }}">Submissions</a>
             <a href="{{ route('client.results.index') }}"     class="an-mob-link {{ request()->routeIs('client.results.*')      ? 'active' : '' }}">Results</a>
             <a href="{{ route('client.invoices.index') }}"    class="an-mob-link {{ request()->routeIs('client.invoices.*')     ? 'active' : '' }}">Invoices</a>
-            <a href="{{ route('client.complaints.create') }}" class="an-mob-link {{ request()->routeIs('client.complaints.*')   ? 'active' : '' }}">Complaints</a>
         @endrole
 
         @hasanyrole('reception|analyst')
