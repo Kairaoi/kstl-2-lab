@@ -60,6 +60,7 @@ class SubmissionRepository extends BaseRepository
             'sample_type'           => $input['sample_type'],
             'sample_quantity'       => $input['sample_quantity']       ?? null,
             'sample_quantity_unit'  => $input['sample_quantity_unit']  ?? null,
+            'sample_items'          => $input['sample_items']          ?? null,
             'collected_at'          => $input['collected_at']          ?? null,
             'collection_location'   => $input['collection_location']   ?? null,
 

@@ -69,8 +69,8 @@
                   @submit="clearDraft()">
                 @csrf
 
-                @php $steps = ['Sample Info', 'Tests', 'Transport', 'Declaration']; @endphp
-                @php $stepSubs = ['Names, type & quantity', 'Micro & chemical tests', 'Method & priority', 'Review & submit']; @endphp
+                @php $steps = ['Sample Info', 'Tests', 'Test Samples', 'Transport', 'Declaration']; @endphp
+                @php $stepSubs = ['Names, type & quantity', 'Micro & chemical tests', 'Reference & quantity', 'Method & priority', 'Review & submit']; @endphp
 
                 <div class="flex gap-8 items-start">
 
@@ -330,14 +330,94 @@
                                 </button>
                                 <button type="button" @click="nextStep()"
                                         class="inline-flex items-center gap-2 px-5 py-2.5 bg-blue-600 text-white text-sm font-medium rounded-lg hover:bg-blue-700 transition">
+                                    Next: Test Samples
+                                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"/></svg>
+                                </button>
+                            </div>
+                        </div>
+
+                        {{-- ── Step 3: Test Samples ──────────────────────────── --}}
+                        <div x-show="currentStep === 2" x-cloak>
+                            <div class="bg-white shadow rounded-xl overflow-hidden">
+                                <div class="px-6 py-4 border-b border-gray-100">
+                                    <h3 class="text-base font-medium text-gray-900"># of Samples</h3>
+                                    <p class="text-sm text-gray-500 mt-0.5">Add a reference number and quantity for each sample being submitted. Up to 9 samples.</p>
+                                </div>
+                                <div class="px-6 py-5 space-y-3">
+
+                                    <template x-for="(item, index) in sampleItems" :key="index">
+                                        <div class="flex items-end gap-3 py-1">
+                                            <div class="flex-1 min-w-0">
+                                                <label class="block text-xs font-medium text-gray-700 mb-1">
+                                                    Sample Reference <span x-text="index + 1" class="text-gray-400"></span>
+                                                </label>
+                                                <input type="text"
+                                                       :name="`sample_items[${index}][ref]`"
+                                                       x-model="item.ref"
+                                                       class="block w-full border-gray-300 focus:border-indigo-500 focus:ring-indigo-500 rounded-md shadow-sm text-sm"
+                                                       placeholder="e.g. S-001"/>
+                                            </div>
+                                            <div class="w-28 shrink-0">
+                                                <label class="block text-xs font-medium text-gray-700 mb-1">Quantity</label>
+                                                <input type="number"
+                                                       :name="`sample_items[${index}][qty]`"
+                                                       x-model="item.qty"
+                                                       class="block w-full border-gray-300 focus:border-indigo-500 focus:ring-indigo-500 rounded-md shadow-sm text-sm"
+                                                       placeholder="0" min="0" step="0.01"/>
+                                            </div>
+                                            <div class="w-20 shrink-0">
+                                                <label class="block text-xs font-medium text-gray-700 mb-1">Unit</label>
+                                                <select :name="`sample_items[${index}][unit]`"
+                                                        x-model="item.unit"
+                                                        class="block w-full border-gray-300 focus:border-indigo-500 focus:ring-indigo-500 rounded-md shadow-sm text-sm px-2 py-2">
+                                                    <option value="g">g</option>
+                                                    <option value="kg">kg</option>
+                                                    <option value="ml">ml</option>
+                                                    <option value="L">L</option>
+                                                </select>
+                                            </div>
+                                            <button type="button" @click="removeSample(index)"
+                                                    x-show="sampleItems.length > 1"
+                                                    class="mb-0.5 p-1.5 text-red-400 hover:text-red-600 hover:bg-red-50 rounded transition shrink-0">
+                                                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/>
+                                                </svg>
+                                            </button>
+                                        </div>
+                                    </template>
+
+                                    <div class="pt-2 flex items-center gap-4">
+                                        <button type="button" @click="addSample()"
+                                                x-show="sampleItems.length < 9"
+                                                class="inline-flex items-center gap-1.5 text-sm text-blue-600 hover:text-blue-800 font-medium transition">
+                                            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"/>
+                                            </svg>
+                                            Add another sample
+                                        </button>
+                                        <span class="text-xs text-gray-400" x-text="`${sampleItems.length}/9 samples`"></span>
+                                    </div>
+
+                                    <p x-show="sampleItems.length >= 9" class="text-xs text-amber-600 font-medium">Maximum of 9 samples reached.</p>
+
+                                </div>
+                            </div>
+                            <div class="flex items-center justify-between mt-5">
+                                <button type="button" @click="prevStep()"
+                                        class="inline-flex items-center gap-2 px-5 py-2.5 bg-gray-100 text-gray-700 text-sm font-medium rounded-lg hover:bg-gray-200 transition">
+                                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7"/></svg>
+                                    Back
+                                </button>
+                                <button type="button" @click="nextStep()"
+                                        class="inline-flex items-center gap-2 px-5 py-2.5 bg-blue-600 text-white text-sm font-medium rounded-lg hover:bg-blue-700 transition">
                                     Next: Transport
                                     <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"/></svg>
                                 </button>
                             </div>
                         </div>
 
-                        {{-- ── Step 3: Transport & Instructions ────────────────── --}}
-                        <div x-show="currentStep === 2" x-cloak>
+                        {{-- ── Step 4: Transport & Instructions ────────────────── --}}
+                        <div x-show="currentStep === 3" x-cloak>
                             <div class="bg-white shadow rounded-xl overflow-hidden">
                                 <div class="px-6 py-4 border-b border-gray-100">
                                     <h3 class="text-base font-medium text-gray-900">Transport &amp; Instructions</h3>
@@ -432,8 +512,8 @@
                             </div>
                         </div>
 
-                        {{-- ── Step 4: Declaration ──────────────────────────────── --}}
-                        <div x-show="currentStep === 3" x-cloak>
+                        {{-- ── Step 5: Declaration ──────────────────────────────── --}}
+                        <div x-show="currentStep === 4" x-cloak>
                             <div class="bg-white shadow rounded-xl overflow-hidden">
                                 <div class="px-6 py-4 border-b border-gray-100">
                                     <h3 class="text-base font-medium text-gray-900">Declaration</h3>
@@ -517,6 +597,9 @@
         </div>
     </div>
 
+    @php
+        $defaultSampleItems = old('sample_items', [['ref' => '', 'qty' => '', 'unit' => 'kg']]);
+    @endphp
     @push('scripts')
     <script>
         function submissionWizard(checkDraft = true) {
@@ -525,6 +608,7 @@
                 hasDraft: false,
                 draftSaved: false,
                 _draftTimer: null,
+                sampleItems: @json($defaultSampleItems),
 
                 init() {
                     if (checkDraft) {
@@ -535,12 +619,27 @@
                     form.addEventListener('change', () => this.saveDraft());
                 },
 
+                addSample() {
+                    if (this.sampleItems.length < 9) {
+                        this.sampleItems.push({ ref: '', qty: '', unit: 'kg' });
+                        this.$nextTick(() => this.saveDraft());
+                    }
+                },
+
+                removeSample(index) {
+                    if (this.sampleItems.length > 1) {
+                        this.sampleItems.splice(index, 1);
+                        this.$nextTick(() => this.saveDraft());
+                    }
+                },
+
                 saveDraft() {
                     const form = document.getElementById('submission-form');
-                    const data = { _step: this.currentStep };
+                    const data = { _step: this.currentStep, _sampleItems: this.sampleItems };
 
                     form.querySelectorAll('[name]').forEach(el => {
                         if (el.name === '_token' || el.name === 'submitter_name') return;
+                        if (el.name.startsWith('sample_items[')) return;
                         if (el.type === 'checkbox') {
                             if (!Array.isArray(data[el.name])) data[el.name] = [];
                             if (el.checked) data[el.name].push(el.value);
@@ -563,9 +662,14 @@
                     const data = JSON.parse(raw);
                     const form = document.getElementById('submission-form');
 
+                    if (data._sampleItems && Array.isArray(data._sampleItems) && data._sampleItems.length) {
+                        this.sampleItems = data._sampleItems;
+                    }
+
                     form.querySelectorAll('[name]').forEach(el => {
                         const name = el.name;
                         if (name === '_token' || name === 'submitter_name') return;
+                        if (name.startsWith('sample_items[')) return;
                         if (!(name in data)) return;
                         const value = data[name];
 
@@ -606,7 +710,7 @@
                 },
 
                 nextStep() {
-                    if (this.currentStep < 3) {
+                    if (this.currentStep < 4) {
                         this.currentStep++;
                         this.saveDraft();
                         window.scrollTo({ top: 0, behavior: 'smooth' });

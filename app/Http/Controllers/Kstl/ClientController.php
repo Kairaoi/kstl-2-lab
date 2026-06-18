@@ -154,6 +154,12 @@ class ClientController extends Controller
                 'tests_requested.*'     => ['string', 'in:total_coliforms,e_coli,enterococci,yeast_mold,apc,e_coli_coliform,staph_aureus,salmonella_spp,listeria_mono,listeria_spp,histamine,moisture,ph,conductivity,water_activity'],
                 'tests_other'           => ['nullable', 'string', 'max:1000'],
 
+                // Test samples (# of samples tab)
+                'sample_items'          => ['nullable', 'array', 'max:9'],
+                'sample_items.*.ref'    => ['nullable', 'string', 'max:100'],
+                'sample_items.*.qty'    => ['nullable', 'numeric', 'min:0'],
+                'sample_items.*.unit'   => ['nullable', 'in:g,kg,ml,L'],
+
                 // Transport method (Schedule 1: Frozen / Chill / Fresh)
                 'transport_method'      => ['required', 'in:frozen,chilled'],
 
@@ -183,6 +189,7 @@ class ClientController extends Controller
                     'collection_location'   => $validated['collection_location']   ?? null,
                     'tests_requested'       => $validated['tests_requested']       ?? [],
                     'tests_other'           => $validated['tests_other']           ?? null,
+                    'sample_items'          => $validated['sample_items']          ?? null,
                     'transport_method'      => $validated['transport_method'],
                     'priority'              => $validated['priority']              ?? 'routine',
                     'special_instructions'  => $validated['special_instructions']  ?? null,

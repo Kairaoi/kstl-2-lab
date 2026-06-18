@@ -305,24 +305,32 @@
                                             : json_decode($submission->tests_requested ?? '[]', true) ?? [];
 
                                         $testLabels = [
-                                            'total_plate_count'   => 'Total Plate Count (TPC)',
-                                            'e_coli'              => 'E. coli',
-                                            'salmonella'          => 'Salmonella',
-                                            'listeria'            => 'Listeria monocytogenes',
-                                            'coliforms'           => 'Coliforms',
-                                            'heavy_metals'        => 'Heavy Metals (Hg, Pb, Cd, As)',
-                                            'histamine'           => 'Histamine',
-                                            'moisture_content'    => 'Moisture Content',
-                                            'salt_content'        => 'Salt Content',
-                                            'protein_content'     => 'Protein Content',
-                                            'sensory_evaluation'  => 'Sensory Evaluation',
-                                            'net_weight'          => 'Net Weight',
-                                            'packaging_integrity' => 'Packaging Integrity',
+                                            // Microbiological — Water
+                                            'total_coliforms' => 'Total Coliforms',
+                                            'e_coli'          => 'E. coli',
+                                            'enterococci'     => 'Enterococci & Faecal Coliforms',
+                                            // Microbiological — Fish (Petrifilm)
+                                            'yeast_mold'      => 'Yeast & Mould',
+                                            'apc'             => 'APC (Aerobic Plate Count)',
+                                            'e_coli_coliform' => 'E. coli & Coliform',
+                                            'staph_aureus'    => 'Staphylococcus aureus',
+                                            // Rapid Kit
+                                            'salmonella_spp'  => 'Salmonella species',
+                                            'listeria_mono'   => 'Listeria monocytogenes',
+                                            'listeria_spp'    => 'Listeria species',
+                                            // Chemical
+                                            'moisture'        => 'Moisture Content',
+                                            'histamine'       => 'ELISA Histamine Rapid Kit',
+                                            'ph'              => 'pH',
+                                            'conductivity'    => 'Conductivity',
+                                            'water_activity'  => 'Water Activity',
                                         ];
 
-                                        $microTests = array_filter($tests, fn($t) => in_array($t, ['total_plate_count','e_coli','salmonella','listeria','coliforms']));
-                                        $chemTests  = array_filter($tests, fn($t) => in_array($t, ['heavy_metals','histamine','moisture_content','salt_content','protein_content']));
-                                        $physTests  = array_filter($tests, fn($t) => in_array($t, ['sensory_evaluation','net_weight','packaging_integrity']));
+                                        $microKeys = ['total_coliforms','e_coli','enterococci','yeast_mold','apc','e_coli_coliform','staph_aureus','salmonella_spp','listeria_mono','listeria_spp'];
+                                        $chemKeys  = ['moisture','histamine','ph','conductivity','water_activity'];
+                                        $microTests = array_filter($tests, fn($t) => in_array($t, $microKeys));
+                                        $chemTests  = array_filter($tests, fn($t) => in_array($t, $chemKeys));
+                                        $physTests  = [];
                                     @endphp
 
                                     @if(count($tests))
@@ -470,6 +478,48 @@
                     </div>
                 </div>
             </div>
+
+            @if($submission->sample_items && count($submission->sample_items))
+                <x-section-border/>
+
+                {{-- ── Test Samples ──────────────────────────────────────────────── --}}
+                <div class="md:grid md:grid-cols-3 md:gap-6">
+                    <div class="md:col-span-1 px-4 sm:px-0">
+                        <h3 class="text-lg font-medium text-gray-900">Test Samples</h3>
+                        <p class="mt-1 text-sm text-gray-600">Sample reference numbers and quantities submitted for testing.</p>
+                    </div>
+                    <div class="mt-5 md:mt-0 md:col-span-2">
+                        <div class="bg-white shadow rounded-xl overflow-hidden">
+                            <div class="overflow-x-auto">
+                                <table class="w-full text-sm">
+                                    <thead class="bg-gray-50 border-b border-gray-100">
+                                        <tr>
+                                            <th class="text-left px-4 py-3 text-xs font-medium text-gray-500 uppercase tracking-wide w-8">#</th>
+                                            <th class="text-left px-4 py-3 text-xs font-medium text-gray-500 uppercase tracking-wide">Reference</th>
+                                            <th class="text-left px-4 py-3 text-xs font-medium text-gray-500 uppercase tracking-wide">Quantity</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody class="divide-y divide-gray-50">
+                                        @foreach($submission->sample_items as $i => $item)
+                                            <tr>
+                                                <td class="px-4 py-3 text-gray-400 text-xs">{{ $i + 1 }}</td>
+                                                <td class="px-4 py-3 text-gray-800 font-medium">{{ $item['ref'] ?? '—' }}</td>
+                                                <td class="px-4 py-3 text-gray-700">
+                                                    @if(isset($item['qty']) && $item['qty'] !== '')
+                                                        {{ number_format((float) $item['qty'], 2) }} {{ $item['unit'] ?? '' }}
+                                                    @else
+                                                        —
+                                                    @endif
+                                                </td>
+                                            </tr>
+                                        @endforeach
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            @endif
 
             <x-section-border/>
 

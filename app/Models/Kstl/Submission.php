@@ -31,6 +31,7 @@ class Submission extends Model
         'sample_type',           // fish, shellfish, seaweed, water, sediment, other
         'sample_quantity',
         'sample_quantity_unit',
+        'sample_items',          // JSON array of {ref, qty, unit} per sample (up to 9)
         'collected_at',          // Sampling Date
         'collection_location',
 
@@ -69,6 +70,7 @@ class Submission extends Model
     {
         return [
             'tests_requested'    => 'array',
+            'sample_items'       => 'array',
             'application_date'   => 'date',
             'collected_at'       => 'date',
             'results_required_by'=> 'date',
