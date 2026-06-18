@@ -240,8 +240,13 @@
                                             </div>
                                             <p class="text-xs text-gray-400 mt-0.5">
                                                 {{ $submission->client->company_name ?? '—' }}
-                                                &bull; {{ $submission->sample_name }}
-                                                &bull; {{ ucfirst($submission->sample_type) }}
+                                                @if($submission->sample_items && count($submission->sample_items))
+                                                    @foreach($submission->sample_items as $si)
+                                                        &bull; <span class="text-gray-600">{{ $si['name'] ?? '—' }}</span>@if(!empty($si['scientific_name'])) <span class="italic">({{ $si['scientific_name'] }})</span>@endif
+                                                    @endforeach
+                                                @elseif($submission->sample_name)
+                                                    &bull; {{ $submission->sample_name }}
+                                                @endif
                                                 @if($submission->priority !== 'routine')
                                                     &bull; <span class="text-orange-600 font-medium capitalize">{{ $submission->priority }}</span>
                                                 @endif
@@ -281,17 +286,26 @@
                                             <thead class="bg-gray-50">
                                                 <tr>
                                                     <th class="text-left px-4 py-2 font-medium text-gray-500 uppercase">Test</th>
+                                                    <th class="text-left px-4 py-2 font-medium text-gray-500 uppercase">Sample</th>
                                                     <th class="text-left px-4 py-2 font-medium text-gray-500 uppercase">Category</th>
                                                     <th class="text-left px-4 py-2 font-medium text-gray-500 uppercase">Status</th>
                                                     <th class="text-left px-4 py-2 font-medium text-gray-500 uppercase">Result</th>
-                                                    <th class="px-4 py-2"></th>
                                                 </tr>
                                             </thead>
                                             <tbody class="divide-y divide-gray-50">
                                                 @foreach($tests as $test)
                                                     <tr class="hover:bg-gray-50">
-                                                        <td class="px-4 py-2.5 font-medium text-gray-800">
-                                                            {{ $test->getDisplayLabel() }}
+                                                        <td class="px-4 py-2.5">
+                                                            <a href="{{ route('analyst.tests.show', $test->id) }}"
+                                                               class="font-medium text-gray-800 hover:text-indigo-600 transition">
+                                                                {{ $test->getDisplayLabel() }}
+                                                            </a>
+                                                        </td>
+                                                        <td class="px-4 py-2.5 text-xs text-gray-600">
+                                                            <p class="font-medium">{{ $test->sample->common_name }}</p>
+                                                            @if($test->sample->scientific_name)
+                                                                <p class="text-gray-400 italic">{{ $test->sample->scientific_name }}</p>
+                                                            @endif
                                                         </td>
                                                         <td class="px-4 py-2.5">
                                                             <span class="inline-flex px-1.5 py-0.5 text-xs rounded-full capitalize
@@ -333,13 +347,6 @@
                                                             @else
                                                                 <span class="text-gray-400">—</span>
                                                             @endif
-                                                        </td>
-                                                        <td class="px-4 py-2.5 text-right">
-                                                            <a href="{{ route('analyst.tests.show', $test->id) }}"
-                                                               class="px-2.5 py-1 text-xs font-medium rounded-md transition
-                                                               {{ $test->status === 'completed' ? 'bg-gray-100 text-gray-600 hover:bg-gray-200' : ($test->status === 'flagged' ? 'bg-orange-100 text-orange-700 hover:bg-orange-200' : 'bg-indigo-600 text-white hover:bg-indigo-700') }}">
-                                                                {{ $test->status === 'completed' ? 'View' : ($test->status === 'flagged' ? 'Review' : ($test->status === 'in_progress' ? 'Continue' : 'Start')) }}
-                                                            </a>
                                                         </td>
                                                     </tr>
                                                 @endforeach
@@ -432,8 +439,17 @@
                                             <p class="text-gray-400">{{ $submission->client->responsible_officer_name ?? '' }}</p>
                                         </td>
                                         <td class="px-6 py-3.5 text-xs text-gray-700">
-                                            {{ $submission->sample_name }}
-                                            <span class="text-gray-400 capitalize">· {{ $submission->sample_type }}</span>
+                                            @if($submission->sample_items && count($submission->sample_items))
+                                                @foreach($submission->sample_items as $si)
+                                                    <span class="font-medium">{{ $si['name'] ?? '—' }}</span>@if(!empty($si['scientific_name'])) <span class="text-gray-400 italic">({{ $si['scientific_name'] }})</span>@endif
+                                                    @if(!$loop->last) <span class="text-gray-300 mx-1">·</span> @endif
+                                                @endforeach
+                                            @else
+                                                {{ $submission->sample_name ?? '—' }}
+                                                @if($submission->sample_type)
+                                                    <span class="text-gray-400 capitalize">· {{ $submission->sample_type }}</span>
+                                                @endif
+                                            @endif
                                         </td>
                                         <td class="px-6 py-3.5 text-xs text-gray-600">
                                             <span class="font-medium text-green-700">{{ $completedCnt }}</span>

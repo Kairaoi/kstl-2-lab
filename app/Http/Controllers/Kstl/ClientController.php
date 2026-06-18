@@ -140,12 +140,12 @@ class ClientController extends Controller
         try {
             $validated = $request->validate([
                 // Sample info (Schedule 1: Sample table)
-                'sample_name'           => ['required', 'string', 'max:255'],
+                'sample_name'           => ['nullable', 'string', 'max:255'],
                 'scientific_name'       => ['nullable', 'string', 'max:255'],
                 'sample_description'    => ['nullable', 'string', 'max:2000'],
-                'sample_type'           => ['required', 'in:fish,shellfish,seaweed,water,sediment,other'],
-                'sample_quantity'       => ['required', 'numeric', 'min:0'],
-                'sample_quantity_unit'  => ['required', 'in:g,kg,ml,L'],
+                'sample_type'           => ['nullable', 'in:fish,shellfish,seaweed,water,sediment,other'],
+                'sample_quantity'       => ['nullable', 'numeric', 'min:0'],
+                'sample_quantity_unit'  => ['nullable', 'in:g,kg,ml,L'],
                 'collected_at'          => ['required', 'date', 'before_or_equal:today'],
                 'collection_location'   => ['nullable', 'string', 'max:255'],
 
@@ -154,11 +154,17 @@ class ClientController extends Controller
                 'tests_requested.*'     => ['string', 'in:total_coliforms,e_coli,enterococci,yeast_mold,apc,e_coli_coliform,staph_aureus,salmonella_spp,listeria_mono,listeria_spp,histamine,moisture,ph,conductivity,water_activity'],
                 'tests_other'           => ['nullable', 'string', 'max:1000'],
 
-                // Test samples (# of samples tab)
-                'sample_items'          => ['nullable', 'array', 'max:9'],
-                'sample_items.*.ref'    => ['nullable', 'string', 'max:100'],
-                'sample_items.*.qty'    => ['nullable', 'numeric', 'min:0'],
-                'sample_items.*.unit'   => ['nullable', 'in:g,kg,ml,L'],
+                // Per-sample entries
+                'sample_items'                       => ['nullable', 'array', 'max:9'],
+                'sample_items.*.name'                => ['nullable', 'string', 'max:255'],
+                'sample_items.*.scientific_name'     => ['nullable', 'string', 'max:255'],
+                'sample_items.*.type'                => ['nullable', 'in:fish,shellfish,seaweed,water,sediment,other'],
+                'sample_items.*.ref'                 => ['nullable', 'string', 'max:100'],
+                'sample_items.*.qty'                 => ['nullable', 'numeric', 'min:0'],
+                'sample_items.*.unit'                => ['nullable', 'in:g,kg,ml,L'],
+                'sample_items.*.tests'               => ['nullable', 'array'],
+                'sample_items.*.tests.*'             => ['string', 'in:total_coliforms,e_coli,enterococci,yeast_mold,apc,e_coli_coliform,staph_aureus,salmonella_spp,listeria_mono,listeria_spp,moisture,histamine,ph,conductivity,water_activity'],
+                'sample_items.*.tests_other'         => ['nullable', 'string', 'max:1000'],
 
                 // Transport method (Schedule 1: Frozen / Chill / Fresh)
                 'transport_method'      => ['required', 'in:frozen,chilled'],
@@ -176,20 +182,32 @@ class ClientController extends Controller
                 'submitter_designation' => ['nullable', 'string', 'max:255'],
             ]);
 
-            $submission = DB::transaction(function () use ($validated, $client) {
+            // Derive submission-level tests from per-sample tests (union, for display/reporting)
+            $sampleItemsData = $validated['sample_items'] ?? [];
+            $mergedTests = [];
+            $mergedOther = [];
+            foreach ($sampleItemsData as $si) {
+                foreach ($si['tests'] ?? [] as $t) {
+                    if (!in_array($t, $mergedTests)) $mergedTests[] = $t;
+                }
+                $siOther = trim($si['tests_other'] ?? '');
+                if ($siOther !== '') $mergedOther[] = $siOther;
+            }
+
+            $submission = DB::transaction(function () use ($validated, $client, $mergedTests, $mergedOther, $sampleItemsData) {
                 return $this->submissionRepo->create([
                     'client_id'             => $client->id,
-                    'sample_name'           => $validated['sample_name'],
-                    'scientific_name'       => $validated['scientific_name']       ?? null,
+                    'sample_name'           => $sampleItemsData[0]['name'] ?? ($validated['sample_name'] ?? null),
+                    'scientific_name'       => $sampleItemsData[0]['scientific_name'] ?? ($validated['scientific_name'] ?? null),
                     'sample_description'    => $validated['sample_description']    ?? null,
-                    'sample_type'           => $validated['sample_type'],
-                    'sample_quantity'       => $validated['sample_quantity'],
-                    'sample_quantity_unit'  => $validated['sample_quantity_unit'],
+                    'sample_type'           => $sampleItemsData[0]['type'] ?? ($validated['sample_type'] ?? null),
+                    'sample_quantity'       => $validated['sample_quantity'] ?? null,
+                    'sample_quantity_unit'  => $validated['sample_quantity_unit'] ?? null,
                     'collected_at'          => $validated['collected_at'],
                     'collection_location'   => $validated['collection_location']   ?? null,
-                    'tests_requested'       => $validated['tests_requested']       ?? [],
-                    'tests_other'           => $validated['tests_other']           ?? null,
-                    'sample_items'          => $validated['sample_items']          ?? null,
+                    'tests_requested'       => $mergedTests,
+                    'tests_other'           => $mergedOther ? implode('; ', $mergedOther) : null,
+                    'sample_items'          => $sampleItemsData ?: null,
                     'transport_method'      => $validated['transport_method'],
                     'priority'              => $validated['priority']              ?? 'routine',
                     'special_instructions'  => $validated['special_instructions']  ?? null,
@@ -308,9 +326,9 @@ class ClientController extends Controller
                 'sample_name'           => ['required', 'string', 'max:255'],
                 'scientific_name'       => ['nullable', 'string', 'max:255'],
                 'sample_description'    => ['nullable', 'string', 'max:2000'],
-                'sample_type'           => ['required', 'in:fish,shellfish,seaweed,water,sediment,other'],
-                'sample_quantity'       => ['required', 'numeric', 'min:0'],
-                'sample_quantity_unit'  => ['required', 'in:g,kg,ml,L'],
+                'sample_type'           => ['nullable', 'in:fish,shellfish,seaweed,water,sediment,other'],
+                'sample_quantity'       => ['nullable', 'numeric', 'min:0'],
+                'sample_quantity_unit'  => ['nullable', 'in:g,kg,ml,L'],
                 'collected_at'          => ['required', 'date', 'before_or_equal:today'],
                 'collection_location'   => ['nullable', 'string', 'max:255'],
                 'tests_requested'       => ['nullable', 'array'],

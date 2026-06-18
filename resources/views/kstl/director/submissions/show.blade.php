@@ -1,4 +1,5 @@
 {{-- resources/views/kstl/director/submissions/show.blade.php --}}
+{{-- Director review page: test results + file preview modal + per-test notes + text highlight --}}
 
 <x-app-layout>
     <x-slot name="header">
@@ -31,9 +32,83 @@
         </div>
     </x-slot>
 
+    @push('styles')
+    <style>
+        /* ── File preview modal ───────────────────────── */
+        .preview-modal-backdrop { backdrop-filter: blur(4px); }
+
+        /* ── Text highlight colours ───────────────────── */
+        .hl-yellow { background: #fef08a; border-radius: 2px; padding: 0 1px; }
+        .hl-green  { background: #bbf7d0; border-radius: 2px; padding: 0 1px; }
+        .hl-blue   { background: #bfdbfe; border-radius: 2px; padding: 0 1px; }
+        .hl-pink   { background: #fbcfe8; border-radius: 2px; padding: 0 1px; }
+
+        /* Floating highlight toolbar */
+        #hl-toolbar {
+            position: fixed;
+            z-index: 9999;
+            display: none;
+            gap: 4px;
+            background: #1e293b;
+            border-radius: 8px;
+            padding: 5px 8px;
+            box-shadow: 0 4px 20px rgba(0,0,0,.35);
+            align-items: center;
+        }
+        #hl-toolbar button {
+            width: 20px; height: 20px; border-radius: 4px; border: 2px solid rgba(255,255,255,.2); cursor: pointer;
+        }
+        #hl-toolbar .hl-tb-label { font-size: 11px; color: #94a3b8; white-space: nowrap; }
+        #hl-toolbar .hl-tb-clear { font-size: 11px; color: #f87171; cursor: pointer; background: none; border: none; padding: 0 2px; }
+
+        /* Highlightable cells */
+        .highlightable { cursor: text; }
+    </style>
+    @endpush
+
     <div class="py-8">
         <div class="max-w-7xl mx-auto sm:px-6 lg:px-8 space-y-6"
-             x-data="{ selectedTests: [], queryMode: false }">
+             x-data="{
+                selectedTests: [],
+                queryMode: false,
+                previewOpen: false,
+                previewUrl: '',
+                previewName: '',
+                previewMime: '',
+                previewAttachmentId: '',
+                previewNote: '',
+                previewNoteSaved: false,
+                previewNoteSaving: false,
+                openPreview(url, name, mime, attachmentId, existingNote) {
+                    this.previewUrl          = url;
+                    this.previewName         = name;
+                    this.previewMime         = mime;
+                    this.previewAttachmentId = attachmentId;
+                    this.previewNote         = existingNote || '';
+                    this.previewNoteSaved    = false;
+                    this.previewOpen         = true;
+                },
+                closePreview() {
+                    this.previewOpen = false;
+                    this.previewUrl  = '';
+                },
+                async savePreviewNote() {
+                    if (!this.previewAttachmentId) return;
+                    this.previewNoteSaving = true;
+                    await fetch('/director/attachments/' + this.previewAttachmentId + '/note', {
+                        method: 'POST',
+                        headers: {
+                            'Content-Type': 'application/json',
+                            'X-CSRF-TOKEN': document.querySelector('meta[name=csrf-token]').content,
+                            'Accept': 'application/json',
+                        },
+                        body: JSON.stringify({ director_note: this.previewNote }),
+                    });
+                    this.previewNoteSaving = false;
+                    this.previewNoteSaved  = true;
+                    setTimeout(() => this.previewNoteSaved = false, 2500);
+                }
+             }">
 
             @if(session('success'))
                 <div class="bg-green-50 border-l-4 border-green-400 p-4 rounded-lg text-sm text-green-800">
@@ -250,8 +325,9 @@
                                                 </span>
                                             </td>
 
-                                            {{-- Value --}}
-                                            <td class="px-4 py-3 text-sm text-gray-700">
+                                            {{-- Value (highlightable) --}}
+                                            <td class="px-4 py-3 text-sm text-gray-700 highlightable"
+                                                data-hl-cell="test-{{ $test->id }}-value">
                                                 @if($test->result_value)
                                                     <span class="font-mono">{{ $test->result_value }}</span>
                                                     @if($test->result_unit)
@@ -262,8 +338,9 @@
                                                 @endif
                                             </td>
 
-                                            {{-- Notes --}}
-                                            <td class="px-4 py-3 text-xs text-gray-500 max-w-xs">
+                                            {{-- Notes (highlightable) --}}
+                                            <td class="px-4 py-3 text-xs text-gray-500 max-w-xs highlightable"
+                                                data-hl-cell="test-{{ $test->id }}-notes">
                                                 {{ $test->result_notes ? \Illuminate\Support\Str::limit($test->result_notes, 80) : '—' }}
                                             </td>
 
@@ -308,36 +385,72 @@
 
                                         </tr>
 
-                                        {{-- Supporting documents --}}
+                                        {{-- Supporting documents + per-test director note --}}
+                                        @php $colspan = $existingResult ? 6 : 7; @endphp
+
                                         @if($test->attachments->isNotEmpty())
                                             <tr class="{{ $test->status === 'flagged' ? 'bg-red-50/20' : 'bg-gray-50/40' }}">
-                                                <td colspan="{{ $existingResult ? 6 : 7 }}" class="px-4 pb-3 pt-0">
-                                                    <div class="ml-1 rounded-lg border border-gray-100 bg-white px-3 py-2">
-                                                        <p class="text-xs font-medium text-gray-500 mb-1.5 flex items-center gap-1.5">
+                                                <td colspan="{{ $colspan }}" class="px-4 pb-3 pt-0">
+                                                    <div class="ml-1 rounded-lg border border-gray-100 bg-white px-3 py-2.5">
+                                                        <p class="text-xs font-medium text-gray-500 mb-2 flex items-center gap-1.5">
                                                             <svg class="w-3.5 h-3.5 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15.172 7l-6.586 6.586a2 2 0 102.828 2.828l6.414-6.586a4 4 0 00-5.656-5.656l-6.415 6.585a6 6 0 108.486 8.486L20.5 13"/>
                                                             </svg>
                                                             Supporting documents ({{ $test->attachments->count() }})
                                                         </p>
-                                                        <ul class="space-y-1">
+                                                        <ul class="space-y-2">
                                                             @foreach($test->attachments as $attachment)
-                                                                <li class="flex items-baseline gap-2">
-                                                                    <a href="{{ route('director.attachments.download', $attachment->id) }}"
-                                                                       class="text-xs font-medium text-indigo-600 hover:text-indigo-800 hover:underline inline-flex items-center gap-1">
-                                                                        <svg class="w-3 h-3 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4"/>
-                                                                        </svg>
-                                                                        {{ $attachment->original_filename }}
-                                                                    </a>
-                                                                    <span class="text-xs text-gray-400">
-                                                                        ({{ $attachment->human_size }})
+                                                                @php
+                                                                    $isImage = str_starts_with($attachment->mime_type ?? '', 'image/');
+                                                                    $isPdf   = ($attachment->mime_type ?? '') === 'application/pdf';
+                                                                    $canPreview = $isImage || $isPdf;
+                                                                @endphp
+                                                                <li class="flex items-center gap-2 flex-wrap">
+                                                                    {{-- File icon --}}
+                                                                    <svg class="w-4 h-4 shrink-0 {{ $isPdf ? 'text-red-400' : ($isImage ? 'text-blue-400' : 'text-gray-400') }}" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                                        @if($isPdf)
+                                                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 21h10a2 2 0 002-2V9.414a1 1 0 00-.293-.707l-5.414-5.414A1 1 0 0012.586 3H7a2 2 0 00-2 2v14a2 2 0 002 2z"/>
+                                                                        @elseif($isImage)
+                                                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z"/>
+                                                                        @else
+                                                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15.172 7l-6.586 6.586a2 2 0 102.828 2.828l6.414-6.586a4 4 0 00-5.656-5.656l-6.415 6.585a6 6 0 108.486 8.486L20.5 13"/>
+                                                                        @endif
+                                                                    </svg>
+
+                                                                    <span class="text-xs font-medium text-gray-700">{{ $attachment->original_filename }}</span>
+                                                                    <span class="text-xs text-gray-400">({{ $attachment->human_size }}
                                                                         @if($attachment->uploadedBy)
                                                                             &middot; {{ $attachment->uploadedBy->name ?? trim(($attachment->uploadedBy->first_name ?? '') . ' ' . ($attachment->uploadedBy->last_name ?? '')) }}
                                                                         @endif
-                                                                    </span>
+                                                                    )</span>
                                                                     @if($attachment->description)
-                                                                        <span class="text-xs text-gray-500">— {{ $attachment->description }}</span>
+                                                                        <span class="text-xs text-gray-500 italic">— {{ $attachment->description }}</span>
                                                                     @endif
+
+                                                                    <div class="ml-auto flex items-center gap-1.5">
+                                                                        @if($canPreview)
+                                                                            <button type="button"
+                                                                                    @click="openPreview(
+                                                                                        '{{ route('director.attachments.preview', $attachment->id) }}',
+                                                                                        '{{ addslashes($attachment->original_filename) }}',
+                                                                                        '{{ $attachment->mime_type }}',
+                                                                                        '{{ $attachment->id }}',
+                                                                                        {{ json_encode($attachment->director_note ?? '') }}
+                                                                                    )"
+                                                                                    class="inline-flex items-center gap-1 px-2 py-0.5 text-xs font-medium rounded bg-indigo-50 text-indigo-700 hover:bg-indigo-100 transition">
+                                                                                <svg class="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"/><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"/></svg>
+                                                                                Preview
+                                                                                @if($attachment->director_note)
+                                                                                    <span class="w-1.5 h-1.5 rounded-full bg-indigo-400 inline-block"></span>
+                                                                                @endif
+                                                                            </button>
+                                                                        @endif
+                                                                        <a href="{{ route('director.attachments.download', $attachment->id) }}"
+                                                                           class="inline-flex items-center gap-1 px-2 py-0.5 text-xs font-medium rounded bg-gray-100 text-gray-600 hover:bg-gray-200 transition">
+                                                                            <svg class="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4"/></svg>
+                                                                            Download
+                                                                        </a>
+                                                                    </div>
                                                                 </li>
                                                             @endforeach
                                                         </ul>
@@ -345,6 +458,60 @@
                                                 </td>
                                             </tr>
                                         @endif
+
+                                        {{-- Per-test director note (collapsible) --}}
+                                        <tr x-data="{
+                                                open: {{ $test->director_review_note ? 'true' : 'false' }},
+                                                note: {{ json_encode($test->director_review_note ?? '') }},
+                                                saved: false,
+                                                saving: false,
+                                                async saveNote() {
+                                                    this.saving = true;
+                                                    await fetch('{{ route('director.tests.note', $test->id) }}', {
+                                                        method: 'POST',
+                                                        headers: {
+                                                            'Content-Type': 'application/json',
+                                                            'X-CSRF-TOKEN': document.querySelector('meta[name=csrf-token]').content,
+                                                            'Accept': 'application/json',
+                                                        },
+                                                        body: JSON.stringify({ director_review_note: this.note }),
+                                                    });
+                                                    this.saving = false;
+                                                    this.saved  = true;
+                                                    setTimeout(() => this.saved = false, 2500);
+                                                }
+                                            }"
+                                             class="bg-gray-50/30 border-t border-dashed border-gray-100">
+                                            <td colspan="{{ $colspan }}" class="px-4 py-1.5">
+                                                <div class="flex items-center gap-2">
+                                                    <button type="button" @click="open = !open"
+                                                            class="inline-flex items-center gap-1.5 text-xs text-gray-400 hover:text-indigo-600 transition">
+                                                        <svg class="w-3.5 h-3.5 transition" :class="open ? 'rotate-90' : ''" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"/>
+                                                        </svg>
+                                                        <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 8h10M7 12h4m1 8l-4-4H5a2 2 0 01-2-2V6a2 2 0 012-2h14a2 2 0 012 2v8a2 2 0 01-2 2h-3l-4 4z"/></svg>
+                                                        <span x-text="open ? 'Hide note' : (note ? 'View note' : 'Add director note')"></span>
+                                                        <span x-show="note && !open" class="w-2 h-2 rounded-full bg-indigo-400 inline-block"></span>
+                                                    </button>
+                                                    <span x-show="saved" x-cloak class="text-xs text-green-600 font-medium">Saved ✓</span>
+                                                </div>
+                                                <div x-show="open" x-cloak class="mt-2 space-y-2">
+                                                    <textarea x-model="note" rows="2"
+                                                              class="w-full text-xs border-gray-200 rounded-lg focus:border-indigo-400 focus:ring-indigo-400 resize-none"
+                                                              placeholder="Director's internal review note for this test (not shown to client)..."></textarea>
+                                                    <div class="flex items-center justify-end gap-2">
+                                                        <button type="button" @click="open = false" class="text-xs text-gray-400 hover:text-gray-600">Cancel</button>
+                                                        <button type="button" @click="saveNote()"
+                                                                :disabled="saving"
+                                                                class="px-3 py-1 text-xs font-medium rounded-md bg-indigo-600 text-white hover:bg-indigo-700 disabled:opacity-50 transition">
+                                                            <span x-show="!saving">Save note</span>
+                                                            <span x-show="saving" x-cloak>Saving…</span>
+                                                        </button>
+                                                    </div>
+                                                </div>
+                                            </td>
+                                        </tr>
+
                                     @endforeach
                                 </tbody>
                             </table>
@@ -510,6 +677,291 @@
 
             <div class="pb-8"></div>
 
+            {{-- ════════════════════════════════════════════════════════
+                 File Preview Modal  (must be INSIDE the x-data scope)
+            ════════════════════════════════════════════════════════ --}}
+            <div x-show="previewOpen"
+                 x-cloak
+                 class="preview-modal-backdrop fixed inset-0 z-50 flex flex-col bg-black/60"
+                 @keydown.escape.window="closePreview()">
+
+                {{-- Header bar --}}
+                <div class="flex items-center justify-between px-5 py-3 bg-gray-900 text-white shrink-0">
+                    <div class="flex items-center gap-3 min-w-0">
+                        <svg class="w-4 h-4 text-gray-400 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"/>
+                        </svg>
+                        <span class="text-sm font-medium truncate" x-text="previewName"></span>
+                    </div>
+                    <div class="flex items-center gap-3 shrink-0">
+                        <a :href="previewUrl.replace('/preview', '/download')"
+                           class="inline-flex items-center gap-1.5 px-3 py-1.5 text-xs font-medium rounded-md bg-gray-700 text-gray-200 hover:bg-gray-600 transition">
+                            <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4"/></svg>
+                            Download
+                        </a>
+                        <button @click="closePreview()"
+                                class="w-8 h-8 flex items-center justify-center rounded-lg text-gray-400 hover:text-white hover:bg-gray-700 transition">
+                            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/></svg>
+                        </button>
+                    </div>
+                </div>
+
+                {{-- Full-width file viewer with floating comment overlay --}}
+                <div class="flex-1 overflow-hidden relative p-4"
+                     x-data="{ commentOpen: false }">
+
+                    {{-- File viewer — full width --}}
+                    <template x-if="previewOpen && previewMime && previewMime.startsWith('image/')">
+                        <div class="w-full h-full flex items-center justify-center">
+                            <img :src="previewUrl" :alt="previewName"
+                                 class="max-w-full max-h-full object-contain rounded shadow-lg">
+                        </div>
+                    </template>
+                    <template x-if="previewOpen && previewMime === 'application/pdf'">
+                        <iframe :src="previewUrl"
+                                class="w-full h-full rounded bg-white"
+                                frameborder="0"
+                                title="PDF Preview"></iframe>
+                    </template>
+                    <template x-if="previewOpen && previewMime && !previewMime.startsWith('image/') && previewMime !== 'application/pdf'">
+                        <div class="w-full h-full flex flex-col items-center justify-center gap-4 text-white">
+                            <svg class="w-16 h-16 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"/>
+                            </svg>
+                            <p class="text-gray-300 text-sm">Preview not available for this file type.</p>
+                            <a :href="previewUrl.replace('/preview', '/download')"
+                               class="px-4 py-2 bg-indigo-600 text-white text-sm rounded-lg hover:bg-indigo-700 transition">
+                                Download file
+                            </a>
+                        </div>
+                    </template>
+
+                    {{-- Toggle comment button (bottom-right, always visible) --}}
+                    <button @click="commentOpen = !commentOpen"
+                            class="absolute bottom-6 right-6 z-20 inline-flex items-center gap-2 px-3.5 py-2 rounded-xl shadow-xl text-sm font-medium transition"
+                            :class="commentOpen
+                                ? 'bg-indigo-600 text-white hover:bg-indigo-500'
+                                : 'bg-gray-800 text-gray-200 hover:bg-gray-700 ring-1 ring-gray-600'">
+                        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 8h10M7 12h4m1 8l-4-4H5a2 2 0 01-2-2V6a2 2 0 012-2h14a2 2 0 012 2v8a2 2 0 01-2 2h-3l-4 4z"/>
+                        </svg>
+                        <span x-text="commentOpen ? 'Hide comment' : 'Add comment'"></span>
+                        {{-- dot if a note already exists --}}
+                        <span x-show="!commentOpen && previewNote"
+                              class="w-2 h-2 rounded-full bg-indigo-400 shrink-0"></span>
+                    </button>
+
+                    {{-- Floating comment panel (overlay, bottom-right) --}}
+                    <div x-show="commentOpen"
+                         x-cloak
+                         x-transition:enter="transition ease-out duration-200"
+                         x-transition:enter-start="opacity-0 translate-y-3"
+                         x-transition:enter-end="opacity-100 translate-y-0"
+                         x-transition:leave="transition ease-in duration-150"
+                         x-transition:leave-start="opacity-100 translate-y-0"
+                         x-transition:leave-end="opacity-0 translate-y-3"
+                         class="absolute bottom-20 right-6 z-20 w-80 rounded-xl shadow-2xl overflow-hidden
+                                flex flex-col"
+                         style="max-height: 60vh; background:#1e293b; border:1px solid #334155;">
+
+                        {{-- Panel header --}}
+                        <div class="flex items-center justify-between px-4 py-2.5 border-b"
+                             style="border-color:#334155;">
+                            <div class="flex items-center gap-2">
+                                <svg class="w-3.5 h-3.5 text-indigo-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 8h10M7 12h4m1 8l-4-4H5a2 2 0 01-2-2V6a2 2 0 012-2h14a2 2 0 012 2v8a2 2 0 01-2 2h-3l-4 4z"/>
+                                </svg>
+                                <span class="text-xs font-semibold" style="color:#e2e8f0;">Director's Comment</span>
+                            </div>
+                            <span class="text-xs" style="color:#64748b;">Internal only</span>
+                        </div>
+
+                        {{-- Textarea --}}
+                        <div class="p-3 flex-1 flex flex-col gap-2">
+                            <textarea
+                                x-model="previewNote"
+                                rows="7"
+                                placeholder="Write your comment or observation about this document…"
+                                class="w-full rounded-lg text-sm resize-none p-3 focus:outline-none focus:ring-1 focus:ring-indigo-500"
+                                style="background:#0f172a; border:1px solid #334155; color:#f1f5f9; placeholder-color:#64748b;"
+                            ></textarea>
+
+                            {{-- Save row --}}
+                            <div class="flex items-center justify-between">
+                                <span x-show="previewNoteSaved" x-cloak
+                                      class="text-xs font-medium flex items-center gap-1"
+                                      style="color:#4ade80;">
+                                    <svg class="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M5 13l4 4L19 7"/></svg>
+                                    Saved
+                                </span>
+                                <span x-show="!previewNoteSaved" style="color:#475569; font-size:11px;"></span>
+
+                                <button @click="savePreviewNote()"
+                                        :disabled="previewNoteSaving"
+                                        class="px-3.5 py-1.5 text-xs font-semibold rounded-lg transition disabled:opacity-50"
+                                        style="background:#4f46e5; color:#fff;">
+                                    <span x-show="!previewNoteSaving">Save</span>
+                                    <span x-show="previewNoteSaving" x-cloak>Saving…</span>
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+
+                </div>
+            </div>
+
         </div>
     </div>
+
+    {{-- ════════════════════════════════════════════════════════
+         Text Highlight Toolbar (floating)
+    ════════════════════════════════════════════════════════ --}}
+    <div id="hl-toolbar" role="toolbar" aria-label="Highlight selected text">
+        <span class="hl-tb-label">Highlight:</span>
+        <button title="Yellow" style="background:#fef08a" onclick="applyHighlight('hl-yellow')"></button>
+        <button title="Green"  style="background:#bbf7d0" onclick="applyHighlight('hl-green')"></button>
+        <button title="Blue"   style="background:#bfdbfe" onclick="applyHighlight('hl-blue')"></button>
+        <button title="Pink"   style="background:#fbcfe8" onclick="applyHighlight('hl-pink')"></button>
+        <button class="hl-tb-clear" title="Remove highlight" onclick="removeHighlight()">✕</button>
+    </div>
+
+    @push('scripts')
+    <script>
+    (() => {
+        const SUBMISSION_KEY = 'hl_{{ $submission->id }}';
+        const toolbar = document.getElementById('hl-toolbar');
+        let savedRange = null;
+
+        // ── Restore highlights from localStorage ──────────────────
+        function loadHighlights() {
+            const data = JSON.parse(localStorage.getItem(SUBMISSION_KEY) || '[]');
+            data.forEach(h => {
+                // Find the element by its data-hl-cell attribute
+                const cell = document.querySelector(`[data-hl-cell="${h.cell}"]`);
+                if (!cell) return;
+                const html = cell.innerHTML;
+                // Replace exact text match with highlighted version
+                const escaped = h.text.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
+                const regex = new RegExp(escaped, 'g');
+                cell.innerHTML = html.replace(regex,
+                    `<mark class="${h.color}" data-hl="${h.cell}">${h.text}</mark>`
+                );
+            });
+        }
+
+        // ── Save a highlight entry ─────────────────────────────────
+        function saveHighlight(cellId, text, color) {
+            const data = JSON.parse(localStorage.getItem(SUBMISSION_KEY) || '[]');
+            // Avoid duplicates
+            const exists = data.some(h => h.cell === cellId && h.text === text);
+            if (!exists) {
+                data.push({ cell: cellId, text, color });
+                localStorage.setItem(SUBMISSION_KEY, JSON.stringify(data));
+            }
+        }
+
+        // ── Remove a highlight entry ───────────────────────────────
+        function removeHighlightEntry(cellId, text) {
+            let data = JSON.parse(localStorage.getItem(SUBMISSION_KEY) || '[]');
+            data = data.filter(h => !(h.cell === cellId && h.text === text));
+            localStorage.setItem(SUBMISSION_KEY, JSON.stringify(data));
+        }
+
+        // ── Apply highlight to current selection ──────────────────
+        window.applyHighlight = function(color) {
+            if (!savedRange) return;
+            const sel = window.getSelection();
+            sel.removeAllRanges();
+            sel.addRange(savedRange);
+
+            const text = savedRange.toString().trim();
+            if (!text) return;
+
+            // Find parent cell
+            const container = savedRange.commonAncestorContainer;
+            const cell = container.nodeType === 1
+                ? container.closest('[data-hl-cell]')
+                : container.parentElement?.closest('[data-hl-cell]');
+
+            if (!cell) { hideToolbar(); return; }
+
+            // Wrap with <mark>
+            try {
+                const mark = document.createElement('mark');
+                mark.className = color;
+                mark.dataset.hl = cell.dataset.hlCell;
+                savedRange.surroundContents(mark);
+                saveHighlight(cell.dataset.hlCell, text, color);
+            } catch(e) {
+                // surroundContents fails on partial tag spans — ignore
+            }
+
+            sel.removeAllRanges();
+            hideToolbar();
+        };
+
+        // ── Remove highlight under cursor ──────────────────────────
+        window.removeHighlight = function() {
+            if (!savedRange) return;
+            const container = savedRange.commonAncestorContainer;
+            const mark = container.nodeType === 1
+                ? container.closest('mark[data-hl]')
+                : container.parentElement?.closest('mark[data-hl]');
+            if (!mark) { hideToolbar(); return; }
+
+            const text = mark.textContent;
+            const cellId = mark.dataset.hl;
+            // Unwrap the mark
+            mark.replaceWith(document.createTextNode(text));
+            removeHighlightEntry(cellId, text);
+            hideToolbar();
+        };
+
+        function hideToolbar() {
+            toolbar.style.display = 'none';
+            savedRange = null;
+        }
+
+        // ── Show toolbar on text selection ─────────────────────────
+        document.addEventListener('mouseup', (e) => {
+            // Don't intercept toolbar button clicks
+            if (toolbar.contains(e.target)) return;
+
+            const sel = window.getSelection();
+            if (!sel || sel.isCollapsed || !sel.toString().trim()) {
+                setTimeout(() => {
+                    const s2 = window.getSelection();
+                    if (!s2 || s2.isCollapsed) hideToolbar();
+                }, 100);
+                return;
+            }
+
+            // Only show for highlightable cells
+            const range = sel.getRangeAt(0);
+            const container = range.commonAncestorContainer;
+            const cell = container.nodeType === 1
+                ? container.closest('.highlightable')
+                : container.parentElement?.closest('.highlightable');
+
+            if (!cell) return;
+
+            savedRange = range.cloneRange();
+            const rect = range.getBoundingClientRect();
+            toolbar.style.display = 'flex';
+            toolbar.style.left = Math.max(8, rect.left + rect.width / 2 - 100) + 'px';
+            toolbar.style.top  = (rect.top + window.scrollY - 44) + 'px';
+        });
+
+        document.addEventListener('mousedown', (e) => {
+            if (!toolbar.contains(e.target)) hideToolbar();
+        });
+
+        // Restore on load
+        document.addEventListener('DOMContentLoaded', loadHighlights);
+        // Also try immediately (if DOM already ready)
+        if (document.readyState !== 'loading') loadHighlights();
+    })();
+    </script>
+    @endpush
+
 </x-app-layout>

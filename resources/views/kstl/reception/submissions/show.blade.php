@@ -126,24 +126,6 @@
                         <p class="rs-section-title mb-3">Submission Details</p>
                         <dl class="grid grid-cols-2 gap-x-4 gap-y-3 text-sm">
                             <div>
-                                <dt class="rs-meta-label">Sample Name</dt>
-                                <dd class="font-medium text-gray-800 mt-0.5">{{ $submission->sample_name }}</dd>
-                            </div>
-                            @if($submission->scientific_name)
-                            <div>
-                                <dt class="rs-meta-label">Scientific Name</dt>
-                                <dd class="text-gray-700 italic mt-0.5">{{ $submission->scientific_name }}</dd>
-                            </div>
-                            @endif
-                            <div>
-                                <dt class="rs-meta-label">Sample Type</dt>
-                                <dd class="text-gray-700 capitalize mt-0.5">{{ $submission->sample_type }}</dd>
-                            </div>
-                            <div>
-                                <dt class="rs-meta-label">Quantity</dt>
-                                <dd class="text-gray-700 mt-0.5">{{ $submission->sample_quantity }} {{ $submission->sample_quantity_unit }}</dd>
-                            </div>
-                            <div>
                                 <dt class="rs-meta-label">Priority</dt>
                                 <dd class="mt-0.5"><x-kstl.priority-badge :priority="$submission->priority" /></dd>
                             </div>
@@ -167,6 +149,48 @@
                             </div>
                             @endif
                         </dl>
+
+                        {{-- Per-sample summary table --}}
+                        @if($submission->sample_items && count($submission->sample_items))
+                            <div class="mt-4">
+                                <dt class="rs-meta-label mb-2">Samples ({{ count($submission->sample_items) }})</dt>
+                                <div class="rounded-lg border border-gray-100 overflow-hidden divide-y divide-gray-50">
+                                    @foreach($submission->sample_items as $si => $item)
+                                        <div class="px-3 py-2 flex items-center justify-between gap-3 text-xs">
+                                            <div class="flex items-center gap-2 min-w-0">
+                                                <span class="inline-flex items-center justify-center w-5 h-5 rounded-full bg-indigo-100 text-indigo-700 font-bold shrink-0">{{ $si + 1 }}</span>
+                                                <div class="min-w-0">
+                                                    <p class="font-medium text-gray-800 truncate">{{ $item['name'] ?? '—' }}</p>
+                                                    @if(!empty($item['scientific_name']))
+                                                        <p class="text-gray-400 italic truncate">{{ $item['scientific_name'] }}</p>
+                                                    @endif
+                                                </div>
+                                            </div>
+                                            <div class="text-right shrink-0 text-gray-500 space-y-0.5">
+                                                @if(!empty($item['ref']))
+                                                    <span class="font-mono bg-gray-100 px-1.5 py-0.5 rounded">{{ $item['ref'] }}</span>
+                                                @endif
+                                                @if(isset($item['qty']) && $item['qty'] !== '')
+                                                    <span class="ml-1">{{ $item['qty'] }} {{ $item['unit'] ?? '' }}</span>
+                                                @endif
+                                                @php $tCount = count($item['tests'] ?? []); @endphp
+                                                @if($tCount)
+                                                    <span class="ml-1 text-purple-600">{{ $tCount }} test{{ $tCount > 1 ? 's' : '' }}</span>
+                                                @endif
+                                            </div>
+                                        </div>
+                                    @endforeach
+                                </div>
+                            </div>
+                        @elseif($submission->sample_name)
+                            <div class="mt-3">
+                                <dt class="rs-meta-label mb-1">Sample</dt>
+                                <dd class="font-medium text-gray-800">{{ $submission->sample_name }}</dd>
+                                @if($submission->scientific_name)
+                                    <dd class="text-gray-500 italic text-xs">{{ $submission->scientific_name }}</dd>
+                                @endif
+                            </div>
+                        @endif
                     </div>
                 </div>
 
@@ -178,13 +202,27 @@
                             ? $submission->tests_requested
                             : json_decode($submission->tests_requested ?? '[]', true) ?? [];
 
-                        $micro = array_filter($tests, fn($t) => in_array($t, [
-                            'total_coliforms','e_coli','enterococci',
-                            'yeast_mold','apc','e_coli_coliform','staph_aureus'
-                        ]));
-                        $chem = array_filter($tests, fn($t) => in_array($t, [
-                            'histamine','moisture','ph','conductivity','water_activity'
-                        ]));
+                        $allTestLabels = [
+                            'total_coliforms' => 'Total Coliforms',
+                            'e_coli'          => 'E. coli',
+                            'enterococci'     => 'Enterococci & Faecal Coliforms',
+                            'yeast_mold'      => 'Yeast & Mould',
+                            'apc'             => 'APC (Aerobic Plate Count)',
+                            'e_coli_coliform' => 'E. coli & Coliform',
+                            'staph_aureus'    => 'Staphylococcus aureus',
+                            'salmonella_spp'  => 'Salmonella species',
+                            'listeria_mono'   => 'Listeria monocytogenes',
+                            'listeria_spp'    => 'Listeria species',
+                            'moisture'        => 'Moisture Content',
+                            'histamine'       => 'ELISA Histamine Rapid Kit',
+                            'ph'              => 'pH',
+                            'conductivity'    => 'Conductivity',
+                            'water_activity'  => 'Water Activity',
+                        ];
+                        $microKeys = ['total_coliforms','e_coli','enterococci','yeast_mold','apc','e_coli_coliform','staph_aureus','salmonella_spp','listeria_mono','listeria_spp'];
+                        $chemKeys  = ['moisture','histamine','ph','conductivity','water_activity'];
+                        $micro = array_filter($tests, fn($t) => in_array($t, $microKeys));
+                        $chem  = array_filter($tests, fn($t) => in_array($t, $chemKeys));
                     @endphp
 
                     <div class="grid grid-cols-1 sm:grid-cols-2 gap-6">
@@ -193,7 +231,7 @@
                             @if(count($micro))
                                 <div class="flex flex-wrap gap-1">
                                     @foreach($micro as $t)
-                                        <span class="inline-flex px-2 py-0.5 text-xs bg-purple-50 text-purple-700 rounded-full">{{ str_replace('_', ' ', $t) }}</span>
+                                        <span class="inline-flex px-2 py-0.5 text-xs bg-purple-50 text-purple-700 rounded-full">{{ $allTestLabels[$t] ?? ucwords(str_replace('_', ' ', $t)) }}</span>
                                     @endforeach
                                 </div>
                             @else
@@ -205,7 +243,7 @@
                             @if(count($chem))
                                 <div class="flex flex-wrap gap-1">
                                     @foreach($chem as $t)
-                                        <span class="inline-flex px-2 py-0.5 text-xs bg-blue-50 text-blue-700 rounded-full">{{ str_replace('_', ' ', $t) }}</span>
+                                        <span class="inline-flex px-2 py-0.5 text-xs bg-blue-50 text-blue-700 rounded-full">{{ $allTestLabels[$t] ?? ucwords(str_replace('_', ' ', $t)) }}</span>
                                     @endforeach
                                 </div>
                             @else
@@ -792,20 +830,35 @@
     </div>
 
     @push('scripts')
+    @php
+        // Pre-populate rows from sample_items (multi-sample submissions).
+        // Fall back to the legacy single-sample fields for older records.
+        $collectedDate = $submission->collected_at?->format('Y-m-d') ?? '';
+        if ($submission->sample_items && count($submission->sample_items)) {
+            $initialRows = array_map(fn($item) => [
+                'common_name'     => $item['name']            ?? '',
+                'scientific_name' => $item['scientific_name'] ?? '',
+                'sampling_date'   => $collectedDate,
+                'quantity'        => $item['qty']             ?? '',
+                'quantity_unit'   => $item['unit']            ?? 'kg',
+                'notes'           => '',
+            ], $submission->sample_items);
+        } else {
+            $initialRows = [[
+                'common_name'     => $submission->sample_name             ?? '',
+                'scientific_name' => $submission->scientific_name          ?? '',
+                'sampling_date'   => $collectedDate,
+                'quantity'        => $submission->sample_quantity          ?? '',
+                'quantity_unit'   => $submission->sample_quantity_unit     ?? 'g',
+                'notes'           => '',
+            ]];
+        }
+    @endphp
     <script>
         function sampleReceiveForm() {
             return {
                 today: new Date().toISOString().split('T')[0],
-                rows: [
-                    {
-                        common_name:     '{{ $submission->sample_name }}',
-                        scientific_name: '{{ $submission->scientific_name ?? '' }}',
-                        sampling_date:   '{{ $submission->collected_at?->format('Y-m-d') ?? '' }}',
-                        quantity:        '{{ $submission->sample_quantity ?? '' }}',
-                        quantity_unit:   '{{ $submission->sample_quantity_unit ?? 'g' }}',
-                        notes:           '',
-                    }
-                ],
+                rows: @json($initialRows),
 
                 addRow() {
                     this.rows.push({

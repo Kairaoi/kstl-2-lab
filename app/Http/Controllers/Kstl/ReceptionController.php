@@ -205,17 +205,24 @@ class ReceptionController extends Controller
                 ->with('error', 'This submission cannot be sent to testing at this stage.');
         }
 
-        $samples = $this->sampleRepo->getBySubmissionId($id);
+        $samples    = $this->sampleRepo->getBySubmissionId($id);
+        $sampleItems = is_array($submission->sample_items) ? $submission->sample_items : [];
+        // Union tests as fallback for samples without per-item test data
+        $unionTests = is_array($submission->tests_requested)
+            ? $submission->tests_requested
+            : json_decode($submission->tests_requested ?? '[]', true) ?? [];
 
-        DB::transaction(function () use ($submission, $samples) {
-            foreach ($samples as $sample) {
+        DB::transaction(function () use ($submission, $samples, $sampleItems, $unionTests) {
+            foreach ($samples->values() as $idx => $sample) {
                 if (in_array($sample->status, [
                     Sample::STATUS_ACCEPTED,
                     Sample::STATUS_CONSENT_TO_PROCEED,
                 ])) {
-                    $tests = is_array($submission->tests_requested)
-                        ? $submission->tests_requested
-                        : json_decode($submission->tests_requested ?? '[]', true) ?? [];
+                    // Use per-sample tests from sample_items by position; fall back to union
+                    $tests = $sampleItems[$idx]['tests'] ?? [];
+                    if (empty($tests)) {
+                        $tests = $unionTests;
+                    }
 
                     foreach ($tests as $testKey) {
                         \App\Models\Kstl\SampleTest::firstOrCreate(

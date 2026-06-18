@@ -69,8 +69,8 @@
                   @submit="clearDraft()">
                 @csrf
 
-                @php $steps = ['Sample Info', 'Tests', 'Test Samples', 'Transport', 'Declaration']; @endphp
-                @php $stepSubs = ['Names, type & quantity', 'Micro & chemical tests', 'Reference & quantity', 'Method & priority', 'Review & submit']; @endphp
+                @php $steps = ['Collection Info', 'Samples', 'Transport', 'Declaration']; @endphp
+                @php $stepSubs = ['Date, location & notes', 'Name, type & tests', 'Method & priority', 'Review & submit']; @endphp
 
                 <div class="flex gap-8 items-start">
 
@@ -123,77 +123,14 @@
                     {{-- ── Form Content ──────────────────────────────────────── --}}
                     <div class="flex-1 min-w-0">
 
-                        {{-- ── Step 1: Sample Information ──────────────────────── --}}
+                        {{-- ── Step 1: Collection Info ─────────────────────────── --}}
                         <div x-show="currentStep === 0" x-cloak>
                             <div class="bg-white shadow rounded-xl overflow-hidden">
                                 <div class="px-6 py-4 border-b border-gray-100">
-                                    <h3 class="text-base font-medium text-gray-900">Sample Information</h3>
-                                    <p class="text-sm text-gray-500 mt-0.5">Provide details about the sample being submitted.</p>
+                                    <h3 class="text-base font-medium text-gray-900">Collection Info</h3>
+                                    <p class="text-sm text-gray-500 mt-0.5">When and where the samples were collected, plus any notes.</p>
                                 </div>
                                 <div class="px-6 py-5 space-y-5">
-
-                                    <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                                        <div>
-                                            <x-label for="sample_name" value="Common Name *"/>
-                                            <x-input id="sample_name" type="text" name="sample_name"
-                                                     value="{{ old('sample_name') }}"
-                                                     class="mt-1 block w-full"
-                                                     placeholder="e.g. Yellowfin Tuna"
-                                                     autofocus/>
-                                            <x-input-error for="sample_name" class="mt-1"/>
-                                        </div>
-                                        <div>
-                                            <x-label for="scientific_name" value="Scientific Name"/>
-                                            <x-input id="scientific_name" type="text" name="scientific_name"
-                                                     value="{{ old('scientific_name') }}"
-                                                     class="mt-1 block w-full"
-                                                     placeholder="e.g. Thunnus albacares"/>
-                                            <x-input-error for="scientific_name" class="mt-1"/>
-                                        </div>
-                                    </div>
-
-                                    <div>
-                                        <x-label for="sample_description" value="Sample Description"/>
-                                        <textarea id="sample_description" name="sample_description" rows="2"
-                                                  class="mt-1 block w-full border-gray-300 focus:border-indigo-500 focus:ring-indigo-500 rounded-md shadow-sm text-sm"
-                                                  placeholder="Describe the sample — condition, preservation method...">{{ old('sample_description') }}</textarea>
-                                        <x-input-error for="sample_description" class="mt-1"/>
-                                    </div>
-
-                                    <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                                        <div>
-                                            <x-label for="sample_type" value="Sample Type *"/>
-                                            <select id="sample_type" name="sample_type"
-                                                    class="mt-1 block w-full border-gray-300 focus:border-indigo-500 focus:ring-indigo-500 rounded-md shadow-sm text-sm"
-                                                   >
-                                                <option value="">— Select type —</option>
-                                                <option value="fish"      {{ old('sample_type') === 'fish'      ? 'selected' : '' }}>Fish</option>
-                                                <option value="shellfish" {{ old('sample_type') === 'shellfish' ? 'selected' : '' }}>Shellfish</option>
-                                                <option value="seaweed"   {{ old('sample_type') === 'seaweed'   ? 'selected' : '' }}>Seaweed</option>
-                                                <option value="water"     {{ old('sample_type') === 'water'     ? 'selected' : '' }}>Water</option>
-                                                <option value="sediment"  {{ old('sample_type') === 'sediment'  ? 'selected' : '' }}>Sediment</option>
-                                                <option value="other"     {{ old('sample_type') === 'other'     ? 'selected' : '' }}>Other</option>
-                                            </select>
-                                            <x-input-error for="sample_type" class="mt-1"/>
-                                        </div>
-                                        <div>
-                                            <x-label for="sample_quantity" value="Quantity / Weight *"/>
-                                            <div class="mt-1 flex rounded-md shadow-sm">
-                                                <x-input id="sample_quantity" type="number" name="sample_quantity"
-                                                         value="{{ old('sample_quantity') }}"
-                                                         class="block w-full rounded-r-none"
-                                                         placeholder="0" min="0" step="0.01"/>
-                                                <select name="sample_quantity_unit"
-                                                        class="border-l-0 border-gray-300 focus:border-indigo-500 focus:ring-indigo-500 rounded-r-md shadow-sm text-sm px-3">
-                                                    <option value="g"  {{ old('sample_quantity_unit') === 'g'  ? 'selected' : '' }}>g</option>
-                                                    <option value="kg" {{ old('sample_quantity_unit', 'kg') === 'kg' ? 'selected' : '' }}>kg</option>
-                                                    <option value="ml" {{ old('sample_quantity_unit') === 'ml' ? 'selected' : '' }}>ml</option>
-                                                    <option value="L"  {{ old('sample_quantity_unit') === 'L'  ? 'selected' : '' }}>L</option>
-                                                </select>
-                                            </div>
-                                            <x-input-error for="sample_quantity" class="mt-1"/>
-                                        </div>
-                                    </div>
 
                                     <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
                                         <div>
@@ -201,7 +138,8 @@
                                             <x-input id="collected_at" type="date" name="collected_at"
                                                      value="{{ old('collected_at') }}"
                                                      class="mt-1 block w-full"
-                                                     max="{{ date('Y-m-d') }}"/>
+                                                     max="{{ date('Y-m-d') }}"
+                                                     autofocus/>
                                             <x-input-error for="collected_at" class="mt-1"/>
                                         </div>
                                         <div>
@@ -214,189 +152,187 @@
                                         </div>
                                     </div>
 
+                                    <div>
+                                        <x-label for="sample_description" value="Notes (optional)"/>
+                                        <textarea id="sample_description" name="sample_description" rows="2"
+                                                  class="mt-1 block w-full border-gray-300 focus:border-indigo-500 focus:ring-indigo-500 rounded-md shadow-sm text-sm"
+                                                  placeholder="Any general notes about the collection or samples...">{{ old('sample_description') }}</textarea>
+                                        <x-input-error for="sample_description" class="mt-1"/>
+                                    </div>
+
                                 </div>
                             </div>
                             <div class="flex justify-end mt-5">
                                 <button type="button" @click="nextStep()"
                                         class="inline-flex items-center gap-2 px-5 py-2.5 bg-blue-600 text-white text-sm font-medium rounded-lg hover:bg-blue-700 transition">
-                                    Next: Tests Requested
+                                    Next: Samples
                                     <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"/></svg>
                                 </button>
                             </div>
                         </div>
 
-                        {{-- ── Step 2: Tests Requested ─────────────────────────── --}}
+                        {{-- ── Step 2: Samples ─────────────────────────────────── --}}
                         <div x-show="currentStep === 1" x-cloak>
                             <div class="bg-white shadow rounded-xl overflow-hidden">
                                 <div class="px-6 py-4 border-b border-gray-100">
-                                    <h3 class="text-base font-medium text-gray-900">Tests Requested</h3>
-                                    <p class="text-sm text-gray-500 mt-0.5">Select all tests you require. The lab will confirm feasibility on receipt.</p>
+                                    <h3 class="text-base font-medium text-gray-900">Samples</h3>
+                                    <p class="text-sm text-gray-500 mt-0.5">Add each sample — name, type, reference number, and quantity. Up to 9 samples.</p>
                                 </div>
-                                <div class="px-6 py-5 space-y-5">
-
-                                    <div>
-                                        <p class="text-xs font-semibold text-gray-500 uppercase tracking-wide mb-1">Microbiological Analysis</p>
-                                        <p class="text-xs text-gray-400 mb-3">Select the microbiological tests for your sample type.</p>
-
-                                        <p class="text-xs font-medium text-gray-600 mb-2">1. Water Samples (Colilert &amp; Enterolert)</p>
-                                        <div class="grid grid-cols-1 sm:grid-cols-2 gap-2 mb-4">
-                                            @foreach([
-                                                'total_coliforms' => 'Total Coliforms',
-                                                'e_coli'          => 'E. coli',
-                                                'enterococci'     => 'Enterococci &amp; Faecal Coliforms',
-                                            ] as $value => $label)
-                                                <label class="flex items-center gap-3 p-3 border border-gray-100 rounded-lg hover:bg-purple-50 cursor-pointer transition">
-                                                    <input type="checkbox" name="tests_requested[]" value="{{ $value }}"
-                                                           {{ in_array($value, old('tests_requested', [])) ? 'checked' : '' }}
-                                                           class="rounded border-gray-300 text-purple-600 shadow-sm focus:ring-purple-500"/>
-                                                    <span class="text-sm text-gray-700">{!! $label !!}</span>
-                                                </label>
-                                            @endforeach
-                                        </div>
-
-                                        <p class="text-xs font-medium text-gray-600 mb-2">2. Fish and Fishery Samples (Petrifilm)</p>
-                                        <div class="grid grid-cols-1 sm:grid-cols-2 gap-2">
-                                            @foreach([
-                                                'yeast_mold'      => 'Yeast &amp; Mould',
-                                                'apc'             => 'APC (Aerobic Plate Count)',
-                                                'e_coli_coliform' => '<em>E. coli</em> &amp; Coliform',
-                                                'staph_aureus'    => '<em>Staphylococcus aureus</em>',
-                                            ] as $value => $label)
-                                                <label class="flex items-center gap-3 p-3 border border-gray-100 rounded-lg hover:bg-purple-50 cursor-pointer transition">
-                                                    <input type="checkbox" name="tests_requested[]" value="{{ $value }}"
-                                                           {{ in_array($value, old('tests_requested', [])) ? 'checked' : '' }}
-                                                           class="rounded border-gray-300 text-purple-600 shadow-sm focus:ring-purple-500"/>
-                                                    <span class="text-sm text-gray-700">{!! $label !!}</span>
-                                                </label>
-                                            @endforeach
-                                        </div>
-
-                                        <p class="text-xs font-medium text-gray-600 mt-4 mb-2">3. Rapid Kit Tests</p>
-                                        <div class="grid grid-cols-1 sm:grid-cols-2 gap-2">
-                                            @foreach([
-                                                'salmonella_spp' => '<em>Salmonella</em> species',
-                                                'listeria_mono'  => '<em>Listeria monocytogenes</em>',
-                                                'listeria_spp'   => '<em>Listeria</em> species',
-                                            ] as $value => $label)
-                                                <label class="flex items-center gap-3 p-3 border border-gray-100 rounded-lg hover:bg-purple-50 cursor-pointer transition">
-                                                    <input type="checkbox" name="tests_requested[]" value="{{ $value }}"
-                                                           {{ in_array($value, old('tests_requested', [])) ? 'checked' : '' }}
-                                                           class="rounded border-gray-300 text-purple-600 shadow-sm focus:ring-purple-500"/>
-                                                    <span class="text-sm text-gray-700">{!! $label !!}</span>
-                                                </label>
-                                            @endforeach
-                                        </div>
-                                    </div>
-
-                                    <hr class="border-gray-100"/>
-
-                                    <div>
-                                        <p class="text-xs font-semibold text-gray-500 uppercase tracking-wide mb-1">Chemical Analysis</p>
-                                        <p class="text-xs text-gray-400 mb-3">Select the chemical tests.</p>
-                                        <div class="grid grid-cols-1 sm:grid-cols-2 gap-2">
-                                            @foreach([
-                                                'moisture'       => 'Moisture Content',
-                                                'histamine'      => 'ELISA Histamine Rapid Kit',
-                                                'ph'             => 'pH',
-                                                'conductivity'   => 'Conductivity',
-                                                'water_activity' => 'Water Activity',
-                                            ] as $value => $label)
-                                                <label class="flex items-center gap-3 p-3 border border-gray-100 rounded-lg hover:bg-blue-50 cursor-pointer transition">
-                                                    <input type="checkbox" name="tests_requested[]" value="{{ $value }}"
-                                                           {{ in_array($value, old('tests_requested', [])) ? 'checked' : '' }}
-                                                           class="rounded border-gray-300 text-blue-600 shadow-sm focus:ring-blue-500"/>
-                                                    <span class="text-sm text-gray-700">{{ $label }}</span>
-                                                </label>
-                                            @endforeach
-                                        </div>
-                                    </div>
-
-                                    <div>
-                                        <x-label for="tests_other" value="Other Tests (specify)"/>
-                                        <textarea id="tests_other" name="tests_other" rows="2"
-                                                  class="mt-1 block w-full border-gray-300 focus:border-indigo-500 focus:ring-indigo-500 rounded-md shadow-sm text-sm"
-                                                  placeholder="List any additional tests not shown above...">{{ old('tests_other') }}</textarea>
-                                    </div>
-
-                                    <x-input-error for="tests_requested" class="mt-1"/>
-
-                                </div>
-                            </div>
-                            <div class="flex items-center justify-between mt-5">
-                                <button type="button" @click="prevStep()"
-                                        class="inline-flex items-center gap-2 px-5 py-2.5 bg-gray-100 text-gray-700 text-sm font-medium rounded-lg hover:bg-gray-200 transition">
-                                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7"/></svg>
-                                    Back
-                                </button>
-                                <button type="button" @click="nextStep()"
-                                        class="inline-flex items-center gap-2 px-5 py-2.5 bg-blue-600 text-white text-sm font-medium rounded-lg hover:bg-blue-700 transition">
-                                    Next: Test Samples
-                                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"/></svg>
-                                </button>
-                            </div>
-                        </div>
-
-                        {{-- ── Step 3: Test Samples ──────────────────────────── --}}
-                        <div x-show="currentStep === 2" x-cloak>
-                            <div class="bg-white shadow rounded-xl overflow-hidden">
-                                <div class="px-6 py-4 border-b border-gray-100">
-                                    <h3 class="text-base font-medium text-gray-900"># of Samples</h3>
-                                    <p class="text-sm text-gray-500 mt-0.5">Add a reference number and quantity for each sample being submitted. Up to 9 samples.</p>
-                                </div>
-                                <div class="px-6 py-5 space-y-3">
+                                <div class="px-6 py-5 space-y-4">
 
                                     <template x-for="(item, index) in sampleItems" :key="index">
-                                        <div class="flex items-end gap-3 py-1">
-                                            <div class="flex-1 min-w-0">
-                                                <label class="block text-xs font-medium text-gray-700 mb-1">
-                                                    Sample Reference <span x-text="index + 1" class="text-gray-400"></span>
-                                                </label>
-                                                <input type="text"
-                                                       :name="`sample_items[${index}][ref]`"
-                                                       x-model="item.ref"
-                                                       class="block w-full border-gray-300 focus:border-indigo-500 focus:ring-indigo-500 rounded-md shadow-sm text-sm"
-                                                       placeholder="e.g. S-001"/>
+                                        <div class="border border-gray-200 rounded-lg p-4 space-y-3">
+
+                                            {{-- Card header --}}
+                                            <div class="flex items-center justify-between">
+                                                <span class="text-xs font-semibold text-gray-500 uppercase tracking-wide"
+                                                      x-text="`Sample ${index + 1}`"></span>
+                                                <button type="button" @click="removeSample(index)"
+                                                        x-show="sampleItems.length > 1"
+                                                        class="text-xs text-red-400 hover:text-red-600 flex items-center gap-1 transition">
+                                                    <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/>
+                                                    </svg>
+                                                    Remove
+                                                </button>
                                             </div>
-                                            <div class="w-28 shrink-0">
-                                                <label class="block text-xs font-medium text-gray-700 mb-1">Quantity</label>
-                                                <input type="number"
-                                                       :name="`sample_items[${index}][qty]`"
-                                                       x-model="item.qty"
-                                                       class="block w-full border-gray-300 focus:border-indigo-500 focus:ring-indigo-500 rounded-md shadow-sm text-sm"
-                                                       placeholder="0" min="0" step="0.01"/>
+
+                                            {{-- Name row --}}
+                                            <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                                                <div>
+                                                    <label class="block text-xs font-medium text-gray-700 mb-1">Common Name *</label>
+                                                    <input type="text"
+                                                           :name="`sample_items[${index}][name]`"
+                                                           x-model="item.name"
+                                                           class="block w-full border-gray-300 focus:border-indigo-500 focus:ring-indigo-500 rounded-md shadow-sm text-sm"
+                                                           placeholder="e.g. Yellowfin Tuna"/>
+                                                </div>
+                                                <div>
+                                                    <label class="block text-xs font-medium text-gray-700 mb-1">Scientific Name</label>
+                                                    <input type="text"
+                                                           :name="`sample_items[${index}][scientific_name]`"
+                                                           x-model="item.scientific_name"
+                                                           class="block w-full border-gray-300 focus:border-indigo-500 focus:ring-indigo-500 rounded-md shadow-sm text-sm"
+                                                           placeholder="e.g. Thunnus albacares"/>
+                                                </div>
                                             </div>
-                                            <div class="w-20 shrink-0">
-                                                <label class="block text-xs font-medium text-gray-700 mb-1">Unit</label>
-                                                <select :name="`sample_items[${index}][unit]`"
-                                                        x-model="item.unit"
-                                                        class="block w-full border-gray-300 focus:border-indigo-500 focus:ring-indigo-500 rounded-md shadow-sm text-sm px-2 py-2">
-                                                    <option value="g">g</option>
-                                                    <option value="kg">kg</option>
-                                                    <option value="ml">ml</option>
-                                                    <option value="L">L</option>
-                                                </select>
+
+                                            {{-- Type / Ref / Qty / Unit row --}}
+                                            <div class="grid grid-cols-2 sm:grid-cols-4 gap-3">
+                                                <div>
+                                                    <label class="block text-xs font-medium text-gray-700 mb-1">Sample Type</label>
+                                                    <select :name="`sample_items[${index}][type]`"
+                                                            x-model="item.type"
+                                                            class="block w-full border-gray-300 focus:border-indigo-500 focus:ring-indigo-500 rounded-md shadow-sm text-sm">
+                                                        <option value="">— Type —</option>
+                                                        <option value="fish">Fish</option>
+                                                        <option value="shellfish">Shellfish</option>
+                                                        <option value="seaweed">Seaweed</option>
+                                                        <option value="water">Water</option>
+                                                        <option value="sediment">Sediment</option>
+                                                        <option value="other">Other</option>
+                                                    </select>
+                                                </div>
+                                                <div>
+                                                    <label class="block text-xs font-medium text-gray-700 mb-1">Reference #</label>
+                                                    <input type="text"
+                                                           :name="`sample_items[${index}][ref]`"
+                                                           x-model="item.ref"
+                                                           class="block w-full border-gray-300 focus:border-indigo-500 focus:ring-indigo-500 rounded-md shadow-sm text-sm"
+                                                           placeholder="e.g. S-001"/>
+                                                </div>
+                                                <div>
+                                                    <label class="block text-xs font-medium text-gray-700 mb-1">Quantity</label>
+                                                    <input type="number"
+                                                           :name="`sample_items[${index}][qty]`"
+                                                           x-model="item.qty"
+                                                           class="block w-full border-gray-300 focus:border-indigo-500 focus:ring-indigo-500 rounded-md shadow-sm text-sm"
+                                                           placeholder="0" min="0" step="0.01"/>
+                                                </div>
+                                                <div>
+                                                    <label class="block text-xs font-medium text-gray-700 mb-1">Unit</label>
+                                                    <select :name="`sample_items[${index}][unit]`"
+                                                            x-model="item.unit"
+                                                            class="block w-full border-gray-300 focus:border-indigo-500 focus:ring-indigo-500 rounded-md shadow-sm text-sm">
+                                                        <option value="g">g</option>
+                                                        <option value="kg">kg</option>
+                                                        <option value="ml">ml</option>
+                                                        <option value="L">L</option>
+                                                    </select>
+                                                </div>
                                             </div>
-                                            <button type="button" @click="removeSample(index)"
-                                                    x-show="sampleItems.length > 1"
-                                                    class="mb-0.5 p-1.5 text-red-400 hover:text-red-600 hover:bg-red-50 rounded transition shrink-0">
-                                                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/>
-                                                </svg>
-                                            </button>
+
+                                            {{-- Tests for this sample --}}
+                                            <div class="border-t border-gray-100 pt-3 mt-1">
+                                                <p class="text-xs font-semibold text-gray-500 uppercase tracking-wide mb-2">Tests Requested for This Sample</p>
+
+                                                <p class="text-xs font-medium text-gray-500 mb-1.5">Microbiological</p>
+                                                <div class="grid grid-cols-2 sm:grid-cols-3 gap-1.5 mb-3">
+                                                    @foreach([
+                                                        'total_coliforms' => 'Total Coliforms',
+                                                        'e_coli'          => 'E. coli',
+                                                        'enterococci'     => 'Enterococci & Faecal Coliforms',
+                                                        'yeast_mold'      => 'Yeast & Mould',
+                                                        'apc'             => 'APC (Aerobic Plate Count)',
+                                                        'e_coli_coliform' => 'E. coli & Coliform',
+                                                        'staph_aureus'    => 'Staphylococcus aureus',
+                                                        'salmonella_spp'  => 'Salmonella species',
+                                                        'listeria_mono'   => 'Listeria monocytogenes',
+                                                        'listeria_spp'    => 'Listeria species',
+                                                    ] as $tValue => $tLabel)
+                                                        <label class="flex items-center gap-2 p-2 border border-gray-100 rounded-lg hover:bg-purple-50 cursor-pointer transition">
+                                                            <input type="checkbox"
+                                                                   value="{{ $tValue }}"
+                                                                   x-model="item.tests"
+                                                                   :name="`sample_items[${index}][tests][]`"
+                                                                   class="rounded border-gray-300 text-purple-600 shadow-sm focus:ring-purple-500 shrink-0"/>
+                                                            <span class="text-xs text-gray-700 leading-tight">{{ $tLabel }}</span>
+                                                        </label>
+                                                    @endforeach
+                                                </div>
+
+                                                <p class="text-xs font-medium text-gray-500 mb-1.5">Chemical</p>
+                                                <div class="grid grid-cols-2 sm:grid-cols-3 gap-1.5 mb-3">
+                                                    @foreach([
+                                                        'moisture'       => 'Moisture Content',
+                                                        'histamine'      => 'ELISA Histamine Rapid Kit',
+                                                        'ph'             => 'pH',
+                                                        'conductivity'   => 'Conductivity',
+                                                        'water_activity' => 'Water Activity',
+                                                    ] as $tValue => $tLabel)
+                                                        <label class="flex items-center gap-2 p-2 border border-gray-100 rounded-lg hover:bg-blue-50 cursor-pointer transition">
+                                                            <input type="checkbox"
+                                                                   value="{{ $tValue }}"
+                                                                   x-model="item.tests"
+                                                                   :name="`sample_items[${index}][tests][]`"
+                                                                   class="rounded border-gray-300 text-blue-600 shadow-sm focus:ring-blue-500 shrink-0"/>
+                                                            <span class="text-xs text-gray-700 leading-tight">{{ $tLabel }}</span>
+                                                        </label>
+                                                    @endforeach
+                                                </div>
+
+                                                <div>
+                                                    <label class="block text-xs font-medium text-gray-700 mb-1">Other Tests (specify)</label>
+                                                    <input type="text"
+                                                           :name="`sample_items[${index}][tests_other]`"
+                                                           x-model="item.tests_other"
+                                                           class="block w-full border-gray-300 focus:border-indigo-500 focus:ring-indigo-500 rounded-md shadow-sm text-sm"
+                                                           placeholder="Any additional tests not listed above..."/>
+                                                </div>
+                                            </div>
+
                                         </div>
                                     </template>
 
-                                    <div class="pt-2 flex items-center gap-4">
-                                        <button type="button" @click="addSample()"
-                                                x-show="sampleItems.length < 9"
-                                                class="inline-flex items-center gap-1.5 text-sm text-blue-600 hover:text-blue-800 font-medium transition">
-                                            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"/>
-                                            </svg>
-                                            Add another sample
-                                        </button>
-                                        <span class="text-xs text-gray-400" x-text="`${sampleItems.length}/9 samples`"></span>
-                                    </div>
+                                    <button type="button" @click="addSample()"
+                                            x-show="sampleItems.length < 9"
+                                            class="inline-flex items-center gap-1.5 text-sm text-blue-600 hover:text-blue-800 font-medium transition">
+                                        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"/>
+                                        </svg>
+                                        Add another sample
+                                        <span class="text-xs font-normal text-gray-400 ml-1" x-text="`(${sampleItems.length}/9)`"></span>
+                                    </button>
 
                                     <p x-show="sampleItems.length >= 9" class="text-xs text-amber-600 font-medium">Maximum of 9 samples reached.</p>
 
@@ -416,8 +352,8 @@
                             </div>
                         </div>
 
-                        {{-- ── Step 4: Transport & Instructions ────────────────── --}}
-                        <div x-show="currentStep === 3" x-cloak>
+                        {{-- ── Step 3: Transport & Instructions ────────────────── --}}
+                        <div x-show="currentStep === 2" x-cloak>
                             <div class="bg-white shadow rounded-xl overflow-hidden">
                                 <div class="px-6 py-4 border-b border-gray-100">
                                     <h3 class="text-base font-medium text-gray-900">Transport &amp; Instructions</h3>
@@ -512,8 +448,8 @@
                             </div>
                         </div>
 
-                        {{-- ── Step 5: Declaration ──────────────────────────────── --}}
-                        <div x-show="currentStep === 4" x-cloak>
+                        {{-- ── Step 4: Declaration ──────────────────────────────── --}}
+                        <div x-show="currentStep === 3" x-cloak>
                             <div class="bg-white shadow rounded-xl overflow-hidden">
                                 <div class="px-6 py-4 border-b border-gray-100">
                                     <h3 class="text-base font-medium text-gray-900">Declaration</h3>
@@ -521,10 +457,17 @@
                                 </div>
                                 <div class="px-6 py-5 space-y-5">
 
+                                    {{-- Submission summary --}}
                                     <div class="bg-gray-50 rounded-lg border border-gray-100 divide-y divide-gray-100 text-sm">
                                         <div class="px-4 py-3 flex justify-between gap-4">
-                                            <span class="text-gray-500">Sample</span>
-                                            <span class="font-medium text-gray-800 text-right" x-text="document.getElementById('sample_name')?.value || '—'"></span>
+                                            <span class="text-gray-500">Samples</span>
+                                            <span class="font-medium text-gray-800 text-right"
+                                                  x-text="sampleItems.length + (sampleItems.length === 1 ? ' sample' : ' samples') + (sampleItems[0]?.name ? ' — ' + sampleItems[0].name + (sampleItems.length > 1 ? ' + ' + (sampleItems.length - 1) + ' more' : '') : '')"></span>
+                                        </div>
+                                        <div class="px-4 py-3 flex justify-between gap-4">
+                                            <span class="text-gray-500">Tests selected</span>
+                                            <span class="font-medium text-gray-800 text-right"
+                                                  x-text="testCount() > 0 ? testCount() + (testCount() === 1 ? ' test' : ' tests') : '—'"></span>
                                         </div>
                                         <div class="px-4 py-3 flex justify-between gap-4">
                                             <span class="text-gray-500">Company</span>
@@ -540,11 +483,25 @@
                                         </div>
                                     </div>
 
+                                    {{-- Warning: samples missing tests --}}
+                                    <div x-show="sampleItems.some(s => !s.tests || s.tests.length === 0)"
+                                         class="flex items-start gap-2.5 bg-amber-50 border border-amber-200 rounded-lg px-4 py-3">
+                                        <svg class="w-4 h-4 text-amber-500 shrink-0 mt-0.5" fill="currentColor" viewBox="0 0 20 20">
+                                            <path fill-rule="evenodd" d="M8.485 2.495c.673-1.167 2.357-1.167 3.03 0l6.28 10.875c.673 1.167-.17 2.625-1.516 2.625H3.72c-1.347 0-2.189-1.458-1.515-2.625L8.485 2.495zM10 5a.75.75 0 01.75.75v3.5a.75.75 0 01-1.5 0v-3.5A.75.75 0 0110 5zm0 9a1 1 0 100-2 1 1 0 000 2z" clip-rule="evenodd"/>
+                                        </svg>
+                                        <p class="text-sm text-amber-800">
+                                            <span class="font-medium">Some samples have no tests selected.</span>
+                                            You can still submit, but go back to the Samples step to add tests if needed.
+                                        </p>
+                                    </div>
+
                                     <input type="hidden" name="submitter_name" value="{{ trim(auth()->user()->first_name . ' ' . auth()->user()->last_name) }}"/>
 
-                                    <div class="bg-gray-50 rounded-lg p-4 border border-gray-100">
+                                    <div class="bg-gray-50 rounded-lg p-4 border border-gray-100"
+                                         :class="declarationAccepted ? 'border-green-200 bg-green-50' : 'border-gray-100 bg-gray-50'">
                                         <label class="flex items-start gap-3 cursor-pointer">
                                             <input type="checkbox" name="declaration_accepted" value="1"
+                                                   x-model="declarationAccepted"
                                                    {{ old('declaration_accepted') ? 'checked' : '' }}
                                                    class="mt-0.5 rounded border-gray-300 text-indigo-600 shadow-sm focus:ring-indigo-500"/>
                                             <span class="text-sm text-gray-700 leading-relaxed">
@@ -565,7 +522,11 @@
                                     Back
                                 </button>
                                 <button type="submit"
-                                        class="inline-flex items-center gap-2 px-6 py-2.5 bg-green-600 text-white text-sm font-medium rounded-lg hover:bg-green-700 transition disabled:opacity-50">
+                                        :disabled="!declarationAccepted"
+                                        :class="declarationAccepted
+                                            ? 'bg-green-600 hover:bg-green-700 cursor-pointer'
+                                            : 'bg-gray-300 cursor-not-allowed'"
+                                        class="inline-flex items-center gap-2 px-6 py-2.5 text-white text-sm font-medium rounded-lg transition">
                                     <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"/></svg>
                                     Submit Sample
                                 </button>
@@ -598,7 +559,9 @@
     </div>
 
     @php
-        $defaultSampleItems = old('sample_items', [['ref' => '', 'qty' => '', 'unit' => 'kg']]);
+        $blankSample = ['name' => '', 'scientific_name' => '', 'type' => '', 'ref' => 'S-001', 'qty' => '', 'unit' => 'kg', 'tests' => [], 'tests_other' => ''];
+        $rawItems = old('sample_items', [$blankSample]);
+        $defaultSampleItems = array_map(fn($i) => array_merge($blankSample, $i), $rawItems);
     @endphp
     @push('scripts')
     <script>
@@ -607,8 +570,13 @@
                 currentStep: 0,
                 hasDraft: false,
                 draftSaved: false,
+                declarationAccepted: {{ old('declaration_accepted') ? 'true' : 'false' }},
                 _draftTimer: null,
                 sampleItems: @json($defaultSampleItems),
+
+                testCount() {
+                    return this.sampleItems.reduce((sum, s) => sum + (Array.isArray(s.tests) ? s.tests.length : 0), 0);
+                },
 
                 init() {
                     if (checkDraft) {
@@ -621,7 +589,8 @@
 
                 addSample() {
                     if (this.sampleItems.length < 9) {
-                        this.sampleItems.push({ ref: '', qty: '', unit: 'kg' });
+                        const nextRef = 'S-' + String(this.sampleItems.length + 1).padStart(3, '0');
+                        this.sampleItems.push({ name: '', scientific_name: '', type: '', ref: nextRef, qty: '', unit: 'kg', tests: [], tests_other: '' });
                         this.$nextTick(() => this.saveDraft());
                     }
                 },
@@ -676,6 +645,7 @@
                         if (el.type === 'checkbox') {
                             const vals = Array.isArray(value) ? value : (value ? [value] : []);
                             el.checked = vals.includes(el.value);
+                            if (name === 'declaration_accepted') this.declarationAccepted = el.checked;
                         } else if (el.type === 'radio') {
                             if (el.value === value) {
                                 el.checked = true;
@@ -710,7 +680,7 @@
                 },
 
                 nextStep() {
-                    if (this.currentStep < 4) {
+                    if (this.currentStep < 3) {
                         this.currentStep++;
                         this.saveDraft();
                         window.scrollTo({ top: 0, behavior: 'smooth' });

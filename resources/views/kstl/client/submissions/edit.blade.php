@@ -35,11 +35,10 @@
                 @endif
             --}}
 
-            <form method="POST" action="{{ route('client.submissions.index') }}"
+            <form method="POST" action="{{ route('client.submissions.update', $submission->id) }}"
                   enctype="multipart/form-data">
                 @csrf
                 @method('PUT')
-                {{-- Replace action with: route('client.submissions.update', $submission->id) --}}
 
                 {{-- ── Section 1: Sample Information ──────────────────────────────── --}}
                 <div class="md:grid md:grid-cols-3 md:gap-6">

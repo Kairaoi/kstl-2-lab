@@ -33,6 +33,7 @@ class SampleTest extends Model
         'director_outcome',
         'director_authorised_at',
         'director_authorised_by',
+        'director_review_note',
     ];
 
     protected function casts(): array

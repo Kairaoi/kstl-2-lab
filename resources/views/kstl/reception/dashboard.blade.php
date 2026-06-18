@@ -185,11 +185,24 @@
                                             </p>
                                         </td>
 
-                                        {{-- Sample Type --}}
+                                        {{-- Samples --}}
                                         <td class="px-6 py-4">
-                                            <span class="text-sm text-gray-700 capitalize">
-                                                {{ $submission->sample_type }}
-                                            </span>
+                                            @if($submission->sample_items && count($submission->sample_items))
+                                                @php $items = $submission->sample_items; @endphp
+                                                <p class="text-sm text-gray-800 font-medium">{{ $items[0]['name'] ?? '—' }}</p>
+                                                @if(count($items) > 1)
+                                                    <p class="text-xs text-indigo-600 mt-0.5">+{{ count($items) - 1 }} more sample{{ count($items) - 1 > 1 ? 's' : '' }}</p>
+                                                @elseif(!empty($items[0]['type']))
+                                                    <p class="text-xs text-gray-400 capitalize mt-0.5">{{ $items[0]['type'] }}</p>
+                                                @endif
+                                            @elseif($submission->sample_name)
+                                                <p class="text-sm text-gray-800">{{ $submission->sample_name }}</p>
+                                                @if($submission->sample_type)
+                                                    <p class="text-xs text-gray-400 capitalize mt-0.5">{{ $submission->sample_type }}</p>
+                                                @endif
+                                            @else
+                                                <span class="text-sm text-gray-400">—</span>
+                                            @endif
                                         </td>
 
                                         {{-- Submitted --}}
@@ -241,21 +254,43 @@
                                                     Assess
                                                 </a>
                                             @elseif($submission->status === 'accepted')
-                                                <a href="{{ route('reception.submissions.show', $submission->id) }}"
-                                                   class="inline-flex items-center gap-1.5 px-3 py-1.5 bg-indigo-600 text-white text-xs font-medium rounded-lg hover:bg-indigo-700 transition">
-                                                    <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 7l5 5m0 0l-5 5m5-5H6"/>
-                                                    </svg>
-                                                    Send to Testing
-                                                </a>
+                                                <div class="flex items-center gap-1.5 justify-end">
+                                                    <a href="{{ route('reception.submissions.show', $submission->id) }}"
+                                                       class="text-xs text-gray-500 px-2.5 py-1.5 border border-gray-200 rounded-lg hover:bg-gray-50 transition">
+                                                        View
+                                                    </a>
+                                                    <form method="POST"
+                                                          action="{{ route('reception.submissions.send-to-testing', $submission->id) }}"
+                                                          onsubmit="return confirm('Send all {{ count($submission->sample_items ?? []) ?: 1 }} sample(s) to the testing queue?')">
+                                                        @csrf
+                                                        <button type="submit"
+                                                                class="inline-flex items-center gap-1.5 px-3 py-1.5 bg-indigo-600 text-white text-xs font-medium rounded-lg hover:bg-indigo-700 transition">
+                                                            <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 7l5 5m0 0l-5 5m5-5H6"/>
+                                                            </svg>
+                                                            Send to Testing
+                                                        </button>
+                                                    </form>
+                                                </div>
                                             @elseif($submission->status === 'consent_to_proceed')
-                                                <a href="{{ route('reception.submissions.show', $submission->id) }}"
-                                                   class="inline-flex items-center gap-1.5 px-3 py-1.5 bg-indigo-600 text-white text-xs font-medium rounded-lg hover:bg-indigo-700 transition">
-                                                    <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 7l5 5m0 0l-5 5m5-5H6"/>
-                                                    </svg>
-                                                    Send to Testing
-                                                </a>
+                                                <div class="flex items-center gap-1.5 justify-end">
+                                                    <a href="{{ route('reception.submissions.show', $submission->id) }}"
+                                                       class="text-xs text-gray-500 px-2.5 py-1.5 border border-gray-200 rounded-lg hover:bg-gray-50 transition">
+                                                        View
+                                                    </a>
+                                                    <form method="POST"
+                                                          action="{{ route('reception.submissions.send-to-testing', $submission->id) }}"
+                                                          onsubmit="return confirm('Send consented sample(s) to the testing queue?')">
+                                                        @csrf
+                                                        <button type="submit"
+                                                                class="inline-flex items-center gap-1.5 px-3 py-1.5 bg-indigo-600 text-white text-xs font-medium rounded-lg hover:bg-indigo-700 transition">
+                                                            <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 7l5 5m0 0l-5 5m5-5H6"/>
+                                                            </svg>
+                                                            Send to Testing
+                                                        </button>
+                                                    </form>
+                                                </div>
                                             @elseif($submission->status === 'rejected')
                                                 <a href="{{ route('reception.submissions.consent', $submission->id) }}"
                                                    class="inline-flex items-center gap-1.5 px-3 py-1.5 bg-red-600 text-white text-xs font-medium rounded-lg hover:bg-red-700 transition">
@@ -325,8 +360,18 @@
                                             <p class="text-gray-400 text-xs">{{ $submission->client->responsible_officer_name ?? '' }}</p>
                                         </td>
                                         <td class="px-6 py-3.5 text-xs text-gray-600">
-                                            {{ $submission->sample_name }}
-                                            <span class="ml-1 text-gray-400 capitalize">· {{ $submission->sample_type }}</span>
+                                            @if($submission->sample_items && count($submission->sample_items))
+                                                @php $items = $submission->sample_items; @endphp
+                                                <span class="font-medium text-gray-800">{{ $items[0]['name'] ?? '—' }}</span>
+                                                @if(count($items) > 1)
+                                                    <span class="ml-1 text-indigo-500">+{{ count($items) - 1 }} more</span>
+                                                @endif
+                                            @else
+                                                {{ $submission->sample_name ?? '—' }}
+                                                @if($submission->sample_type)
+                                                    <span class="ml-1 text-gray-400 capitalize">· {{ $submission->sample_type }}</span>
+                                                @endif
+                                            @endif
                                         </td>
                                         <td class="px-6 py-3.5">
                                             <x-kstl.priority-badge :priority="$submission->priority" />

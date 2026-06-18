@@ -338,6 +338,77 @@ class DirectorController extends Controller
         return Storage::disk('private')->download($att->file_path, $att->original_filename);
     }
 
+    // ── Preview a test attachment inline (PDF / image) ─────────────
+    public function previewAttachment(string $attachment)
+    {
+        $att = SampleTestAttachment::findOrFail($attachment);
+
+        abort_unless(
+            Storage::disk('private')->exists($att->file_path),
+            404,
+            'File not found.'
+        );
+
+        Log::info('Director previewed test attachment', [
+            'attachment_id' => $att->id,
+            'test_id'       => $att->sample_test_id,
+            'user_id'       => Auth::id(),
+        ]);
+
+        $contents = Storage::disk('private')->get($att->file_path);
+        $mime     = $att->mime_type ?? 'application/octet-stream';
+
+        return response($contents, 200)
+            ->header('Content-Type', $mime)
+            ->header('Content-Disposition', 'inline; filename="' . addslashes($att->original_filename) . '"')
+            ->header('Cache-Control', 'private, no-store');
+    }
+
+    // ── Save a director note on a specific attachment ──────────────
+    public function saveAttachmentNote(Request $request, string $attachment)
+    {
+        $att = SampleTestAttachment::findOrFail($attachment);
+
+        $validated = $request->validate([
+            'director_note' => ['nullable', 'string', 'max:3000'],
+        ]);
+
+        $att->update(['director_note' => $validated['director_note'] ?? null]);
+
+        Log::info('Director saved attachment note', [
+            'attachment_id' => $att->id,
+            'user_id'       => Auth::id(),
+        ]);
+
+        return response()->json(['ok' => true]);
+    }
+
+    // ── Save a per-test director review note ───────────────────────
+    public function saveTestNote(Request $request, string $testId)
+    {
+        $test = SampleTest::findOrFail($testId);
+
+        // Ensure the test belongs to a submission the director can see
+        abort_unless($test->sample()->exists(), 403);
+
+        $validated = $request->validate([
+            'director_review_note' => ['nullable', 'string', 'max:2000'],
+        ]);
+
+        $test->update(['director_review_note' => $validated['director_review_note'] ?? null]);
+
+        Log::info('Director saved test review note', [
+            'test_id'    => $testId,
+            'user_id'    => Auth::id(),
+        ]);
+
+        if ($request->expectsJson()) {
+            return response()->json(['ok' => true]);
+        }
+
+        return redirect()->back()->with('success', 'Note saved.');
+    }
+
     // ── Helpers ────────────────────────────────────────────────────
     private function getFlaggedCount(): int
     {

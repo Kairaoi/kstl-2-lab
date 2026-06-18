@@ -20,6 +20,7 @@ class SampleTestAttachment extends Model
         'mime_type',
         'file_size',
         'description',
+        'director_note',
     ];
 
     protected $casts = [

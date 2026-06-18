@@ -222,16 +222,33 @@
                                                 : json_decode($submission->tests_requested ?? '[]', true) ?? [];
                                         @endphp
                                         @if(count($tests))
+                                            @php
+                                                $indexTestLabels = [
+                                                    'total_coliforms' => 'Total Coliforms',
+                                                    'e_coli'          => 'E. coli',
+                                                    'enterococci'     => 'Enterococci',
+                                                    'yeast_mold'      => 'Yeast & Mould',
+                                                    'apc'             => 'APC',
+                                                    'e_coli_coliform' => 'E. coli & Coliform',
+                                                    'staph_aureus'    => 'S. aureus',
+                                                    'salmonella_spp'  => 'Salmonella spp.',
+                                                    'listeria_mono'   => 'L. monocytogenes',
+                                                    'listeria_spp'    => 'Listeria spp.',
+                                                    'moisture'        => 'Moisture',
+                                                    'histamine'       => 'Histamine',
+                                                    'ph'              => 'pH',
+                                                    'conductivity'    => 'Conductivity',
+                                                    'water_activity'  => 'Water Activity',
+                                                ];
+                                            @endphp
                                             <div class="flex flex-wrap gap-1">
                                                 @foreach(array_slice($tests, 0, 3) as $test)
                                                     <span class="inline-flex px-1.5 py-0.5 text-xs bg-blue-50 text-blue-700 rounded">
-                                                        {{ str_replace('_', ' ', $test) }}
+                                                        {{ $indexTestLabels[$test] ?? ucwords(str_replace('_', ' ', $test)) }}
                                                     </span>
                                                 @endforeach
                                                 @if(count($tests) > 3)
-                                                    <span class="text-xs text-gray-400">
-                                                        +{{ count($tests) - 3 }} more
-                                                    </span>
+                                                    <span class="text-xs text-gray-400">+{{ count($tests) - 3 }} more</span>
                                                 @endif
                                             </div>
                                         @else

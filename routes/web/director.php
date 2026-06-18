@@ -39,6 +39,16 @@ Route::middleware([
     Route::get('/attachments/{attachment}/download', [DirectorController::class, 'downloadAttachment'])
         ->name('attachments.download');
 
+    Route::get('/attachments/{attachment}/preview', [DirectorController::class, 'previewAttachment'])
+        ->name('attachments.preview');
+
+    Route::post('/attachments/{attachment}/note', [DirectorController::class, 'saveAttachmentNote'])
+        ->name('attachments.note');
+
+    // ── Per-test director review notes ────────────────────────────
+    Route::post('/tests/{testId}/note', [DirectorController::class, 'saveTestNote'])
+        ->name('tests.note');
+
     // ── Flagged tests (queued for Director attention) ─────────────
     Route::get('/flagged', [DirectorController::class, 'flaggedIndex'])
         ->name('flagged.index');

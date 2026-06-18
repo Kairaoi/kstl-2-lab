@@ -115,13 +115,23 @@
                                                     {{ $client->company_name ?? '—' }}
                                                 </span>
                                                 <svg class="w-3 h-3 text-gray-300 flex-shrink-0" fill="currentColor" viewBox="0 0 6 6"><circle cx="3" cy="3" r="3"/></svg>
-                                                <span class="inline-flex items-center gap-1 px-2 py-0.5 rounded-md bg-teal-50 text-teal-700 text-xs font-semibold">
-                                                    {{ $submission->sample_name }}
-                                                </span>
-                                                <svg class="w-3 h-3 text-gray-300 flex-shrink-0" fill="currentColor" viewBox="0 0 6 6"><circle cx="3" cy="3" r="3"/></svg>
-                                                <span class="inline-flex items-center gap-1 px-2 py-0.5 rounded-md bg-sky-50 text-sky-700 text-xs font-semibold capitalize">
-                                                    {{ ucfirst($submission->sample_type) }}
-                                                </span>
+                                                @if($submission->sample_items && count($submission->sample_items))
+                                                    @foreach($submission->sample_items as $si)
+                                                        <span class="inline-flex items-center gap-1 px-2 py-0.5 rounded-md bg-teal-50 text-teal-700 text-xs font-semibold">
+                                                            {{ $si['name'] ?? '—' }}
+                                                            @if(!empty($si['scientific_name']))
+                                                                <span class="italic font-normal text-teal-500">({{ $si['scientific_name'] }})</span>
+                                                            @endif
+                                                        </span>
+                                                    @endforeach
+                                                @elseif($submission->sample_name)
+                                                    <span class="inline-flex items-center gap-1 px-2 py-0.5 rounded-md bg-teal-50 text-teal-700 text-xs font-semibold">
+                                                        {{ $submission->sample_name }}
+                                                        @if($submission->sample_type)
+                                                            <span class="italic font-normal text-teal-500 capitalize">({{ $submission->sample_type }})</span>
+                                                        @endif
+                                                    </span>
+                                                @endif
                                                 <svg class="w-3 h-3 text-gray-300 flex-shrink-0" fill="currentColor" viewBox="0 0 6 6"><circle cx="3" cy="3" r="3"/></svg>
                                                 <span class="inline-flex items-center gap-1 px-2 py-0.5 rounded-full bg-indigo-50 text-indigo-700 font-semibold text-xs whitespace-nowrap">
                                                     <svg class="w-3 h-3 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -196,10 +206,16 @@
                                                     <tr class="hover:bg-gray-50 transition {{ $rowBg }}" x-data="{ showModal: false }">
                                                         <td class="px-4 py-2.5">
                                                             <p class="font-medium text-gray-800 text-xs">{{ $test->sample->sample_code }}</p>
-                                                            <p class="text-xs text-gray-400 mt-0.5">{{ $test->sample->common_name }}</p>
+                                                            <p class="text-xs text-gray-700 mt-0.5">{{ $test->sample->common_name }}</p>
+                                                            @if($test->sample->scientific_name)
+                                                                <p class="text-xs text-gray-400 italic mt-0.5">{{ $test->sample->scientific_name }}</p>
+                                                            @endif
                                                         </td>
-                                                        <td class="px-4 py-2.5 text-sm text-gray-700">
-                                                            {{ $test->getDisplayLabel() }}
+                                                        <td class="px-4 py-2.5">
+                                                            <a href="{{ route('analyst.tests.show', $test->id) }}"
+                                                               class="text-sm font-medium text-gray-800 hover:text-indigo-600 transition">
+                                                                {{ $test->getDisplayLabel() }}
+                                                            </a>
                                                         </td>
                                                         <td class="px-4 py-2.5">
                                                             <span class="inline-flex px-2 py-0.5 text-xs rounded-full capitalize
@@ -285,7 +301,12 @@
                                                                                                     <h3 class="text-xl font-bold text-white">
                                                                                                         Test Results — {{ $test->sample->submission->reference_number }}
                                                                                                     </h3>
-                                                                                                    <p class="text-sm text-indigo-100 mt-0.5">{{ $test->sample->common_name }}</p>
+                                                                                                    <p class="text-sm text-indigo-100 mt-0.5">
+                                                                                                        {{ $test->sample->common_name }}
+                                                                                                        @if($test->sample->scientific_name)
+                                                                                                            <span class="italic text-indigo-200"> — {{ $test->sample->scientific_name }}</span>
+                                                                                                        @endif
+                                                                                                    </p>
                                                                                                 </div>
                                                                                             </div>
                                                                                             <button @click="showModal = false" class="text-indigo-200 hover:text-white transition">
@@ -319,8 +340,11 @@
                                                                                                         </div>
                                                                                                         <div>
                                                                                                             <dt class="text-xs text-gray-500 font-medium">Sample</dt>
-                                                                                                            <dd class="text-gray-900 mt-1">{{ $test->sample->sample_code }}</dd>
-                                                                                                            <dd class="text-sm text-gray-700">{{ $test->sample->common_name }}</dd>
+                                                                                                            <dd class="text-gray-900 mt-1 font-mono text-xs">{{ $test->sample->sample_code }}</dd>
+                                                                                                            <dd class="text-sm font-medium text-gray-800 mt-0.5">{{ $test->sample->common_name }}</dd>
+                                                                                                            @if($test->sample->scientific_name)
+                                                                                                                <dd class="text-xs text-gray-400 italic">{{ $test->sample->scientific_name }}</dd>
+                                                                                                            @endif
                                                                                                         </div>
                                                                                                         <div>
                                                                                                             <dt class="text-xs text-gray-500 font-medium">Type</dt>

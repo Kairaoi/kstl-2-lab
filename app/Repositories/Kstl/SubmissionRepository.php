@@ -54,10 +54,10 @@ class SubmissionRepository extends BaseRepository
             'received_by'           => $input['received_by']           ?? null,
 
             // Sample info
-            'sample_name'           => $input['sample_name'],
+            'sample_name'           => $input['sample_name']           ?? null,
             'scientific_name'       => $input['scientific_name']       ?? null,
             'sample_description'    => $input['sample_description']    ?? null,
-            'sample_type'           => $input['sample_type'],
+            'sample_type'           => $input['sample_type']           ?? null,
             'sample_quantity'       => $input['sample_quantity']       ?? null,
             'sample_quantity_unit'  => $input['sample_quantity_unit']  ?? null,
             'sample_items'          => $input['sample_items']          ?? null,
