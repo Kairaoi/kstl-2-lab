@@ -223,6 +223,7 @@
                                             <th class="text-left px-3 py-2.5">Test</th>
                                             <th class="text-left px-3 py-2.5">Result</th>
                                             <th class="text-left px-3 py-2.5">Methods</th>
+                                            <th class="text-left px-3 py-2.5">Outcome</th>
                                         </tr>
                                     </thead>
                                     <tbody>
@@ -261,6 +262,15 @@
                                                         </a>
                                                     @elseif($sopCode)
                                                         <span class="font-mono text-xs text-gray-500">{{ $sopCode }}</span>
+                                                    @else
+                                                        <span class="text-gray-400">—</span>
+                                                    @endif
+                                                </td>
+                                                <td class="px-3 py-2.5">
+                                                    @if($test->director_outcome === 'pass')
+                                                        <span class="inline-flex items-center px-2 py-0.5 rounded-full text-xs font-semibold bg-green-50 text-green-700 ring-1 ring-green-600/20">Pass</span>
+                                                    @elseif($test->director_outcome === 'fail')
+                                                        <span class="inline-flex items-center px-2 py-0.5 rounded-full text-xs font-semibold bg-red-50 text-red-700 ring-1 ring-red-600/20">Fail</span>
                                                     @else
                                                         <span class="text-gray-400">—</span>
                                                     @endif
