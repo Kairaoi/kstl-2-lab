@@ -3,6 +3,7 @@
 namespace App\Http\Controllers\Kstl;
 
 use App\Http\Controllers\Controller;
+use App\Models\Kstl\Invoice;
 use App\Models\Kstl\SampleTest;
 use App\Models\Kstl\Submission;
 use App\Repositories\Kstl\ClientRepository;
@@ -30,7 +31,7 @@ class ClientResultController extends Controller
                     Submission::STATUS_AUTHORISED,
                     Submission::STATUS_COMPLETED,
                 ])
-                ->with('result.authorisedBy')
+                ->with(['result.authorisedBy', 'invoice'])
                 ->orderByDesc('submitted_at')
                 ->get()
             : collect();
@@ -57,8 +58,19 @@ class ClientResultController extends Controller
                 Submission::STATUS_AUTHORISED,
                 Submission::STATUS_COMPLETED,
             ])
-            ->with(['result.authorisedBy', 'samples'])
+            ->with(['result.authorisedBy', 'samples', 'invoice'])
             ->firstOrFail();
+
+        // Payment gate — results are withheld until the invoice is paid
+        $invoice = $submission->invoice;
+        if (! $invoice) {
+            return redirect()->route('client.invoices.index')
+                ->with('info', 'Your invoice for ' . $submission->reference_number . ' is being prepared. Results will be available once payment is received.');
+        }
+        if (! $invoice->isPaid() && ! $invoice->isWaived()) {
+            return redirect()->route('client.invoices.show', $invoice->id)
+                ->with('warning', 'Your results for ' . $submission->reference_number . ' are ready, but will only be released once payment is confirmed. Please settle the invoice below.');
+        }
 
         $result  = $submission->result;
         $samples = $submission->samples;

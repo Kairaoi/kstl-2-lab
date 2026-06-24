@@ -7,6 +7,7 @@ use App\Models\AuditLog;
 use App\Services\AuditService;
 use App\Services\NotificationService;
 use App\Repositories\Kstl\ClientRepository;
+use App\Repositories\Kstl\InvoiceRepository;
 use App\Repositories\Kstl\SubmissionRepository;
 use App\Repositories\Kstl\SampleRepository;
 use App\Repositories\Kstl\SampleTestRepository;
@@ -28,6 +29,7 @@ class DirectorController extends Controller
         protected SampleTestRepository $testRepo,
         protected ResultRepository     $resultRepo,
         protected ClientRepository     $clientRepo,
+        protected InvoiceRepository    $invoiceRepo,
         protected NotificationService  $notifyService,
         protected AuditService        $auditService,
     ) {}
@@ -118,14 +120,27 @@ class DirectorController extends Controller
             );
 
             $result = $this->resultRepo->findBySubmissionId($submission->id);
-            if ($result) { 
-                $this->auditService->logResultAuthorised($result->load('submission')); 
+            if ($result) {
+                $this->auditService->logResultAuthorised($result->load('submission'));
             }
 
             if ($result) {
                 $this->notifyService->notifyResultsReady($submission, $result);
             }
         });
+
+        // Auto-generate invoice on authorisation if one doesn't already exist
+        if (! $this->invoiceRepo->findBySubmissionId($submission->id)) {
+            try {
+                $resultId = $this->resultRepo->findBySubmissionId($submission->id)?->id;
+                $this->invoiceRepo->generateForSubmission($submission->id, $resultId);
+            } catch (\Throwable $e) {
+                Log::warning('Auto-invoice generation failed after authorisation', [
+                    'submission_id' => $submission->id,
+                    'error'         => $e->getMessage(),
+                ]);
+            }
+        }
 
         return redirect()->route('director.submissions.show', $submission->id)
             ->with('success', "Submission {$submission->reference_number} has been authorised — " . ucfirst($validated['overall_outcome']) . '. All results are now viewable below.');
@@ -165,7 +180,9 @@ class DirectorController extends Controller
             return redirect()->back()->with('error', 'Invalid test selection.');
         }
 
-        DB::transaction(function () use ($submission, $toAuthorise, $submissionTestIds) {
+        $allAuthorised = false;
+
+        DB::transaction(function () use ($submission, $toAuthorise, $submissionTestIds, &$allAuthorised) {
             foreach ($toAuthorise as $testId => $outcome) {
                 SampleTest::where('id', $testId)->update([
                     'director_outcome'       => $outcome,
@@ -203,8 +220,23 @@ class DirectorController extends Controller
                     $this->auditService->logResultAuthorised($result->load('submission'));
                     $this->notifyService->notifyResultsReady($submission, $result);
                 }
+
+                $allAuthorised = true;
             }
         });
+
+        // Auto-generate invoice once all tests are authorised
+        if ($allAuthorised && ! $this->invoiceRepo->findBySubmissionId($submission->id)) {
+            try {
+                $resultId = $this->resultRepo->findBySubmissionId($submission->id)?->id;
+                $this->invoiceRepo->generateForSubmission($submission->id, $resultId);
+            } catch (\Throwable $e) {
+                Log::warning('Auto-invoice generation failed after test authorisation', [
+                    'submission_id' => $id,
+                    'error'         => $e->getMessage(),
+                ]);
+            }
+        }
 
         $remaining = SampleTest::whereIn('id', $submissionTestIds)->whereNull('director_outcome')->count();
 

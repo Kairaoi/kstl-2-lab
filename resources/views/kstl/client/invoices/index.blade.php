@@ -8,6 +8,12 @@
     <div class="py-8">
         <div class="max-w-7xl mx-auto sm:px-6 lg:px-8 space-y-6">
 
+            @if(session('info'))
+                <div class="bg-blue-50 border-l-4 border-blue-400 p-4 rounded-lg text-sm text-blue-800">
+                    {{ session('info') }}
+                </div>
+            @endif
+
             @if($invoices->isEmpty())
                 <div class="bg-white rounded-xl border border-gray-100 px-6 py-16 text-center">
                     <svg class="w-10 h-10 text-gray-200 mx-auto mb-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
