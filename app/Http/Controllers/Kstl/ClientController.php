@@ -837,7 +837,7 @@ class ClientController extends Controller
             'client_id' => $client?->id,
         ]);
 
-        return view('kstl.client.profile.show', compact('user', 'client'));
+        return view('kstl.client.profile.company', compact('user', 'client'));
     }
 
     public function profileUpdate(Request $request)
