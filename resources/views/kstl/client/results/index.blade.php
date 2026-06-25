@@ -43,7 +43,6 @@
                                 <tr style="background:#1a2f4e;">
                                     <th style="text-align:left; padding:9px 16px; font-size:9px; font-weight:700; letter-spacing:.12em; text-transform:uppercase; color:#e2e8f0;">Reference</th>
                                     <th style="text-align:left; padding:9px 16px; font-size:9px; font-weight:700; letter-spacing:.12em; text-transform:uppercase; color:#e2e8f0;">Sample</th>
-                                    <th style="text-align:left; padding:9px 16px; font-size:9px; font-weight:700; letter-spacing:.12em; text-transform:uppercase; color:#e2e8f0;">Outcome</th>
                                     <th style="text-align:left; padding:9px 16px; font-size:9px; font-weight:700; letter-spacing:.12em; text-transform:uppercase; color:#e2e8f0;">Authorised</th>
                                     <th style="text-align:left; padding:9px 16px; font-size:9px; font-weight:700; letter-spacing:.12em; text-transform:uppercase; color:#e2e8f0;">By</th>
                                     <th style="padding:9px 16px;"></th>
@@ -73,33 +72,6 @@
                                         <td style="padding:11px 16px; font-size:12.5px; color:#1a2f4e; font-weight:600;">
                                             {{ $submission->sample_name }}
                                             <span style="display:block; font-size:11px; color:#9ca3af; font-weight:400; text-transform:capitalize;">{{ $submission->sample_type }}</span>
-                                        </td>
-                                        <td style="padding:11px 16px; font-size:12.5px;">
-                                            @if(! $locked)
-                                                @if($outcome === 'pass')
-                                                    <span style="border-radius:999px; padding:2px 12px; font-size:10px; font-weight:700; background:#dcfce7; color:#15803d; display:inline-block;">
-                                                        &#10003; Pass
-                                                    </span>
-                                                @elseif($outcome === 'fail')
-                                                    <span style="border-radius:999px; padding:2px 12px; font-size:10px; font-weight:700; background:#fee2e2; color:#dc2626; display:inline-block;">
-                                                        &#10007; Fail
-                                                    </span>
-                                                @else
-                                                    <span style="border-radius:999px; padding:2px 12px; font-size:10px; font-weight:700; background:#fef9c3; color:#ca8a04; display:inline-block; text-transform:capitalize;">
-                                                        {{ ucfirst($outcome) }}
-                                                    </span>
-                                                @endif
-                                            @elseif($invoice)
-                                                <span style="border-radius:999px; padding:2px 12px; font-size:10px; font-weight:700; background:#fffbeb; color:#b45309; display:inline-flex; align-items:center; gap:4px;">
-                                                    <svg style="width:10px; height:10px; flex-shrink:0;" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z"/></svg>
-                                                    Payment Required
-                                                </span>
-                                            @else
-                                                <span style="border-radius:999px; padding:2px 12px; font-size:10px; font-weight:700; background:#f3f4f6; color:#9ca3af; display:inline-flex; align-items:center; gap:4px;">
-                                                    <svg style="width:10px; height:10px; flex-shrink:0;" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>
-                                                    Invoice Pending
-                                                </span>
-                                            @endif
                                         </td>
                                         <td style="padding:11px 16px; font-size:12.5px; color:#6b7280;">
                                             {{ $result?->authorised_at?->format('d M Y') ?? '—' }}

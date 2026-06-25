@@ -67,11 +67,10 @@
         }
         .guest-brand { display: flex; align-items: center; gap: 11px; text-decoration: none; }
         .gb-crest {
-            width: 36px; height: 36px;
-            background: var(--navy); border-radius: 3px;
+            width: 38px; height: 38px;
             display: flex; align-items: center; justify-content: center; flex-shrink: 0;
         }
-        .gb-crest svg { width: 19px; height: 19px; stroke: #f4f3f0; fill: none; }
+        .gb-crest img { width: 38px; height: 38px; object-fit: contain; }
         .gb-main { font-family: 'Noto Serif', serif; font-size: 13px; font-weight: 700; color: var(--navy); line-height: 1.2; letter-spacing: -.01em; }
         .gb-sub  { font-size: 9px; color: var(--muted); letter-spacing: .04em; margin-top: 1px; }
         .guest-nav-links { display: flex; align-items: center; gap: 6px; }
@@ -137,9 +136,7 @@
     <nav class="guest-nav">
         <a href="/" class="guest-brand">
             <div class="gb-crest">
-                <svg viewBox="0 0 24 24" stroke-width="1.4">
-                    <path stroke-linecap="round" stroke-linejoin="round" d="M19.428 15.428a2 2 0 00-1.022-.547l-2.387-.477a6 6 0 00-3.86.517l-.318.158a6 6 0 01-3.86.517L6.05 15.21a2 2 0 00-1.806.547M8 4h8l-1 1v5.172a2 2 0 00.586 1.414l5 5c1.26 1.26.367 3.414-1.415 3.414H4.828c-1.782 0-2.674-2.154-1.414-3.414l5-5A2 2 0 009 10.172V5L8 4z"/>
-                </svg>
+                <img src="{{ asset('images/mfor-logo.png') }}" alt="MFOR">
             </div>
             <div>
                 <div class="gb-main">KSTL Portal</div>
