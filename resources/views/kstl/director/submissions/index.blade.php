@@ -1,49 +1,47 @@
-{{-- resources/views/kstl/director/submissions/index.blade.php --}}
+﻿{{-- resources/views/kstl/director/submissions/index.blade.php --}}
 {{-- Director pipeline view — all submissions from intake to completion --}}
 
 <x-app-layout>
     <x-slot name="header">
-        <div class="flex items-center justify-between">
-            <div class="flex items-center gap-3">
-                <a href="{{ route('director.dashboard') }}"
-                   class="text-gray-400 hover:text-gray-600 transition">
-                    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7"/>
-                    </svg>
-                </a>
-                <div>
-                    <p class="text-xs font-semibold tracking-widest text-amber-600 uppercase">Director &middot; Monitoring</p>
-                    <h2 class="font-semibold text-xl text-gray-800 leading-tight mt-0.5">All Submissions — Pipeline View</h2>
-                </div>
+        <div style="display:flex;align-items:center;gap:12px;">
+            <a href="{{ route('director.dashboard') }}"
+               style="color:#9ca3af;text-decoration:none;display:flex;align-items:center;">
+                <svg style="width:18px;height:18px;" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7"/>
+                </svg>
+            </a>
+            <div>
+                <p style="font-size:9px;font-weight:700;letter-spacing:.14em;text-transform:uppercase;color:#b8922a;margin:0 0 3px;">Director &middot; Monitoring</p>
+                <h2 style="font-family:'Georgia',serif;font-size:17px;font-weight:700;color:#1a2f4e;margin:0;line-height:1.2;">All Submissions — Pipeline View</h2>
             </div>
         </div>
     </x-slot>
 
-    <div class="py-8">
-        <div class="max-w-7xl mx-auto sm:px-6 lg:px-8 space-y-6">
+    <div style="background:#f1f5f9;min-height:100vh;padding:52px 0 56px;">
+        <div style="max-width:80rem;margin:0 auto;padding:0 2rem;">
 
             {{-- ── Status Summary Bar ──────────────────────────────── --}}
             @php
                 $statuses = [
-                    'new_submission'        => ['label' => 'New',              'color' => 'bg-gray-100 text-gray-700'],
-                    'reception_review'      => ['label' => 'Reception Review', 'color' => 'bg-blue-50 text-blue-700'],
-                    'sample_received'       => ['label' => 'Sample Received',  'color' => 'bg-cyan-50 text-cyan-700'],
-                    'testing'               => ['label' => 'Testing',          'color' => 'bg-indigo-50 text-indigo-700'],
-                    'awaiting_authorisation'=> ['label' => 'Awaiting Auth',    'color' => 'bg-amber-50 text-amber-700'],
-                    'authorised'            => ['label' => 'Authorised',       'color' => 'bg-green-50 text-green-700'],
-                    'completed'             => ['label' => 'Completed',        'color' => 'bg-teal-50 text-teal-700'],
-                    'rejected'              => ['label' => 'Rejected',         'color' => 'bg-red-50 text-red-700'],
+                    'new_submission'        => ['label' => 'New',              'accent' => '#6b7280'],
+                    'reception_review'      => ['label' => 'Reception Review', 'accent' => '#3b82f6'],
+                    'sample_received'       => ['label' => 'Sample Received',  'accent' => '#06b6d4'],
+                    'testing'               => ['label' => 'Testing',          'accent' => '#6366f1'],
+                    'awaiting_authorisation'=> ['label' => 'Awaiting Auth',    'accent' => '#b8922a'],
+                    'authorised'            => ['label' => 'Authorised',       'accent' => '#16a34a'],
+                    'completed'             => ['label' => 'Completed',        'accent' => '#0d9488'],
+                    'rejected'              => ['label' => 'Rejected',         'accent' => '#dc2626'],
                 ];
             @endphp
-            <div class="grid grid-cols-2 sm:grid-cols-4 lg:grid-cols-8 gap-2">
+            <div style="display:grid;grid-template-columns:repeat(8,1fr);gap:8px;margin-bottom:20px;">
                 @foreach($statuses as $key => $meta)
+                    @php $isActive = request('status') === $key; @endphp
                     <a href="?status={{ $key }}&search={{ request('search') }}"
-                       class="rounded-xl border px-3 py-3 text-center transition hover:shadow-sm
-                              {{ request('status') === $key ? 'ring-2 ring-offset-1 ring-indigo-500 ' . $meta['color'] : 'bg-white border-gray-200' }}">
-                        <p class="text-2xl font-bold {{ request('status') === $key ? '' : 'text-gray-800' }}">
+                       style="display:block;background:#fff;border:1px solid {{ $isActive ? $meta['accent'] : '#e2e8f0' }};border-top:3px solid {{ $meta['accent'] }};border-radius:4px;padding:12px 10px;text-align:center;text-decoration:none;{{ $isActive ? 'box-shadow:0 0 0 2px '.$meta['accent'].'33;' : '' }}">
+                        <p style="font-size:22px;font-weight:700;color:#1a2f4e;margin:0 0 2px;line-height:1;">
                             {{ $statusCounts[$key] ?? 0 }}
                         </p>
-                        <p class="text-xs font-medium mt-0.5 {{ request('status') === $key ? '' : 'text-gray-500' }}">
+                        <p style="font-size:9px;font-weight:700;letter-spacing:.06em;color:{{ $isActive ? $meta['accent'] : '#6b7280' }};margin:0;text-transform:uppercase;">
                             {{ $meta['label'] }}
                         </p>
                     </a>
@@ -51,17 +49,17 @@
             </div>
 
             {{-- ── Filters ─────────────────────────────────────────── --}}
-            <div class="bg-white rounded-xl border border-gray-100 px-5 py-4">
-                <form method="GET" class="flex flex-wrap items-end gap-3">
-                    <div class="flex-1 min-w-48">
-                        <label class="block text-xs font-medium text-gray-500 mb-1">Search</label>
+            <div style="background:#fff;border:1px solid #e2e8f0;border-radius:4px;padding:16px 20px;margin-bottom:20px;">
+                <form method="GET" style="display:flex;flex-wrap:wrap;align-items:flex-end;gap:12px;">
+                    <div style="flex:1;min-width:200px;">
+                        <label style="display:block;font-size:9px;font-weight:700;letter-spacing:.14em;text-transform:uppercase;color:#9ca3af;margin-bottom:6px;">Search</label>
                         <input type="text" name="search" value="{{ request('search') }}"
                                placeholder="Reference, sample, or company…"
-                               class="w-full border-gray-300 rounded-lg text-sm focus:border-teal-500 focus:ring-teal-500"/>
+                               style="width:100%;padding:8px 12px;border:1px solid #e2e8f0;border-radius:3px;font-size:12.5px;color:#374151;outline:none;box-sizing:border-box;">
                     </div>
                     <div>
-                        <label class="block text-xs font-medium text-gray-500 mb-1">Status</label>
-                        <select name="status" class="border-gray-300 rounded-lg text-sm focus:border-teal-500 focus:ring-teal-500">
+                        <label style="display:block;font-size:9px;font-weight:700;letter-spacing:.14em;text-transform:uppercase;color:#9ca3af;margin-bottom:6px;">Status</label>
+                        <select name="status" style="padding:8px 12px;border:1px solid #e2e8f0;border-radius:3px;font-size:12.5px;color:#374151;outline:none;">
                             <option value="">All statuses</option>
                             @foreach($statuses as $key => $meta)
                                 <option value="{{ $key }}" {{ request('status') === $key ? 'selected' : '' }}>
@@ -71,12 +69,12 @@
                         </select>
                     </div>
                     <button type="submit"
-                            class="inline-flex items-center gap-2 px-4 py-2 bg-teal-600 text-white text-sm font-medium rounded-lg hover:bg-teal-700 transition">
+                            style="background:#1a2f4e;color:#fff;padding:8px 18px;border-radius:3px;font-size:12px;font-weight:600;border:none;cursor:pointer;">
                         Filter
                     </button>
                     @if(request()->hasAny(['status', 'search']))
                         <a href="{{ route('director.submissions.index') }}"
-                           class="inline-flex items-center gap-1 px-3 py-2 text-sm text-gray-500 hover:text-gray-700 border border-gray-200 rounded-lg">
+                           style="padding:8px 14px;border:1px solid #e2e8f0;border-radius:3px;font-size:12px;color:#6b7280;text-decoration:none;">
                             Clear
                         </a>
                     @endif
@@ -84,100 +82,107 @@
             </div>
 
             {{-- ── Submissions Table ───────────────────────────────── --}}
-            <div class="bg-white rounded-xl border border-gray-100 overflow-hidden">
-                <div class="px-5 py-4 border-b border-gray-100 flex items-center justify-between">
-                    <p class="text-sm font-medium text-gray-700">
-                        {{ $submissions->total() }} submission{{ $submissions->total() !== 1 ? 's' : '' }}
-                        @if(request('status'))
-                            &middot; <span class="text-indigo-600">{{ $statuses[request('status')]['label'] ?? request('status') }}</span>
-                        @endif
+            <div style="background:#fff;border:1px solid #e2e8f0;border-radius:4px;overflow:hidden;">
+
+                {{-- Table header bar --}}
+                <div style="padding:12px 20px;border-bottom:2px solid #b8922a;display:flex;align-items:center;justify-content:space-between;">
+                    <p style="font-family:'Georgia',serif;font-size:15px;font-weight:700;color:#1a2f4e;margin:0;">
+                        Submissions
+                        <span style="font-family:inherit;font-size:13px;font-weight:400;color:#6b7280;">
+                            — {{ $submissions->total() }} record{{ $submissions->total() !== 1 ? 's' : '' }}
+                            @if(request('status'))
+                                &middot;
+                                @php
+                                    $activeLabel = $statuses[request('status')]['label'] ?? request('status');
+                                    $activeAccent = $statuses[request('status')]['accent'] ?? '#1a2f4e';
+                                @endphp
+                                <span style="color:{{ $activeAccent }};">{{ $activeLabel }}</span>
+                            @endif
+                        </span>
                     </p>
-                    <p class="text-xs text-gray-400">Showing {{ $submissions->firstItem() }}–{{ $submissions->lastItem() }}</p>
+                    @if($submissions->firstItem())
+                        <p style="font-size:11px;color:#9ca3af;margin:0;">
+                            Showing {{ $submissions->firstItem() }}“{{ $submissions->lastItem() }}
+                        </p>
+                    @endif
                 </div>
 
                 @if($submissions->isEmpty())
-                    <div class="p-12 text-center">
-                        <svg class="w-12 h-12 text-gray-300 mx-auto mb-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <div style="padding:48px 20px;text-align:center;">
+                        <svg style="width:40px;height:40px;color:#d1d5db;margin:0 auto 12px;" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2"/>
                         </svg>
-                        <p class="text-gray-500 font-medium">No submissions found</p>
-                        <p class="text-gray-400 text-sm mt-1">Try adjusting your filters.</p>
+                        <p style="font-size:13px;color:#6b7280;margin:0 0 4px;font-weight:600;">No submissions found</p>
+                        <p style="font-size:12px;color:#9ca3af;margin:0;">Try adjusting your filters.</p>
                     </div>
                 @else
-                    <div class="overflow-x-auto">
-                        <table class="w-full text-sm">
-                            <thead class="bg-gray-50 border-b border-gray-100">
-                                <tr>
-                                    <th class="text-left px-5 py-3 text-xs font-medium text-gray-500 uppercase tracking-wide">Reference</th>
-                                    <th class="text-left px-4 py-3 text-xs font-medium text-gray-500 uppercase tracking-wide">Client</th>
-                                    <th class="text-left px-4 py-3 text-xs font-medium text-gray-500 uppercase tracking-wide">Sample</th>
-                                    <th class="text-left px-4 py-3 text-xs font-medium text-gray-500 uppercase tracking-wide">Priority</th>
-                                    <th class="text-left px-4 py-3 text-xs font-medium text-gray-500 uppercase tracking-wide">Status</th>
-                                    <th class="text-left px-4 py-3 text-xs font-medium text-gray-500 uppercase tracking-wide">Submitted</th>
-                                    <th class="text-left px-4 py-3 text-xs font-medium text-gray-500 uppercase tracking-wide">Last Updated</th>
-                                    <th class="px-4 py-3"></th>
+                    <div style="overflow-x:auto;">
+                        <table style="width:100%;border-collapse:collapse;">
+                            <thead>
+                                <tr style="background:#1a2f4e;">
+                                    <th style="text-align:left;padding:9px 16px;font-size:9px;font-weight:700;letter-spacing:.12em;text-transform:uppercase;color:#e2e8f0;white-space:nowrap;">Reference</th>
+                                    <th style="text-align:left;padding:9px 16px;font-size:9px;font-weight:700;letter-spacing:.12em;text-transform:uppercase;color:#e2e8f0;white-space:nowrap;">Client</th>
+                                    <th style="text-align:left;padding:9px 16px;font-size:9px;font-weight:700;letter-spacing:.12em;text-transform:uppercase;color:#e2e8f0;white-space:nowrap;">Sample</th>
+                                    <th style="text-align:left;padding:9px 16px;font-size:9px;font-weight:700;letter-spacing:.12em;text-transform:uppercase;color:#e2e8f0;white-space:nowrap;">Priority</th>
+                                    <th style="text-align:left;padding:9px 16px;font-size:9px;font-weight:700;letter-spacing:.12em;text-transform:uppercase;color:#e2e8f0;white-space:nowrap;">Status</th>
+                                    <th style="text-align:left;padding:9px 16px;font-size:9px;font-weight:700;letter-spacing:.12em;text-transform:uppercase;color:#e2e8f0;white-space:nowrap;">Submitted</th>
+                                    <th style="text-align:left;padding:9px 16px;font-size:9px;font-weight:700;letter-spacing:.12em;text-transform:uppercase;color:#e2e8f0;white-space:nowrap;">Last Updated</th>
+                                    <th style="padding:9px 16px;"></th>
                                 </tr>
                             </thead>
-                            <tbody class="divide-y divide-gray-50">
-                                @foreach($submissions as $sub)
+                            <tbody>
+                                @foreach($submissions as $i => $sub)
                                     @php
-                                        $sc = [
-                                            'new_submission'         => 'bg-gray-100 text-gray-700',
-                                            'reception_review'       => 'bg-blue-50 text-blue-700',
-                                            'sample_received'        => 'bg-cyan-50 text-cyan-700',
-                                            'testing'                => 'bg-indigo-50 text-indigo-700',
-                                            'awaiting_authorisation' => 'bg-amber-50 text-amber-700',
-                                            'authorised'             => 'bg-green-50 text-green-700',
-                                            'completed'              => 'bg-teal-50 text-teal-700',
-                                            'rejected'               => 'bg-red-50 text-red-700',
-                                        ];
+                                        $rowBg = $i % 2 === 0 ? '#fff' : '#f8fafc';
                                         $sl = [
-                                            'new_submission'         => 'New',
-                                            'reception_review'       => 'Reception Review',
-                                            'sample_received'        => 'Sample Received',
-                                            'testing'                => 'Testing',
-                                            'awaiting_authorisation' => 'Awaiting Authorisation',
-                                            'authorised'             => 'Authorised',
-                                            'completed'              => 'Completed',
-                                            'rejected'               => 'Rejected',
+                                            'new_submission'         => ['label' => 'New',                   'bg' => '#f3f4f6', 'color' => '#374151'],
+                                            'reception_review'       => ['label' => 'Reception Review',      'bg' => '#eff6ff', 'color' => '#1d4ed8'],
+                                            'sample_received'        => ['label' => 'Sample Received',       'bg' => '#ecfeff', 'color' => '#0e7490'],
+                                            'testing'                => ['label' => 'Testing',               'bg' => '#eef2ff', 'color' => '#4338ca'],
+                                            'awaiting_authorisation' => ['label' => 'Awaiting Authorisation','bg' => '#fffbeb', 'color' => '#92400e'],
+                                            'authorised'             => ['label' => 'Authorised',            'bg' => '#f0fdf4', 'color' => '#15803d'],
+                                            'completed'              => ['label' => 'Completed',             'bg' => '#f0fdfa', 'color' => '#0f766e'],
+                                            'rejected'               => ['label' => 'Rejected',              'bg' => '#fef2f2', 'color' => '#b91c1c'],
                                         ];
+                                        $statusData = $sl[$sub->status] ?? ['label' => ucfirst(str_replace('_',' ',$sub->status)), 'bg' => '#f3f4f6', 'color' => '#374151'];
                                         $pc = [
-                                            'routine'   => 'bg-gray-100 text-gray-600',
-                                            'urgent'    => 'bg-amber-50 text-amber-700',
-                                            'emergency' => 'bg-red-50 text-red-700',
+                                            'routine'   => ['bg' => '#f3f4f6', 'color' => '#374151'],
+                                            'urgent'    => ['bg' => '#fffbeb', 'color' => '#92400e'],
+                                            'emergency' => ['bg' => '#fef2f2', 'color' => '#b91c1c'],
                                         ];
+                                        $priorityData = $pc[$sub->priority ?? 'routine'] ?? $pc['routine'];
                                     @endphp
-                                    <tr class="hover:bg-gray-50 transition">
-                                        <td class="px-5 py-3">
-                                            <p class="font-mono text-xs font-semibold text-indigo-600">{{ $sub->reference_number }}</p>
+                                    <tr style="background:{{ $rowBg }};border-bottom:1px solid #f1f5f9;">
+                                        <td style="padding:11px 16px;font-size:12.5px;">
+                                            <span style="font-family:monospace;font-size:11.5px;font-weight:700;color:#1a2f4e;">{{ $sub->reference_number }}</span>
                                         </td>
-                                        <td class="px-4 py-3">
-                                            <p class="font-medium text-gray-800 text-xs">{{ $sub->client->company_name ?? '—' }}</p>
+                                        <td style="padding:11px 16px;font-size:12.5px;">
+                                            <span style="font-weight:600;color:#374151;">{{ $sub->client->company_name ?? '—' }}</span>
                                         </td>
-                                        <td class="px-4 py-3 text-xs text-gray-600 max-w-xs truncate">
+                                        <td style="padding:11px 16px;font-size:12.5px;color:#6b7280;max-width:200px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;">
                                             {{ $sub->sample_name }}
                                         </td>
-                                        <td class="px-4 py-3">
-                                            <span class="inline-flex px-2 py-0.5 text-xs font-medium rounded-full capitalize {{ $pc[$sub->priority ?? 'routine'] ?? 'bg-gray-100 text-gray-600' }}">
+                                        <td style="padding:11px 16px;">
+                                            <span style="display:inline-flex;padding:2px 8px;border-radius:20px;background:{{ $priorityData['bg'] }};color:{{ $priorityData['color'] }};font-size:10px;font-weight:700;text-transform:capitalize;">
                                                 {{ ucfirst($sub->priority ?? 'routine') }}
                                             </span>
                                         </td>
-                                        <td class="px-4 py-3">
-                                            <span class="inline-flex px-2 py-0.5 text-xs font-medium rounded-full {{ $sc[$sub->status] ?? 'bg-gray-100 text-gray-500' }}">
-                                                {{ $sl[$sub->status] ?? ucfirst(str_replace('_',' ',$sub->status)) }}
+                                        <td style="padding:11px 16px;">
+                                            <span style="display:inline-flex;padding:2px 8px;border-radius:20px;background:{{ $statusData['bg'] }};color:{{ $statusData['color'] }};font-size:10px;font-weight:700;">
+                                                {{ $statusData['label'] }}
                                             </span>
                                         </td>
-                                        <td class="px-4 py-3 text-xs text-gray-500">
+                                        <td style="padding:11px 16px;font-size:12.5px;color:#6b7280;white-space:nowrap;">
                                             {{ $sub->submitted_at?->format('d M Y') ?? $sub->created_at->format('d M Y') }}
                                         </td>
-                                        <td class="px-4 py-3 text-xs text-gray-400">
+                                        <td style="padding:11px 16px;font-size:12.5px;color:#9ca3af;white-space:nowrap;">
                                             {{ $sub->updated_at->diffForHumans() }}
                                         </td>
-                                        <td class="px-4 py-3 text-right">
+                                        <td style="padding:11px 16px;text-align:right;">
                                             <a href="{{ route('director.submissions.show', $sub->id) }}"
-                                               class="inline-flex items-center gap-1 px-3 py-1.5 text-xs font-medium text-indigo-600 hover:text-indigo-800 border border-indigo-200 rounded-lg hover:bg-indigo-50 transition">
+                                               style="display:inline-flex;align-items:center;gap:4px;padding:5px 12px;background:#1a2f4e;color:#fff;border-radius:3px;font-size:11px;font-weight:600;text-decoration:none;">
                                                 View
-                                                <svg class="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                <svg style="width:10px;height:10px;" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"/>
                                                 </svg>
                                             </a>
@@ -190,7 +195,7 @@
 
                     {{-- Pagination --}}
                     @if($submissions->hasPages())
-                        <div class="px-5 py-4 border-t border-gray-100">
+                        <div style="padding:14px 20px;border-top:1px solid #f1f5f9;">
                             {{ $submissions->links() }}
                         </div>
                     @endif

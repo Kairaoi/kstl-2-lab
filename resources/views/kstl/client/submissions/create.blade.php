@@ -303,7 +303,8 @@
                                                     @foreach([
                                                         'total_coliforms' => 'Total Coliforms',
                                                         'e_coli'          => 'E. coli',
-                                                        'enterococci'     => 'Enterococci & Faecal Coliforms',
+                                                        'enterococci'     => 'Enterococci',
+                                                        'faecal_coliforms' => 'Faecal Coliforms',
                                                         'yeast_mold'      => 'Yeast & Mould',
                                                         'apc'             => 'APC (Aerobic Plate Count)',
                                                         'e_coli_coliform' => 'E. coli & Coliform',
@@ -318,6 +319,23 @@
                                                                    x-model="item.tests"
                                                                    :name="`sample_items[${index}][tests][]`"
                                                                    class="rounded border-gray-300 text-purple-600 shadow-sm focus:ring-purple-500 shrink-0"/>
+                                                            <span class="text-xs text-gray-700 leading-tight">{{ $tLabel }}</span>
+                                                        </label>
+                                                    @endforeach
+                                                </div>
+
+                                                <p class="text-xs font-medium text-gray-500 mb-1.5">Water Testing</p>
+                                                <div class="grid grid-cols-2 sm:grid-cols-3 gap-1.5 mb-3">
+                                                    @foreach([
+                                                        'e_coli_colilert'        => 'E. coli (Colilert)',
+                                                        'enterococci_enterolert' => 'Enterococci (Enterolert)',
+                                                    ] as $tValue => $tLabel)
+                                                        <label class="flex items-center gap-2 p-2 border border-gray-100 rounded-lg hover:bg-cyan-50 cursor-pointer transition">
+                                                            <input type="checkbox"
+                                                                   value="{{ $tValue }}"
+                                                                   x-model="item.tests"
+                                                                   :name="`sample_items[${index}][tests][]`"
+                                                                   class="rounded border-gray-300 text-cyan-600 shadow-sm focus:ring-cyan-500 shrink-0"/>
                                                             <span class="text-xs text-gray-700 leading-tight">{{ $tLabel }}</span>
                                                         </label>
                                                     @endforeach

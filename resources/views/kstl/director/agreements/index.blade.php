@@ -1,81 +1,96 @@
-{{-- resources/views/kstl/director/agreements/index.blade.php --}}
+﻿{{-- resources/views/kstl/director/agreements/index.blade.php --}}
 
 <x-app-layout>
     <x-slot name="header">
-        <div class="flex items-center justify-between">
-            <h2 class="font-semibold text-xl text-gray-800 leading-tight">Service Agreements</h2>
-            <div class="flex items-center gap-3 text-sm">
-                <span class="text-gray-400">Fully executed:</span>
-                <span class="font-semibold text-green-700">{{ $totalSigned }}</span>
+        <div style="position:relative;overflow:hidden;background:linear-gradient(135deg,#0f2240 0%,#1a2f4e 60%,#1e3a5f 100%);">
+            <div style="height:3px;background:linear-gradient(90deg,#1a2f4e,#b8922a 30%,#b8922a 70%,#1a2f4e);"></div>
+            <div style="max-width:80rem;margin:0 auto;padding:28px 2rem 32px;">
+                <div style="display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:16px;">
+                    <div style="display:flex;align-items:center;gap:20px;">
+                        <img src="{{ asset('images/mfor-logo.png') }}" alt="MFOR" style="filter:brightness(0) invert(1);opacity:.92;width:56px;height:56px;flex-shrink:0;">
+                        <div>
+                            <p style="font-size:9px;font-weight:700;letter-spacing:.18em;text-transform:uppercase;color:#b8922a;margin:0 0 4px;">Director Portal</p>
+                            <h1 style="font-family:'Georgia',serif;font-size:22px;font-weight:700;color:#fff;margin:0 0 6px;line-height:1.2;">Service Agreements</h1>
+                            <p style="font-size:12px;color:#94a3b8;margin:0;">Countersign and manage client service agreements</p>
+                        </div>
+                    </div>
+                    <div style="display:flex;align-items:center;gap:10px;flex-wrap:wrap;">
+                        <span style="font-size:12px;color:#94a3b8;">Fully executed:</span>
+                        <span style="display:inline-flex;padding:5px 14px;font-size:12px;font-weight:700;background:#dcfce7;color:#166534;border-radius:3px;">{{ $totalSigned }}</span>
+                    </div>
+                </div>
             </div>
         </div>
     </x-slot>
 
-    <div class="py-8">
-        <div class="max-w-7xl mx-auto sm:px-6 lg:px-8 space-y-6">
+    @push('styles')
+    <style>
+        .page-hdr { padding: 0 !important; }
+        .page-hdr-inner { max-width: 100% !important; padding: 0 !important; }
+        .app-main { padding-left:0 !important; padding-right:0 !important; padding-top:0 !important; max-width:100% !important; }
+    </style>
+    @endpush
+
+    <div style="background:#f1f5f9;min-height:100vh;padding:52px 0 56px;">
+        <div style="max-width:80rem;margin:0 auto;padding:0 2rem;">
 
             @if(session('success'))
-                <div class="bg-green-50 border-l-4 border-green-400 p-4 rounded-lg text-sm text-green-800">
-                    {{ session('success') }}
-                </div>
+                <div style="background:#f0fdf4;border:1px solid #bbf7d0;border-left:4px solid #16a34a;border-radius:4px;padding:12px 16px;margin-bottom:20px;font-size:13px;color:#166534;">{{ session('success') }}</div>
+            @endif
+            @if(session('error'))
+                <div style="background:#fef2f2;border:1px solid #fecaca;border-left:4px solid #dc2626;border-radius:4px;padding:12px 16px;margin-bottom:20px;font-size:13px;color:#991b1b;">{{ session('error') }}</div>
             @endif
 
             {{-- ── Pending Countersign ──────────────────────────── --}}
-            <div class="bg-white rounded-xl border border-gray-100 overflow-hidden">
-                <div class="px-6 py-4 border-b border-gray-100">
-                    <h3 class="text-sm font-medium text-gray-800">
+            <div style="background:#fff;border:1px solid #e2e8f0;border-radius:4px;overflow:hidden;margin-bottom:24px;">
+                <div style="padding:16px 24px;border-bottom:1px solid #e2e8f0;">
+                    <h3 style="font-family:'Georgia',serif;font-size:14px;font-weight:700;color:#1a2f4e;margin:0 0 4px;">
                         Awaiting Your Countersignature
                         @if($pending->isNotEmpty())
-                            <span class="ml-2 inline-flex items-center px-2 py-0.5 text-xs font-medium bg-amber-100 text-amber-700 rounded-full">
+                            <span style="display:inline-flex;margin-left:8px;padding:2px 8px;font-size:11px;font-weight:600;background:#fef9c3;color:#854d0e;border-radius:9999px;">
                                 {{ $pending->count() }} pending
                             </span>
                         @endif
                     </h3>
-                    <p class="text-xs text-gray-400 mt-0.5">
+                    <p style="font-size:12px;color:#94a3b8;margin:0;">
                         These clients have signed the service agreement and are waiting for your countersignature.
                     </p>
                 </div>
 
                 @if($pending->isEmpty())
-                    <div class="px-6 py-12 text-center">
-                        <svg class="w-10 h-10 text-gray-200 mx-auto mb-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"/>
-                        </svg>
-                        <p class="text-sm text-gray-400">No agreements pending countersignature.</p>
+                    <div style="padding:48px 24px;text-align:center;">
+                        <p style="font-size:13px;color:#94a3b8;">No agreements pending countersignature.</p>
                     </div>
                 @else
-                    <div class="overflow-x-auto">
-                        <table class="w-full text-sm">
-                            <thead class="bg-gray-50 border-b border-gray-100">
-                                <tr>
-                                    <th class="text-left px-6 py-3 text-xs font-medium text-gray-500 uppercase">Company</th>
-                                    <th class="text-left px-6 py-3 text-xs font-medium text-gray-500 uppercase">Officer</th>
-                                    <th class="text-left px-6 py-3 text-xs font-medium text-gray-500 uppercase">Email</th>
-                                    <th class="text-left px-6 py-3 text-xs font-medium text-gray-500 uppercase">Client Signed</th>
-                                    <th class="px-6 py-3"></th>
+                    <div style="overflow-x:auto;">
+                        <table style="width:100%;border-collapse:collapse;">
+                            <thead>
+                                <tr style="background:#1a2f4e;">
+                                    <th style="padding:10px 16px;text-align:left;font-size:9px;font-weight:700;letter-spacing:.12em;text-transform:uppercase;color:#e2e8f0;">Company</th>
+                                    <th style="padding:10px 16px;text-align:left;font-size:9px;font-weight:700;letter-spacing:.12em;text-transform:uppercase;color:#e2e8f0;">Officer</th>
+                                    <th style="padding:10px 16px;text-align:left;font-size:9px;font-weight:700;letter-spacing:.12em;text-transform:uppercase;color:#e2e8f0;">Email</th>
+                                    <th style="padding:10px 16px;text-align:left;font-size:9px;font-weight:700;letter-spacing:.12em;text-transform:uppercase;color:#e2e8f0;">Client Signed</th>
+                                    <th style="padding:10px 16px;"></th>
                                 </tr>
                             </thead>
-                            <tbody class="divide-y divide-gray-50">
+                            <tbody>
                                 @foreach($pending as $client)
-                                    <tr class="hover:bg-gray-50 transition">
-                                        <td class="px-6 py-4">
-                                            <p class="font-medium text-gray-800">{{ $client->company_name }}</p>
+                                    <tr style="border-bottom:1px solid #f1f5f9;{{ $loop->even ? 'background:#f8fafc;' : '' }}">
+                                        <td style="padding:12px 16px;">
+                                            <p style="font-size:13px;font-weight:600;color:#1e293b;margin:0;">{{ $client->company_name }}</p>
                                         </td>
-                                        <td class="px-6 py-4 text-gray-600">
+                                        <td style="padding:12px 16px;font-size:13px;color:#374151;">
                                             {{ $client->responsible_officer_name ?? '—' }}
                                         </td>
-                                        <td class="px-6 py-4 text-gray-500 text-xs">
+                                        <td style="padding:12px 16px;font-size:12px;color:#64748b;">
                                             {{ $client->user?->email ?? '—' }}
                                         </td>
-                                        <td class="px-6 py-4 text-xs text-gray-500">
+                                        <td style="padding:12px 16px;font-size:12px;color:#64748b;">
                                             {{ $client->service_agreement_signed_at?->format('d M Y \a\t H:i') ?? '—' }}
                                         </td>
-                                        <td class="px-6 py-4 text-right">
+                                        <td style="padding:12px 16px;text-align:right;">
                                             <a href="{{ route('director.agreements.show', $client->id) }}"
-                                               class="inline-flex items-center gap-1.5 px-3 py-1.5 bg-teal-600 text-white text-xs font-medium rounded-lg hover:bg-teal-700 transition">
-                                                <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15.232 5.232l3.536 3.536m-2.036-5.036a2.5 2.5 0 113.536 3.536L6.5 21.036H3v-3.572L16.732 3.732z"/>
-                                                </svg>
+                                               style="display:inline-flex;align-items:center;gap:8px;padding:7px 16px;background:#0d9488;color:#fff;font-size:12px;font-weight:700;letter-spacing:.06em;text-transform:uppercase;border-radius:3px;text-decoration:none;">
                                                 Countersign
                                             </a>
                                         </td>
@@ -87,80 +102,70 @@
                 @endif
             </div>
 
-
             {{-- ── Fully Executed Agreements ───────────────────────── --}}
-            <div class="bg-white rounded-xl border border-gray-100 overflow-hidden">
-                <div class="px-6 py-4 border-b border-gray-100 flex items-center justify-between">
+            <div style="background:#fff;border:1px solid #e2e8f0;border-radius:4px;overflow:hidden;margin-bottom:24px;">
+                <div style="padding:16px 24px;border-bottom:1px solid #e2e8f0;display:flex;align-items:center;justify-content:space-between;">
                     <div>
-                        <h3 class="text-sm font-medium text-gray-800">Fully Executed Agreements</h3>
-                        <p class="text-xs text-gray-400 mt-0.5">Both client and director have signed</p>
+                        <h3 style="font-family:'Georgia',serif;font-size:14px;font-weight:700;color:#1a2f4e;margin:0 0 4px;">Fully Executed Agreements</h3>
+                        <p style="font-size:12px;color:#94a3b8;margin:0;">Both client and director have signed</p>
                     </div>
-                    <span class="text-xs font-medium text-teal-700 bg-teal-50 px-3 py-1 rounded-full border border-teal-100">
+                    <span style="display:inline-flex;padding:4px 12px;font-size:12px;font-weight:600;background:#ccfbf1;color:#0f766e;border:1px solid #99f6e4;border-radius:9999px;">
                         {{ $executed->count() }} executed
                     </span>
                 </div>
 
                 @if($executed->isEmpty())
-                    <div class="px-6 py-12 text-center">
-                        <svg class="w-8 h-8 text-gray-200 mx-auto mb-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5"
-                                  d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"/>
-                        </svg>
-                        <p class="text-sm text-gray-400">No fully executed agreements yet</p>
+                    <div style="padding:48px 24px;text-align:center;">
+                        <p style="font-size:13px;color:#94a3b8;">No fully executed agreements yet.</p>
                     </div>
                 @else
-                    <div class="overflow-x-auto">
-                        <table class="w-full text-sm">
-                            <thead class="bg-gray-50 border-b border-gray-100">
-                                <tr>
-                                    <th class="text-left px-6 py-3 text-xs font-medium text-gray-500 uppercase">Company</th>
-                                    <th class="text-left px-6 py-3 text-xs font-medium text-gray-500 uppercase">Responsible Officer</th>
-                                    <th class="text-left px-6 py-3 text-xs font-medium text-gray-500 uppercase">Email</th>
-                                    <th class="text-left px-6 py-3 text-xs font-medium text-gray-500 uppercase">Client Signed</th>
-                                    <th class="text-left px-6 py-3 text-xs font-medium text-gray-500 uppercase">Director Signed</th>
-                                    <th class="text-left px-6 py-3 text-xs font-medium text-gray-500 uppercase">Signature Type</th>
-                                    <th class="px-6 py-3"></th>
+                    <div style="overflow-x:auto;">
+                        <table style="width:100%;border-collapse:collapse;">
+                            <thead>
+                                <tr style="background:#1a2f4e;">
+                                    <th style="padding:10px 16px;text-align:left;font-size:9px;font-weight:700;letter-spacing:.12em;text-transform:uppercase;color:#e2e8f0;">Company</th>
+                                    <th style="padding:10px 16px;text-align:left;font-size:9px;font-weight:700;letter-spacing:.12em;text-transform:uppercase;color:#e2e8f0;">Responsible Officer</th>
+                                    <th style="padding:10px 16px;text-align:left;font-size:9px;font-weight:700;letter-spacing:.12em;text-transform:uppercase;color:#e2e8f0;">Email</th>
+                                    <th style="padding:10px 16px;text-align:left;font-size:9px;font-weight:700;letter-spacing:.12em;text-transform:uppercase;color:#e2e8f0;">Client Signed</th>
+                                    <th style="padding:10px 16px;text-align:left;font-size:9px;font-weight:700;letter-spacing:.12em;text-transform:uppercase;color:#e2e8f0;">Director Signed</th>
+                                    <th style="padding:10px 16px;text-align:left;font-size:9px;font-weight:700;letter-spacing:.12em;text-transform:uppercase;color:#e2e8f0;">Signature Type</th>
+                                    <th style="padding:10px 16px;"></th>
                                 </tr>
                             </thead>
-                            <tbody class="divide-y divide-gray-50">
+                            <tbody>
                                 @foreach($executed as $client)
-                                    <tr class="hover:bg-gray-50 transition">
-                                        <td class="px-6 py-4">
-                                            <p class="font-medium text-gray-800">{{ $client->company_name }}</p>
-                                            <p class="text-xs text-gray-400 mt-0.5">{{ $client->address }}</p>
+                                    <tr style="border-bottom:1px solid #f1f5f9;{{ $loop->even ? 'background:#f8fafc;' : '' }}">
+                                        <td style="padding:12px 16px;">
+                                            <p style="font-size:13px;font-weight:600;color:#1e293b;margin:0;">{{ $client->company_name }}</p>
+                                            <p style="font-size:11px;color:#94a3b8;margin:2px 0 0;">{{ $client->address }}</p>
                                         </td>
-                                        <td class="px-6 py-4 text-gray-600 text-sm">
+                                        <td style="padding:12px 16px;font-size:13px;color:#374151;">
                                             {{ $client->responsible_officer_name ?? '—' }}
                                         </td>
-                                        <td class="px-6 py-4 text-xs text-gray-500">
+                                        <td style="padding:12px 16px;font-size:12px;color:#64748b;">
                                             {{ $client->user?->email ?? '—' }}
                                         </td>
-                                        <td class="px-6 py-4 text-xs text-gray-500">
+                                        <td style="padding:12px 16px;font-size:12px;color:#64748b;">
                                             {{ $client->service_agreement_signed_at?->format('d M Y') ?? '—' }}
-                                            <p class="text-gray-300">{{ $client->service_agreement_signed_at?->format('H:i') }}</p>
+                                            <p style="font-size:11px;color:#94a3b8;margin:2px 0 0;">{{ $client->service_agreement_signed_at?->format('H:i') }}</p>
                                         </td>
-                                        <td class="px-6 py-4 text-xs text-gray-500">
+                                        <td style="padding:12px 16px;font-size:12px;color:#64748b;">
                                             {{ $client->director_signed_at?->format('d M Y') ?? '—' }}
-                                            <p class="text-gray-300">{{ $client->director_signed_at?->format('H:i') }}</p>
+                                            <p style="font-size:11px;color:#94a3b8;margin:2px 0 0;">{{ $client->director_signed_at?->format('H:i') }}</p>
                                         </td>
-                                        <td class="px-6 py-4">
-                                            <span class="inline-flex items-center gap-1 px-2 py-0.5 text-xs rounded-full capitalize
-                                                {{ $client->signature_type === 'drawn' ? 'bg-blue-50 text-blue-700' : 'bg-purple-50 text-purple-700' }}">
-                                                {{ $client->signature_type === 'drawn' ? '✏ Drawn' : '↑ Uploaded' }}
+                                        <td style="padding:12px 16px;">
+                                            <span style="display:inline-flex;padding:2px 8px;font-size:11px;font-weight:600;border-radius:9999px;text-transform:capitalize;{{ $client->signature_type === 'drawn' ? 'background:#dbeafe;color:#1e40af;' : 'background:#f3e8ff;color:#6b21a8;' }}">
+                                                {{ $client->signature_type === 'drawn' ? 'Drawn' : 'Uploaded' }}
                                             </span>
                                         </td>
-                                        <td class="px-6 py-4 text-right">
-                                            <div class="flex items-center justify-end gap-2">
+                                        <td style="padding:12px 16px;text-align:right;">
+                                            <div style="display:flex;align-items:center;justify-content:flex-end;gap:8px;">
                                                 <a href="{{ route('director.agreements.show', $client->id) }}"
-                                                   class="text-xs text-gray-500 px-3 py-1.5 border border-gray-200 rounded-lg hover:bg-gray-50 transition">
+                                                   style="display:inline-flex;align-items:center;gap:8px;padding:6px 14px;background:#fff;color:#1a2f4e;font-size:11px;font-weight:700;letter-spacing:.06em;border:1px solid #1a2f4e;border-radius:3px;text-decoration:none;">
                                                     View
                                                 </a>
                                                 <a href="{{ route('director.agreements.download', $client->id) }}"
-                                                   class="inline-flex items-center gap-1 text-xs text-teal-700 px-3 py-1.5 border border-teal-200 rounded-lg hover:bg-teal-50 transition">
-                                                    <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                                                              d="M12 10v6m0 0l-3-3m3 3l3-3m2 8H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"/>
-                                                    </svg>
+                                                   style="display:inline-flex;align-items:center;gap:6px;padding:6px 14px;background:#fff;color:#0d9488;font-size:11px;font-weight:700;letter-spacing:.06em;border:1px solid #0d9488;border-radius:3px;text-decoration:none;">
                                                     PDF
                                                 </a>
                                             </div>
@@ -173,6 +178,6 @@
                 @endif
             </div>
 
-        <div class="pb-12"></div>
+        </div>
     </div>
 </x-app-layout>

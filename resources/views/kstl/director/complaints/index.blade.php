@@ -1,78 +1,110 @@
-{{-- resources/views/kstl/director/complaints/index.blade.php --}}
+﻿{{-- resources/views/kstl/director/complaints/index.blade.php --}}
 
 <x-app-layout>
     <x-slot name="header">
-        <h2 class="font-semibold text-xl text-gray-800 leading-tight">Complaints</h2>
+        <div style="position:relative;overflow:hidden;background:linear-gradient(135deg,#0f2240 0%,#1a2f4e 60%,#1e3a5f 100%);">
+            <div style="height:3px;background:linear-gradient(90deg,#1a2f4e,#b8922a 30%,#b8922a 70%,#1a2f4e);"></div>
+            <div style="max-width:80rem;margin:0 auto;padding:28px 2rem 32px;">
+                <div style="display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:16px;">
+                    <div style="display:flex;align-items:center;gap:20px;">
+                        <img src="{{ asset('images/mfor-logo.png') }}" alt="MFOR" style="filter:brightness(0) invert(1);opacity:.92;width:56px;height:56px;flex-shrink:0;">
+                        <div>
+                            <p style="font-size:9px;font-weight:700;letter-spacing:.18em;text-transform:uppercase;color:#b8922a;margin:0 0 4px;">Director Portal</p>
+                            <h1 style="font-family:'Georgia',serif;font-size:22px;font-weight:700;color:#fff;margin:0 0 6px;line-height:1.2;">Complaints</h1>
+                            <p style="font-size:12px;color:#94a3b8;margin:0;">Review and respond to client complaints</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
     </x-slot>
 
-    <div class="py-8">
-        <div class="max-w-7xl mx-auto sm:px-6 lg:px-8 space-y-6">
+    @push('styles')
+    <style>
+        .page-hdr { padding: 0 !important; }
+        .page-hdr-inner { max-width: 100% !important; padding: 0 !important; }
+        .app-main { padding-left:0 !important; padding-right:0 !important; padding-top:0 !important; max-width:100% !important; }
+    </style>
+    @endpush
+
+    <div style="background:#f1f5f9;min-height:100vh;padding:52px 0 56px;">
+        <div style="max-width:80rem;margin:0 auto;padding:0 2rem;">
 
             @if(session('success'))
-                <div class="bg-green-50 border-l-4 border-green-400 p-4 rounded-lg text-sm text-green-800">
-                    {{ session('success') }}
-                </div>
+                <div style="background:#f0fdf4;border:1px solid #bbf7d0;border-left:4px solid #16a34a;border-radius:4px;padding:12px 16px;margin-bottom:20px;font-size:13px;color:#166534;">{{ session('success') }}</div>
+            @endif
+            @if(session('error'))
+                <div style="background:#fef2f2;border:1px solid #fecaca;border-left:4px solid #dc2626;border-radius:4px;padding:12px 16px;margin-bottom:20px;font-size:13px;color:#991b1b;">{{ session('error') }}</div>
             @endif
 
             {{-- Summary Cards --}}
-            <div class="grid grid-cols-2 sm:grid-cols-4 gap-4">
-                @foreach(['open' => ['bg-yellow-100','text-yellow-700'], 'under_investigation' => ['bg-blue-100','text-blue-700'], 'resolved' => ['bg-green-100','text-green-700'], 'closed' => ['bg-gray-100','text-gray-500']] as $status => $colors)
-                    <div class="bg-white rounded-xl border border-gray-100 p-4">
-                        <p class="text-xs text-gray-500 uppercase tracking-wide mb-1 capitalize">{{ str_replace('_',' ',$status) }}</p>
-                        <p class="text-3xl font-bold text-gray-900">{{ $counts[$status] }}</p>
+            <div style="display:grid;grid-template-columns:repeat(4,1fr);gap:16px;margin-bottom:24px;">
+                @foreach(['open' => ['#b8922a','Open'], 'under_investigation' => ['#1a2f4e','Under Investigation'], 'resolved' => ['#0d9488','Resolved'], 'closed' => ['#64748b','Closed']] as $status => [$color, $label])
+                    <div style="background:#fff;border:1px solid #e2e8f0;border-radius:4px;border-left:4px solid {{ $color }};padding:18px 20px;">
+                        <p style="font-size:9px;font-weight:700;letter-spacing:.12em;text-transform:uppercase;color:#64748b;margin:0 0 6px;">{{ $label }}</p>
+                        <p style="font-size:28px;font-weight:700;color:#1a2f4e;margin:0;line-height:1;">{{ $counts[$status] }}</p>
                     </div>
                 @endforeach
             </div>
 
             {{-- Complaints Table --}}
-            <div class="bg-white rounded-xl border border-gray-100 overflow-hidden">
-                <div class="px-6 py-4 border-b border-gray-100">
-                    <h3 class="text-sm font-medium text-gray-800">All Complaints</h3>
+            <div style="background:#fff;border:1px solid #e2e8f0;border-radius:4px;overflow:hidden;margin-bottom:24px;">
+                <div style="padding:16px 24px;border-bottom:1px solid #e2e8f0;">
+                    <h3 style="font-family:'Georgia',serif;font-size:14px;font-weight:700;color:#1a2f4e;margin:0;">All Complaints</h3>
                 </div>
 
                 @if($complaints->isEmpty())
-                    <div class="px-6 py-16 text-center">
-                        <p class="text-sm text-gray-400">No complaints recorded.</p>
+                    <div style="padding:64px 24px;text-align:center;">
+                        <p style="font-size:13px;color:#94a3b8;">No complaints recorded.</p>
                     </div>
                 @else
-                    <div class="overflow-x-auto">
-                        <table class="w-full text-sm">
-                            <thead class="bg-gray-50 border-b border-gray-100">
-                                <tr>
-                                    <th class="text-left px-6 py-3 text-xs font-medium text-gray-500 uppercase">Subject</th>
-                                    <th class="text-left px-6 py-3 text-xs font-medium text-gray-500 uppercase">From</th>
-                                    <th class="text-left px-6 py-3 text-xs font-medium text-gray-500 uppercase">Type</th>
-                                    <th class="text-left px-6 py-3 text-xs font-medium text-gray-500 uppercase">Lodged</th>
-                                    <th class="text-left px-6 py-3 text-xs font-medium text-gray-500 uppercase">Status</th>
-                                    <th class="px-6 py-3"></th>
+                    <div style="overflow-x:auto;">
+                        <table style="width:100%;border-collapse:collapse;">
+                            <thead>
+                                <tr style="background:#1a2f4e;">
+                                    <th style="padding:10px 16px;text-align:left;font-size:9px;font-weight:700;letter-spacing:.12em;text-transform:uppercase;color:#e2e8f0;">Subject</th>
+                                    <th style="padding:10px 16px;text-align:left;font-size:9px;font-weight:700;letter-spacing:.12em;text-transform:uppercase;color:#e2e8f0;">From</th>
+                                    <th style="padding:10px 16px;text-align:left;font-size:9px;font-weight:700;letter-spacing:.12em;text-transform:uppercase;color:#e2e8f0;">Type</th>
+                                    <th style="padding:10px 16px;text-align:left;font-size:9px;font-weight:700;letter-spacing:.12em;text-transform:uppercase;color:#e2e8f0;">Lodged</th>
+                                    <th style="padding:10px 16px;text-align:left;font-size:9px;font-weight:700;letter-spacing:.12em;text-transform:uppercase;color:#e2e8f0;">Status</th>
+                                    <th style="padding:10px 16px;"></th>
                                 </tr>
                             </thead>
-                            <tbody class="divide-y divide-gray-50">
+                            <tbody>
                                 @foreach($complaints as $complaint)
-                                    <tr class="hover:bg-gray-50 transition">
-                                        <td class="px-6 py-4 font-medium text-gray-800">
+                                    @php
+                                        $statusBadge = match($complaint->status) {
+                                            'open'                 => 'background:#fef9c3;color:#854d0e;',
+                                            'under_investigation'  => 'background:#dbeafe;color:#1e40af;',
+                                            'resolved'             => 'background:#dcfce7;color:#166534;',
+                                            'closed'               => 'background:#f1f5f9;color:#64748b;',
+                                            default                => 'background:#f1f5f9;color:#64748b;',
+                                        };
+                                    @endphp
+                                    <tr style="border-bottom:1px solid #f1f5f9;{{ $loop->even ? 'background:#f8fafc;' : '' }}">
+                                        <td style="padding:12px 16px;font-size:13px;font-weight:600;color:#1e293b;">
                                             {{ $complaint->subject }}
                                         </td>
-                                        <td class="px-6 py-4 text-gray-600">
-                                            <p>{{ $complaint->complainant_name ?? '—' }}</p>
+                                        <td style="padding:12px 16px;">
+                                            <p style="font-size:13px;color:#374151;margin:0;">{{ $complaint->complainant_name ?? '—' }}</p>
                                             @if($complaint->complainant_organisation)
-                                                <p class="text-xs text-gray-400">{{ $complaint->complainant_organisation }}</p>
+                                                <p style="font-size:11px;color:#94a3b8;margin:2px 0 0;">{{ $complaint->complainant_organisation }}</p>
                                             @endif
                                         </td>
-                                        <td class="px-6 py-4 text-xs text-gray-500">
+                                        <td style="padding:12px 16px;font-size:12px;color:#64748b;">
                                             {{ implode(', ', $complaint->getComplaintTypeLabels()) }}
                                         </td>
-                                        <td class="px-6 py-4 text-xs text-gray-500">
+                                        <td style="padding:12px 16px;font-size:12px;color:#64748b;">
                                             {{ $complaint->created_at->format('d M Y') }}
                                         </td>
-                                        <td class="px-6 py-4">
-                                            <span class="inline-flex px-2 py-0.5 text-xs font-medium rounded-full capitalize {{ $complaint->getStatusColour() }}">
+                                        <td style="padding:12px 16px;">
+                                            <span style="display:inline-flex;padding:2px 8px;font-size:11px;font-weight:600;border-radius:9999px;text-transform:capitalize;{{ $statusBadge }}">
                                                 {{ str_replace('_', ' ', $complaint->status) }}
                                             </span>
                                         </td>
-                                        <td class="px-6 py-4 text-right">
+                                        <td style="padding:12px 16px;text-align:right;">
                                             <a href="{{ route('director.complaints.show', $complaint->id) }}"
-                                               class="text-xs text-teal-600 px-3 py-1.5 border border-teal-200 rounded-lg hover:bg-teal-50 transition">
+                                               style="display:inline-flex;align-items:center;gap:8px;padding:6px 14px;background:#0d9488;color:#fff;font-size:11px;font-weight:700;letter-spacing:.06em;text-transform:uppercase;border-radius:3px;text-decoration:none;">
                                                 Respond
                                             </a>
                                         </td>

@@ -1,49 +1,72 @@
-<x-app-layout>
+﻿<x-app-layout>
     <x-slot name="header">
-        <h2 class="font-semibold text-xl text-gray-800 leading-tight">
-            {{ $client ? 'Update Company Details' : 'Complete Your Company Profile' }}
-        </h2>
+        <div style="position:relative;overflow:hidden;background:linear-gradient(135deg,#0f2240 0%,#1a2f4e 60%,#1e3a5f 100%);">
+            <div style="height:3px;background:linear-gradient(90deg,#1a2f4e,#b8922a 30%,#b8922a 70%,#1a2f4e);"></div>
+            <div style="max-width:80rem;margin:0 auto;padding:28px 2rem 32px;">
+                <div style="display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:16px;">
+                    <div style="display:flex;align-items:center;gap:20px;">
+                        <img src="{{ asset('images/mfor-logo.png') }}" alt="MFOR" style="filter:brightness(0) invert(1);opacity:.92;width:56px;height:56px;flex-shrink:0;">
+                        <div>
+                            <p style="font-size:9px;font-weight:700;letter-spacing:.18em;text-transform:uppercase;color:#b8922a;margin:0 0 4px;">Client Portal</p>
+                            <h1 style="font-family:'Georgia',serif;font-size:22px;font-weight:700;color:#fff;margin:0 0 6px;line-height:1.2;">{{ $client ? 'Update Company Details' : 'Complete Your Company Profile' }}</h1>
+                            <p style="font-size:12px;color:#94a3b8;margin:0;">Step 1 of onboarding — your details appear on all reports and invoices</p>
+                        </div>
+                    </div>
+                    <div style="display:flex;align-items:center;gap:10px;flex-wrap:wrap;">
+                        <a href="{{ route('client.dashboard') }}" style="display:inline-flex;align-items:center;gap:8px;padding:8px 20px;background:#fff;color:#1a2f4e;font-size:12px;font-weight:700;letter-spacing:.06em;border:1px solid #1a2f4e;border-radius:3px;text-decoration:none;">
+                            Back to Dashboard
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
     </x-slot>
 
-    <div class="py-8">
-        <div class="max-w-7xl mx-auto sm:px-6 lg:px-8 space-y-6">
+    @push('styles')
+    <style>
+        .page-hdr { padding: 0 !important; }
+        .page-hdr-inner { max-width: 100% !important; padding: 0 !important; }
+        .app-main { padding-left:0 !important; padding-right:0 !important; padding-top:0 !important; max-width:100% !important; }
+    </style>
+    @endpush
+
+    <div style="background:#f1f5f9;min-height:100vh;padding:52px 0 56px;">
+        <div style="max-width:80rem;margin:0 auto;padding:0 2rem;">
 
             {{-- Progress Steps --}}
-            <div class="bg-white rounded-xl shadow-sm border border-gray-100 p-5">
-                <div class="flex items-center gap-0">
+            <div style="background:#fff;border:1px solid #e2e8f0;border-radius:4px;padding:20px 24px;margin-bottom:24px;">
+                <div style="display:flex;align-items:center;">
 
                     {{-- Step 1 --}}
-                    <div class="flex items-center gap-2">
-                        <div class="w-8 h-8 rounded-full flex items-center justify-center text-xs font-bold
-                            {{ $client ? 'bg-green-500 text-white' : 'bg-blue-600 text-white' }}">
-                            {{ $client ? '✓' : '1' }}
+                    <div style="display:flex;align-items:center;gap:10px;">
+                        <div style="width:32px;height:32px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:11px;font-weight:700;{{ $client ? 'background:#16a34a;color:#fff;' : 'background:#1a2f4e;color:#fff;' }}">
+                            {{ $client ? 'âœ“' : '1' }}
                         </div>
-                        <span class="text-sm font-medium {{ $client ? 'text-green-700' : 'text-blue-700' }}">
+                        <span style="font-size:13px;font-weight:600;{{ $client ? 'color:#16a34a;' : 'color:#1a2f4e;' }}">
                             Company Details
                         </span>
                     </div>
 
-                    <div class="flex-1 h-0.5 mx-3 {{ $client ? 'bg-green-300' : 'bg-gray-200' }}"></div>
+                    <div style="flex:1;height:2px;margin:0 12px;background:{{ $client ? '#86efac' : '#e2e8f0' }};"></div>
 
                     {{-- Step 2 --}}
-                    <div class="flex items-center gap-2">
-                        <div class="w-8 h-8 rounded-full flex items-center justify-center text-xs font-bold
-                            {{ $client && $client->service_agreement_signed_at ? 'bg-green-500 text-white' : 'bg-gray-200 text-gray-500' }}">
-                            {{ $client && $client->service_agreement_signed_at ? '✓' : '2' }}
+                    <div style="display:flex;align-items:center;gap:10px;">
+                        <div style="width:32px;height:32px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:11px;font-weight:700;{{ $client && $client->service_agreement_signed_at ? 'background:#16a34a;color:#fff;' : 'background:#e2e8f0;color:#64748b;' }}">
+                            {{ $client && $client->service_agreement_signed_at ? 'âœ“' : '2' }}
                         </div>
-                        <span class="text-sm font-medium text-gray-500">
+                        <span style="font-size:13px;font-weight:600;color:#64748b;">
                             Sign Agreement
                         </span>
                     </div>
 
-                    <div class="flex-1 h-0.5 mx-3 bg-gray-200"></div>
+                    <div style="flex:1;height:2px;margin:0 12px;background:#e2e8f0;"></div>
 
                     {{-- Step 3 --}}
-                    <div class="flex items-center gap-2">
-                        <div class="w-8 h-8 rounded-full bg-gray-200 flex items-center justify-center text-xs font-bold text-gray-500">
+                    <div style="display:flex;align-items:center;gap:10px;">
+                        <div style="width:32px;height:32px;border-radius:50%;background:#e2e8f0;display:flex;align-items:center;justify-content:center;font-size:11px;font-weight:700;color:#64748b;">
                             3
                         </div>
-                        <span class="text-sm font-medium text-gray-500">Access Lab</span>
+                        <span style="font-size:13px;font-weight:600;color:#64748b;">Access Lab</span>
                     </div>
 
                 </div>
@@ -51,39 +74,21 @@
 
             {{-- Info Banner --}}
             @if(! $client)
-                <div class="bg-blue-50 border-l-4 border-blue-400 p-4 rounded-lg">
-                    <div class="flex items-start gap-3">
-                        <svg class="w-5 h-5 text-blue-400 shrink-0 mt-0.5" fill="currentColor" viewBox="0 0 20 20">
-                            <path fill-rule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7-4a1 1 0 11-2 0 1 1 0 012 0zM9 9a.75.75 0 000 1.5h.253a.25.25 0 01.244.304l-.459 2.066A1.75 1.75 0 0010.747 15H11a.75.75 0 000-1.5h-.253a.25.25 0 01-.244-.304l.459-2.066A1.75 1.75 0 009.253 9H9z" clip-rule="evenodd"/>
-                        </svg>
-                        <div>
-                            <p class="text-sm font-medium text-blue-800">Step 1 of 2 — Company Details</p>
-                            <p class="text-sm text-blue-700 mt-1">
-                                Please provide your company information before signing the service agreement.
-                                This information will appear on your test reports and invoices.
-                            </p>
-                        </div>
-                    </div>
+                <div style="background:#eff6ff;border:1px solid #bfdbfe;border-left:4px solid #1a2f4e;border-radius:4px;padding:12px 16px;margin-bottom:20px;">
+                    <p style="font-size:13px;font-weight:700;color:#1a2f4e;margin:0 0 4px;">Step 1 of 2 — Company Details</p>
+                    <p style="font-size:13px;color:#1e40af;margin:0;">
+                        Please provide your company information before signing the service agreement.
+                        This information will appear on your test reports and invoices.
+                    </p>
                 </div>
             @endif
 
             {{-- Flash Messages --}}
             @if(session('success'))
-                <div class="bg-green-50 border-l-4 border-green-400 p-4 rounded-lg flex items-center gap-3">
-                    <svg class="w-5 h-5 text-green-400 shrink-0" fill="currentColor" viewBox="0 0 20 20">
-                        <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.857-9.809a.75.75 0 00-1.214-.882l-3.483 4.79-1.88-1.88a.75.75 0 10-1.06 1.061l2.5 2.5a.75.75 0 001.137-.089l4-5.5z" clip-rule="evenodd"/>
-                    </svg>
-                    <p class="text-sm text-green-800">{{ session('success') }}</p>
-                </div>
+                <div style="background:#f0fdf4;border:1px solid #bbf7d0;border-left:4px solid #16a34a;border-radius:4px;padding:12px 16px;margin-bottom:20px;font-size:13px;color:#166534;">{{ session('success') }}</div>
             @endif
-
             @if(session('error'))
-                <div class="bg-red-50 border-l-4 border-red-400 p-4 rounded-lg flex items-center gap-3">
-                    <svg class="w-5 h-5 text-red-400 shrink-0" fill="currentColor" viewBox="0 0 20 20">
-                        <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm-1-9a1 1 0 112 0v4a1 1 0 11-2 0V9zm1-5a1 1 0 100 2 1 1 0 000-2z" clip-rule="evenodd"/>
-                    </svg>
-                    <p class="text-sm text-red-800">{{ session('error') }}</p>
-                </div>
+                <div style="background:#fef2f2;border:1px solid #fecaca;border-left:4px solid #dc2626;border-radius:4px;padding:12px 16px;margin-bottom:20px;font-size:13px;color:#991b1b;">{{ session('error') }}</div>
             @endif
 
             {{-- Form --}}
@@ -92,128 +97,128 @@
                 @csrf
                 @if($client) @method('PUT') @endif
 
-                <x-validation-errors class="mb-4 bg-red-50 border border-red-200 rounded-xl p-4"/>
+                @if($errors->any())
+                    <div style="background:#fef2f2;border:1px solid #fecaca;border-left:4px solid #dc2626;border-radius:4px;padding:12px 16px;margin-bottom:20px;">
+                        <ul style="margin:0;padding-left:16px;font-size:13px;color:#991b1b;">
+                            @foreach($errors->all() as $error)<li>{{ $error }}</li>@endforeach
+                        </ul>
+                    </div>
+                @endif
 
-                {{-- Company Details --}}
-                <div class="md:grid md:grid-cols-3 md:gap-6 mb-6">
-                    <div class="md:col-span-1 px-4 sm:px-0">
-                        <h3 class="text-lg font-medium text-gray-900">Company / Organisation</h3>
-                        <p class="mt-1 text-sm text-gray-600">
+                {{-- Company / Organisation --}}
+                <div style="display:grid;grid-template-columns:1fr 2fr;gap:24px;margin-bottom:24px;">
+                    <div style="padding:0 4px;">
+                        <h3 style="font-family:'Georgia',serif;font-size:15px;font-weight:700;color:#1a2f4e;margin:0 0 6px;">Company / Organisation</h3>
+                        <p style="font-size:13px;color:#64748b;margin:0;">
                             Your business details as they will appear on reports and invoices.
                         </p>
                     </div>
-                    <div class="mt-5 md:mt-0 md:col-span-2">
-                        <div class="bg-white shadow rounded-xl overflow-hidden">
-                            <div class="px-6 py-5 space-y-5">
+                    <div style="background:#fff;border:1px solid #e2e8f0;border-radius:4px;overflow:hidden;">
+                        <div style="padding:20px 24px;display:flex;flex-direction:column;gap:20px;">
 
-                                <div>
-                                    <x-label for="company_name" value="Company / Organisation Name *"/>
-                                    <x-input id="company_name"
-                                             type="text"
-                                             name="company_name"
-                                             value="{{ old('company_name', $client?->company_name) }}"
-                                             class="mt-1 block w-full"
-                                             placeholder="e.g. Smith Seafoods Ltd"
-                                             required autofocus/>
-                                    <x-input-error for="company_name" class="mt-1"/>
-                                </div>
-
-                                <div>
-                                    <x-label for="address" value="Business Address *"/>
-                                    <textarea id="address"
-                                              name="address"
-                                              rows="3"
-                                              class="mt-1 block w-full border-gray-300 focus:border-indigo-500 focus:ring-indigo-500 rounded-md shadow-sm text-sm"
-                                              placeholder="Street address, City, Island"
-                                              required>{{ old('address', $client?->address) }}</textarea>
-                                    <x-input-error for="address" class="mt-1"/>
-                                </div>
-
-                                <div>
-                                    <x-label for="company_phone" value="Company Phone"/>
-                                    <x-input id="company_phone"
-                                             type="tel"
-                                             name="company_phone"
-                                             value="{{ old('company_phone', $client?->company_phone) }}"
-                                             class="mt-1 block w-full sm:w-1/2"
-                                             placeholder="+686 12345"/>
-                                    <x-input-error for="company_phone" class="mt-1"/>
-                                </div>
-
+                            <div>
+                                <label for="company_name" style="display:block;font-size:11px;font-weight:700;letter-spacing:.08em;text-transform:uppercase;color:#475569;margin-bottom:6px;">Company / Organisation Name *</label>
+                                <input id="company_name"
+                                       type="text"
+                                       name="company_name"
+                                       value="{{ old('company_name', $client?->company_name) }}"
+                                       style="width:100%;padding:8px 12px;border:1px solid #cbd5e1;border-radius:3px;font-size:13px;color:#1e293b;background:#fff;box-sizing:border-box;"
+                                       placeholder="e.g. Smith Seafoods Ltd"
+                                       required autofocus>
+                                @error('company_name')<p style="margin:4px 0 0;font-size:12px;color:#dc2626;">{{ $message }}</p>@enderror
                             </div>
+
+                            <div>
+                                <label for="address" style="display:block;font-size:11px;font-weight:700;letter-spacing:.08em;text-transform:uppercase;color:#475569;margin-bottom:6px;">Business Address *</label>
+                                <textarea id="address"
+                                          name="address"
+                                          rows="3"
+                                          style="width:100%;padding:8px 12px;border:1px solid #cbd5e1;border-radius:3px;font-size:13px;color:#1e293b;background:#fff;resize:vertical;box-sizing:border-box;"
+                                          placeholder="Street address, City, Island"
+                                          required>{{ old('address', $client?->address) }}</textarea>
+                                @error('address')<p style="margin:4px 0 0;font-size:12px;color:#dc2626;">{{ $message }}</p>@enderror
+                            </div>
+
+                            <div>
+                                <label for="company_phone" style="display:block;font-size:11px;font-weight:700;letter-spacing:.08em;text-transform:uppercase;color:#475569;margin-bottom:6px;">Company Phone</label>
+                                <input id="company_phone"
+                                       type="tel"
+                                       name="company_phone"
+                                       value="{{ old('company_phone', $client?->company_phone) }}"
+                                       style="width:50%;padding:8px 12px;border:1px solid #cbd5e1;border-radius:3px;font-size:13px;color:#1e293b;background:#fff;box-sizing:border-box;"
+                                       placeholder="+686 12345">
+                                @error('company_phone')<p style="margin:4px 0 0;font-size:12px;color:#dc2626;">{{ $message }}</p>@enderror
+                            </div>
+
                         </div>
                     </div>
                 </div>
 
-                <x-section-border/>
+                <hr style="border:none;border-top:1px solid #e2e8f0;margin:0 0 24px;">
 
                 {{-- Responsible Officer --}}
-                <div class="md:grid md:grid-cols-3 md:gap-6 mb-6">
-                    <div class="md:col-span-1 px-4 sm:px-0">
-                        <h3 class="text-lg font-medium text-gray-900">Responsible Officer</h3>
-                        <p class="mt-1 text-sm text-gray-600">
+                <div style="display:grid;grid-template-columns:1fr 2fr;gap:24px;margin-bottom:32px;">
+                    <div style="padding:0 4px;">
+                        <h3 style="font-family:'Georgia',serif;font-size:15px;font-weight:700;color:#1a2f4e;margin:0 0 6px;">Responsible Officer</h3>
+                        <p style="font-size:13px;color:#64748b;margin:0;">
                             The person responsible for this account and who signs agreements.
                             May be different from the login user.
                         </p>
                     </div>
-                    <div class="mt-5 md:mt-0 md:col-span-2">
-                        <div class="bg-white shadow rounded-xl overflow-hidden">
-                            <div class="px-6 py-5 space-y-5">
+                    <div style="background:#fff;border:1px solid #e2e8f0;border-radius:4px;overflow:hidden;">
+                        <div style="padding:20px 24px;display:flex;flex-direction:column;gap:20px;">
+
+                            <div>
+                                <label for="responsible_officer_name" style="display:block;font-size:11px;font-weight:700;letter-spacing:.08em;text-transform:uppercase;color:#475569;margin-bottom:6px;">Full Name *</label>
+                                <input id="responsible_officer_name"
+                                       type="text"
+                                       name="responsible_officer_name"
+                                       value="{{ old('responsible_officer_name', $client?->responsible_officer_name) }}"
+                                       style="width:100%;padding:8px 12px;border:1px solid #cbd5e1;border-radius:3px;font-size:13px;color:#1e293b;background:#fff;box-sizing:border-box;"
+                                       placeholder="e.g. John Smith"
+                                       required>
+                                @error('responsible_officer_name')<p style="margin:4px 0 0;font-size:12px;color:#dc2626;">{{ $message }}</p>@enderror
+                            </div>
+
+                            <div style="display:grid;grid-template-columns:1fr 1fr;gap:16px;">
+                                <div>
+                                    <label for="responsible_officer_email" style="display:block;font-size:11px;font-weight:700;letter-spacing:.08em;text-transform:uppercase;color:#475569;margin-bottom:6px;">Email Address *</label>
+                                    <input id="responsible_officer_email"
+                                           type="email"
+                                           name="responsible_officer_email"
+                                           value="{{ old('responsible_officer_email', $client?->responsible_officer_email ?? auth()->user()->email) }}"
+                                           style="width:100%;padding:8px 12px;border:1px solid #cbd5e1;border-radius:3px;font-size:13px;color:#1e293b;background:#fff;box-sizing:border-box;"
+                                           required>
+                                    @error('responsible_officer_email')<p style="margin:4px 0 0;font-size:12px;color:#dc2626;">{{ $message }}</p>@enderror
+                                </div>
 
                                 <div>
-                                    <x-label for="responsible_officer_name" value="Full Name *"/>
-                                    <x-input id="responsible_officer_name"
-                                             type="text"
-                                             name="responsible_officer_name"
-                                             value="{{ old('responsible_officer_name', $client?->responsible_officer_name) }}"
-                                             class="mt-1 block w-full"
-                                             placeholder="e.g. John Smith"
-                                             required/>
-                                    <x-input-error for="responsible_officer_name" class="mt-1"/>
+                                    <label for="responsible_officer_phone" style="display:block;font-size:11px;font-weight:700;letter-spacing:.08em;text-transform:uppercase;color:#475569;margin-bottom:6px;">Phone</label>
+                                    <input id="responsible_officer_phone"
+                                           type="tel"
+                                           name="responsible_officer_phone"
+                                           value="{{ old('responsible_officer_phone', $client?->responsible_officer_phone) }}"
+                                           style="width:100%;padding:8px 12px;border:1px solid #cbd5e1;border-radius:3px;font-size:13px;color:#1e293b;background:#fff;box-sizing:border-box;"
+                                           placeholder="+686 12345">
+                                    @error('responsible_officer_phone')<p style="margin:4px 0 0;font-size:12px;color:#dc2626;">{{ $message }}</p>@enderror
                                 </div>
-
-                                <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                                    <div>
-                                        <x-label for="responsible_officer_email" value="Email Address *"/>
-                                        <x-input id="responsible_officer_email"
-                                                 type="email"
-                                                 name="responsible_officer_email"
-                                                 value="{{ old('responsible_officer_email', $client?->responsible_officer_email ?? $user->email) }}"
-                                                 class="mt-1 block w-full"
-                                                 required/>
-                                        <x-input-error for="responsible_officer_email" class="mt-1"/>
-                                    </div>
-
-                                    <div>
-                                        <x-label for="responsible_officer_phone" value="Phone"/>
-                                        <x-input id="responsible_officer_phone"
-                                                 type="tel"
-                                                 name="responsible_officer_phone"
-                                                 value="{{ old('responsible_officer_phone', $client?->responsible_officer_phone) }}"
-                                                 class="mt-1 block w-full"
-                                                 placeholder="+686 12345"/>
-                                        <x-input-error for="responsible_officer_phone" class="mt-1"/>
-                                    </div>
-                                </div>
-
                             </div>
+
                         </div>
                     </div>
                 </div>
 
                 {{-- Actions --}}
-                <div class="flex items-center justify-between pt-2 pb-8">
-                    <a href="{{ route('client.dashboard') }}">
-                        <x-secondary-button type="button">
-                            Back to Dashboard
-                        </x-secondary-button>
+                <div style="display:flex;align-items:center;justify-content:space-between;padding-top:8px;padding-bottom:32px;">
+                    <a href="{{ route('client.dashboard') }}" style="display:inline-flex;align-items:center;gap:8px;padding:8px 20px;background:#fff;color:#1a2f4e;font-size:12px;font-weight:700;letter-spacing:.06em;border:1px solid #1a2f4e;border-radius:3px;text-decoration:none;">
+                        Back to Dashboard
                     </a>
 
                     <button type="submit"
-                            class="inline-flex items-center gap-2 px-5 py-2.5 bg-blue-600 text-white text-sm font-medium rounded-lg hover:bg-blue-700 transition">
+                            style="display:inline-flex;align-items:center;gap:8px;padding:8px 20px;background:#1a2f4e;color:#fff;font-size:12px;font-weight:700;letter-spacing:.06em;text-transform:uppercase;border-radius:3px;border:none;cursor:pointer;">
                         {{ $client ? 'Update Details' : 'Save & Continue to Agreement' }}
                         @if(! $client)
-                            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <svg style="width:14px;height:14px;" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"/>
                             </svg>
                         @endif

@@ -12,33 +12,36 @@
         [x-cloak] { display: none !important; }
     </style>
 </head>
-<body class="bg-gray-50 min-h-screen">
+<body style="background:#f1f5f9;min-height:100vh;margin:0;font-family:system-ui,-apple-system,sans-serif;">
 
     {{-- Header --}}
-    <div class="bg-blue-900 text-white py-4 px-6">
-        <div class="max-w-2xl mx-auto flex items-center gap-3">
-            <div class="w-8 h-8 bg-blue-700 rounded-lg flex items-center justify-center text-xs font-bold">KL</div>
-            <div>
-                <p class="font-semibold text-sm">Kiribati Seafood Toxicology Laboratory</p>
-                <p class="text-blue-300 text-xs">Sample Assessment — Client Response</p>
+    <div style="background:linear-gradient(135deg,#0f2240 0%,#1a2f4e 60%,#1e3a5f 100%);">
+        <div style="height:3px;background:linear-gradient(90deg,#1a2f4e,#b8922a 30%,#b8922a 70%,#1a2f4e);"></div>
+        <div style="max-width:36rem;margin:0 auto;padding:18px 1.5rem;">
+            <div style="display:flex;align-items:center;gap:14px;">
+                <div style="width:36px;height:36px;background:rgba(184,146,42,.2);border:1px solid #b8922a;border-radius:3px;display:flex;align-items:center;justify-content:center;font-size:10px;font-weight:700;color:#b8922a;flex-shrink:0;letter-spacing:.06em;">KL</div>
+                <div>
+                    <p style="font-size:13px;font-weight:700;color:#fff;margin:0 0 2px;">Kiribati Seafood Toxicology Laboratory</p>
+                    <p style="font-size:10px;font-weight:700;letter-spacing:.12em;text-transform:uppercase;color:#b8922a;margin:0;">Laboratory Services &nbsp;&bull;&nbsp; Sample Assessment — Client Response</p>
+                </div>
             </div>
         </div>
     </div>
 
-    <div class="max-w-2xl mx-auto px-4 py-10 space-y-6">
+    <div style="max-width:36rem;margin:0 auto;padding:28px 1.5rem;">
 
         @if(session('error'))
-            <div class="bg-red-50 border border-red-200 rounded-xl p-4 text-sm text-red-800">
+            <div style="background:#fef2f2;border:1px solid #fecaca;border-left:4px solid #dc2626;border-radius:4px;padding:12px 16px;margin-bottom:20px;font-size:13px;color:#991b1b;">
                 {{ session('error') }}
             </div>
         @endif
 
         {{-- Intro --}}
-        <div class="bg-white rounded-xl border border-gray-200 p-6">
-            <p class="text-sm text-gray-500 mb-1">Reference</p>
-            <p class="text-xl font-bold text-gray-900 font-mono mb-4">{{ $submission->reference_number }}</p>
+        <div style="background:#fff;border:1px solid #e2e8f0;border-radius:4px;padding:20px 24px;margin-bottom:16px;">
+            <p style="font-size:10px;font-weight:700;letter-spacing:.08em;text-transform:uppercase;color:#64748b;margin:0 0 4px;">Reference</p>
+            <p style="font-size:18px;font-weight:700;color:#1a2f4e;font-family:monospace;margin:0 0 16px;">{{ $submission->reference_number }}</p>
 
-            <p class="text-gray-700 text-sm leading-relaxed">
+            <p style="font-size:13px;color:#374151;line-height:1.6;margin:0;">
                 Dear <strong>{{ $submission->client->responsible_officer_name ?? $submission->client->company_name }}</strong>,
                 the sample listed below did not pass our reception assessment.
                 Please review the findings and indicate your decision.
@@ -46,38 +49,38 @@
         </div>
 
         {{-- Sample Info --}}
-        <div class="bg-white rounded-xl border border-gray-200 overflow-hidden">
-            <div class="px-5 py-3.5 border-b border-gray-100 bg-gray-50">
-                <h3 class="text-sm font-medium text-gray-800">Sample Details</h3>
+        <div style="background:#fff;border:1px solid #e2e8f0;border-radius:4px;overflow:hidden;margin-bottom:16px;">
+            <div style="padding:12px 20px;border-bottom:1px solid #e2e8f0;background:#f8fafc;">
+                <h3 style="font-family:'Georgia',serif;font-size:13px;font-weight:700;color:#1a2f4e;margin:0;">Sample Details</h3>
             </div>
-            <dl class="px-5 py-4 space-y-3 text-sm">
-                <div class="flex justify-between">
-                    <dt class="text-gray-500">Sample Code</dt>
-                    <dd class="font-mono font-medium text-gray-800">{{ $sample->sample_code }}</dd>
+            <dl style="padding:0 20px;margin:0;">
+                <div style="display:flex;justify-content:space-between;padding:10px 0;border-bottom:1px solid #f1f5f9;">
+                    <dt style="font-size:12px;color:#64748b;">Sample Code</dt>
+                    <dd style="font-family:monospace;font-weight:700;color:#1a2f4e;font-size:13px;margin:0;">{{ $sample->sample_code }}</dd>
                 </div>
-                <div class="flex justify-between">
-                    <dt class="text-gray-500">Common Name</dt>
-                    <dd class="font-medium text-gray-800">{{ $sample->common_name }}</dd>
+                <div style="display:flex;justify-content:space-between;padding:10px 0;border-bottom:1px solid #f1f5f9;">
+                    <dt style="font-size:12px;color:#64748b;">Common Name</dt>
+                    <dd style="font-weight:600;color:#1e293b;font-size:13px;margin:0;">{{ $sample->common_name }}</dd>
                 </div>
                 @if($sample->scientific_name)
-                <div class="flex justify-between">
-                    <dt class="text-gray-500">Scientific Name</dt>
-                    <dd class="italic text-gray-700">{{ $sample->scientific_name }}</dd>
+                <div style="display:flex;justify-content:space-between;padding:10px 0;border-bottom:1px solid #f1f5f9;">
+                    <dt style="font-size:12px;color:#64748b;">Scientific Name</dt>
+                    <dd style="font-style:italic;color:#374151;font-size:13px;margin:0;">{{ $sample->scientific_name }}</dd>
                 </div>
                 @endif
-                <div class="flex justify-between">
-                    <dt class="text-gray-500">Quantity</dt>
-                    <dd class="text-gray-700">{{ $sample->quantity }} {{ $sample->quantity_unit }}</dd>
+                <div style="display:flex;justify-content:space-between;padding:10px 0;">
+                    <dt style="font-size:12px;color:#64748b;">Quantity</dt>
+                    <dd style="color:#374151;font-size:13px;margin:0;">{{ $sample->quantity }} {{ $sample->quantity_unit }}</dd>
                 </div>
             </dl>
         </div>
 
         {{-- Assessment Criteria --}}
-        <div class="bg-white rounded-xl border border-gray-200 overflow-hidden">
-            <div class="px-5 py-3.5 border-b border-gray-100 bg-gray-50">
-                <h3 class="text-sm font-medium text-gray-800">Assessment Results</h3>
+        <div style="background:#fff;border:1px solid #e2e8f0;border-radius:4px;overflow:hidden;margin-bottom:16px;">
+            <div style="padding:12px 20px;border-bottom:1px solid #e2e8f0;background:#f8fafc;">
+                <h3 style="font-family:'Georgia',serif;font-size:13px;font-weight:700;color:#1a2f4e;margin:0;">Assessment Results</h3>
             </div>
-            <div class="px-5 py-4">
+            <div style="padding:16px 20px;">
                 @php
                     $criteria = [
                         'Temperature'  => $assessment->temperature_ok,
@@ -89,54 +92,54 @@
                         'Weight'       => $assessment->weight_ok,
                     ];
                 @endphp
-                <div class="grid grid-cols-2 gap-2 mb-4">
+                <div style="display:grid;grid-template-columns:1fr 1fr;gap:6px;margin-bottom:16px;">
                     @foreach($criteria as $label => $passed)
-                        <div class="flex items-center gap-2 text-sm py-1">
+                        <div style="display:flex;align-items:center;gap:8px;font-size:13px;padding:4px 0;">
                             @if($passed)
-                                <svg class="w-4 h-4 text-green-500 shrink-0" fill="currentColor" viewBox="0 0 20 20">
+                                <svg style="width:16px;height:16px;flex-shrink:0;color:#16a34a;" fill="currentColor" viewBox="0 0 20 20">
                                     <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.857-9.809a.75.75 0 00-1.214-.882l-3.483 4.79-1.88-1.88a.75.75 0 10-1.06 1.061l2.5 2.5a.75.75 0 001.137-.089l4-5.5z" clip-rule="evenodd"/>
                                 </svg>
-                                <span class="text-gray-600">{{ $label }}</span>
+                                <span style="color:#374151;">{{ $label }}</span>
                             @else
-                                <svg class="w-4 h-4 text-red-500 shrink-0" fill="currentColor" viewBox="0 0 20 20">
+                                <svg style="width:16px;height:16px;flex-shrink:0;color:#dc2626;" fill="currentColor" viewBox="0 0 20 20">
                                     <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm-1-9a1 1 0 112 0v4a1 1 0 11-2 0V9zm1-5a1 1 0 100 2 1 1 0 000-2z" clip-rule="evenodd"/>
                                 </svg>
-                                <span class="text-red-700 font-medium">{{ $label }} — FAILED</span>
+                                <span style="color:#dc2626;font-weight:700;">{{ $label }} — FAILED</span>
                             @endif
                         </div>
                     @endforeach
                 </div>
 
                 @if($assessment->rejection_reason)
-                    <div class="bg-red-50 border border-red-200 rounded-lg p-3">
-                        <p class="text-xs font-medium text-red-700 mb-1">Reason for Rejection</p>
-                        <p class="text-sm text-red-800">{{ $assessment->rejection_reason }}</p>
+                    <div style="background:#fef2f2;border:1px solid #fecaca;border-left:4px solid #dc2626;border-radius:4px;padding:10px 14px;">
+                        <p style="font-size:10px;font-weight:700;letter-spacing:.08em;text-transform:uppercase;color:#991b1b;margin:0 0 4px;">Reason for Rejection</p>
+                        <p style="font-size:13px;color:#7f1d1d;margin:0;">{{ $assessment->rejection_reason }}</p>
                     </div>
                 @endif
             </div>
         </div>
 
         {{-- Decision Form --}}
-        <div class="bg-white rounded-xl border border-gray-200 overflow-hidden"
+        <div style="background:#fff;border:1px solid #e2e8f0;border-radius:4px;overflow:hidden;"
              x-data="{ decision: '' }">
-            <div class="px-5 py-3.5 border-b border-gray-100 bg-gray-50">
-                <h3 class="text-sm font-medium text-gray-800">Your Decision</h3>
-                <p class="text-xs text-gray-400 mt-0.5">Please select one option and confirm.</p>
+            <div style="padding:12px 20px;border-bottom:1px solid #e2e8f0;background:#f8fafc;">
+                <h3 style="font-family:'Georgia',serif;font-size:13px;font-weight:700;color:#1a2f4e;margin:0;">Your Decision</h3>
+                <p style="font-size:11px;color:#64748b;margin:4px 0 0;">Please select one option and confirm.</p>
             </div>
-            <div class="px-5 py-5 space-y-4">
+            <div style="padding:20px;">
 
                 <form method="POST" action="{{ route('client.consent.store', $token) }}">
                     @csrf
 
                     {{-- Option A --}}
-                    <label class="flex items-start gap-4 p-4 rounded-xl border-2 cursor-pointer transition mb-3"
-                           :class="decision === 'consent_to_proceed' ? 'border-amber-400 bg-amber-50' : 'border-gray-200 hover:border-gray-300'">
+                    <label style="display:flex;align-items:flex-start;gap:16px;padding:16px;border-radius:3px;cursor:pointer;margin-bottom:10px;"
+                           :style="decision === 'consent_to_proceed' ? 'border:2px solid #b8922a;background:#fffbeb;' : 'border:2px solid #e2e8f0;background:#fff;'">
                         <input type="radio" name="decision" value="consent_to_proceed"
                                x-model="decision"
-                               class="mt-1 text-amber-600 focus:ring-amber-500">
+                               style="margin-top:2px;flex-shrink:0;accent-color:#b8922a;">
                         <div>
-                            <p class="text-sm font-semibold text-gray-800">Proceed with Testing</p>
-                            <p class="text-xs text-gray-500 mt-1 leading-relaxed">
+                            <p style="font-size:13px;font-weight:700;color:#1a2f4e;margin:0 0 4px;">Proceed with Testing</p>
+                            <p style="font-size:12px;color:#64748b;margin:0;line-height:1.5;">
                                 I acknowledge the assessment findings but request that testing proceeds.
                                 I understand results will include a note about the sample condition.
                             </p>
@@ -144,14 +147,14 @@
                     </label>
 
                     {{-- Option B --}}
-                    <label class="flex items-start gap-4 p-4 rounded-xl border-2 cursor-pointer transition mb-5"
-                           :class="decision === 'confirm_rejection' ? 'border-red-400 bg-red-50' : 'border-gray-200 hover:border-gray-300'">
+                    <label style="display:flex;align-items:flex-start;gap:16px;padding:16px;border-radius:3px;cursor:pointer;margin-bottom:20px;"
+                           :style="decision === 'confirm_rejection' ? 'border:2px solid #dc2626;background:#fef2f2;' : 'border:2px solid #e2e8f0;background:#fff;'">
                         <input type="radio" name="decision" value="confirm_rejection"
                                x-model="decision"
-                               class="mt-1 text-red-600 focus:ring-red-500">
+                               style="margin-top:2px;flex-shrink:0;accent-color:#dc2626;">
                         <div>
-                            <p class="text-sm font-semibold text-gray-800">Cancel Submission</p>
-                            <p class="text-xs text-gray-500 mt-1 leading-relaxed">
+                            <p style="font-size:13px;font-weight:700;color:#1a2f4e;margin:0 0 4px;">Cancel Submission</p>
+                            <p style="font-size:12px;color:#64748b;margin:0;line-height:1.5;">
                                 I accept the rejection. I will arrange to submit a new sample.
                                 No testing will be conducted on this sample.
                             </p>
@@ -160,12 +163,12 @@
 
                     <button type="submit"
                             x-bind:disabled="!decision"
-                            x-bind:class="!decision
-                                ? 'bg-gray-100 text-gray-400 cursor-not-allowed'
+                            x-bind:style="!decision
+                                ? 'background:#f1f5f9;color:#94a3b8;cursor:not-allowed;border:1px solid #e2e8f0;'
                                 : (decision === 'consent_to_proceed'
-                                    ? 'bg-amber-600 hover:bg-amber-700 text-white'
-                                    : 'bg-red-600 hover:bg-red-700 text-white')"
-                            class="w-full py-3 text-sm font-semibold rounded-xl transition"
+                                    ? 'background:#b8922a;color:#fff;border:none;cursor:pointer;'
+                                    : 'background:#dc2626;color:#fff;border:none;cursor:pointer;')"
+                            style="width:100%;padding:12px;font-size:13px;font-weight:700;border-radius:3px;letter-spacing:.04em;"
                             onclick="return confirm('Are you sure? This decision cannot be changed.')">
                         <span x-text="!decision
                             ? 'Please select an option above'
@@ -176,9 +179,9 @@
                     </button>
                 </form>
 
-                <p class="text-xs text-gray-400 text-center">
+                <p style="font-size:11px;color:#94a3b8;text-align:center;margin:16px 0 0;">
                     This link expires {{ $assessment->consent_token_expires_at?->format('d M Y \a\t H:i') }}.
-                    Contact <a href="mailto:{{ config('mail.from.address') }}" class="underline">{{ config('mail.from.address') }}</a> if you need help.
+                    Contact <a href="mailto:{{ config('mail.from.address') }}" style="color:#1a2f4e;text-decoration:underline;">{{ config('mail.from.address') }}</a> if you need help.
                 </p>
             </div>
         </div>

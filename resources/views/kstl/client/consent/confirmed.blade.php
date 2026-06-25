@@ -8,73 +8,76 @@
     <title>Decision Recorded — KSTL</title>
     @vite(['resources/css/app.css'])
 </head>
-<body class="bg-gray-50 min-h-screen">
+<body style="background:#f1f5f9;min-height:100vh;margin:0;font-family:system-ui,-apple-system,sans-serif;">
 
-    <div class="bg-blue-900 text-white py-4 px-6">
-        <div class="max-w-2xl mx-auto flex items-center gap-3">
-            <div class="w-8 h-8 bg-blue-700 rounded-lg flex items-center justify-center text-xs font-bold">KL</div>
-            <div>
-                <p class="font-semibold text-sm">Kiribati Seafood Toxicology Laboratory</p>
-                <p class="text-blue-300 text-xs">Sample Assessment — Client Response</p>
+    <div style="background:linear-gradient(135deg,#0f2240 0%,#1a2f4e 60%,#1e3a5f 100%);">
+        <div style="height:3px;background:linear-gradient(90deg,#1a2f4e,#b8922a 30%,#b8922a 70%,#1a2f4e);"></div>
+        <div style="max-width:36rem;margin:0 auto;padding:18px 1.5rem;">
+            <div style="display:flex;align-items:center;gap:14px;">
+                <div style="width:36px;height:36px;background:rgba(184,146,42,.2);border:1px solid #b8922a;border-radius:3px;display:flex;align-items:center;justify-content:center;font-size:10px;font-weight:700;color:#b8922a;flex-shrink:0;letter-spacing:.06em;">KL</div>
+                <div>
+                    <p style="font-size:13px;font-weight:700;color:#fff;margin:0 0 2px;">Kiribati Seafood Toxicology Laboratory</p>
+                    <p style="font-size:10px;font-weight:700;letter-spacing:.12em;text-transform:uppercase;color:#b8922a;margin:0;">Laboratory Services &nbsp;&bull;&nbsp; Sample Assessment — Client Response</p>
+                </div>
             </div>
         </div>
     </div>
 
-    <div class="max-w-2xl mx-auto px-4 py-16 text-center">
+    <div style="max-width:36rem;margin:0 auto;padding:56px 1.5rem;text-align:center;">
 
         @if($assessment->client_decision === 'consent_to_proceed')
-            <div class="w-16 h-16 bg-amber-100 rounded-full flex items-center justify-center mx-auto mb-6">
-                <svg class="w-8 h-8 text-amber-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <div style="width:64px;height:64px;background:#fffbeb;border:2px solid #b8922a;border-radius:50%;display:flex;align-items:center;justify-content:center;margin:0 auto 24px;">
+                <svg style="width:32px;height:32px;color:#b8922a;" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"/>
                 </svg>
             </div>
-            <h1 class="text-2xl font-bold text-gray-900 mb-3">Decision Recorded</h1>
-            <p class="text-gray-600 mb-2">
+            <h1 style="font-family:'Georgia',serif;font-size:24px;font-weight:700;color:#1a2f4e;margin:0 0 12px;">Decision Recorded</h1>
+            <p style="font-size:14px;color:#374151;margin:0 0 8px;">
                 Thank you. We have recorded your consent to proceed with testing
                 despite the assessment findings.
             </p>
-            <p class="text-gray-500 text-sm">
+            <p style="font-size:13px;color:#64748b;margin:0;">
                 Our lab team will commence testing and you will be notified when results are ready.
             </p>
         @else
-            <div class="w-16 h-16 bg-red-100 rounded-full flex items-center justify-center mx-auto mb-6">
-                <svg class="w-8 h-8 text-red-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <div style="width:64px;height:64px;background:#fef2f2;border:2px solid #dc2626;border-radius:50%;display:flex;align-items:center;justify-content:center;margin:0 auto 24px;">
+                <svg style="width:32px;height:32px;color:#dc2626;" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/>
                 </svg>
             </div>
-            <h1 class="text-2xl font-bold text-gray-900 mb-3">Rejection Confirmed</h1>
-            <p class="text-gray-600 mb-2">
+            <h1 style="font-family:'Georgia',serif;font-size:24px;font-weight:700;color:#1a2f4e;margin:0 0 12px;">Rejection Confirmed</h1>
+            <p style="font-size:14px;color:#374151;margin:0 0 8px;">
                 Thank you. We have recorded your decision to cancel this submission.
             </p>
-            <p class="text-gray-500 text-sm">
+            <p style="font-size:13px;color:#64748b;margin:0;">
                 You are welcome to resubmit with a fresh sample. Please contact us if you need assistance.
             </p>
         @endif
 
-        <div class="mt-8 bg-white rounded-xl border border-gray-200 p-5 text-left text-sm">
-            <div class="flex justify-between py-2 border-b border-gray-100">
-                <span class="text-gray-500">Reference</span>
-                <span class="font-mono font-medium">{{ $assessment->sample->submission->reference_number }}</span>
+        <div style="margin-top:32px;background:#fff;border:1px solid #e2e8f0;border-radius:4px;padding:4px 20px;text-align:left;">
+            <div style="display:flex;justify-content:space-between;align-items:center;padding:12px 0;border-bottom:1px solid #f1f5f9;">
+                <span style="font-size:12px;color:#64748b;">Reference</span>
+                <span style="font-family:monospace;font-weight:700;color:#1a2f4e;font-size:13px;">{{ $assessment->sample->submission->reference_number }}</span>
             </div>
-            <div class="flex justify-between py-2 border-b border-gray-100">
-                <span class="text-gray-500">Sample</span>
-                <span class="font-medium">{{ $assessment->sample->common_name }}</span>
+            <div style="display:flex;justify-content:space-between;align-items:center;padding:12px 0;border-bottom:1px solid #f1f5f9;">
+                <span style="font-size:12px;color:#64748b;">Sample</span>
+                <span style="font-weight:600;color:#1e293b;font-size:13px;">{{ $assessment->sample->common_name }}</span>
             </div>
-            <div class="flex justify-between py-2 border-b border-gray-100">
-                <span class="text-gray-500">Decision</span>
-                <span class="font-medium {{ $assessment->client_decision === 'consent_to_proceed' ? 'text-amber-700' : 'text-red-700' }}">
+            <div style="display:flex;justify-content:space-between;align-items:center;padding:12px 0;border-bottom:1px solid #f1f5f9;">
+                <span style="font-size:12px;color:#64748b;">Decision</span>
+                <span style="font-weight:700;font-size:13px;{{ $assessment->client_decision === 'consent_to_proceed' ? 'color:#b8922a;' : 'color:#dc2626;' }}">
                     {{ $assessment->client_decision === 'consent_to_proceed' ? 'Consent to Proceed' : 'Confirmed Rejection' }}
                 </span>
             </div>
-            <div class="flex justify-between py-2">
-                <span class="text-gray-500">Recorded</span>
-                <span class="text-gray-700">{{ $assessment->client_decision_at?->format('d M Y \a\t H:i') }}</span>
+            <div style="display:flex;justify-content:space-between;align-items:center;padding:12px 0;">
+                <span style="font-size:12px;color:#64748b;">Recorded</span>
+                <span style="font-size:13px;color:#374151;">{{ $assessment->client_decision_at?->format('d M Y \a\t H:i') }}</span>
             </div>
         </div>
 
-        <p class="mt-8 text-sm text-gray-400">
+        <p style="margin-top:32px;font-size:13px;color:#94a3b8;">
             Questions? Contact us at
-            <a href="mailto:{{ config('mail.from.address') }}" class="text-blue-600 underline">
+            <a href="mailto:{{ config('mail.from.address') }}" style="color:#1a2f4e;text-decoration:underline;">
                 {{ config('mail.from.address') }}
             </a>
         </p>

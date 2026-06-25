@@ -3,98 +3,81 @@
 
 <x-app-layout>
     <x-slot name="header">
-        <div class="flex items-center justify-between gap-3">
-            <div class="flex items-center gap-3">
-                <a href="{{ route('director.submissions.show', $submission->id) }}"
-                   class="text-gray-400 hover:text-gray-600 transition no-print">
-                    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7"/>
-                    </svg>
-                </a>
-                <div>
-                    <h2 class="font-semibold text-xl text-gray-800 leading-tight">
-                        Internal Report — {{ $submission->reference_number }}
-                    </h2>
-                    <p class="text-xs text-gray-400 mt-0.5">Director use only &middot; {{ $submission->sample_name }}</p>
+        <div style="position:relative;overflow:hidden;background:linear-gradient(135deg,#0f2240 0%,#1a2f4e 60%,#1e3a5f 100%);">
+            <div style="height:3px;background:linear-gradient(90deg,#1a2f4e,#b8922a 30%,#b8922a 70%,#1a2f4e);"></div>
+            <div style="max-width:80rem;margin:0 auto;padding:28px 2rem 32px;">
+                <div style="display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:16px;">
+                    <div style="display:flex;align-items:center;gap:20px;">
+                        <img src="{{ asset('images/mfor-logo.png') }}" alt="MFOR" style="filter:brightness(0) invert(1);opacity:.92;width:56px;height:56px;flex-shrink:0;">
+                        <div>
+                            <p style="font-size:9px;font-weight:700;letter-spacing:.18em;text-transform:uppercase;color:#b8922a;margin:0 0 4px;">Director Portal &middot; Internal Report</p>
+                            <h1 style="font-family:'Georgia',serif;font-size:22px;font-weight:700;color:#fff;margin:0 0 6px;line-height:1.2;">{{ $submission->reference_number }}</h1>
+                            <p style="font-size:12px;color:#94a3b8;margin:0;">Director use only &middot; {{ $submission->sample_name }}</p>
+                        </div>
+                    </div>
+                    <div style="display:flex;align-items:center;gap:10px;flex-wrap:wrap;" class="no-print">
+                        <span style="display:inline-flex;align-items:center;padding:5px 14px;background:#fee2e2;color:#991b1b;border:1px solid #fca5a5;border-radius:3px;font-size:11px;font-weight:700;letter-spacing:.06em;">
+                            INTERNAL &mdash; NOT FOR CLIENT
+                        </span>
+                        <button onclick="window.print()"
+                                style="display:inline-flex;align-items:center;gap:8px;padding:8px 20px;background:#fff;color:#1a2f4e;font-size:12px;font-weight:700;letter-spacing:.06em;border:1px solid #1a2f4e;border-radius:3px;cursor:pointer;">
+                            Print / Save PDF
+                        </button>
+                        <a href="{{ route('director.submissions.show', $submission->id) }}"
+                           style="display:inline-flex;align-items:center;gap:8px;padding:8px 20px;background:#fff;color:#1a2f4e;font-size:12px;font-weight:700;letter-spacing:.06em;border:1px solid #fff;border-radius:3px;text-decoration:none;">
+                            &larr; Back
+                        </a>
+                    </div>
                 </div>
-            </div>
-            <div class="flex items-center gap-2 no-print">
-                <span class="inline-flex items-center px-2.5 py-1 rounded-full text-xs font-semibold bg-red-100 text-red-700 ring-1 ring-red-600/20">
-                    INTERNAL — NOT FOR CLIENT
-                </span>
-                <button onclick="window.print()"
-                        class="inline-flex items-center gap-2 px-3 py-1.5 text-xs font-medium text-gray-600 border border-gray-200 rounded-lg hover:bg-gray-50 transition">
-                    <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 17h2a2 2 0 002-2v-4a2 2 0 00-2-2H5a2 2 0 00-2 2v4a2 2 0 002 2h2m2 4h6a2 2 0 002-2v-4a2 2 0 00-2-2H9a2 2 0 00-2 2v4a2 2 0 002 2zm8-12V5a2 2 0 00-2-2H9a2 2 0 00-2 2v4h10z"/>
-                    </svg>
-                    Print / Save PDF
-                </button>
             </div>
         </div>
     </x-slot>
 
     @push('styles')
     <style>
-        .ir-doc { background: var(--surface); border: 1px solid var(--border); }
-        .ir-letterhead { border-bottom: 3px double var(--navy); background: linear-gradient(180deg, #fbfaf8 0%, #ffffff 100%); }
-        .ir-crest { width: 54px; height: 54px; border-radius: 50%; border: 2px solid var(--gold); display: flex; align-items: center; justify-content: center; }
-        .ir-crest svg { width: 28px; height: 28px; stroke: var(--navy); fill: none; }
-        .ir-title { font-family: 'Noto Serif', serif; color: var(--navy); letter-spacing: .01em; }
-        .ir-eyebrow { letter-spacing: .18em; text-transform: uppercase; font-size: 10px; color: var(--gold); font-weight: 700; }
-        .ir-meta-label { letter-spacing: .08em; text-transform: uppercase; font-size: 10px; color: var(--subtle); font-weight: 600; }
-        .ir-section-title { font-family: 'Noto Serif', serif; color: var(--navy); font-size: 13px; font-weight: 700; letter-spacing: .02em; display: flex; align-items: center; gap: 8px; }
-        .ir-section-title::before { content: ''; width: 3px; height: 14px; background: var(--gold); border-radius: 2px; display: inline-block; }
-        .ir-seal { font-family: 'Noto Serif', serif; font-weight: 700; border: 2px solid currentColor; border-radius: 999px; padding: .35rem 1.4rem; letter-spacing: .12em; text-transform: uppercase; display: inline-flex; align-items: center; gap: .5rem; }
-        .ir-table thead th { font-family: 'Noto Sans', sans-serif; letter-spacing: .06em; text-transform: uppercase; font-size: 10px; color: var(--muted); border-bottom: 2px solid var(--border); background: #faf9f7; }
-        .ir-table td { border-bottom: 1px solid #efedea; }
-        .ir-watermark { position: relative; }
-        .ir-internal-banner { background: #fff3cd; border: 1px solid #ffc107; border-radius: 6px; }
+        .page-hdr { padding: 0 !important; }
+        .page-hdr-inner { max-width: 100% !important; padding: 0 !important; }
+        .app-main { padding-left:0 !important; padding-right:0 !important; padding-top:0 !important; max-width:100% !important; }
         @media print {
             .no-print { display: none !important; }
             body { background: #fff !important; }
-            .ir-doc { border: none !important; box-shadow: none !important; }
             .page-hdr, .gov-stripe, .gov-top, nav, .app-footer { display: none !important; }
-            .ir-seal { -webkit-print-color-adjust: exact; print-color-adjust: exact; }
-            .ir-internal-banner { -webkit-print-color-adjust: exact; print-color-adjust: exact; }
             a[href]:after { content: ''; }
         }
     </style>
     @endpush
 
-    <div class="py-8">
-        <div class="max-w-4xl mx-auto sm:px-6 lg:px-8">
+    <div style="background:#f1f5f9;min-height:100vh;padding:52px 0 56px;">
+        <div style="max-width:64rem;margin:0 auto;padding:0 2rem;">
 
             {{-- Internal use banner --}}
-            <div class="ir-internal-banner px-5 py-3 mb-4 flex items-center gap-3 no-print">
-                <svg class="w-5 h-5 text-amber-600 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01M10.29 3.86L1.82 18a2 2 0 001.71 3h16.94a2 2 0 001.71-3L13.71 3.86a2 2 0 00-3.42 0z"/>
-                </svg>
-                <p class="text-sm text-amber-800 font-medium">
+            <div style="background:#fffbeb;border:1px solid #fde68a;border-left:4px solid #f59e0b;border-radius:4px;padding:12px 16px;margin-bottom:20px;display:flex;align-items:flex-start;gap:12px;" class="no-print">
+                <p style="font-size:13px;color:#92400e;font-weight:600;margin:0;">
                     This is the internal Director's report. It contains outcome determination and analyst details not included in the client-facing Certificate of Analysis.
                 </p>
             </div>
 
-            <div class="ir-doc rounded-xl shadow-sm overflow-hidden">
+            <div style="background:#fff;border:1px solid #e2e8f0;border-radius:4px;overflow:hidden;">
 
                 {{-- ── Letterhead ─────────────────────────────────────────── --}}
-                <div class="ir-letterhead px-8 py-6">
-                    <div class="flex items-start justify-between gap-6">
-                        <div class="flex items-start gap-4">
-                            <div class="ir-crest">
-                                <svg viewBox="0 0 24 24" stroke-width="1.5">
+                <div style="padding:24px 32px;border-bottom:3px double #1a2f4e;background:linear-gradient(180deg,#fbfaf8 0%,#ffffff 100%);">
+                    <div style="display:flex;align-items:flex-start;justify-content:space-between;gap:24px;">
+                        <div style="display:flex;align-items:flex-start;gap:16px;">
+                            <div style="width:54px;height:54px;border-radius:50%;border:2px solid #b8922a;display:flex;align-items:center;justify-content:center;flex-shrink:0;">
+                                <svg viewBox="0 0 24 24" style="width:28px;height:28px;stroke:#1a2f4e;fill:none;" stroke-width="1.5">
                                     <path stroke-linecap="round" stroke-linejoin="round" d="M3.75 21h16.5M4.5 3h15M5.25 3v18m13.5-18v18M9 6.75h1.5m-1.5 3h1.5m-1.5 3h1.5m3-6H15m-1.5 3H15m-1.5 3H15M9 21v-3.375c0-.621.504-1.125 1.125-1.125h3.75c.621 0 1.125.504 1.125 1.125V21"/>
                                 </svg>
                             </div>
                             <div>
-                                <p class="ir-eyebrow">Government of Kiribati &middot; Ministry of Fisheries &amp; Ocean Resources</p>
-                                <h1 class="ir-title text-2xl font-bold mt-1">Kiribati Seafood Toxicology Laboratory</h1>
-                                <img src="{{ asset('images/mfor-logo.png') }}" alt="MFOR" class="h-6 mt-1 object-contain object-left">
+                                <p style="font-size:9px;font-weight:700;letter-spacing:.18em;text-transform:uppercase;color:#b8922a;margin:0 0 4px;">Government of Kiribati &middot; Ministry of Fisheries &amp; Ocean Resources</p>
+                                <h1 style="font-family:'Georgia',serif;font-size:20px;font-weight:700;color:#1a2f4e;margin:0 0 6px;">Kiribati Seafood Toxicology Laboratory</h1>
+                                <img src="{{ asset('images/mfor-logo.png') }}" alt="MFOR" style="height:24px;object-fit:contain;object-position:left;">
                             </div>
                         </div>
-                        <div class="text-right shrink-0">
-                            <p class="ir-eyebrow">Results</p>
-                            <p class="font-mono text-sm font-semibold text-gray-800 mt-1">{{ $submission->reference_number }}</p>
-                            <p class="text-xs text-gray-400 mt-0.5">
+                        <div style="text-align:right;flex-shrink:0;">
+                            <p style="font-size:9px;font-weight:700;letter-spacing:.18em;text-transform:uppercase;color:#b8922a;margin:0 0 4px;">Results</p>
+                            <p style="font-family:monospace;font-size:13px;font-weight:700;color:#1a2f4e;margin:0 0 4px;">{{ $submission->reference_number }}</p>
+                            <p style="font-size:12px;color:#94a3b8;margin:0;">
                                 Issued {{ $result?->authorised_at?->format('d M Y') ?? now()->format('d M Y') }}
                             </p>
                         </div>
@@ -102,95 +85,93 @@
                 </div>
 
                 {{-- ── Authorisation strip ─────────────────────────────────── --}}
-                <div class="px-8 py-5 flex items-center justify-between gap-6 border-b border-gray-100 bg-gray-50/40">
+                <div style="padding:20px 32px;display:flex;align-items:center;justify-content:space-between;gap:24px;border-bottom:1px solid #e2e8f0;background:#f8fafc;">
                     <div>
-                        <p class="ir-meta-label">Authorisation Status</p>
+                        <p style="font-size:9px;font-weight:700;letter-spacing:.12em;text-transform:uppercase;color:#64748b;margin:0 0 4px;">Authorisation Status</p>
                         @if($result?->authorised_at)
-                            <p class="text-sm font-semibold text-green-700 mt-1">Authorised</p>
+                            <p style="font-size:13px;font-weight:700;color:#16a34a;margin:0;">Authorised</p>
                         @else
-                            <p class="text-sm text-gray-400 italic mt-1">Awaiting Director authorisation</p>
+                            <p style="font-size:13px;color:#94a3b8;font-style:italic;margin:0;">Awaiting Director authorisation</p>
                         @endif
                     </div>
 
-                    {{-- Company --}}
-                    <div class="text-center">
-                        <p class="ir-meta-label">Prepared For</p>
-                        <p class="text-sm font-semibold text-gray-800 mt-1">{{ $submission->client->company_name }}</p>
-                        <p class="text-xs text-gray-500 mt-0.5">{{ $submission->client->user->email ?? '' }}</p>
+                    <div style="text-align:center;">
+                        <p style="font-size:9px;font-weight:700;letter-spacing:.12em;text-transform:uppercase;color:#64748b;margin:0 0 4px;">Prepared For</p>
+                        <p style="font-size:13px;font-weight:700;color:#1e293b;margin:0 0 2px;">{{ $submission->client->company_name }}</p>
+                        <p style="font-size:12px;color:#64748b;margin:0;">{{ $submission->client->user->email ?? '' }}</p>
                     </div>
 
                     @if($result?->authorised_at)
-                        <div class="text-right">
-                            <p class="ir-meta-label">Authorised By</p>
-                            <p class="text-sm font-medium text-gray-800 mt-1">{{ $result->authorisedBy?->name ?? 'Laboratory Director' }}</p>
-                            <p class="text-xs text-gray-500">Laboratory Director</p>
-                            <p class="text-xs text-gray-400 mt-1">{{ $result->authorised_at->format('d M Y \a\t H:i') }}</p>
+                        <div style="text-align:right;">
+                            <p style="font-size:9px;font-weight:700;letter-spacing:.12em;text-transform:uppercase;color:#64748b;margin:0 0 4px;">Authorised By</p>
+                            <p style="font-size:13px;font-weight:600;color:#1e293b;margin:0 0 2px;">{{ $result->authorisedBy?->name ?? 'Laboratory Director' }}</p>
+                            <p style="font-size:12px;color:#64748b;margin:0 0 2px;">Laboratory Director</p>
+                            <p style="font-size:11px;color:#94a3b8;margin:0;">{{ $result->authorised_at->format('d M Y \a\t H:i') }}</p>
                         </div>
                     @endif
                 </div>
 
                 {{-- ── Submission particulars ─────────────────────────────── --}}
-                <div class="px-8 py-6 border-b border-gray-100">
-                    <p class="ir-section-title mb-4">Submission Particulars</p>
+                <div style="padding:24px 32px;border-bottom:1px solid #e2e8f0;">
+                    <h2 style="font-family:'Georgia',serif;font-size:14px;font-weight:700;color:#1a2f4e;margin:0 0 16px;padding-bottom:8px;border-bottom:2px solid #b8922a;">Submission Particulars</h2>
 
-                    {{-- Meta row --}}
-                    <dl class="grid grid-cols-2 md:grid-cols-3 gap-x-6 gap-y-4 text-sm mb-5">
+                    <dl style="display:grid;grid-template-columns:repeat(3,1fr);gap:16px 24px;margin-bottom:20px;">
                         <div>
-                            <dt class="ir-meta-label">Client</dt>
-                            <dd class="text-gray-800 mt-1 font-medium">{{ $submission->client->company_name }}</dd>
+                            <dt style="font-size:9px;font-weight:700;letter-spacing:.12em;text-transform:uppercase;color:#64748b;margin:0 0 4px;">Client</dt>
+                            <dd style="font-size:13px;font-weight:600;color:#1e293b;margin:0;">{{ $submission->client->company_name }}</dd>
                         </div>
                         <div>
-                            <dt class="ir-meta-label">Reference</dt>
-                            <dd class="font-mono text-gray-800 mt-1">{{ $submission->reference_number }}</dd>
+                            <dt style="font-size:9px;font-weight:700;letter-spacing:.12em;text-transform:uppercase;color:#64748b;margin:0 0 4px;">Reference</dt>
+                            <dd style="font-family:monospace;font-size:13px;color:#1e293b;margin:0;">{{ $submission->reference_number }}</dd>
                         </div>
                         <div>
-                            <dt class="ir-meta-label">Priority</dt>
-                            <dd class="text-gray-700 mt-1 capitalize">{{ $submission->priority ?? 'Routine' }}</dd>
+                            <dt style="font-size:9px;font-weight:700;letter-spacing:.12em;text-transform:uppercase;color:#64748b;margin:0 0 4px;">Priority</dt>
+                            <dd style="font-size:13px;color:#374151;text-transform:capitalize;margin:0;">{{ $submission->priority ?? 'Routine' }}</dd>
                         </div>
                         <div>
-                            <dt class="ir-meta-label">Collected</dt>
-                            <dd class="text-gray-700 mt-1">{{ $submission->collected_at?->format('d M Y') ?? '—' }}</dd>
+                            <dt style="font-size:9px;font-weight:700;letter-spacing:.12em;text-transform:uppercase;color:#64748b;margin:0 0 4px;">Collected</dt>
+                            <dd style="font-size:13px;color:#374151;margin:0;">{{ $submission->collected_at?->format('d M Y') ?? '—' }}</dd>
                         </div>
                         @if($submission->delivered_at)
                         <div>
-                            <dt class="ir-meta-label">Delivered</dt>
-                            <dd class="text-gray-700 mt-1">{{ $submission->delivered_at->format('d M Y') }}</dd>
+                            <dt style="font-size:9px;font-weight:700;letter-spacing:.12em;text-transform:uppercase;color:#64748b;margin:0 0 4px;">Delivered</dt>
+                            <dd style="font-size:13px;color:#374151;margin:0;">{{ $submission->delivered_at->format('d M Y') }}</dd>
                         </div>
                         @endif
                         <div>
-                            <dt class="ir-meta-label">Submitted</dt>
-                            <dd class="text-gray-700 mt-1">{{ $submission->submitted_at?->format('d M Y') ?? '—' }}</dd>
+                            <dt style="font-size:9px;font-weight:700;letter-spacing:.12em;text-transform:uppercase;color:#64748b;margin:0 0 4px;">Submitted</dt>
+                            <dd style="font-size:13px;color:#374151;margin:0;">{{ $submission->submitted_at?->format('d M Y') ?? '—' }}</dd>
                         </div>
                         <div>
-                            <dt class="ir-meta-label">Results Required By</dt>
-                            <dd class="text-gray-700 mt-1">{{ $submission->results_required_by?->format('d M Y') ?? '—' }}</dd>
+                            <dt style="font-size:9px;font-weight:700;letter-spacing:.12em;text-transform:uppercase;color:#64748b;margin:0 0 4px;">Results Required By</dt>
+                            <dd style="font-size:13px;color:#374151;margin:0;">{{ $submission->results_required_by?->format('d M Y') ?? '—' }}</dd>
                         </div>
                         <div>
-                            <dt class="ir-meta-label">Date of Issue</dt>
-                            <dd class="text-gray-700 mt-1">{{ $result?->authorised_at?->format('d M Y') ?? '—' }}</dd>
+                            <dt style="font-size:9px;font-weight:700;letter-spacing:.12em;text-transform:uppercase;color:#64748b;margin:0 0 4px;">Date of Issue</dt>
+                            <dd style="font-size:13px;color:#374151;margin:0;">{{ $result?->authorised_at?->format('d M Y') ?? '—' }}</dd>
                         </div>
                     </dl>
 
                     {{-- Samples table --}}
-                    <dt class="ir-meta-label mb-2">Samples Submitted ({{ $submission->samples->count() }})</dt>
-                    <table class="w-full text-sm border border-gray-100 rounded-lg overflow-hidden">
-                        <thead class="bg-gray-50">
-                            <tr>
-                                <th class="text-left px-3 py-2 ir-meta-label">#</th>
-                                <th class="text-left px-3 py-2 ir-meta-label">Common Name</th>
-                                <th class="text-left px-3 py-2 ir-meta-label">Scientific Name</th>
-                                <th class="text-left px-3 py-2 ir-meta-label">Sample Code</th>
-                                <th class="text-left px-3 py-2 ir-meta-label">Qty</th>
+                    <p style="font-size:9px;font-weight:700;letter-spacing:.12em;text-transform:uppercase;color:#64748b;margin:0 0 8px;">Samples Submitted ({{ $submission->samples->count() }})</p>
+                    <table style="width:100%;border-collapse:collapse;border:1px solid #e2e8f0;border-radius:4px;overflow:hidden;">
+                        <thead>
+                            <tr style="background:#f8fafc;">
+                                <th style="padding:8px 12px;text-align:left;font-size:9px;font-weight:700;letter-spacing:.12em;text-transform:uppercase;color:#64748b;">#</th>
+                                <th style="padding:8px 12px;text-align:left;font-size:9px;font-weight:700;letter-spacing:.12em;text-transform:uppercase;color:#64748b;">Common Name</th>
+                                <th style="padding:8px 12px;text-align:left;font-size:9px;font-weight:700;letter-spacing:.12em;text-transform:uppercase;color:#64748b;">Scientific Name</th>
+                                <th style="padding:8px 12px;text-align:left;font-size:9px;font-weight:700;letter-spacing:.12em;text-transform:uppercase;color:#64748b;">Sample Code</th>
+                                <th style="padding:8px 12px;text-align:left;font-size:9px;font-weight:700;letter-spacing:.12em;text-transform:uppercase;color:#64748b;">Qty</th>
                             </tr>
                         </thead>
-                        <tbody class="divide-y divide-gray-50">
+                        <tbody>
                             @foreach($submission->samples as $i => $sample)
-                                <tr>
-                                    <td class="px-3 py-2 text-gray-400 font-mono text-xs">{{ $i + 1 }}</td>
-                                    <td class="px-3 py-2 font-medium text-gray-800">{{ $sample->common_name ?? '—' }}</td>
-                                    <td class="px-3 py-2 italic text-gray-500">{{ $sample->scientific_name ?? '—' }}</td>
-                                    <td class="px-3 py-2 font-mono text-xs text-gray-500">{{ $sample->sample_code }}</td>
-                                    <td class="px-3 py-2 text-gray-600 text-xs">{{ $sample->quantity ?? '—' }} {{ $sample->quantity_unit ?? '' }}</td>
+                                <tr style="border-bottom:1px solid #f1f5f9;{{ $loop->even ? 'background:#f8fafc;' : '' }}">
+                                    <td style="padding:8px 12px;font-size:12px;color:#94a3b8;font-family:monospace;">{{ $i + 1 }}</td>
+                                    <td style="padding:8px 12px;font-size:13px;font-weight:600;color:#1e293b;">{{ $sample->common_name ?? '—' }}</td>
+                                    <td style="padding:8px 12px;font-size:13px;font-style:italic;color:#64748b;">{{ $sample->scientific_name ?? '—' }}</td>
+                                    <td style="padding:8px 12px;font-family:monospace;font-size:12px;color:#64748b;">{{ $sample->sample_code }}</td>
+                                    <td style="padding:8px 12px;font-size:12px;color:#64748b;">{{ $sample->quantity ?? '—' }} {{ $sample->quantity_unit ?? '' }}</td>
                                 </tr>
                             @endforeach
                         </tbody>
@@ -216,11 +197,10 @@
                 @endphp
 
                 {{-- ── Authorised Results ─────────────────────────────────────── --}}
-                <div class="px-8 py-6 border-b border-gray-100">
-                    <div class="flex items-center justify-between mb-4">
-                        <p class="ir-section-title">Authorised Results</p>
-                        <span class="inline-flex items-center gap-1.5 px-2.5 py-1 text-xs font-semibold rounded-full bg-green-50 text-green-700 ring-1 ring-green-600/20">
-                            <svg class="w-3 h-3" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M5 13l4 4L19 7"/></svg>
+                <div style="padding:24px 32px;border-bottom:1px solid #e2e8f0;">
+                    <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:16px;">
+                        <h2 style="font-family:'Georgia',serif;font-size:14px;font-weight:700;color:#1a2f4e;margin:0;padding-bottom:8px;border-bottom:2px solid #b8922a;">Authorised Results</h2>
+                        <span style="display:inline-flex;align-items:center;gap:6px;padding:4px 12px;background:#dcfce7;color:#166534;border:1px solid #86efac;border-radius:3px;font-size:11px;font-weight:700;">
                             Authorised
                         </span>
                     </div>
@@ -229,27 +209,27 @@
                         @php
                             $sampleAuthorisedTests = $authorisedTests->filter(fn($r) => $r['sample']->id === $sample->id);
                         @endphp
-                        <div class="mb-6 last:mb-0">
-                            <div class="flex items-center justify-between mb-2">
+                        <div style="margin-bottom:24px;">
+                            <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:10px;">
                                 <div>
-                                    <h4 class="text-sm font-semibold text-gray-800">{{ $sample->common_name ?? $sample->sample_code }}</h4>
+                                    <h4 style="font-size:14px;font-weight:700;color:#1e293b;margin:0;">{{ $sample->common_name ?? $sample->sample_code }}</h4>
                                     @if($sample->scientific_name)
-                                        <p class="text-xs text-gray-400 italic mt-0.5">{{ $sample->scientific_name }}</p>
+                                        <p style="font-size:12px;color:#94a3b8;font-style:italic;margin:2px 0 0;">{{ $sample->scientific_name }}</p>
                                     @endif
-                                    <p class="text-xs text-gray-400 font-mono mt-0.5">{{ $sample->sample_code }}</p>
+                                    <p style="font-family:monospace;font-size:11px;color:#94a3b8;margin:2px 0 0;">{{ $sample->sample_code }}</p>
                                 </div>
                             </div>
 
                             @if($sampleAuthorisedTests->isEmpty())
-                                <p class="text-sm text-gray-400 italic py-3">No test results available.</p>
+                                <p style="font-size:13px;color:#94a3b8;font-style:italic;padding:12px 0;">No test results available.</p>
                             @else
-                                <table class="ir-table w-full text-sm">
+                                <table style="width:100%;border-collapse:collapse;border:1px solid #e2e8f0;">
                                     <thead>
-                                        <tr>
-                                            <th class="text-left px-3 py-2.5">Test</th>
-                                            <th class="text-left px-3 py-2.5">Result</th>
-                                            <th class="text-left px-3 py-2.5">Methods</th>
-                                            <th class="text-left px-3 py-2.5">Analyst</th>
+                                        <tr style="background:#1a2f4e;">
+                                            <th style="padding:8px 12px;text-align:left;font-size:9px;font-weight:700;letter-spacing:.12em;text-transform:uppercase;color:#e2e8f0;">Test</th>
+                                            <th style="padding:8px 12px;text-align:left;font-size:9px;font-weight:700;letter-spacing:.12em;text-transform:uppercase;color:#e2e8f0;">Result</th>
+                                            <th style="padding:8px 12px;text-align:left;font-size:9px;font-weight:700;letter-spacing:.12em;text-transform:uppercase;color:#e2e8f0;">Methods</th>
+                                            <th style="padding:8px 12px;text-align:left;font-size:9px;font-weight:700;letter-spacing:.12em;text-transform:uppercase;color:#e2e8f0;">Analyst</th>
                                         </tr>
                                     </thead>
                                     <tbody>
@@ -272,39 +252,37 @@
                                                 $isDetected    = $test->result_qualifier === 'detected' || $test->result_qualifier === 'fail';
                                                 $isNotDetected = $test->result_qualifier === 'not_detected' || $test->result_qualifier === 'pass';
                                             @endphp
-                                            <tr>
-                                                <td class="px-3 py-2.5 text-gray-800 font-medium">{{ $test->getDisplayLabel() }}</td>
-                                                <td class="px-3 py-2.5 font-medium {{ $isDetected ? 'text-red-600' : ($isNotDetected ? 'text-green-700' : 'text-gray-700') }}">
+                                            <tr style="border-bottom:1px solid #f1f5f9;{{ $loop->even ? 'background:#f8fafc;' : '' }}">
+                                                <td style="padding:10px 12px;font-size:13px;font-weight:600;color:#1e293b;">{{ $test->getDisplayLabel() }}</td>
+                                                <td style="padding:10px 12px;font-size:13px;font-weight:600;{{ $isDetected ? 'color:#dc2626;' : ($isNotDetected ? 'color:#16a34a;' : 'color:#374151;') }}">
                                                     {{ $resultText }}
                                                 </td>
-                                                <td class="px-3 py-2.5">
+                                                <td style="padding:10px 12px;">
                                                     @if($sopCode && $sopDoc)
                                                         @if($sopDoc->currentVersion)
                                                             <a href="{{ route('staff.documents.preview', $sopDoc->id) }}"
                                                                target="_blank"
-                                                               class="inline-flex items-center gap-1 font-mono text-xs text-blue-600 hover:text-blue-800 hover:underline">
+                                                               style="font-family:monospace;font-size:12px;color:#1a2f4e;text-decoration:none;display:inline-flex;align-items:center;gap:4px;">
                                                                 {{ $sopCode }}
-                                                                <svg class="w-3 h-3 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"/><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"/></svg>
                                                             </a>
                                                         @else
                                                             <a href="{{ route('staff.documents.show', $sopDoc->id) }}"
                                                                target="_blank"
-                                                               class="inline-flex items-center gap-1 font-mono text-xs text-blue-600 hover:text-blue-800 hover:underline">
+                                                               style="font-family:monospace;font-size:12px;color:#1a2f4e;text-decoration:none;">
                                                                 {{ $sopCode }}
-                                                                <svg class="w-3 h-3 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14"/></svg>
                                                             </a>
                                                         @endif
                                                     @elseif($sopCode)
-                                                        <span class="font-mono text-xs text-gray-500">{{ $sopCode }}</span>
+                                                        <span style="font-family:monospace;font-size:12px;color:#64748b;">{{ $sopCode }}</span>
                                                     @else
-                                                        <span class="text-gray-400">—</span>
+                                                        <span style="color:#94a3b8;">—</span>
                                                     @endif
                                                 </td>
-                                                <td class="px-3 py-2.5 text-xs text-gray-500">{{ $test->assignedTo?->name ?? '—' }}</td>
+                                                <td style="padding:10px 12px;font-size:12px;color:#64748b;">{{ $test->assignedTo?->name ?? '—' }}</td>
                                             </tr>
                                             @if($test->result_notes)
-                                                <tr class="bg-gray-50/60">
-                                                    <td colspan="4" class="px-3 pb-2 pt-0 text-xs text-gray-500 italic">Notes: {{ $test->result_notes }}</td>
+                                                <tr style="background:#f8fafc;">
+                                                    <td colspan="4" style="padding:6px 12px 10px;font-size:12px;color:#64748b;font-style:italic;">Notes: {{ $test->result_notes }}</td>
                                                 </tr>
                                             @endif
                                         @endforeach
@@ -317,16 +295,15 @@
 
                 {{-- ── Analyst Section — Returned for Review ──────────────────── --}}
                 @if($returnedTests->isNotEmpty())
-                <div class="px-8 py-6 border-b border-gray-100">
-                    <div class="flex items-center justify-between mb-4">
-                        <p class="ir-section-title">Analyst Section</p>
-                        <span class="inline-flex items-center gap-1.5 px-2.5 py-1 text-xs font-semibold rounded-full bg-amber-50 text-amber-700 ring-1 ring-amber-500/30">
-                            <svg class="w-3 h-3" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"/></svg>
-                            Return — Pending Analyst Review
+                <div style="padding:24px 32px;border-bottom:1px solid #e2e8f0;">
+                    <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:16px;">
+                        <h2 style="font-family:'Georgia',serif;font-size:14px;font-weight:700;color:#1a2f4e;margin:0;padding-bottom:8px;border-bottom:2px solid #b8922a;">Analyst Section</h2>
+                        <span style="display:inline-flex;align-items:center;gap:6px;padding:4px 12px;background:#fef9c3;color:#854d0e;border:1px solid #fde047;border-radius:3px;font-size:11px;font-weight:700;">
+                            Return &mdash; Pending Analyst Review
                         </span>
                     </div>
 
-                    <div class="mb-3 px-4 py-3 bg-amber-50 border border-amber-200 rounded-lg text-xs text-amber-800 leading-relaxed">
+                    <div style="margin-bottom:16px;padding:12px 16px;background:#fffbeb;border:1px solid #fde68a;border-radius:3px;font-size:12px;color:#92400e;line-height:1.6;">
                         The following tests have been queried. The analyst has been notified and will re-confirm results before resubmitting for authorisation. Results shown are from the analyst's last submission.
                     </div>
 
@@ -335,24 +312,24 @@
                             $sampleReturnedTests = $returnedTests->filter(fn($r) => $r['sample']->id === $sample->id);
                         @endphp
                         @if($sampleReturnedTests->isNotEmpty())
-                            <div class="mb-6 last:mb-0">
-                                <div class="flex items-center justify-between mb-2">
+                            <div style="margin-bottom:24px;">
+                                <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:10px;">
                                     <div>
-                                        <h4 class="text-sm font-semibold text-gray-800">{{ $sample->common_name ?? $sample->sample_code }}</h4>
+                                        <h4 style="font-size:14px;font-weight:700;color:#1e293b;margin:0;">{{ $sample->common_name ?? $sample->sample_code }}</h4>
                                         @if($sample->scientific_name)
-                                            <p class="text-xs text-gray-400 italic mt-0.5">{{ $sample->scientific_name }}</p>
+                                            <p style="font-size:12px;color:#94a3b8;font-style:italic;margin:2px 0 0;">{{ $sample->scientific_name }}</p>
                                         @endif
-                                        <p class="text-xs text-gray-400 font-mono mt-0.5">{{ $sample->sample_code }}</p>
+                                        <p style="font-family:monospace;font-size:11px;color:#94a3b8;margin:2px 0 0;">{{ $sample->sample_code }}</p>
                                     </div>
                                     <x-kstl.status-badge :status="$sample->status" />
                                 </div>
-                                <table class="ir-table w-full text-sm">
+                                <table style="width:100%;border-collapse:collapse;border:1px solid #e2e8f0;">
                                     <thead>
-                                        <tr>
-                                            <th class="text-left px-3 py-2.5">Test</th>
-                                            <th class="text-left px-3 py-2.5">Result</th>
-                                            <th class="text-left px-3 py-2.5">Methods</th>
-                                            <th class="text-left px-3 py-2.5">Analyst</th>
+                                        <tr style="background:#1a2f4e;">
+                                            <th style="padding:8px 12px;text-align:left;font-size:9px;font-weight:700;letter-spacing:.12em;text-transform:uppercase;color:#e2e8f0;">Test</th>
+                                            <th style="padding:8px 12px;text-align:left;font-size:9px;font-weight:700;letter-spacing:.12em;text-transform:uppercase;color:#e2e8f0;">Result</th>
+                                            <th style="padding:8px 12px;text-align:left;font-size:9px;font-weight:700;letter-spacing:.12em;text-transform:uppercase;color:#e2e8f0;">Methods</th>
+                                            <th style="padding:8px 12px;text-align:left;font-size:9px;font-weight:700;letter-spacing:.12em;text-transform:uppercase;color:#e2e8f0;">Analyst</th>
                                         </tr>
                                     </thead>
                                     <tbody>
@@ -380,40 +357,38 @@
                                                 $sopCode = \App\Models\Kstl\SampleTest::TEST_SOPS[$test->test_key] ?? null;
                                                 $sopDoc  = $sopCode ? ($sopDocuments[$sopCode] ?? null) : null;
                                             @endphp
-                                            <tr class="bg-amber-50/40">
-                                                <td class="px-3 py-2.5 text-gray-800 font-medium">{{ $test->getDisplayLabel() }}</td>
-                                                <td class="px-3 py-2.5 font-medium {{ $isDetected ? 'text-red-600' : ($isNotDetected ? 'text-green-700' : 'text-gray-700') }}">
+                                            <tr style="background:#fffbeb;border-bottom:1px solid #fde68a;">
+                                                <td style="padding:10px 12px;font-size:13px;font-weight:600;color:#1e293b;">{{ $test->getDisplayLabel() }}</td>
+                                                <td style="padding:10px 12px;font-size:13px;font-weight:600;{{ $isDetected ? 'color:#dc2626;' : ($isNotDetected ? 'color:#16a34a;' : 'color:#374151;') }}">
                                                     {{ $resultText }}
                                                 </td>
-                                                <td class="px-3 py-2.5">
+                                                <td style="padding:10px 12px;">
                                                     @if($sopCode && $sopDoc)
                                                         @if($sopDoc->currentVersion)
                                                             <a href="{{ route('staff.documents.preview', $sopDoc->id) }}"
                                                                target="_blank"
-                                                               class="inline-flex items-center gap-1 font-mono text-xs text-blue-600 hover:text-blue-800 hover:underline">
+                                                               style="font-family:monospace;font-size:12px;color:#1a2f4e;text-decoration:none;">
                                                                 {{ $sopCode }}
-                                                                <svg class="w-3 h-3 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"/><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"/></svg>
                                                             </a>
                                                         @else
                                                             <a href="{{ route('staff.documents.show', $sopDoc->id) }}"
                                                                target="_blank"
-                                                               class="inline-flex items-center gap-1 font-mono text-xs text-blue-600 hover:text-blue-800 hover:underline">
+                                                               style="font-family:monospace;font-size:12px;color:#1a2f4e;text-decoration:none;">
                                                                 {{ $sopCode }}
-                                                                <svg class="w-3 h-3 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14"/></svg>
                                                             </a>
                                                         @endif
                                                     @elseif($sopCode)
-                                                        <span class="font-mono text-xs text-gray-500">{{ $sopCode }}</span>
+                                                        <span style="font-family:monospace;font-size:12px;color:#64748b;">{{ $sopCode }}</span>
                                                     @else
-                                                        <span class="text-gray-400">—</span>
+                                                        <span style="color:#94a3b8;">—</span>
                                                     @endif
                                                 </td>
-                                                <td class="px-3 py-2.5 text-xs text-gray-500">{{ $test->assignedTo?->name ?? '—' }}</td>
+                                                <td style="padding:10px 12px;font-size:12px;color:#64748b;">{{ $test->assignedTo?->name ?? '—' }}</td>
                                             </tr>
                                             @if($queryNote)
-                                                <tr class="bg-amber-50/60">
-                                                    <td colspan="4" class="px-3 pb-2.5 pt-0 text-xs text-amber-700 italic">
-                                                        <span class="font-semibold not-italic">Director query:</span> {{ $queryNote }}
+                                                <tr style="background:#fefce8;">
+                                                    <td colspan="4" style="padding:6px 12px 10px;font-size:12px;color:#92400e;font-style:italic;">
+                                                        <span style="font-weight:700;font-style:normal;">Director query:</span> {{ $queryNote }}
                                                     </td>
                                                 </tr>
                                             @endif
@@ -429,39 +404,36 @@
                 {{-- ── Assessment Record ────────────────────────────────────── --}}
                 @php $assessedSamples = $submission->samples->filter(fn($s) => $s->assessment !== null); @endphp
                 @if($assessedSamples->isNotEmpty())
-                <div class="px-8 py-6 border-b border-gray-100">
-                    <div class="flex items-center justify-between mb-4">
-                        <p class="ir-section-title">Sample Assessment Record</p>
+                <div style="padding:24px 32px;border-bottom:1px solid #e2e8f0;">
+                    <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:16px;">
+                        <h2 style="font-family:'Georgia',serif;font-size:14px;font-weight:700;color:#1a2f4e;margin:0;padding-bottom:8px;border-bottom:2px solid #b8922a;">Sample Assessment Record</h2>
                         @php
                             $allAccepted = $assessedSamples->every(fn($s) => $s->assessment->outcome === 'accepted');
                             $anyRejected = $assessedSamples->some(fn($s)  => $s->assessment->outcome === 'rejected');
                         @endphp
                         @if($allAccepted)
-                            <span class="inline-flex items-center gap-1.5 px-2.5 py-1 text-xs font-semibold rounded-full bg-green-50 text-green-700 ring-1 ring-green-600/20">
-                                <svg class="w-3 h-3" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M5 13l4 4L19 7"/></svg>
-                                All Accepted
-                            </span>
+                            <span style="display:inline-flex;align-items:center;gap:6px;padding:4px 12px;background:#dcfce7;color:#166534;border:1px solid #86efac;border-radius:3px;font-size:11px;font-weight:700;">All Accepted</span>
                         @elseif($anyRejected)
-                            <span class="inline-flex items-center gap-1.5 px-2.5 py-1 text-xs font-semibold rounded-full bg-red-50 text-red-700 ring-1 ring-red-600/20">Rejected</span>
+                            <span style="display:inline-flex;align-items:center;gap:6px;padding:4px 12px;background:#fee2e2;color:#991b1b;border:1px solid #fca5a5;border-radius:3px;font-size:11px;font-weight:700;">Rejected</span>
                         @endif
                     </div>
 
                     @foreach($assessedSamples as $sample)
                         @php $a = $sample->assessment; @endphp
-                        <div class="{{ !$loop->last ? 'mb-5 pb-5 border-b border-gray-100' : '' }}">
-                            <div class="flex items-center justify-between mb-3">
+                        <div style="{{ !$loop->last ? 'margin-bottom:20px;padding-bottom:20px;border-bottom:1px solid #e2e8f0;' : '' }}">
+                            <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:12px;">
                                 <div>
-                                    <p class="text-sm font-semibold text-gray-800">{{ $sample->common_name }}</p>
-                                    <p class="text-xs font-mono text-gray-400 mt-0.5">{{ $sample->sample_code }}</p>
+                                    <p style="font-size:14px;font-weight:700;color:#1e293b;margin:0;">{{ $sample->common_name }}</p>
+                                    <p style="font-family:monospace;font-size:11px;color:#94a3b8;margin:2px 0 0;">{{ $sample->sample_code }}</p>
                                 </div>
-                                <div class="flex items-center gap-3">
-                                    <span class="inline-flex px-2 py-0.5 text-xs font-semibold rounded-full {{ $a->outcome === 'accepted' ? 'bg-green-50 text-green-700' : 'bg-red-50 text-red-700' }}">
+                                <div style="display:flex;align-items:center;gap:12px;">
+                                    <span style="display:inline-flex;padding:3px 10px;font-size:12px;font-weight:700;border-radius:9999px;{{ $a->outcome === 'accepted' ? 'background:#dcfce7;color:#166534;' : 'background:#fee2e2;color:#991b1b;' }}">
                                         {{ ucfirst($a->outcome) }}
                                     </span>
                                     @if($a->assessedBy)
-                                        <div class="text-right">
-                                            <p class="text-xs text-gray-500">{{ $a->assessedBy->name }}</p>
-                                            <p class="text-xs text-gray-400">{{ ($a->assessed_at ?? $a->created_at)->format('d M Y H:i') }}</p>
+                                        <div style="text-align:right;">
+                                            <p style="font-size:12px;color:#64748b;margin:0;">{{ $a->assessedBy->name }}</p>
+                                            <p style="font-size:11px;color:#94a3b8;margin:2px 0 0;">{{ ($a->assessed_at ?? $a->created_at)->format('d M Y H:i') }}</p>
                                         </div>
                                     @endif
                                 </div>
@@ -476,29 +448,29 @@
                                     'Weight / Quantity'   => [$a->weight_ok,      $a->weight_notes],
                                 ];
                             @endphp
-                            <div class="grid grid-cols-2 md:grid-cols-3 gap-2">
+                            <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:8px;">
                                 @foreach($criteria as $label => [$pass, $notes])
-                                    <div class="rounded-lg border {{ $pass ? 'border-green-100 bg-green-50/40' : 'border-red-100 bg-red-50/40' }} px-3 py-2">
-                                        <div class="flex items-center justify-between gap-2">
-                                            <span class="text-xs font-medium text-gray-700">{{ $label }}</span>
-                                            <span class="text-xs font-semibold {{ $pass ? 'text-green-600' : 'text-red-600' }}">
+                                    <div style="border-radius:3px;border:1px solid;padding:10px 12px;{{ $pass ? 'border-color:#bbf7d0;background:#f0fdf4;' : 'border-color:#fecaca;background:#fff5f5;' }}">
+                                        <div style="display:flex;align-items:center;justify-content:space-between;gap:8px;">
+                                            <span style="font-size:12px;font-weight:600;color:#374151;">{{ $label }}</span>
+                                            <span style="font-size:12px;font-weight:700;{{ $pass ? 'color:#16a34a;' : 'color:#dc2626;' }}">
                                                 {{ $pass ? 'Pass' : 'Fail' }}
                                             </span>
                                         </div>
                                         @if($notes)
-                                            <p class="text-xs text-gray-500 mt-1 leading-snug">{{ $notes }}</p>
+                                            <p style="font-size:11px;color:#64748b;margin:4px 0 0;line-height:1.4;">{{ $notes }}</p>
                                         @endif
                                     </div>
                                 @endforeach
                             </div>
                             @if($a->additional_observations)
-                                <div class="mt-2 bg-gray-50 rounded px-3 py-2 text-xs text-gray-600">
-                                    <span class="font-medium">Observations:</span> {{ $a->additional_observations }}
+                                <div style="margin-top:8px;background:#f8fafc;border-radius:3px;padding:10px 12px;font-size:12px;color:#475569;">
+                                    <span style="font-weight:700;">Observations:</span> {{ $a->additional_observations }}
                                 </div>
                             @endif
                             @if($a->rejection_reason)
-                                <div class="mt-2 bg-red-50 border border-red-100 rounded px-3 py-2 text-xs text-red-700">
-                                    <span class="font-semibold">Rejection reason:</span> {{ $a->rejection_reason }}
+                                <div style="margin-top:8px;background:#fff5f5;border:1px solid #fecaca;border-radius:3px;padding:10px 12px;font-size:12px;color:#991b1b;">
+                                    <span style="font-weight:700;">Rejection reason:</span> {{ $a->rejection_reason }}
                                 </div>
                             @endif
                         </div>
@@ -508,33 +480,32 @@
 
                 {{-- ── Director's Comments ─────────────────────────────────── --}}
                 @if($result?->director_comments)
-                    <div class="px-8 py-6 border-b border-gray-100">
-                        <p class="ir-section-title mb-3">Director's Comments</p>
-                        <p class="text-sm text-gray-700 leading-relaxed whitespace-pre-line">{{ $result->director_comments }}</p>
+                    <div style="padding:24px 32px;border-bottom:1px solid #e2e8f0;">
+                        <h2 style="font-family:'Georgia',serif;font-size:14px;font-weight:700;color:#1a2f4e;margin:0 0 12px;padding-bottom:8px;border-bottom:2px solid #b8922a;">Director's Comments</h2>
+                        <p style="font-size:13px;color:#374151;line-height:1.7;white-space:pre-line;margin:0;">{{ $result->director_comments }}</p>
                     </div>
                 @endif
 
                 {{-- ── Footer ──────────────────────────────────────────────── --}}
-                <div class="px-8 py-5 bg-gray-50/60 border-t border-gray-200">
-                    <div class="flex items-start justify-between gap-6 text-xs text-gray-500">
-                        <div class="max-w-md">
-                            <p class="font-semibold text-red-600 mb-1">INTERNAL DOCUMENT — CONFIDENTIAL</p>
-                            <p class="leading-relaxed">
+                <div style="padding:20px 32px;background:#f8fafc;border-top:1px solid #e2e8f0;">
+                    <div style="display:flex;align-items:flex-start;justify-content:space-between;gap:24px;">
+                        <div style="max-width:28rem;">
+                            <p style="font-size:11px;font-weight:700;color:#dc2626;margin:0 0 4px;text-transform:uppercase;letter-spacing:.06em;">INTERNAL DOCUMENT &mdash; CONFIDENTIAL</p>
+                            <p style="font-size:12px;color:#64748b;line-height:1.6;margin:0;">
                                 This document is for Director use only and must not be shared with the client or external parties.
                                 The client-facing Certificate of Analysis does not include determination outcomes or analyst details.
                             </p>
                         </div>
-                        <div class="text-right shrink-0">
-                            <p class="ir-meta-label">Document Ref.</p>
-                            <p class="font-mono text-gray-700 mt-1">{{ $submission->reference_number }}</p>
-                            <p class="text-gray-400 mt-1">KSTL &middot; Director Portal</p>
+                        <div style="text-align:right;flex-shrink:0;">
+                            <p style="font-size:9px;font-weight:700;letter-spacing:.12em;text-transform:uppercase;color:#64748b;margin:0 0 4px;">Document Ref.</p>
+                            <p style="font-family:monospace;font-size:13px;color:#1a2f4e;font-weight:600;margin:0 0 4px;">{{ $submission->reference_number }}</p>
+                            <p style="font-size:12px;color:#94a3b8;margin:0;">KSTL &middot; Director Portal</p>
                         </div>
                     </div>
                 </div>
 
             </div>
 
-            <div class="pb-8"></div>
         </div>
     </div>
 </x-app-layout>

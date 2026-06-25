@@ -1,74 +1,88 @@
-{{-- resources/views/kstl/director/agreements/sign.blade.php --}}
+﻿{{-- resources/views/kstl/director/agreements/sign.blade.php --}}
 
 <x-app-layout>
     <x-slot name="header">
-        <div class="flex items-center gap-3">
-            <a href="{{ route('director.agreements.index') }}"
-               class="text-gray-400 hover:text-gray-600 transition">
-                <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7"/>
-                </svg>
-            </a>
-            <div>
-                <h2 class="font-semibold text-xl text-gray-800 leading-tight">
-                    Countersign Agreement — {{ $client->company_name }}
-                </h2>
-                <p class="text-sm text-gray-500 mt-0.5">
-                    Client signed {{ $client->service_agreement_signed_at?->format('d M Y \a\t H:i') }}
-                </p>
+        <div style="position:relative;overflow:hidden;background:linear-gradient(135deg,#0f2240 0%,#1a2f4e 60%,#1e3a5f 100%);">
+            <div style="height:3px;background:linear-gradient(90deg,#1a2f4e,#b8922a 30%,#b8922a 70%,#1a2f4e);"></div>
+            <div style="max-width:80rem;margin:0 auto;padding:28px 2rem 32px;">
+                <div style="display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:16px;">
+                    <div style="display:flex;align-items:center;gap:20px;">
+                        <img src="{{ asset('images/mfor-logo.png') }}" alt="MFOR" style="filter:brightness(0) invert(1);opacity:.92;width:56px;height:56px;flex-shrink:0;">
+                        <div>
+                            <p style="font-size:9px;font-weight:700;letter-spacing:.18em;text-transform:uppercase;color:#b8922a;margin:0 0 4px;">Director Portal</p>
+                            <h1 style="font-family:'Georgia',serif;font-size:22px;font-weight:700;color:#fff;margin:0 0 6px;line-height:1.2;">Countersign Agreement &mdash; {{ $client->company_name }}</h1>
+                            <p style="font-size:12px;color:#94a3b8;margin:0;">Client signed {{ $client->service_agreement_signed_at?->format('d M Y \a\t H:i') }}</p>
+                        </div>
+                    </div>
+                    <div style="display:flex;align-items:center;gap:10px;flex-wrap:wrap;">
+                        <a href="{{ route('director.agreements.index') }}"
+                           style="display:inline-flex;align-items:center;gap:8px;padding:8px 20px;background:#fff;color:#1a2f4e;font-size:12px;font-weight:700;letter-spacing:.06em;border:1px solid #1a2f4e;border-radius:3px;text-decoration:none;">
+                            &larr; All Agreements
+                        </a>
+                    </div>
+                </div>
             </div>
         </div>
     </x-slot>
 
-    <div class="py-8">
-        <div class="max-w-4xl mx-auto sm:px-6 lg:px-8 space-y-6">
+    @push('styles')
+    <style>
+        .page-hdr { padding: 0 !important; }
+        .page-hdr-inner { max-width: 100% !important; padding: 0 !important; }
+        .app-main { padding-left:0 !important; padding-right:0 !important; padding-top:0 !important; max-width:100% !important; }
+    </style>
+    @endpush
+
+    <div style="background:#f1f5f9;min-height:100vh;padding:52px 0 56px;">
+        <div style="max-width:64rem;margin:0 auto;padding:0 2rem;">
 
             @if(session('error'))
-                <div class="bg-red-50 border-l-4 border-red-400 p-4 rounded-lg text-sm text-red-800">
-                    {{ session('error') }}
-                </div>
+                <div style="background:#fef2f2;border:1px solid #fecaca;border-left:4px solid #dc2626;border-radius:4px;padding:12px 16px;margin-bottom:20px;font-size:13px;color:#991b1b;">{{ session('error') }}</div>
+            @endif
+            @if(session('success'))
+                <div style="background:#f0fdf4;border:1px solid #bbf7d0;border-left:4px solid #16a34a;border-radius:4px;padding:12px 16px;margin-bottom:20px;font-size:13px;color:#166534;">{{ session('success') }}</div>
             @endif
 
             {{-- ── Agreement Details ────────────────────────────── --}}
-            <div class="bg-white rounded-xl border border-gray-100 overflow-hidden">
-                <div class="px-6 py-4 border-b border-gray-100">
-                    <h3 class="text-sm font-medium text-gray-800">Agreement Details</h3>
+            <div style="background:#fff;border:1px solid #e2e8f0;border-radius:4px;overflow:hidden;margin-bottom:24px;">
+                <div style="padding:16px 24px;border-bottom:1px solid #e2e8f0;">
+                    <h3 style="font-family:'Georgia',serif;font-size:14px;font-weight:700;color:#1a2f4e;margin:0;">Agreement Details</h3>
                 </div>
-                <div class="px-6 py-5 grid grid-cols-1 sm:grid-cols-2 gap-5 text-sm">
+                <div style="padding:20px 24px;display:grid;grid-template-columns:1fr 1fr;gap:20px;">
                     <div>
-                        <p class="text-xs text-gray-400 uppercase tracking-wide mb-1">Company</p>
-                        <p class="font-semibold text-gray-900">{{ $client->company_name }}</p>
+                        <p style="font-size:9px;font-weight:700;letter-spacing:.12em;text-transform:uppercase;color:#64748b;margin:0 0 4px;">Company</p>
+                        <p style="font-size:14px;font-weight:700;color:#1e293b;margin:0;">{{ $client->company_name }}</p>
                     </div>
                     <div>
-                        <p class="text-xs text-gray-400 uppercase tracking-wide mb-1">Responsible Officer</p>
-                        <p class="text-gray-700">{{ $client->responsible_officer_name ?? '—' }}</p>
+                        <p style="font-size:9px;font-weight:700;letter-spacing:.12em;text-transform:uppercase;color:#64748b;margin:0 0 4px;">Responsible Officer</p>
+                        <p style="font-size:13px;color:#374151;margin:0;">{{ $client->responsible_officer_name ?? '—' }}</p>
                     </div>
                     <div>
-                        <p class="text-xs text-gray-400 uppercase tracking-wide mb-1">Address</p>
-                        <p class="text-gray-700 whitespace-pre-line">{{ $client->address ?? '—' }}</p>
+                        <p style="font-size:9px;font-weight:700;letter-spacing:.12em;text-transform:uppercase;color:#64748b;margin:0 0 4px;">Address</p>
+                        <p style="font-size:13px;color:#374151;white-space:pre-line;margin:0;">{{ $client->address ?? '—' }}</p>
                     </div>
                     <div>
-                        <p class="text-xs text-gray-400 uppercase tracking-wide mb-1">Phone</p>
-                        <p class="text-gray-700">{{ $client->company_phone ?? '—' }}</p>
+                        <p style="font-size:9px;font-weight:700;letter-spacing:.12em;text-transform:uppercase;color:#64748b;margin:0 0 4px;">Phone</p>
+                        <p style="font-size:13px;color:#374151;margin:0;">{{ $client->company_phone ?? '—' }}</p>
                     </div>
                     <div>
-                        <p class="text-xs text-gray-400 uppercase tracking-wide mb-1">Client Signed</p>
-                        <p class="text-gray-700">{{ $client->service_agreement_signed_at?->format('d M Y \a\t H:i') }}</p>
+                        <p style="font-size:9px;font-weight:700;letter-spacing:.12em;text-transform:uppercase;color:#64748b;margin:0 0 4px;">Client Signed</p>
+                        <p style="font-size:13px;color:#374151;margin:0;">{{ $client->service_agreement_signed_at?->format('d M Y \a\t H:i') }}</p>
                     </div>
                     <div>
-                        <p class="text-xs text-gray-400 uppercase tracking-wide mb-1">Email</p>
-                        <p class="text-gray-700">{{ $client->user?->email ?? '—' }}</p>
+                        <p style="font-size:9px;font-weight:700;letter-spacing:.12em;text-transform:uppercase;color:#64748b;margin:0 0 4px;">Email</p>
+                        <p style="font-size:13px;color:#374151;margin:0;">{{ $client->user?->email ?? '—' }}</p>
                     </div>
                 </div>
 
                 {{-- Client signature preview --}}
                 @if($client->signature_data)
-                    <div class="px-6 pb-5">
-                        <p class="text-xs text-gray-400 uppercase tracking-wide mb-2">Client Signature</p>
-                        <div class="inline-block border border-gray-200 rounded-lg p-2 bg-gray-50">
+                    <div style="padding:0 24px 20px;">
+                        <p style="font-size:9px;font-weight:700;letter-spacing:.12em;text-transform:uppercase;color:#64748b;margin:0 0 8px;">Client Signature</p>
+                        <div style="display:inline-block;border:1px solid #e2e8f0;border-radius:3px;padding:8px;background:#f8fafc;">
                             <img src="{{ $client->signature_data }}"
                                  alt="Client signature"
-                                 class="h-16 object-contain">
+                                 style="height:64px;object-fit:contain;">
                         </div>
                     </div>
                 @endif
@@ -77,66 +91,59 @@
             {{-- ── Director Countersign Form ─────────────────────── --}}
             @if($client->director_signed_at)
                 {{-- ── Already Countersigned ── --}}
-                <div class="bg-white rounded-xl border border-green-200 overflow-hidden">
-                    <div class="px-6 py-4 border-b border-green-100 flex items-center justify-between">
+                <div style="background:#fff;border:1px solid #bbf7d0;border-radius:4px;overflow:hidden;margin-bottom:24px;">
+                    <div style="padding:16px 24px;border-bottom:1px solid #bbf7d0;display:flex;align-items:center;justify-content:space-between;">
                         <div>
-                            <h3 class="text-sm font-medium text-green-800">✓ Agreement Countersigned</h3>
-                            <p class="text-xs text-green-600 mt-0.5">
+                            <h3 style="font-family:'Georgia',serif;font-size:14px;font-weight:700;color:#166534;margin:0 0 4px;">&#10003; Agreement Countersigned</h3>
+                            <p style="font-size:12px;color:#16a34a;margin:0;">
                                 Signed by <strong>{{ trim(auth()->user()->first_name . ' ' . auth()->user()->last_name) }}</strong>
                                 on {{ $client->director_signed_at->format('d M Y \a\t H:i') }}
                             </p>
                         </div>
-                        <span class="inline-flex items-center gap-1.5 px-3 py-1.5 bg-green-600 text-white text-xs font-semibold rounded-full">
-                            <svg class="w-3.5 h-3.5" fill="currentColor" viewBox="0 0 20 20">
-                                <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd"/>
-                            </svg>
+                        <span style="display:inline-flex;align-items:center;gap:6px;padding:6px 16px;background:#16a34a;color:#fff;font-size:12px;font-weight:700;letter-spacing:.06em;border-radius:3px;">
                             Fully Executed
                         </span>
                     </div>
 
                     {{-- Signature preview --}}
                     @if($client->director_signature_data)
-                        <div class="px-6 py-5">
-                            <p class="text-xs text-gray-400 uppercase tracking-wide mb-2">Director Signature on File</p>
-                            <div class="inline-block border border-gray-200 rounded-xl bg-white p-3">
+                        <div style="padding:20px 24px;">
+                            <p style="font-size:9px;font-weight:700;letter-spacing:.12em;text-transform:uppercase;color:#64748b;margin:0 0 8px;">Director Signature on File</p>
+                            <div style="display:inline-block;border:1px solid #e2e8f0;border-radius:3px;background:#fff;padding:12px;">
                                 <img src="{{ $client->director_signature_data }}"
                                      alt="Director Signature"
-                                     class="max-h-20 object-contain">
+                                     style="max-height:80px;object-fit:contain;">
                             </div>
-                            <p class="text-xs text-gray-400 mt-2">
+                            <p style="font-size:12px;color:#94a3b8;margin:8px 0 0;">
                                 Method:
-                                <span class="capitalize font-medium text-gray-600">
-                                    {{ $client->director_signature_type === 'drawn' ? '✏ Hand drawn' : '↑ Uploaded image' }}
+                                <span style="font-weight:600;color:#64748b;text-transform:capitalize;">
+                                    {{ $client->director_signature_type === 'drawn' ? 'Hand drawn' : 'Uploaded image' }}
                                 </span>
                             </p>
                         </div>
                     @endif
 
                     {{-- Agreement summary --}}
-                    <div class="px-6 pb-5 grid grid-cols-2 gap-4">
-                        <div class="bg-gray-50 rounded-lg p-4">
-                            <p class="text-xs text-gray-400 uppercase tracking-wide mb-1">Client Signed</p>
-                            <p class="text-sm font-medium text-gray-800">{{ $client->service_agreement_signed_at?->format('d M Y') }}</p>
-                            <p class="text-xs text-gray-500">{{ $client->service_agreement_signed_at?->format('H:i') }}</p>
+                    <div style="padding:0 24px 20px;display:grid;grid-template-columns:1fr 1fr;gap:16px;">
+                        <div style="background:#f8fafc;border-radius:3px;padding:16px;">
+                            <p style="font-size:9px;font-weight:700;letter-spacing:.12em;text-transform:uppercase;color:#64748b;margin:0 0 4px;">Client Signed</p>
+                            <p style="font-size:13px;font-weight:600;color:#1e293b;margin:0;">{{ $client->service_agreement_signed_at?->format('d M Y') }}</p>
+                            <p style="font-size:12px;color:#64748b;margin:2px 0 0;">{{ $client->service_agreement_signed_at?->format('H:i') }}</p>
                         </div>
-                        <div class="bg-green-50 rounded-lg p-4">
-                            <p class="text-xs text-green-600 uppercase tracking-wide mb-1">Director Countersigned</p>
-                            <p class="text-sm font-medium text-green-800">{{ $client->director_signed_at?->format('d M Y') }}</p>
-                            <p class="text-xs text-green-600">{{ $client->director_signed_at?->format('H:i') }}</p>
+                        <div style="background:#f0fdf4;border-radius:3px;padding:16px;">
+                            <p style="font-size:9px;font-weight:700;letter-spacing:.12em;text-transform:uppercase;color:#16a34a;margin:0 0 4px;">Director Countersigned</p>
+                            <p style="font-size:13px;font-weight:600;color:#166534;margin:0;">{{ $client->director_signed_at?->format('d M Y') }}</p>
+                            <p style="font-size:12px;color:#16a34a;margin:2px 0 0;">{{ $client->director_signed_at?->format('H:i') }}</p>
                         </div>
                     </div>
 
-                    <div class="px-6 pb-5 flex gap-3">
+                    <div style="padding:0 24px 20px;display:flex;gap:12px;">
                         <a href="{{ route('director.agreements.index') }}"
-                           class="px-4 py-2 text-sm text-gray-600 border border-gray-200 rounded-lg hover:bg-gray-50 transition">
-                            ← Back to Agreements
+                           style="display:inline-flex;align-items:center;gap:8px;padding:8px 20px;background:#fff;color:#1a2f4e;font-size:12px;font-weight:700;letter-spacing:.06em;border:1px solid #1a2f4e;border-radius:3px;text-decoration:none;">
+                            &larr; Back to Agreements
                         </a>
                         <a href="{{ route('director.agreements.download', $client->id) }}"
-                           class="inline-flex items-center gap-1.5 px-4 py-2 text-sm font-medium text-teal-700 border border-teal-200 rounded-lg hover:bg-teal-50 transition">
-                            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                                      d="M12 10v6m0 0l-3-3m3 3l3-3m2 8H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"/>
-                            </svg>
+                           style="display:inline-flex;align-items:center;gap:8px;padding:8px 20px;background:#fff;color:#0d9488;font-size:12px;font-weight:700;letter-spacing:.06em;border:1px solid #0d9488;border-radius:3px;text-decoration:none;">
                             Download PDF
                         </a>
                     </div>
@@ -144,7 +151,7 @@
 
             @else
                 {{-- ── Countersign Form ── --}}
-                <div class="bg-white rounded-xl border border-gray-100 overflow-hidden"
+                <div style="background:#fff;border:1px solid #e2e8f0;border-radius:4px;overflow:hidden;margin-bottom:24px;"
                  x-data="{
                      tab: 'drawn',
                      canvasEmpty: true,
@@ -198,11 +205,11 @@
                  }"
                  x-init="initCanvas()">
 
-                <div class="px-6 py-4 border-b border-gray-100">
-                    <h3 class="text-sm font-medium text-gray-800">Director Countersignature</h3>
-                    <p class="text-xs text-gray-400 mt-0.5">
-                        Signed as: <strong>{{ trim(auth()->user()->first_name . ' ' . auth()->user()->last_name) }}</strong>
-                        · Laboratory Director, KSTL
+                <div style="padding:16px 24px;border-bottom:1px solid #e2e8f0;">
+                    <h3 style="font-family:'Georgia',serif;font-size:14px;font-weight:700;color:#1a2f4e;margin:0 0 4px;">Director Countersignature</h3>
+                    <p style="font-size:12px;color:#94a3b8;margin:0;">
+                        Signed as: <strong style="color:#475569;">{{ trim(auth()->user()->first_name . ' ' . auth()->user()->last_name) }}</strong>
+                        &middot; Laboratory Director, KSTL
                     </p>
                 </div>
 
@@ -211,25 +218,25 @@
                       enctype="multipart/form-data">
                     @csrf
 
-                    <div class="px-6 py-5 space-y-5">
+                    <div style="padding:20px 24px;">
 
                         {{-- Signature type tabs --}}
-                        <div>
-                            <div class="flex gap-2 mb-4">
+                        <div style="margin-bottom:20px;">
+                            <div style="display:flex;gap:8px;margin-bottom:16px;">
                                 <button type="button"
                                         @click="tab = 'drawn'"
-                                        :class="tab === 'drawn'
-                                            ? 'bg-teal-600 text-white'
-                                            : 'bg-gray-100 text-gray-600 hover:bg-gray-200'"
-                                        class="px-4 py-2 text-sm font-medium rounded-lg transition">
+                                        :style="tab === 'drawn'
+                                            ? 'background:#1a2f4e;color:#fff;'
+                                            : 'background:#f1f5f9;color:#475569;'"
+                                        style="padding:8px 20px;font-size:12px;font-weight:700;letter-spacing:.06em;text-transform:uppercase;border-radius:3px;border:none;cursor:pointer;">
                                     Draw Signature
                                 </button>
                                 <button type="button"
                                         @click="tab = 'upload'"
-                                        :class="tab === 'upload'
-                                            ? 'bg-teal-600 text-white'
-                                            : 'bg-gray-100 text-gray-600 hover:bg-gray-200'"
-                                        class="px-4 py-2 text-sm font-medium rounded-lg transition">
+                                        :style="tab === 'upload'
+                                            ? 'background:#1a2f4e;color:#fff;'
+                                            : 'background:#f1f5f9;color:#475569;'"
+                                        style="padding:8px 20px;font-size:12px;font-weight:700;letter-spacing:.06em;text-transform:uppercase;border-radius:3px;border:none;cursor:pointer;">
                                     Upload Signature
                                 </button>
                             </div>
@@ -239,23 +246,22 @@
 
                             {{-- Draw --}}
                             <div x-show="tab === 'drawn'">
-
-                                <div class="border-2 border-dashed border-gray-300 rounded-xl overflow-hidden bg-gray-50 relative">
+                                <div style="border:2px dashed #cbd5e1;border-radius:3px;overflow:hidden;background:#f8fafc;position:relative;">
                                     <canvas x-ref="canvas"
                                             width="700" height="200"
-                                            class="w-full cursor-crosshair touch-none block">
+                                            style="width:100%;cursor:crosshair;touch-action:none;display:block;">
                                     </canvas>
                                     <button type="button"
                                             @click="clearCanvas()"
-                                            class="absolute top-2 right-2 text-xs text-gray-400 hover:text-gray-600 bg-white border border-gray-200 px-2 py-1 rounded-lg transition">
+                                            style="position:absolute;top:8px;right:8px;font-size:11px;color:#64748b;background:#fff;border:1px solid #e2e8f0;padding:3px 10px;border-radius:3px;cursor:pointer;">
                                         Clear
                                     </button>
-                                    <p class="absolute bottom-2 left-3 text-xs text-gray-300 pointer-events-none"
+                                    <p style="position:absolute;bottom:8px;left:12px;font-size:12px;color:#cbd5e1;pointer-events:none;margin:0;"
                                        x-show="canvasEmpty">
                                         Sign here...
                                     </p>
                                 </div>
-                                <p class="text-xs text-gray-400 mt-1">Draw your signature above using mouse or touch.</p>
+                                <p style="font-size:12px;color:#94a3b8;margin:6px 0 0;">Draw your signature above using mouse or touch.</p>
                             </div>
 
                             {{-- Upload --}}
@@ -263,14 +269,14 @@
                                 <input type="file"
                                        name="signature_upload"
                                        accept="image/png,image/jpeg"
-                                       class="block w-full text-sm text-gray-600 file:mr-4 file:py-2 file:px-4 file:rounded-lg file:border-0 file:text-sm file:font-medium file:bg-teal-50 file:text-teal-700 hover:file:bg-teal-100">
-                                <p class="text-xs text-gray-400 mt-1">Upload a PNG or JPG of your signature. Max 2MB.</p>
+                                       style="display:block;width:100%;font-size:13px;color:#475569;">
+                                <p style="font-size:12px;color:#94a3b8;margin:6px 0 0;">Upload a PNG or JPG of your signature. Max 2MB.</p>
                             </div>
                         </div>
 
                         {{-- Confirmation --}}
-                        <div class="bg-blue-50 border border-blue-100 rounded-xl p-4">
-                            <p class="text-sm text-blue-800 leading-relaxed">
+                        <div style="background:#eff6ff;border:1px solid #bfdbfe;border-radius:3px;padding:16px;">
+                            <p style="font-size:13px;color:#1e40af;line-height:1.6;margin:0;">
                                 By countersigning this agreement, I confirm that I have reviewed the service
                                 agreement with <strong>{{ $client->company_name }}</strong> and authorise
                                 the laboratory to provide testing services under the terms of this agreement.
@@ -279,26 +285,22 @@
 
                     </div>
 
-                    <div class="px-6 py-4 border-t border-gray-100 bg-gray-50 flex items-center justify-between">
-                        <a href="{{ route('director.agreements.index') }}">
-                            <x-secondary-button type="button">Cancel</x-secondary-button>
+                    <div style="padding:16px 24px;border-top:1px solid #e2e8f0;background:#f8fafc;display:flex;align-items:center;justify-content:space-between;">
+                        <a href="{{ route('director.agreements.index') }}"
+                           style="display:inline-flex;align-items:center;gap:8px;padding:8px 20px;background:#fff;color:#1a2f4e;font-size:12px;font-weight:700;letter-spacing:.06em;border:1px solid #1a2f4e;border-radius:3px;text-decoration:none;">
+                            Cancel
                         </a>
-                        <button type="submit"
-                                onclick="return confirm('Countersign this service agreement? This action cannot be undone.')"
-                                class="inline-flex items-center gap-2 px-6 py-2.5 bg-teal-600 text-white text-sm font-medium rounded-lg hover:bg-teal-700 transition">
-                            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15.232 5.232l3.536 3.536m-2.036-5.036a2.5 2.5 0 113.536 3.536L6.5 21.036H3v-3.572L16.732 3.732z"/>
-                            </svg>
-                            Countersign Agreement
-                        </button>
-                        <a href="{{ route('director.agreements.download', $client->id) }}"
-                           class="inline-flex items-center gap-1.5 px-4 py-2.5 text-sm font-medium text-teal-700 border border-teal-200 rounded-lg hover:bg-teal-50 transition">
-                            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                                      d="M12 10v6m0 0l-3-3m3 3l3-3m2 8H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"/>
-                            </svg>
-                            Download PDF
-                        </a>
+                        <div style="display:flex;gap:10px;">
+                            <a href="{{ route('director.agreements.download', $client->id) }}"
+                               style="display:inline-flex;align-items:center;gap:8px;padding:8px 20px;background:#fff;color:#0d9488;font-size:12px;font-weight:700;letter-spacing:.06em;border:1px solid #0d9488;border-radius:3px;text-decoration:none;">
+                                Download PDF
+                            </a>
+                            <button type="submit"
+                                    onclick="return confirm('Countersign this service agreement? This action cannot be undone.')"
+                                    style="display:inline-flex;align-items:center;gap:8px;padding:8px 20px;background:#0d9488;color:#fff;font-size:12px;font-weight:700;letter-spacing:.06em;text-transform:uppercase;border-radius:3px;border:none;cursor:pointer;">
+                                Countersign Agreement
+                            </button>
+                        </div>
                     </div>
                 </form>
             </div>

@@ -1,114 +1,121 @@
-<x-app-layout>
+﻿<x-app-layout>
     <x-slot name="header">
-        <h2 class="font-semibold text-xl text-gray-800 leading-tight">
-            Seafood Laboratory Service Agreement
-        </h2>
-    </x-slot>
-
-    <div class="py-8">
-        <div class="max-w-4xl mx-auto sm:px-6 lg:px-8 space-y-6">
-
-            {{-- Intro Banner --}}
-            <div class="bg-blue-50 border-l-4 border-blue-400 p-4 rounded-lg">
-                <div class="flex items-start gap-3">
-                    <svg class="w-5 h-5 text-blue-400 shrink-0 mt-0.5" fill="currentColor" viewBox="0 0 20 20">
-                        <path fill-rule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7-4a1 1 0 11-2 0 1 1 0 012 0zM9 9a.75.75 0 000 1.5h.253a.25.25 0 01.244.304l-.459 2.066A1.75 1.75 0 0010.747 15H11a.75.75 0 000-1.5h-.253a.25.25 0 01-.244-.304l-.459-2.066A1.75 1.75 0 009.253 9H9z" clip-rule="evenodd"/>
-                    </svg>
-                    <div>
-                        <p class="text-sm font-medium text-blue-800">Action required before submitting samples</p>
-                        <p class="text-sm text-blue-700 mt-1">
-                            Please read the entire service agreement carefully. You must sign it before
-                            you can submit samples to the laboratory.
-                        </p>
+        <div style="position:relative;overflow:hidden;background:linear-gradient(135deg,#0f2240 0%,#1a2f4e 60%,#1e3a5f 100%);">
+            <div style="height:3px;background:linear-gradient(90deg,#1a2f4e,#b8922a 30%,#b8922a 70%,#1a2f4e);"></div>
+            <div style="max-width:80rem;margin:0 auto;padding:28px 2rem 32px;">
+                <div style="display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:16px;">
+                    <div style="display:flex;align-items:center;gap:20px;">
+                        <img src="{{ asset('images/mfor-logo.png') }}" alt="MFOR" style="filter:brightness(0) invert(1);opacity:.92;width:56px;height:56px;flex-shrink:0;">
+                        <div>
+                            <p style="font-size:9px;font-weight:700;letter-spacing:.18em;text-transform:uppercase;color:#b8922a;margin:0 0 4px;">Client Portal</p>
+                            <h1 style="font-family:'Georgia',serif;font-size:22px;font-weight:700;color:#fff;margin:0 0 6px;line-height:1.2;">Seafood Laboratory Service Agreement</h1>
+                            <p style="font-size:12px;color:#94a3b8;margin:0;">Kiribati Seafood Testing Laboratory</p>
+                        </div>
+                    </div>
+                    <div style="display:flex;align-items:center;gap:10px;flex-wrap:wrap;">
+                        <a href="{{ route('client.dashboard') }}" style="display:inline-flex;align-items:center;gap:8px;padding:8px 20px;background:#fff;color:#1a2f4e;font-size:12px;font-weight:700;letter-spacing:.06em;border:1px solid rgba(255,255,255,.5);border-radius:3px;text-decoration:none;">
+                            &larr; Dashboard
+                        </a>
                     </div>
                 </div>
             </div>
+        </div>
+    </x-slot>
+
+    @push('styles')
+    <style>
+        .page-hdr { padding: 0 !important; }
+        .page-hdr-inner { max-width: 100% !important; padding: 0 !important; }
+        .app-main { padding-left:0 !important; padding-right:0 !important; padding-top:0 !important; max-width:100% !important; }
+        [x-cloak] { display: none !important; }
+    </style>
+    @endpush
+
+    <div style="background:#f1f5f9;min-height:100vh;padding:52px 0 56px;">
+        <div style="max-width:56rem;margin:0 auto;padding:0 2rem;">
+
+            {{-- Intro Banner --}}
+            <div style="background:#eff6ff;border:1px solid #bfdbfe;border-left:4px solid #3b82f6;border-radius:4px;padding:14px 18px;margin-bottom:24px;">
+                <p style="font-size:13px;font-weight:700;color:#1e40af;margin:0 0 4px;">Action required before submitting samples</p>
+                <p style="font-size:13px;color:#1d4ed8;margin:0;">
+                    Please read the entire service agreement carefully. You must sign it before
+                    you can submit samples to the laboratory.
+                </p>
+            </div>
 
             {{-- Agreement Document --}}
-            <div class="bg-white shadow rounded-xl overflow-hidden">
+            <div style="background:#fff;border:1px solid #e2e8f0;border-radius:4px;overflow:hidden;margin-bottom:24px;">
 
                 {{-- Document Header --}}
-                <div class="bg-gray-800 px-8 py-6 text-center">
-                    <p class="text-xs text-gray-400 uppercase tracking-widest mb-1">Kiribati Seafood Testing Laboratory</p>
-                    <h1 class="text-xl font-bold text-white">Seafood Laboratory Service Agreement</h1>
-                    <p class="text-gray-400 text-sm mt-2">Please read all sections before signing</p>
+                <div style="background:#1a2f4e;padding:28px 32px;text-align:center;">
+                    <p style="font-size:9px;font-weight:700;letter-spacing:.18em;text-transform:uppercase;color:#b8922a;margin:0 0 8px;">Kiribati Seafood Testing Laboratory</p>
+                    <h2 style="font-family:'Georgia',serif;font-size:20px;font-weight:700;color:#fff;margin:0 0 8px;">Seafood Laboratory Service Agreement</h2>
+                    <p style="font-size:12px;color:#94a3b8;margin:0;">Please read all sections before signing</p>
                 </div>
 
                 {{-- Agreement Body --}}
-                <div class="px-8 py-8 prose prose-sm max-w-none text-gray-700 space-y-6 leading-relaxed">
+                <div style="padding:28px 32px;font-size:13px;color:#374151;line-height:1.7;">
 
                     {{-- 1. Parties --}}
-                    <section>
-                        <h2 class="text-base font-bold text-gray-900 border-b border-gray-200 pb-2 mb-3">
-                            1. Parties
-                        </h2>
-                        <p>This Service Agreement is entered into between:</p>
-                        <ul class="list-disc ml-6 space-y-1 mt-2">
-                            <li><strong>Kiribati Seafood Testing Laboratory (KSTL)</strong>, hereafter referred to as <em>"the Laboratory"</em></li>
+                    <section style="margin-bottom:24px;">
+                        <h2 style="font-family:'Georgia',serif;font-size:15px;font-weight:700;color:#1a2f4e;margin:0 0 10px;padding-bottom:8px;border-bottom:2px solid #b8922a;">1. Parties</h2>
+                        <p style="margin:0 0 8px;">This Service Agreement is entered into between:</p>
+                        <ul style="margin:0 0 10px;padding-left:20px;">
+                            <li style="margin-bottom:4px;"><strong>Kiribati Seafood Testing Laboratory (KSTL)</strong>, hereafter referred to as <em>"the Laboratory"</em></li>
                             <li><strong>{{ $client->company_name }}</strong>, hereafter referred to as <em>"the Client"</em></li>
                         </ul>
-                        <p class="mt-3">
+                        <p style="margin:0;">
                             <strong>Effective Date:</strong>
-                            <span class="text-blue-600 font-medium">{{ now()->format('d F Y') }}</span>
+                            <span style="color:#1a2f4e;font-weight:600;">{{ now()->format('d F Y') }}</span>
                             (date of digital signature)
                         </p>
                     </section>
 
                     {{-- 2. Scope of Services --}}
-                    <section>
-                        <h2 class="text-base font-bold text-gray-900 border-b border-gray-200 pb-2 mb-3">
-                            2. Scope of Services
-                        </h2>
-                        <p>The Laboratory agrees to provide testing services for seafood and/or water samples, including but not limited to:</p>
+                    <section style="margin-bottom:24px;">
+                        <h2 style="font-family:'Georgia',serif;font-size:15px;font-weight:700;color:#1a2f4e;margin:0 0 10px;padding-bottom:8px;border-bottom:2px solid #b8922a;">2. Scope of Services</h2>
+                        <p style="margin:0 0 10px;">The Laboratory agrees to provide testing services for seafood and/or water samples, including but not limited to:</p>
 
-                        <div class="mt-3 space-y-4">
-                            <div>
-                                <p class="font-semibold text-gray-800">Microbiological Analysis</p>
-                                <div class="ml-4 mt-2 space-y-3">
-                                    <div>
-                                        <p class="text-sm font-medium text-gray-700">1. Water Samples (Colilert &amp; Enterolert):</p>
-                                        <ul class="list-disc ml-6 text-sm space-y-1 mt-1">
-                                            <li>Total Coliforms</li>
-                                            <li><em>E. coli</em></li>
-                                            <li><em>Enterococci</em> &amp; Faecal Coliforms</li>
-                                        </ul>
-                                    </div>
-                                    <div>
-                                        <p class="text-sm font-medium text-gray-700">2. Fish and Fishery Samples (Petrifilm):</p>
-                                        <ul class="list-disc ml-6 text-sm space-y-1 mt-1">
-                                            <li>Yeast &amp; Mold</li>
-                                            <li>APC (Aerobic Plate Count)</li>
-                                            <li><em>E. coli</em> &amp; Coliform</li>
-                                            <li><em>Staph. aureus</em></li>
-                                        </ul>
-                                    </div>
-                                </div>
-                            </div>
-
-                            <div>
-                                <p class="font-semibold text-gray-800">Chemical Analysis</p>
-                                <ul class="list-decimal ml-6 text-sm space-y-1 mt-2">
-                                    <li>Histamine — Rapid Kit</li>
-                                    <li>Moisture</li>
-                                    <li>pH</li>
-                                    <li>Conductivity</li>
-                                    <li>Water Activity</li>
+                        <div style="margin-bottom:12px;">
+                            <p style="font-weight:700;color:#1a2f4e;margin:0 0 8px;">Microbiological Analysis</p>
+                            <div style="margin-left:16px;">
+                                <p style="font-weight:600;margin:0 0 4px;">1. Water Samples (Colilert &amp; Enterolert):</p>
+                                <ul style="margin:0 0 10px;padding-left:20px;">
+                                    <li>Total Coliforms</li>
+                                    <li><em>E. coli</em></li>
+                                    <li><em>Enterococci</em> &amp; Faecal Coliforms</li>
+                                </ul>
+                                <p style="font-weight:600;margin:0 0 4px;">2. Fish and Fishery Samples (Petrifilm):</p>
+                                <ul style="margin:0 0 8px;padding-left:20px;">
+                                    <li>Yeast &amp; Mold</li>
+                                    <li>APC (Aerobic Plate Count)</li>
+                                    <li><em>E. coli</em> &amp; Coliform</li>
+                                    <li><em>Staph. aureus</em></li>
                                 </ul>
                             </div>
                         </div>
 
-                        <p class="mt-3 text-sm text-gray-600">
+                        <div style="margin-bottom:10px;">
+                            <p style="font-weight:700;color:#1a2f4e;margin:0 0 8px;">Chemical Analysis</p>
+                            <ol style="margin:0;padding-left:20px;">
+                                <li>Histamine — Rapid Kit</li>
+                                <li>Moisture</li>
+                                <li>pH</li>
+                                <li>Conductivity</li>
+                                <li>Water Activity</li>
+                            </ol>
+                        </div>
+
+                        <p style="margin:0;font-size:12px;color:#64748b;">
                             All services will be conducted in accordance with laboratory guidelines, standard operating
                             procedures (SOPs), and compliance with international standard <strong>ISO 17025</strong>.
                         </p>
                     </section>
 
                     {{-- 3. Client Application --}}
-                    <section>
-                        <h2 class="text-base font-bold text-gray-900 border-b border-gray-200 pb-2 mb-3">
-                            3. Client Application
-                        </h2>
-                        <p>
+                    <section style="margin-bottom:24px;">
+                        <h2 style="font-family:'Georgia',serif;font-size:15px;font-weight:700;color:#1a2f4e;margin:0 0 10px;padding-bottom:8px;border-bottom:2px solid #b8922a;">3. Client Application</h2>
+                        <p style="margin:0;">
                             All test requests for laboratory services shall be submitted through the Laboratory's
                             designated database system. The Client is required to complete and submit the relevant
                             application form with accurate and complete information prior to sample delivery.
@@ -116,27 +123,23 @@
                     </section>
 
                     {{-- 4. Sample Submission and Handling --}}
-                    <section>
-                        <h2 class="text-base font-bold text-gray-900 border-b border-gray-200 pb-2 mb-3">
-                            4. Sample Submission and Handling
-                        </h2>
-                        <p>The Client shall ensure samples are:</p>
-                        <ul class="list-disc ml-6 mt-2 space-y-1">
+                    <section style="margin-bottom:24px;">
+                        <h2 style="font-family:'Georgia',serif;font-size:15px;font-weight:700;color:#1a2f4e;margin:0 0 10px;padding-bottom:8px;border-bottom:2px solid #b8922a;">4. Sample Submission and Handling</h2>
+                        <p style="margin:0 0 8px;">The Client shall ensure samples are:</p>
+                        <ul style="margin:0 0 10px;padding-left:20px;">
                             <li>Properly labeled and documented</li>
                             <li>Collected, stored, and transported under chilled and appropriate conditions</li>
                         </ul>
-                        <p class="mt-3">
+                        <p style="margin:0;">
                             The Laboratory will notify the Client when samples do not comply with the assessment
                             criteria — to proceed for testing or to resubmit a new sample.
                         </p>
                     </section>
 
                     {{-- 5. Turnaround Time --}}
-                    <section>
-                        <h2 class="text-base font-bold text-gray-900 border-b border-gray-200 pb-2 mb-3">
-                            5. Turnaround Time
-                        </h2>
-                        <p>
+                    <section style="margin-bottom:24px;">
+                        <h2 style="font-family:'Georgia',serif;font-size:15px;font-weight:700;color:#1a2f4e;margin:0 0 10px;padding-bottom:8px;border-bottom:2px solid #b8922a;">5. Turnaround Time</h2>
+                        <p style="margin:0;">
                             Standard turnaround times range from <strong>24 hours to 5 working days</strong>.
                             However, turnaround times may be extended due to unforeseen circumstances as stipulated
                             under <em>Force Majeure</em> (Section 10).
@@ -144,23 +147,21 @@
                     </section>
 
                     {{-- 6. Fees and Payment --}}
-                    <section>
-                        <h2 class="text-base font-bold text-gray-900 border-b border-gray-200 pb-2 mb-3">
-                            6. Fees and Payment
-                        </h2>
-                        <p>Testing fees are outlined in <strong>Schedule A (Pricing List)</strong>.</p>
-                        <div class="mt-3 bg-gray-50 border border-gray-200 rounded-lg p-4 space-y-2 text-sm">
-                            <p class="font-medium text-gray-800">Payment Terms:</p>
-                            <p>
+                    <section style="margin-bottom:24px;">
+                        <h2 style="font-family:'Georgia',serif;font-size:15px;font-weight:700;color:#1a2f4e;margin:0 0 10px;padding-bottom:8px;border-bottom:2px solid #b8922a;">6. Fees and Payment</h2>
+                        <p style="margin:0 0 10px;">Testing fees are outlined in <strong>Schedule A (Pricing List)</strong>.</p>
+                        <div style="background:#f8fafc;border:1px solid #e2e8f0;border-radius:3px;padding:14px 16px;font-size:12px;">
+                            <p style="font-weight:700;color:#1a2f4e;margin:0 0 8px;">Payment Terms:</p>
+                            <p style="margin:0 0 8px;">
                                 The Client agrees to pay all fees for services provided by the Laboratory as outlined
                                 in Schedule A. Invoices will be issued after sample assessment for analysis.
                             </p>
-                            <p>
+                            <p style="margin:0 0 8px;">
                                 In the event that samples are rejected, the Client will be notified accordingly.
                                 Should the Client agree to proceed under the stated conditions, an invoice will be issued.
                                 <strong>Payment is due within 10 days</strong> from the invoice date.
                             </p>
-                            <p>
+                            <p style="margin:0;">
                                 Payments shall be made via <strong>bank transfer, cash, or cheque</strong>
                                 to the account details provided on the invoice. The Client must provide a
                                 transaction reference number for all payments.
@@ -169,45 +170,37 @@
                     </section>
 
                     {{-- 7. Reporting of Results --}}
-                    <section>
-                        <h2 class="text-base font-bold text-gray-900 border-b border-gray-200 pb-2 mb-3">
-                            7. Reporting of Results
-                        </h2>
-                        <ul class="list-disc ml-6 space-y-1">
-                            <li>Results will be issued in an official laboratory test report.</li>
-                            <li>Interpretation of results (if requested) will be provided within the Laboratory's scope.</li>
+                    <section style="margin-bottom:24px;">
+                        <h2 style="font-family:'Georgia',serif;font-size:15px;font-weight:700;color:#1a2f4e;margin:0 0 10px;padding-bottom:8px;border-bottom:2px solid #b8922a;">7. Reporting of Results</h2>
+                        <ul style="margin:0;padding-left:20px;">
+                            <li style="margin-bottom:4px;">Results will be issued in an official laboratory test report.</li>
+                            <li style="margin-bottom:4px;">Interpretation of results (if requested) will be provided within the Laboratory's scope.</li>
                             <li>Test results are intended solely for the Client and for the specific samples submitted. Results must not be altered or misrepresented in any form.</li>
                         </ul>
                     </section>
 
                     {{-- 8. Confidentiality --}}
-                    <section>
-                        <h2 class="text-base font-bold text-gray-900 border-b border-gray-200 pb-2 mb-3">
-                            8. Confidentiality
-                        </h2>
-                        <ul class="list-disc ml-6 space-y-1">
-                            <li>All client information and results shall remain confidential.</li>
+                    <section style="margin-bottom:24px;">
+                        <h2 style="font-family:'Georgia',serif;font-size:15px;font-weight:700;color:#1a2f4e;margin:0 0 10px;padding-bottom:8px;border-bottom:2px solid #b8922a;">8. Confidentiality</h2>
+                        <ul style="margin:0;padding-left:20px;">
+                            <li style="margin-bottom:4px;">All client information and results shall remain confidential.</li>
                             <li>Disclosure will only occur with Client consent.</li>
                         </ul>
                     </section>
 
                     {{-- 9. Revocation --}}
-                    <section>
-                        <h2 class="text-base font-bold text-gray-900 border-b border-gray-200 pb-2 mb-3">
-                            9. Revocation
-                        </h2>
-                        <ul class="list-disc ml-6 space-y-1">
-                            <li>Either party may revoke the agreement with <strong>10 days prior written notice</strong>.</li>
+                    <section style="margin-bottom:24px;">
+                        <h2 style="font-family:'Georgia',serif;font-size:15px;font-weight:700;color:#1a2f4e;margin:0 0 10px;padding-bottom:8px;border-bottom:2px solid #b8922a;">9. Revocation</h2>
+                        <ul style="margin:0;padding-left:20px;">
+                            <li style="margin-bottom:4px;">Either party may revoke the agreement with <strong>10 days prior written notice</strong>.</li>
                             <li>Immediate revocation may occur in cases of breach of this service agreement.</li>
                         </ul>
                     </section>
 
                     {{-- 10. Force Majeure --}}
-                    <section>
-                        <h2 class="text-base font-bold text-gray-900 border-b border-gray-200 pb-2 mb-3">
-                            10. Force Majeure
-                        </h2>
-                        <p>
+                    <section style="margin-bottom:24px;">
+                        <h2 style="font-family:'Georgia',serif;font-size:15px;font-weight:700;color:#1a2f4e;margin:0 0 10px;padding-bottom:8px;border-bottom:2px solid #b8922a;">10. Force Majeure</h2>
+                        <p style="margin:0;">
                             The Laboratory shall not be liable for delays or failure due to events beyond its control
                             (e.g., natural disasters, equipment malfunction, supply shortages, inadequate facility
                             conditions and utilities).
@@ -216,10 +209,8 @@
 
                     {{-- 11. Acceptance --}}
                     <section>
-                        <h2 class="text-base font-bold text-gray-900 border-b border-gray-200 pb-2 mb-3">
-                            11. Acceptance
-                        </h2>
-                        <p>
+                        <h2 style="font-family:'Georgia',serif;font-size:15px;font-weight:700;color:#1a2f4e;margin:0 0 10px;padding-bottom:8px;border-bottom:2px solid #b8922a;">11. Acceptance</h2>
+                        <p style="margin:0;">
                             By signing below, both parties agree to the terms of this Service Agreement.
                             <strong>The Service Agreement is valid for 1 year</strong> from the date of signing.
                         </p>
@@ -229,12 +220,12 @@
             </div>
 
             {{-- Signature Form --}}
-            <div class="bg-white shadow rounded-xl overflow-hidden">
-                <div class="px-6 py-4 border-b border-gray-100">
-                    <h3 class="font-semibold text-gray-800">
+            <div style="background:#fff;border:1px solid #e2e8f0;border-radius:4px;overflow:hidden;margin-bottom:24px;">
+                <div style="padding:16px 24px;border-bottom:1px solid #e2e8f0;">
+                    <h3 style="font-family:'Georgia',serif;font-size:14px;font-weight:700;color:#1a2f4e;margin:0;">
                         {{ $client->service_agreement_signed_at ? 'Agreement Signed' : 'Digital Signature — Client Representative' }}
                     </h3>
-                    <p class="text-sm text-gray-500 mt-1">
+                    <p style="font-size:12px;color:#64748b;margin:6px 0 0;">
                         @if($client->service_agreement_signed_at)
                             This agreement was signed on
                             <strong>{{ $client->service_agreement_signed_at->format('d F Y \a\t H:i') }}</strong>.
@@ -248,109 +239,89 @@
                 @if($client->service_agreement_signed_at)
 
                     {{-- ── Already Signed — read-only view ──────────────────────── --}}
-                    <div class="px-6 py-6 space-y-5">
+                    <div style="padding:24px;">
 
                         {{-- Signed confirmation banner --}}
-                        <div class="bg-green-50 border border-green-200 rounded-lg p-4 flex items-start gap-3">
-                            <svg class="w-5 h-5 text-green-500 shrink-0 mt-0.5" fill="currentColor" viewBox="0 0 20 20">
-                                <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.857-9.809a.75.75 0 00-1.214-.882l-3.483 4.79-1.88-1.88a.75.75 0 10-1.06 1.061l2.5 2.5a.75.75 0 001.137-.089l4-5.5z" clip-rule="evenodd"/>
-                            </svg>
-                            <div>
-                                <p class="text-sm font-semibold text-green-800">Service Agreement Signed</p>
-                                <p class="text-sm text-green-700 mt-0.5">
-                                    Valid from {{ $client->service_agreement_signed_at->format('d M Y') }}
-                                    to {{ $client->service_agreement_signed_at->addYear()->format('d M Y') }}.
-                                </p>
-                            </div>
+                        <div style="background:#f0fdf4;border:1px solid #bbf7d0;border-left:4px solid #16a34a;border-radius:4px;padding:12px 16px;margin-bottom:20px;">
+                            <p style="font-size:13px;font-weight:700;color:#166534;margin:0 0 2px;">Service Agreement Signed</p>
+                            <p style="font-size:13px;color:#15803d;margin:0;">
+                                Valid from {{ $client->service_agreement_signed_at->format('d M Y') }}
+                                to {{ $client->service_agreement_signed_at->addYear()->format('d M Y') }}.
+                            </p>
                         </div>
 
                         {{-- Signatory details --}}
-                        <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                        <div style="display:grid;grid-template-columns:1fr 1fr;gap:16px;margin-bottom:20px;">
                             <div>
-                                <p class="text-xs text-gray-400 uppercase tracking-wide">Signed By</p>
-                                <p class="text-sm font-medium text-gray-800 mt-1">
+                                <p style="font-size:10px;font-weight:700;letter-spacing:.08em;text-transform:uppercase;color:#64748b;margin:0 0 4px;">Signed By</p>
+                                <p style="font-size:13px;font-weight:600;color:#1e293b;margin:0;">
                                     {{ $client->responsible_officer_name ?? '—' }}
                                 </p>
                             </div>
                             <div>
-                                <p class="text-xs text-gray-400 uppercase tracking-wide">Company</p>
-                                <p class="text-sm font-medium text-gray-800 mt-1">{{ $client->company_name }}</p>
+                                <p style="font-size:10px;font-weight:700;letter-spacing:.08em;text-transform:uppercase;color:#64748b;margin:0 0 4px;">Company</p>
+                                <p style="font-size:13px;font-weight:600;color:#1e293b;margin:0;">{{ $client->company_name }}</p>
                             </div>
                             <div>
-                                <p class="text-xs text-gray-400 uppercase tracking-wide">Date Signed</p>
-                                <p class="text-sm text-gray-800 mt-1">
+                                <p style="font-size:10px;font-weight:700;letter-spacing:.08em;text-transform:uppercase;color:#64748b;margin:0 0 4px;">Date Signed</p>
+                                <p style="font-size:13px;color:#374151;margin:0;">
                                     {{ $client->service_agreement_signed_at->format('d F Y \a\t H:i') }}
                                 </p>
                             </div>
                             <div>
-                                <p class="text-xs text-gray-400 uppercase tracking-wide">Signature Method</p>
-                                <p class="text-sm text-gray-800 mt-1 capitalize">
-                                    {{ $client->signature_type === 'drawn' ? '✏️ Drawn on screen' : '📁 Uploaded image' }}
+                                <p style="font-size:10px;font-weight:700;letter-spacing:.08em;text-transform:uppercase;color:#64748b;margin:0 0 4px;">Signature Method</p>
+                                <p style="font-size:13px;color:#374151;margin:0;text-transform:capitalize;">
+                                    {{ $client->signature_type === 'drawn' ? 'Drawn on screen' : 'Uploaded image' }}
                                 </p>
                             </div>
                         </div>
 
                         {{-- Signature image --}}
                         @if($client->signature_data)
-                            <div>
-                                <p class="text-xs text-gray-400 uppercase tracking-wide mb-2">Signature</p>
-                                <div class="border border-gray-200 rounded-xl p-4 bg-gray-50 inline-block w-full">
+                            <div style="margin-bottom:20px;">
+                                <p style="font-size:10px;font-weight:700;letter-spacing:.08em;text-transform:uppercase;color:#64748b;margin:0 0 8px;">Signature</p>
+                                <div style="border:1px solid #e2e8f0;border-radius:3px;padding:16px;background:#f8fafc;display:inline-block;width:100%;box-sizing:border-box;">
                                     <img src="{{ $client->signature_data }}"
                                         alt="Signature of {{ $client->responsible_officer_name }}"
-                                        class="max-h-32 object-contain object-left"/>
+                                        style="max-height:128px;object-fit:contain;object-position:left;">
                                 </div>
                             </div>
                         @endif
 
                         {{-- Audit trail note --}}
-                        <div class="bg-blue-50 border border-blue-100 rounded-lg p-4 text-xs text-blue-700">
+                        <div style="background:#eff6ff;border:1px solid #bfdbfe;border-radius:3px;padding:12px 16px;margin-bottom:20px;font-size:12px;color:#1d4ed8;">
                             This signed agreement is recorded with a full audit trail including IP address,
                             browser, and timestamp. It is legally binding for one year from the date of signing.
                         </div>
 
                         {{-- Back button --}}
-                        <div class="flex items-center justify-between pt-2">
-                            <a href="{{ route('client.dashboard') }}">
-                                <x-secondary-button>← Back to Dashboard</x-secondary-button>
+                        <div style="display:flex;align-items:center;justify-content:space-between;padding-top:4px;">
+                            <a href="{{ route('client.dashboard') }}" style="display:inline-flex;align-items:center;gap:8px;padding:8px 20px;background:#fff;color:#1a2f4e;font-size:12px;font-weight:700;letter-spacing:.06em;border:1px solid #1a2f4e;border-radius:3px;text-decoration:none;">
+                                &larr; Back to Dashboard
                             </a>
 
                             {{-- Download PDF --}}
-                            <a href="{{ route('client.agreement.download') }}"
-                            class="inline-flex items-center gap-2 px-4 py-2 bg-blue-600 text-white text-sm font-medium rounded-lg hover:bg-blue-700 transition">
-                                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                                        d="M12 10v6m0 0l-3-3m3 3l3-3m2 8H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"/>
-                                </svg>
+                            <a href="{{ route('client.agreement.download') }}" style="display:inline-flex;align-items:center;gap:8px;padding:8px 20px;background:#1a2f4e;color:#fff;font-size:12px;font-weight:700;letter-spacing:.06em;text-transform:uppercase;border-radius:3px;text-decoration:none;">
                                 Download PDF
                             </a>
                         </div>
 
                     {-- Director countersign status --}
                     @if($client->director_signed_at)
-                        <div class="mt-4 flex items-center gap-2.5 bg-green-50 border border-green-200 rounded-xl p-4">
-                            <svg class="w-5 h-5 text-green-500 shrink-0" fill="currentColor" viewBox="0 0 20 20">
-                                <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.857-9.809a.75.75 0 00-1.214-.882l-3.483 4.79-1.88-1.88a.75.75 0 10-1.06 1.061l2.5 2.5a.75.75 0 001.137-.089l4-5.5z" clip-rule="evenodd"/>
-                            </svg>
-                            <div>
-                                <p class="text-sm font-semibold text-green-800">Agreement Fully Executed</p>
-                                <p class="text-xs text-green-600 mt-0.5">
-                                    Countersigned by <strong>{{ $client->director_signed_by }}</strong>
-                                    on {{ $client->director_signed_at->format('d F Y') }}.
-                                    This agreement is now fully executed by both parties.
-                                </p>
-                            </div>
+                        <div style="margin-top:16px;background:#f0fdf4;border:1px solid #bbf7d0;border-radius:4px;padding:14px 16px;">
+                            <p style="font-size:13px;font-weight:700;color:#166534;margin:0 0 2px;">Agreement Fully Executed</p>
+                            <p style="font-size:12px;color:#15803d;margin:0;">
+                                Countersigned by <strong>{{ $client->director_signed_by }}</strong>
+                                on {{ $client->director_signed_at->format('d F Y') }}.
+                                This agreement is now fully executed by both parties.
+                            </p>
                         </div>
                     @else
-                        <div class="mt-4 flex items-center gap-2.5 bg-amber-50 border border-amber-200 rounded-xl p-4">
-                            <svg class="w-5 h-5 text-amber-500 shrink-0" fill="currentColor" viewBox="0 0 20 20">
-                                <path fill-rule="evenodd" d="M8.485 2.495c.673-1.167 2.357-1.167 3.03 0l6.28 10.875c.673 1.167-.17 2.625-1.516 2.625H3.72c-1.347 0-2.189-1.458-1.515-2.625L8.485 2.495zM10 5a.75.75 0 01.75.75v3.5a.75.75 0 01-1.5 0v-3.5A.75.75 0 0110 5zm0 9a1 1 0 100-2 1 1 0 000-2z" clip-rule="evenodd"/>
-                            </svg>
-                            <div>
-                                <p class="text-sm font-medium text-amber-800">Awaiting Director Countersignature</p>
-                                <p class="text-xs text-amber-600 mt-0.5">
-                                    Your signature has been recorded. The Laboratory Director will review and countersign the agreement.
-                                </p>
-                            </div>
+                        <div style="margin-top:16px;background:#fffbeb;border:1px solid #fef08a;border-left:4px solid #b8922a;border-radius:4px;padding:14px 16px;">
+                            <p style="font-size:13px;font-weight:600;color:#854d0e;margin:0 0 2px;">Awaiting Director Countersignature</p>
+                            <p style="font-size:12px;color:#92400e;margin:0;">
+                                Your signature has been recorded. The Laboratory Director will review and countersign the agreement.
+                            </p>
                         </div>
                     @endif
                     </div>
@@ -360,59 +331,64 @@
                     {{-- ── Not yet signed — full signature form ──────────────────── --}}
                     <form method="POST" action="{{ route('client.agreement.sign') }}"
                           enctype="multipart/form-data"
-                          class="px-6 py-6 space-y-5"
+                          style="padding:24px;"
                           x-data="signatureForm()"
                           @submit.prevent="handleSubmit($event)">
                         @csrf
 
-                        <x-validation-errors class="bg-red-50 border border-red-200 rounded-lg p-4"/>
+                        @if($errors->any())
+                            <div style="background:#fef2f2;border:1px solid #fecaca;border-left:4px solid #dc2626;border-radius:4px;padding:12px 16px;margin-bottom:20px;">
+                                <ul style="margin:0;padding-left:16px;font-size:13px;color:#991b1b;">
+                                    @foreach($errors->all() as $error)<li>{{ $error }}</li>@endforeach
+                                </ul>
+                            </div>
+                        @endif
 
                         {{-- Signatory Info (read-only — from account) --}}
-                        <div class="grid grid-cols-1 sm:grid-cols-3 gap-4 bg-gray-50 rounded-lg p-4 border border-gray-100">
+                        <div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:16px;background:#f8fafc;border:1px solid #e2e8f0;border-radius:3px;padding:16px;margin-bottom:20px;">
                             <div>
-                                <p class="text-xs font-medium text-gray-400 uppercase tracking-wider mb-0.5">Signing as</p>
-                                <p class="text-sm font-medium text-gray-800">{{ $user->name }}</p>
-                                <p class="text-xs text-gray-400 mt-0.5">{{ $user->email }}</p>
+                                <p style="font-size:10px;font-weight:700;letter-spacing:.08em;text-transform:uppercase;color:#64748b;margin:0 0 4px;">Signing as</p>
+                                <p style="font-size:13px;font-weight:600;color:#1e293b;margin:0 0 2px;">{{ $user->name }}</p>
+                                <p style="font-size:11px;color:#64748b;margin:0;">{{ $user->email }}</p>
                             </div>
                             <div>
-                                <p class="text-xs font-medium text-gray-400 uppercase tracking-wider mb-0.5">Company</p>
-                                <p class="text-sm text-gray-800">{{ $client->company_name }}</p>
+                                <p style="font-size:10px;font-weight:700;letter-spacing:.08em;text-transform:uppercase;color:#64748b;margin:0 0 4px;">Company</p>
+                                <p style="font-size:13px;color:#374151;margin:0;">{{ $client->company_name }}</p>
                             </div>
                             <div>
-                                <p class="text-xs font-medium text-gray-400 uppercase tracking-wider mb-0.5">Date</p>
-                                <p class="text-sm text-gray-800">{{ now()->format('d F Y') }}</p>
+                                <p style="font-size:10px;font-weight:700;letter-spacing:.08em;text-transform:uppercase;color:#64748b;margin:0 0 4px;">Date</p>
+                                <p style="font-size:13px;color:#374151;margin:0;">{{ now()->format('d F Y') }}</p>
                             </div>
                         </div>
 
                         {{-- ── Signature Section ──────────────────────────────────── --}}
-                        <div>
-                            <x-label value="Your Signature *"/>
-                            <p class="text-xs text-gray-500 mb-3">
+                        <div style="margin-bottom:20px;">
+                            <label style="display:block;font-size:11px;font-weight:700;letter-spacing:.08em;text-transform:uppercase;color:#475569;margin-bottom:6px;">Your Signature *</label>
+                            <p style="font-size:12px;color:#64748b;margin:0 0 12px;">
                                 Draw your signature in the box below, or upload an image of your handwritten signature.
                             </p>
 
                             {{-- Tab Buttons --}}
-                            <div class="flex gap-2 mb-4">
+                            <div style="display:flex;gap:8px;margin-bottom:16px;">
                                 <button type="button"
                                         @click="switchTab('draw')"
-                                        :class="tab === 'draw' ? 'bg-gray-800 text-white' : 'bg-gray-100 text-gray-600 hover:bg-gray-200'"
-                                        class="px-4 py-2 text-sm font-medium rounded-lg transition">
-                                    ✏️ Draw Signature
+                                        :style="tab === 'draw' ? 'background:#1a2f4e;color:#fff;border-color:#1a2f4e;' : 'background:#f1f5f9;color:#475569;border-color:#e2e8f0;'"
+                                        style="padding:8px 16px;font-size:12px;font-weight:700;border-radius:3px;border:1px solid;cursor:pointer;letter-spacing:.04em;">
+                                    Draw Signature
                                 </button>
                                 <button type="button"
                                         @click="switchTab('upload')"
-                                        :class="tab === 'upload' ? 'bg-gray-800 text-white' : 'bg-gray-100 text-gray-600 hover:bg-gray-200'"
-                                        class="px-4 py-2 text-sm font-medium rounded-lg transition">
-                                    📁 Upload Signature
+                                        :style="tab === 'upload' ? 'background:#1a2f4e;color:#fff;border-color:#1a2f4e;' : 'background:#f1f5f9;color:#475569;border-color:#e2e8f0;'"
+                                        style="padding:8px 16px;font-size:12px;font-weight:700;border-radius:3px;border:1px solid;cursor:pointer;letter-spacing:.04em;">
+                                    Upload Signature
                                 </button>
                             </div>
 
                             {{-- Draw Tab --}}
                             <div x-show="tab === 'draw'" x-cloak>
-                                <div class="border-2 border-gray-200 rounded-xl overflow-hidden bg-white shadow-inner">
+                                <div style="border:2px solid #cbd5e1;border-radius:3px;overflow:hidden;background:#fff;">
                                     <canvas id="signatureCanvas"
-                                            class="w-full touch-none cursor-crosshair block"
-                                            style="height: 200px;"
+                                            style="width:100%;height:200px;touch-action:none;cursor:crosshair;display:block;"
                                             @mousedown="startDrawing($event)"
                                             @mousemove="draw($event)"
                                             @mouseup="stopDrawing()"
@@ -422,11 +398,11 @@
                                             @touchend="stopDrawing()">
                                     </canvas>
                                 </div>
-                                <div class="flex items-center justify-between mt-3">
-                                    <p class="text-xs text-gray-400">Sign inside the box using mouse or finger</p>
+                                <div style="display:flex;align-items:center;justify-content:space-between;margin-top:8px;">
+                                    <p style="font-size:11px;color:#94a3b8;margin:0;">Sign inside the box using mouse or finger</p>
                                     <button type="button"
                                             @click="clearSignature()"
-                                            class="text-xs text-red-600 hover:text-red-700 font-medium">
+                                            style="font-size:11px;color:#dc2626;background:none;border:none;cursor:pointer;font-weight:600;padding:0;">
                                         Clear Signature
                                     </button>
                                 </div>
@@ -434,31 +410,24 @@
 
                             {{-- Upload Tab --}}
                             <div x-show="tab === 'upload'" x-cloak>
-                                <div class="border-2 border-dashed border-gray-300 rounded-xl p-8 text-center bg-gray-50 hover:bg-gray-100 transition">
-                                    <svg class="w-10 h-10 text-gray-400 mx-auto mb-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5"
-                                            d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z"/>
-                                    </svg>
-                                    <p class="text-sm text-gray-600 mb-2">Upload image of your handwritten signature</p>
-                                    <label class="cursor-pointer inline-flex items-center gap-2 px-5 py-2.5 bg-white border border-gray-300 rounded-lg text-sm hover:bg-gray-50">
-                                        <svg class="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-8l-4-4m0 0L8 8m4-4v12"/>
-                                        </svg>
+                                <div style="border:2px dashed #cbd5e1;border-radius:3px;padding:32px;text-align:center;background:#f8fafc;">
+                                    <p style="font-size:13px;color:#64748b;margin:0 0 12px;">Upload image of your handwritten signature</p>
+                                    <label style="display:inline-flex;align-items:center;gap:8px;padding:8px 20px;background:#fff;color:#1a2f4e;font-size:12px;font-weight:700;border:1px solid #1a2f4e;border-radius:3px;cursor:pointer;">
                                         Choose File
                                         <input type="file"
                                                name="signature_upload"
                                                accept="image/jpeg,image/png"
-                                               class="hidden"
+                                               style="display:none;"
                                                :disabled="tab !== 'upload'"
                                                @change="handleUpload($event)">
                                     </label>
-                                    <p class="text-xs text-gray-400 mt-3">JPG or PNG only • Max 2MB</p>
+                                    <p style="font-size:11px;color:#94a3b8;margin:12px 0 0;">JPG or PNG only &bull; Max 2MB</p>
 
-                                    <div x-show="uploadPreview" class="mt-6">
+                                    <div x-show="uploadPreview" style="margin-top:16px;">
                                         <img :src="uploadPreview"
                                              alt="Signature preview"
-                                             class="max-h-40 mx-auto border border-gray-200 rounded-lg shadow-sm object-contain bg-white p-2">
-                                        <p class="text-xs text-green-600 mt-2">✓ Signature image ready</p>
+                                             style="max-height:120px;margin:0 auto;border:1px solid #e2e8f0;border-radius:3px;background:#fff;padding:8px;display:block;">
+                                        <p style="font-size:11px;color:#16a34a;margin:8px 0 0;">Signature image ready</p>
                                     </div>
                                 </div>
                             </div>
@@ -473,30 +442,23 @@
                         </div>
 
                         {{-- Legal notice --}}
-                        <div class="bg-blue-50 border border-blue-100 rounded-lg p-4 text-sm text-blue-800">
-                            <div class="flex items-start gap-2">
-                                <svg class="w-5 h-5 text-blue-500 mt-0.5 shrink-0" fill="currentColor" viewBox="0 0 20 20">
-                                    <path fill-rule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7-4a1 1 0 11-2 0 1 1 0 012 0zM9 9a.75.75 0 000 1.5h.253a.25.25 0 01.244.304l-.459 2.066A1.75 1.75 0 0010.747 15H11a.75.75 0 000-1.5h-.253a.25.25 0 01-.244-.304l.459-2.066A1.75 1.75 0 009.253 9H9z" clip-rule="evenodd"/>
-                                </svg>
-                                <p>
-                                    This digital signature is legally binding. Your name, email address
-                                    (<strong>{{ $user->email }}</strong>), IP address, and the date and time
-                                    of signing will be securely recorded as part of the audit trail.
-                                </p>
-                            </div>
+                        <div style="background:#eff6ff;border:1px solid #bfdbfe;border-radius:3px;padding:14px 16px;margin-bottom:20px;font-size:13px;color:#1d4ed8;">
+                            This digital signature is legally binding. Your name, email address
+                            (<strong>{{ $user->email }}</strong>), IP address, and the date and time
+                            of signing will be securely recorded as part of the audit trail.
                         </div>
 
                         {{-- Declaration Checkbox --}}
-                        <div class="bg-gray-50 border border-gray-200 rounded-lg p-4">
-                            <label class="flex items-start gap-3 cursor-pointer">
+                        <div style="background:#f8fafc;border:1px solid #e2e8f0;border-radius:3px;padding:16px;margin-bottom:20px;">
+                            <label style="display:flex;align-items:flex-start;gap:12px;cursor:pointer;">
                                 <input type="checkbox"
                                        id="declaration_accepted"
                                        name="declaration_accepted"
                                        value="1"
                                        {{ old('declaration_accepted') ? 'checked' : '' }}
                                        required
-                                       class="mt-1 rounded border-gray-300 text-indigo-600 focus:ring-indigo-500"/>
-                                <span class="text-sm text-gray-700 leading-relaxed">
+                                       style="margin-top:2px;width:16px;height:16px;flex-shrink:0;">
+                                <span style="font-size:13px;color:#374151;line-height:1.6;">
                                     I confirm that I have read, understood, and agree to all terms and conditions
                                     of the Seafood Laboratory Service Agreement on behalf of
                                     <strong>{{ $client->company_name }}</strong>.
@@ -507,12 +469,11 @@
                         </div>
 
                         {{-- Actions --}}
-                        <div class="flex items-center justify-between pt-2">
-                            <a href="{{ route('client.dashboard') }}">
-                                <x-secondary-button type="button">Back to Dashboard</x-secondary-button>
+                        <div style="display:flex;align-items:center;justify-content:space-between;padding-top:4px;">
+                            <a href="{{ route('client.dashboard') }}" style="display:inline-flex;align-items:center;gap:8px;padding:8px 20px;background:#fff;color:#1a2f4e;font-size:12px;font-weight:700;letter-spacing:.06em;border:1px solid #1a2f4e;border-radius:3px;text-decoration:none;">
+                                Back to Dashboard
                             </a>
-                            <button type="submit"
-                                    class="px-6 py-3 bg-emerald-600 hover:bg-emerald-700 text-white font-semibold rounded-lg transition">
+                            <button type="submit" style="display:inline-flex;align-items:center;gap:8px;padding:10px 24px;background:#0d9488;color:#fff;font-size:13px;font-weight:700;letter-spacing:.06em;border-radius:3px;border:none;cursor:pointer;">
                                 Sign &amp; Submit Agreement
                             </button>
                         </div>

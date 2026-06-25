@@ -1,21 +1,21 @@
-{{-- resources/views/kstl/analyst/tests/index.blade.php --}}
+﻿{{-- resources/views/kstl/analyst/tests/index.blade.php --}}
 
 <x-app-layout>
     <x-slot name="header">
-        <div class="flex items-center justify-between gap-4">
+        <div style="display:flex; align-items:center; justify-content:space-between; gap:16px;">
             <div>
-                <p class="aq-eyebrow">Analyst</p>
-                <h2 class="aq-title text-xl font-bold leading-tight mt-0.5">Test Queue</h2>
+                <p style="font-size:10px; font-weight:700; letter-spacing:.16em; text-transform:uppercase; color:#b8922a; margin:0 0 4px;">Analyst</p>
+                <h2 style="font-family:'Georgia',serif; font-size:20px; font-weight:700; color:#1a2f4e; margin:0; letter-spacing:.01em;">Test Queue</h2>
             </div>
-            <div class="flex items-center gap-3">
+            <div style="display:flex; align-items:center; gap:12px;">
                 <form method="GET" action="{{ route('analyst.tests.index') }}">
-                    <label class="flex items-center gap-2 text-sm text-gray-600 cursor-pointer">
+                    <label style="display:flex; align-items:center; gap:8px; font-size:12.5px; color:#475569; cursor:pointer;">
                         <input type="checkbox"
                                name="mine"
                                value="1"
                                {{ request('mine') ? 'checked' : '' }}
                                onchange="this.form.submit()"
-                               class="rounded text-indigo-600 focus:ring-indigo-500">
+                               style="border-radius:2px; accent-color:#1a2f4e;">
                         My tests only
                     </label>
                 </form>
@@ -25,46 +25,39 @@
 
     @push('styles')
     <style>
-        .aq-eyebrow { letter-spacing: .16em; text-transform: uppercase; font-size: 10px; color: var(--gold); font-weight: 700; }
-        .aq-title { font-family: 'Noto Serif', serif; color: var(--navy); letter-spacing: .01em; }
-        .aq-section-title {
-            font-family: 'Noto Serif', serif; color: var(--navy);
-            font-size: 13px; font-weight: 700; letter-spacing: .02em;
-            display: flex; align-items: center; gap: 8px;
-        }
-        .aq-section-title::before {
-            content: ''; width: 3px; height: 14px; background: var(--gold); border-radius: 2px; display: inline-block;
-        }
+    .page-hdr { padding: 0 !important; }
+    .page-hdr-inner { max-width: 100% !important; padding: 0 !important; }
+    .app-main { padding-left:0 !important; padding-right:0 !important; padding-top:0 !important; max-width:100% !important; }
     </style>
     @endpush
 
-    <div class="py-8">
-        <div class="max-w-7xl mx-auto sm:px-6 lg:px-8 space-y-6">
+    <div style="background:#f1f5f9; min-height:100vh; padding:52px 0 56px;">
+        <div style="max-width:80rem; margin:0 auto; padding:0 2rem;">
 
             @if(session('success'))
-                <div class="bg-green-50 border-l-4 border-green-400 p-4 rounded-lg flex items-center gap-3">
-                    <svg class="w-4 h-4 text-green-500 shrink-0" fill="currentColor" viewBox="0 0 20 20">
+                <div style="background:#f0fdf4; border:1px solid #86efac; border-left:4px solid #16a34a; border-radius:4px; padding:12px 16px; margin-bottom:20px; display:flex; align-items:center; gap:10px;">
+                    <svg style="width:16px; height:16px; flex-shrink:0;" fill="#16a34a" viewBox="0 0 20 20">
                         <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.857-9.809a.75.75 0 00-1.214-.882l-3.483 4.79-1.88-1.88a.75.75 0 10-1.06 1.061l2.5 2.5a.75.75 0 001.137-.089l4-5.5z" clip-rule="evenodd"/>
                     </svg>
-                    <p class="text-sm text-green-800">{{ session('success') }}</p>
+                    <p style="font-size:13px; color:#15803d; margin:0;">{{ session('success') }}</p>
                 </div>
             @endif
 
-            <div class="bg-white rounded-2xl border border-gray-100 shadow-sm overflow-hidden">
-                <div class="px-6 py-4 border-b border-gray-100 flex items-center justify-between">
-                    <h3 class="aq-section-title">
-                        All Tests
-                        <span class="ml-2 text-xs text-gray-400 font-normal">({{ $queue->count() }} total)</span>
-                    </h3>
+            <div style="background:#fff; border:1px solid #e2e8f0; border-radius:4px; overflow:hidden;">
+                <div style="padding:16px 20px; border-bottom:1px solid #e2e8f0; display:flex; align-items:center; justify-content:space-between;">
+                    <div>
+                        <h3 style="font-family:'Georgia',serif; font-size:15px; font-weight:700; color:#1a2f4e; border-bottom:2px solid #b8922a; padding-bottom:8px; margin:0 0 4px; display:inline-block;">All Tests</h3>
+                        <p style="font-size:11px; color:#94a3b8; margin:4px 0 0;">{{ $queue->count() }} total</p>
+                    </div>
                 </div>
 
                 @if($queue->isEmpty())
-                    <div class="px-6 py-16 text-center">
-                        <svg class="w-10 h-10 text-gray-200 mx-auto mb-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <div style="padding:64px 20px; text-align:center;">
+                        <svg style="width:40px; height:40px; margin:0 auto 12px;" fill="none" stroke="#e2e8f0" viewBox="0 0 24 24">
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"/>
                         </svg>
-                        <p class="text-sm font-medium text-gray-400">No tests assigned</p>
-                        <p class="text-xs text-gray-300 mt-1">Tests you work on will appear here.</p>
+                        <p style="font-size:13px; font-weight:600; color:#94a3b8; margin:0;">No tests assigned</p>
+                        <p style="font-size:11px; color:#cbd5e1; margin:4px 0 0;">Tests you work on will appear here.</p>
                     </div>
                 @else
                     @php
@@ -74,7 +67,7 @@
                         });
                     @endphp
 
-                    <div class="divide-y divide-gray-100">
+                    <div>
                         @foreach($grouped as $submissionId => $tests)
                             @php
                                 $submission = $tests->first()->sample->submission;
@@ -85,56 +78,53 @@
                                 $flaggedCount = $tests->where('status', 'flagged')->count();
                             @endphp
 
-                            <div class="px-6 py-4" x-data="{ open: true }">
+                            <div style="border-bottom:1px solid #f1f5f9; padding:16px 20px;" x-data="{ open: true }">
                                 {{-- Submission header --}}
-                                <div class="flex items-center justify-between cursor-pointer mb-4"
+                                <div style="display:flex; align-items:center; justify-content:space-between; cursor:pointer; margin-bottom:12px;"
                                      @click="open = !open">
-                                    <div class="flex items-center gap-3">
+                                    <div style="display:flex; align-items:center; gap:12px;">
                                         <div>
-                                            <div class="flex items-center gap-2">
-                                                <span class="font-mono text-sm font-semibold text-gray-800">
+                                            <div style="display:flex; align-items:center; gap:8px; flex-wrap:wrap;">
+                                                <span style="font-family:monospace; font-size:13px; font-weight:700; color:#1a2f4e;">
                                                     {{ $submission->reference_number }}
                                                 </span>
-                                                <span class="text-sm text-gray-600">
+                                                <span style="font-size:12.5px; color:#475569;">
                                                     {{ $client->responsible_officer_name ?? $client->user->name ?? '—' }}
                                                 </span>
                                                 @if($flaggedCount > 0)
-                                                    <span class="inline-flex px-2 py-0.5 text-xs bg-orange-50 text-orange-700 rounded-full font-medium">
+                                                    <span style="display:inline-flex; align-items:center; padding:2px 8px; font-size:10px; font-weight:700; background:#fff7ed; color:#c2410c; border:1px solid #fed7aa; border-radius:20px;">
                                                         {{ $flaggedCount }} flagged
                                                     </span>
                                                 @endif
                                                 @if($progress === 100)
-                                                    <span class="inline-flex items-center gap-1 px-2 py-0.5 text-xs bg-green-50 text-green-700 rounded-full font-medium">
-                                                        <svg class="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M5 13l4 4L19 7"/></svg>
+                                                    <span style="display:inline-flex; align-items:center; gap:4px; padding:2px 8px; font-size:10px; font-weight:700; background:#f0fdf4; color:#15803d; border:1px solid #bbf7d0; border-radius:20px;">
                                                         All complete
                                                     </span>
                                                 @endif
                                             </div>
-                                            <div class="mt-1.5 flex items-center gap-2 flex-wrap">
-                                                <span class="inline-flex items-center gap-1 px-2 py-0.5 rounded-md bg-gray-100 text-gray-700 text-xs font-semibold">
+                                            <div style="margin-top:6px; display:flex; align-items:center; gap:8px; flex-wrap:wrap;">
+                                                <span style="display:inline-flex; align-items:center; padding:2px 8px; border-radius:3px; background:#f1f5f9; color:#475569; font-size:11px; font-weight:600;">
                                                     {{ $client->company_name ?? '—' }}
                                                 </span>
-                                                <svg class="w-3 h-3 text-gray-300 flex-shrink-0" fill="currentColor" viewBox="0 0 6 6"><circle cx="3" cy="3" r="3"/></svg>
                                                 @if($submission->sample_items && count($submission->sample_items))
                                                     @foreach($submission->sample_items as $si)
-                                                        <span class="inline-flex items-center gap-1 px-2 py-0.5 rounded-md bg-teal-50 text-teal-700 text-xs font-semibold">
+                                                        <span style="display:inline-flex; align-items:center; padding:2px 8px; border-radius:3px; background:#f0fdfa; color:#0f766e; font-size:11px; font-weight:600;">
                                                             {{ $si['name'] ?? '—' }}
                                                             @if(!empty($si['scientific_name']))
-                                                                <span class="italic font-normal text-teal-500">({{ $si['scientific_name'] }})</span>
+                                                                <span style="font-style:italic; font-weight:400; color:#14b8a6; margin-left:4px;">({{ $si['scientific_name'] }})</span>
                                                             @endif
                                                         </span>
                                                     @endforeach
                                                 @elseif($submission->sample_name)
-                                                    <span class="inline-flex items-center gap-1 px-2 py-0.5 rounded-md bg-teal-50 text-teal-700 text-xs font-semibold">
+                                                    <span style="display:inline-flex; align-items:center; padding:2px 8px; border-radius:3px; background:#f0fdfa; color:#0f766e; font-size:11px; font-weight:600;">
                                                         {{ $submission->sample_name }}
                                                         @if($submission->sample_type)
-                                                            <span class="italic font-normal text-teal-500 capitalize">({{ $submission->sample_type }})</span>
+                                                            <span style="font-style:italic; font-weight:400; color:#14b8a6; margin-left:4px; text-transform:capitalize;">({{ $submission->sample_type }})</span>
                                                         @endif
                                                     </span>
                                                 @endif
-                                                <svg class="w-3 h-3 text-gray-300 flex-shrink-0" fill="currentColor" viewBox="0 0 6 6"><circle cx="3" cy="3" r="3"/></svg>
-                                                <span class="inline-flex items-center gap-1 px-2 py-0.5 rounded-full bg-indigo-50 text-indigo-700 font-semibold text-xs whitespace-nowrap">
-                                                    <svg class="w-3 h-3 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                <span style="display:inline-flex; align-items:center; gap:4px; padding:2px 8px; border-radius:20px; background:#eff6ff; color:#1d4ed8; font-size:11px; font-weight:600; white-space:nowrap;">
+                                                    <svg style="width:11px; height:11px; flex-shrink:0;" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"/>
                                                     </svg>
                                                     Received {{ ($submission->received_at ?? $submission->created_at)->format('d M Y, H:i') }}
@@ -143,14 +133,13 @@
                                         </div>
                                     </div>
 
-                                    <div class="flex items-center gap-4">
+                                    <div style="display:flex; align-items:center; gap:12px;">
                                         {{-- Progress --}}
-                                        <div class="flex items-center gap-2">
-                                            <div class="w-24 h-1.5 bg-gray-100 rounded-full overflow-hidden">
-                                                <div class="h-full bg-green-500 rounded-full transition-all"
-                                                     style="width: {{ $progress }}%"></div>
+                                        <div style="display:flex; align-items:center; gap:8px;">
+                                            <div style="width:80px; height:3px; background:#f1f5f9; border-radius:2px; overflow:hidden;">
+                                                <div style="height:100%; background:#16a34a; border-radius:2px; width:{{ $progress }}%;"></div>
                                             </div>
-                                            <span class="text-xs text-gray-400 font-medium whitespace-nowrap">
+                                            <span style="font-size:11px; color:#94a3b8; font-weight:600; white-space:nowrap;">
                                                 {{ $completedCount }}/{{ $totalCount }}
                                             </span>
                                         </div>
@@ -158,9 +147,9 @@
                                         {{-- View authorised result (analyst's own read-only report) --}}
                                         @if($progress === 100 && $submission->result)
                                             <a href="{{ route('analyst.results.show', $submission->id) }}"
-                                               class="inline-flex items-center gap-1.5 px-3 py-1.5 text-xs font-medium bg-blue-50 text-blue-700 rounded-lg hover:bg-blue-100 transition"
+                                               style="display:inline-flex; align-items:center; gap:6px; padding:5px 12px; font-size:11px; font-weight:600; background:#eff6ff; color:#1d4ed8; border:1px solid #bfdbfe; border-radius:3px; text-decoration:none;"
                                                title="View the authorised result">
-                                                <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                <svg style="width:13px; height:13px;" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"/>
                                                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"/>
                                                 </svg>
@@ -169,8 +158,8 @@
                                         @endif
 
                                         {{-- Chevron --}}
-                                        <svg class="w-4 h-4 text-gray-400 transition-transform"
-                                             :class="{ 'rotate-180': open }"
+                                        <svg style="width:16px; height:16px; color:#94a3b8; transition:transform .2s;"
+                                             :style="open ? 'transform:rotate(180deg)' : ''"
                                              fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"/>
                                         </svg>
@@ -179,104 +168,100 @@
 
                                 {{-- Tests table --}}
                                 <div x-show="open" x-collapse>
-                                    <div class="overflow-x-auto">
-                                        <table class="w-full text-sm">
-                                            <thead class="bg-gray-50">
-                                                <tr>
-                                                    <th class="text-left px-4 py-2 text-xs font-medium text-gray-500 uppercase">Sample</th>
-                                                    <th class="text-left px-4 py-2 text-xs font-medium text-gray-500 uppercase">Test</th>
-                                                    <th class="text-left px-4 py-2 text-xs font-medium text-gray-500 uppercase">Category</th>
-                                                    <th class="text-left px-4 py-2 text-xs font-medium text-indigo-600 uppercase">Queued</th>
-                                                    <th class="text-left px-4 py-2 text-xs font-medium text-gray-500 uppercase">Assigned To</th>
-                                                    <th class="text-left px-4 py-2 text-xs font-medium text-gray-500 uppercase">Status</th>
-                                                    <th class="text-left px-4 py-2 text-xs font-medium text-gray-500 uppercase">Result</th>
-                                                    <th class="px-4 py-2"></th>
+                                    <div style="overflow-x:auto; border:1px solid #e2e8f0; border-radius:4px;">
+                                        <table style="width:100%; border-collapse:collapse;">
+                                            <thead>
+                                                <tr style="background:#1a2f4e;">
+                                                    <th style="text-align:left; padding:9px 16px; font-size:9px; font-weight:700; letter-spacing:.12em; text-transform:uppercase; color:#e2e8f0;">Sample</th>
+                                                    <th style="text-align:left; padding:9px 16px; font-size:9px; font-weight:700; letter-spacing:.12em; text-transform:uppercase; color:#e2e8f0;">Test</th>
+                                                    <th style="text-align:left; padding:9px 16px; font-size:9px; font-weight:700; letter-spacing:.12em; text-transform:uppercase; color:#e2e8f0;">Category</th>
+                                                    <th style="text-align:left; padding:9px 16px; font-size:9px; font-weight:700; letter-spacing:.12em; text-transform:uppercase; color:#e2e8f0;">Queued</th>
+                                                    <th style="text-align:left; padding:9px 16px; font-size:9px; font-weight:700; letter-spacing:.12em; text-transform:uppercase; color:#e2e8f0;">Assigned To</th>
+                                                    <th style="text-align:left; padding:9px 16px; font-size:9px; font-weight:700; letter-spacing:.12em; text-transform:uppercase; color:#e2e8f0;">Status</th>
+                                                    <th style="text-align:left; padding:9px 16px; font-size:9px; font-weight:700; letter-spacing:.12em; text-transform:uppercase; color:#e2e8f0;">Result</th>
+                                                    <th style="padding:9px 16px;"></th>
                                                 </tr>
                                             </thead>
-                                            <tbody class="divide-y divide-gray-50">
-                                                @foreach($tests as $test)
+                                            <tbody>
+                                                @foreach($tests as $i => $test)
                                                     @php
-                                                        $rowBg = $test->status === 'in_progress' ? 'bg-blue-50/30' : ($test->status === 'completed' ? 'bg-green-50/20' : ($test->status === 'flagged' ? 'bg-amber-50/50' : ''));
+                                                        $rowBg = $test->status === 'flagged' ? '#fffbeb' : ($test->status === 'in_progress' ? '#f8faff' : ($test->status === 'completed' ? '#f8fffe' : ($i % 2 === 0 ? '#fff' : '#f8fafc')));
                                                         $directorQuery = null;
                                                         if ($test->status === 'flagged' && $test->result_notes) {
                                                             preg_match('/\[Director query\]\s*(.+?)(?=\n\n|$)/s', $test->result_notes, $dqMatch);
                                                             $directorQuery = isset($dqMatch[1]) ? trim($dqMatch[1]) : null;
                                                         }
                                                     @endphp
-                                                    <tr class="hover:bg-gray-50 transition {{ $rowBg }}" x-data="{ showModal: false }">
-                                                        <td class="px-4 py-2.5">
-                                                            <p class="font-medium text-gray-800 text-xs">{{ $test->sample->sample_code }}</p>
-                                                            <p class="text-xs text-gray-700 mt-0.5">{{ $test->sample->common_name }}</p>
+                                                    <tr style="background:{{ $rowBg }}; border-bottom:1px solid #f1f5f9;" x-data="{ showModal: false }">
+                                                        <td style="padding:10px 16px;">
+                                                            <p style="font-weight:700; color:#1a2f4e; font-size:11px; font-family:monospace; margin:0;">{{ $test->sample->sample_code }}</p>
+                                                            <p style="font-size:12px; color:#475569; margin:2px 0 0;">{{ $test->sample->common_name }}</p>
                                                             @if($test->sample->scientific_name)
-                                                                <p class="text-xs text-gray-400 italic mt-0.5">{{ $test->sample->scientific_name }}</p>
+                                                                <p style="font-size:11px; color:#94a3b8; font-style:italic; margin:1px 0 0;">{{ $test->sample->scientific_name }}</p>
                                                             @endif
                                                         </td>
-                                                        <td class="px-4 py-2.5">
+                                                        <td style="padding:10px 16px;">
                                                             <a href="{{ route('analyst.tests.show', $test->id) }}"
-                                                               class="text-sm font-medium text-gray-800 hover:text-indigo-600 transition">
+                                                               style="font-size:12.5px; font-weight:600; color:#1a2f4e; text-decoration:none;">
                                                                 {{ $test->getDisplayLabel() }}
                                                             </a>
                                                         </td>
-                                                        <td class="px-4 py-2.5">
-                                                            <span class="inline-flex px-2 py-0.5 text-xs rounded-full capitalize
-                                                                {{ $test->getDisplayCategory() === 'microbiological' ? 'bg-purple-50 text-purple-700' : 'bg-blue-50 text-blue-700' }}">
-                                                                {{ $test->getDisplayCategory() }}
+                                                        <td style="padding:10px 16px;">
+                                                            @php $cat = $test->getDisplayCategory(); @endphp
+                                                            <span style="display:inline-flex; padding:2px 8px; font-size:10px; font-weight:600; border-radius:20px; text-transform:capitalize; background:{{ $cat === 'microbiological' ? '#f5f3ff' : '#eff6ff' }}; color:{{ $cat === 'microbiological' ? '#7c3aed' : '#1d4ed8' }};">
+                                                                {{ $cat }}
                                                             </span>
                                                         </td>
-                                                        <td class="px-4 py-2.5">
-                                                            <span class="inline-flex items-center gap-1 px-2 py-1 rounded-md bg-indigo-50 text-indigo-700 text-xs font-semibold whitespace-nowrap">
-                                                                <svg class="w-3 h-3 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"/>
-                                                                </svg>
+                                                        <td style="padding:10px 16px;">
+                                                            <span style="display:inline-flex; align-items:center; gap:4px; padding:3px 8px; border-radius:3px; background:#f1f5f9; color:#475569; font-size:11px; font-weight:600; white-space:nowrap;">
                                                                 {{ $test->created_at->format('d M Y') }}
-                                                                <span class="text-indigo-400 font-normal">{{ $test->created_at->format('H:i') }}</span>
+                                                                <span style="color:#94a3b8; font-weight:400;">{{ $test->created_at->format('H:i') }}</span>
                                                             </span>
                                                         </td>
-                                                        <td class="px-4 py-2.5 text-xs text-gray-500">
+                                                        <td style="padding:10px 16px; font-size:12px; color:#475569;">
                                                             {{ $test->assignedTo?->name ?? '—' }}
                                                         </td>
-                                                        <td class="px-4 py-2.5">
+                                                        <td style="padding:10px 16px;">
                                                             <x-kstl.status-badge :status="$test->status" />
                                                             @if($test->status === 'flagged' && $directorQuery)
-                                                                <p class="mt-1.5 text-xs text-amber-700 leading-snug max-w-[200px]">
-                                                                    <span class="font-semibold">Director:</span>
+                                                                <p style="margin-top:5px; font-size:11px; color:#92400e; line-height:1.4; max-width:180px;">
+                                                                    <span style="font-weight:700;">Director:</span>
                                                                     {{ Str::limit($directorQuery, 80) }}
                                                                 </p>
                                                             @endif
                                                         </td>
-                                                        <td class="px-4 py-2.5 text-xs">
+                                                        <td style="padding:10px 16px; font-size:12px;">
                                                             @if($test->status === 'completed' || $test->status === 'flagged')
                                                                 @php
                                                                     $qualColors = [
-                                                                        'pass'         => 'text-green-700',
-                                                                        'fail'         => 'text-red-700',
-                                                                        'detected'     => 'text-red-700',
-                                                                        'not_detected' => 'text-green-700',
-                                                                        'less_than'    => 'text-gray-700',
-                                                                        'greater_than' => 'text-gray-700',
-                                                                        'equal_to'     => 'text-gray-700',
+                                                                        'pass'         => '#15803d',
+                                                                        'fail'         => '#dc2626',
+                                                                        'detected'     => '#dc2626',
+                                                                        'not_detected' => '#15803d',
+                                                                        'less_than'    => '#475569',
+                                                                        'greater_than' => '#475569',
+                                                                        'equal_to'     => '#475569',
                                                                     ];
-                                                                    $qualColor = $qualColors[$test->result_qualifier] ?? 'text-gray-600';
+                                                                    $qualColor = $qualColors[$test->result_qualifier] ?? '#475569';
                                                                 @endphp
-                                                                <div class="flex flex-col gap-0.5">
+                                                                <div style="display:flex; flex-direction:column; gap:2px;">
                                                                     @if($test->result_qualifier && $test->result_qualifier !== 'pending')
-                                                                        <span class="font-medium {{ $qualColor }} capitalize">
+                                                                        <span style="font-weight:700; color:{{ $qualColor }}; text-transform:capitalize;">
                                                                             {{ str_replace('_', ' ', $test->result_qualifier) }}
                                                                         </span>
                                                                     @endif
                                                                     @if($test->result_value)
-                                                                        <span class="text-gray-600">
+                                                                        <span style="color:#475569;">
                                                                             {{ $test->result_value }}
                                                                             @if($test->result_unit)
-                                                                                <span class="text-gray-400">{{ $test->result_unit }}</span>
+                                                                                <span style="color:#94a3b8;">{{ $test->result_unit }}</span>
                                                                             @endif
                                                                         </span>
                                                                     @endif
                                                                     @if($test->result_notes)
                                                                         <button type="button"
                                                                                 @click="showModal = true"
-                                                                                class="inline-flex items-center gap-1 text-xs text-blue-600 hover:underline text-left mt-1">
-                                                                            <svg class="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"/></svg>
+                                                                                style="display:inline-flex; align-items:center; gap:4px; font-size:11px; color:#1a2f4e; background:none; border:none; cursor:pointer; padding:0; text-align:left; margin-top:3px; text-decoration:underline;">
                                                                             View details
                                                                         </button>
 
@@ -291,26 +276,26 @@
 
                                                                                 <div class="bg-white rounded-xl overflow-hidden shadow-2xl transform transition-all sm:max-w-4xl sm:w-full relative max-h-[90vh] overflow-y-auto">
                                                                                     {{-- Header with close button --}}
-                                                                                    <div class="bg-gradient-to-r from-indigo-600 to-indigo-700 px-6 py-5 sticky top-0 z-10">
-                                                                                        <div class="flex items-center justify-between">
-                                                                                            <div class="flex items-center gap-3">
-                                                                                                <svg class="w-6 h-6 text-indigo-200" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                                                    <div style="background:linear-gradient(135deg,#0f2240,#1a2f4e); padding:20px 24px; position:sticky; top:0; z-index:10;">
+                                                                                        <div style="display:flex; align-items:center; justify-content:space-between;">
+                                                                                            <div style="display:flex; align-items:center; gap:12px;">
+                                                                                                <svg style="width:24px; height:24px; color:#94a3b8;" fill="none" stroke="#94a3b8" viewBox="0 0 24 24">
                                                                                                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"/>
                                                                                                 </svg>
                                                                                                 <div>
-                                                                                                    <h3 class="text-xl font-bold text-white">
+                                                                                                    <h3 style="font-family:'Georgia',serif; font-size:18px; font-weight:700; color:#fff; margin:0;">
                                                                                                         Test Results — {{ $test->sample->submission->reference_number }}
                                                                                                     </h3>
-                                                                                                    <p class="text-sm text-indigo-100 mt-0.5">
+                                                                                                    <p style="font-size:12px; color:#94a3b8; margin:3px 0 0;">
                                                                                                         {{ $test->sample->common_name }}
                                                                                                         @if($test->sample->scientific_name)
-                                                                                                            <span class="italic text-indigo-200"> — {{ $test->sample->scientific_name }}</span>
+                                                                                                            <span style="font-style:italic;"> — {{ $test->sample->scientific_name }}</span>
                                                                                                         @endif
                                                                                                     </p>
                                                                                                 </div>
                                                                                             </div>
-                                                                                            <button @click="showModal = false" class="text-indigo-200 hover:text-white transition">
-                                                                                                <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                                                            <button @click="showModal = false" style="background:none; border:none; cursor:pointer; color:#94a3b8;">
+                                                                                                <svg style="width:24px; height:24px;" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                                                                                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/>
                                                                                                 </svg>
                                                                                             </button>
@@ -321,34 +306,31 @@
                                                                                         <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
                                                                                             {{-- Left: Submission Info --}}
                                                                                             <div class="space-y-4">
-                                                                                                <div class="bg-gray-50 rounded-xl border border-gray-200 p-4">
-                                                                                                    <h4 class="text-xs font-bold text-gray-700 uppercase mb-3 flex items-center gap-2">
-                                                                                                        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                                                                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"/>
-                                                                                                        </svg>
+                                                                                                <div style="background:#f8fafc; border:1px solid #e2e8f0; border-radius:4px; padding:16px;">
+                                                                                                    <h4 style="font-size:9px; font-weight:700; letter-spacing:.12em; text-transform:uppercase; color:#64748b; margin:0 0 12px; display:flex; align-items:center; gap:8px;">
                                                                                                         Submission
                                                                                                     </h4>
                                                                                                     <dl class="space-y-3 text-sm">
                                                                                                         <div>
-                                                                                                            <dt class="text-xs text-gray-500 font-medium">Reference</dt>
-                                                                                                            <dd class="font-mono text-gray-900 mt-1 font-semibold">{{ $test->sample->submission->reference_number }}</dd>
+                                                                                                            <dt style="font-size:9px; font-weight:700; letter-spacing:.1em; text-transform:uppercase; color:#94a3b8;">Reference</dt>
+                                                                                                            <dd style="font-family:monospace; color:#1a2f4e; margin-top:3px; font-weight:700;">{{ $test->sample->submission->reference_number }}</dd>
                                                                                                         </div>
                                                                                                         <div>
-                                                                                                            <dt class="text-xs text-gray-500 font-medium">Client</dt>
-                                                                                                            <dd class="text-gray-900 mt-1 font-medium">{{ $test->sample->submission->client->responsible_officer_name ?? $test->sample->submission->client->user->name }}</dd>
-                                                                                                            <dd class="text-xs text-gray-600">{{ $test->sample->submission->client->company_name }}</dd>
+                                                                                                            <dt style="font-size:9px; font-weight:700; letter-spacing:.1em; text-transform:uppercase; color:#94a3b8;">Client</dt>
+                                                                                                            <dd style="color:#1a2f4e; margin-top:3px; font-weight:600;">{{ $test->sample->submission->client->responsible_officer_name ?? $test->sample->submission->client->user->name }}</dd>
+                                                                                                            <dd style="font-size:11px; color:#475569;">{{ $test->sample->submission->client->company_name }}</dd>
                                                                                                         </div>
                                                                                                         <div>
-                                                                                                            <dt class="text-xs text-gray-500 font-medium">Sample</dt>
-                                                                                                            <dd class="text-gray-900 mt-1 font-mono text-xs">{{ $test->sample->sample_code }}</dd>
-                                                                                                            <dd class="text-sm font-medium text-gray-800 mt-0.5">{{ $test->sample->common_name }}</dd>
+                                                                                                            <dt style="font-size:9px; font-weight:700; letter-spacing:.1em; text-transform:uppercase; color:#94a3b8;">Sample</dt>
+                                                                                                            <dd style="color:#1a2f4e; margin-top:3px; font-family:monospace; font-size:11px;">{{ $test->sample->sample_code }}</dd>
+                                                                                                            <dd style="font-size:13px; font-weight:600; color:#1a2f4e; margin-top:2px;">{{ $test->sample->common_name }}</dd>
                                                                                                             @if($test->sample->scientific_name)
-                                                                                                                <dd class="text-xs text-gray-400 italic">{{ $test->sample->scientific_name }}</dd>
+                                                                                                                <dd style="font-size:11px; color:#94a3b8; font-style:italic;">{{ $test->sample->scientific_name }}</dd>
                                                                                                             @endif
                                                                                                         </div>
                                                                                                         <div>
-                                                                                                            <dt class="text-xs text-gray-500 font-medium">Type</dt>
-                                                                                                            <dd class="text-gray-900 mt-1 capitalize">{{ $test->sample->submission->sample_type }}</dd>
+                                                                                                            <dt style="font-size:9px; font-weight:700; letter-spacing:.1em; text-transform:uppercase; color:#94a3b8;">Type</dt>
+                                                                                                            <dd style="color:#1a2f4e; margin-top:3px; text-transform:capitalize;">{{ $test->sample->submission->sample_type }}</dd>
                                                                                                         </div>
                                                                                                     </dl>
                                                                                                 </div>
@@ -356,50 +338,43 @@
 
                                                                                             {{-- Right: Test Results --}}
                                                                                             <div class="lg:col-span-2 space-y-4">
-                                                                                                {{-- Main Result Card --}}
                                                                                                 @php
                                                                                                     $isPass = in_array($test->result_qualifier, ['pass', 'not_detected']);
-                                                                                                    $cardBg = $isPass ? 'bg-gradient-to-br from-green-50 to-emerald-50 border-green-300' : 'bg-gradient-to-br from-red-50 to-orange-50 border-red-300';
                                                                                                 @endphp
-                                                                                                <div class="border-2 {{ $cardBg }} rounded-xl p-5 shadow-sm">
-                                                                                                    <div class="flex items-start justify-between mb-4">
+                                                                                                <div style="border:2px solid {{ $isPass ? '#86efac' : '#fca5a5' }}; border-radius:4px; padding:20px; background:{{ $isPass ? '#f0fdf4' : '#fff1f2' }};">
+                                                                                                    <div style="display:flex; align-items:flex-start; justify-content:space-between; margin-bottom:16px;">
                                                                                                         <div>
-                                                                                                            <h4 class="text-lg font-bold text-gray-900">{{ $test->getDisplayLabel() }}</h4>
-                                                                                                            <p class="text-sm text-gray-600 mt-1 capitalize flex items-center gap-1.5">
-                                                                                                                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                                                                                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 7h.01M7 3h5c.512 0 1.024.195 1.414.586l7 7a2 2 0 010 2.828l-7 7a2 2 0 01-2.828 0l-7-7A1.994 1.994 0 013 12V7a4 4 0 014-4z"/>
-                                                                                                                </svg>
-                                                                                                                {{ $test->getDisplayCategory() }}
-                                                                                                            </p>
+                                                                                                            <h4 style="font-size:15px; font-weight:700; color:#1a2f4e; margin:0;">{{ $test->getDisplayLabel() }}</h4>
+                                                                                                            <p style="font-size:12px; color:#475569; margin:4px 0 0; text-transform:capitalize;">{{ $test->getDisplayCategory() }}</p>
                                                                                                         </div>
-                                                                                                        <span class="inline-flex px-4 py-2 text-base font-bold rounded-full capitalize shadow-sm {{ $isPass ? 'bg-green-100 text-green-800 border-2 border-green-300' : 'bg-red-100 text-red-800 border-2 border-red-300' }}">
+                                                                                                        <span style="display:inline-flex; padding:6px 16px; font-size:13px; font-weight:700; border-radius:20px; text-transform:capitalize; border:2px solid {{ $isPass ? '#86efac' : '#fca5a5' }}; background:{{ $isPass ? '#dcfce7' : '#fee2e2' }}; color:{{ $isPass ? '#15803d' : '#dc2626' }};">
                                                                                                             {{ str_replace('_', ' ', $test->result_qualifier) }}
                                                                                                         </span>
                                                                                                     </div>
 
                                                                                                     <div class="grid grid-cols-2 gap-4 mt-4">
                                                                                                         @if($test->result_value)
-                                                                                                            <div class="bg-white bg-opacity-60 rounded-lg p-3 border border-gray-200">
-                                                                                                                <dt class="text-xs font-semibold text-gray-600 uppercase">Result Value</dt>
-                                                                                                                <dd class="mt-1.5 text-2xl font-bold text-gray-900">
+                                                                                                            <div style="background:#fff; border-radius:4px; padding:12px; border:1px solid #e2e8f0;">
+                                                                                                                <dt style="font-size:9px; font-weight:700; letter-spacing:.1em; text-transform:uppercase; color:#64748b;">Result Value</dt>
+                                                                                                                <dd style="margin-top:6px; font-size:22px; font-weight:700; color:#1a2f4e;">
                                                                                                                     {{ $test->result_value }}
                                                                                                                     @if($test->result_unit)
-                                                                                                                        <span class="text-base text-gray-600 font-medium ml-1">{{ $test->result_unit }}</span>
+                                                                                                                        <span style="font-size:14px; color:#475569; font-weight:500; margin-left:4px;">{{ $test->result_unit }}</span>
                                                                                                                     @endif
                                                                                                                 </dd>
                                                                                                             </div>
                                                                                                         @endif
 
                                                                                                         @if($test->completed_at)
-                                                                                                            <div class="bg-white bg-opacity-60 rounded-lg p-3 border border-gray-200">
-                                                                                                                <dt class="text-xs font-semibold text-gray-600 uppercase">Completed</dt>
-                                                                                                                <dd class="mt-1.5 text-sm font-medium text-gray-900">
+                                                                                                            <div style="background:#fff; border-radius:4px; padding:12px; border:1px solid #e2e8f0;">
+                                                                                                                <dt style="font-size:9px; font-weight:700; letter-spacing:.1em; text-transform:uppercase; color:#64748b;">Completed</dt>
+                                                                                                                <dd style="margin-top:6px; font-size:13px; font-weight:600; color:#1a2f4e;">
                                                                                                                     {{ $test->completed_at->format('d M Y') }}
                                                                                                                 </dd>
-                                                                                                                <dd class="text-xs text-gray-600 mt-0.5">
+                                                                                                                <dd style="font-size:11px; color:#475569; margin-top:2px;">
                                                                                                                     {{ $test->completed_at->format('H:i') }}
                                                                                                                     @if($test->assignedTo)
-                                                                                                                        • {{ $test->assignedTo->name }}
+                                                                                                                        &middot; {{ $test->assignedTo->name }}
                                                                                                                     @endif
                                                                                                                 </dd>
                                                                                                             </div>
@@ -409,14 +384,9 @@
 
                                                                                                 {{-- Analyst Notes --}}
                                                                                                 @if($test->result_notes)
-                                                                                                    <div class="bg-blue-50 rounded-xl border-2 border-blue-200 p-4">
-                                                                                                        <h4 class="text-sm font-bold text-blue-900 uppercase mb-2 flex items-center gap-2">
-                                                                                                            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                                                                                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"/>
-                                                                                                            </svg>
-                                                                                                            Analyst Notes
-                                                                                                        </h4>
-                                                                                                        <p class="text-sm text-blue-900 leading-relaxed whitespace-pre-line">{{ $test->result_notes }}</p>
+                                                                                                    <div style="background:#eff6ff; border:1px solid #bfdbfe; border-radius:4px; padding:16px;">
+                                                                                                        <h4 style="font-size:9px; font-weight:700; letter-spacing:.12em; text-transform:uppercase; color:#1d4ed8; margin:0 0 8px;">Analyst Notes</h4>
+                                                                                                        <p style="font-size:13px; color:#1e3a8a; line-height:1.6; white-space:pre-line; margin:0;">{{ $test->result_notes }}</p>
                                                                                                     </div>
                                                                                                 @endif
 
@@ -425,50 +395,45 @@
                                                                                                     $allTests = $test->sample->submission->samples->flatMap->sampleTests->whereIn('status', ['completed', 'flagged']);
                                                                                                 @endphp
                                                                                                 @if($allTests->count() > 1)
-                                                                                                    <div class="bg-white rounded-xl border-2 border-gray-200 overflow-hidden">
-                                                                                                        <div class="px-5 py-3 border-b border-gray-200 bg-gray-50">
-                                                                                                            <h4 class="text-sm font-bold text-gray-800 uppercase flex items-center gap-2">
-                                                                                                                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                                                                                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2m-3 7h3m-3 4h3m-6-4h.01M9 16h.01"/>
-                                                                                                                </svg>
-                                                                                                                All Completed Tests ({{ $allTests->count() }})
-                                                                                                            </h4>
+                                                                                                    <div style="background:#fff; border:1px solid #e2e8f0; border-radius:4px; overflow:hidden;">
+                                                                                                        <div style="padding:10px 16px; border-bottom:1px solid #e2e8f0; background:#f8fafc;">
+                                                                                                            <h4 style="font-size:9px; font-weight:700; letter-spacing:.12em; text-transform:uppercase; color:#64748b; margin:0;">All Completed Tests ({{ $allTests->count() }})</h4>
                                                                                                         </div>
-                                                                                                        <table class="w-full text-sm">
-                                                                                                            <thead class="bg-gray-50 text-xs">
-                                                                                                                <tr>
-                                                                                                                    <th class="text-left px-4 py-3 font-semibold text-gray-600">Test</th>
-                                                                                                                    <th class="text-left px-4 py-3 font-semibold text-gray-600">Category</th>
-                                                                                                                    <th class="text-left px-4 py-3 font-semibold text-gray-600">Result</th>
-                                                                                                                    <th class="text-left px-4 py-3 font-semibold text-gray-600">Qualifier</th>
+                                                                                                        <table style="width:100%; border-collapse:collapse;">
+                                                                                                            <thead>
+                                                                                                                <tr style="background:#1a2f4e;">
+                                                                                                                    <th style="text-align:left; padding:8px 16px; font-size:9px; font-weight:700; letter-spacing:.12em; text-transform:uppercase; color:#e2e8f0;">Test</th>
+                                                                                                                    <th style="text-align:left; padding:8px 16px; font-size:9px; font-weight:700; letter-spacing:.12em; text-transform:uppercase; color:#e2e8f0;">Category</th>
+                                                                                                                    <th style="text-align:left; padding:8px 16px; font-size:9px; font-weight:700; letter-spacing:.12em; text-transform:uppercase; color:#e2e8f0;">Result</th>
+                                                                                                                    <th style="text-align:left; padding:8px 16px; font-size:9px; font-weight:700; letter-spacing:.12em; text-transform:uppercase; color:#e2e8f0;">Qualifier</th>
                                                                                                                 </tr>
                                                                                                             </thead>
-                                                                                                            <tbody class="divide-y divide-gray-100">
-                                                                                                                @foreach($allTests as $t)
+                                                                                                            <tbody>
+                                                                                                                @foreach($allTests as $j => $t)
                                                                                                                     @php
                                                                                                                         $isCurrent = $t->id === $test->id;
-                                                                                                                        $tQualColor = match($t->result_qualifier) {
-                                                                                                                            'pass', 'not_detected' => 'bg-green-100 text-green-800 border-green-200',
-                                                                                                                            'fail', 'detected' => 'bg-red-100 text-red-800 border-red-200',
-                                                                                                                            default => 'bg-gray-100 text-gray-700 border-gray-200'
+                                                                                                                        $tQualBg = match($t->result_qualifier) {
+                                                                                                                            'pass', 'not_detected' => 'background:#dcfce7; color:#15803d; border:1px solid #86efac;',
+                                                                                                                            'fail', 'detected' => 'background:#fee2e2; color:#dc2626; border:1px solid #fca5a5;',
+                                                                                                                            default => 'background:#f1f5f9; color:#475569; border:1px solid #e2e8f0;'
                                                                                                                         };
                                                                                                                     @endphp
-                                                                                                                    <tr class="{{ $isCurrent ? 'bg-indigo-50 border-l-4 border-l-indigo-500' : 'hover:bg-gray-50' }}">
-                                                                                                                        <td class="px-4 py-3 {{ $isCurrent ? 'font-bold text-indigo-900' : 'font-medium text-gray-800' }}">
+                                                                                                                    <tr style="background:{{ $isCurrent ? '#eff6ff' : ($j % 2 === 0 ? '#fff' : '#f8fafc') }}; border-bottom:1px solid #f1f5f9; {{ $isCurrent ? 'border-left:4px solid #1a2f4e;' : '' }}">
+                                                                                                                        <td style="padding:10px 16px; font-size:12.5px; font-weight:{{ $isCurrent ? '700' : '600' }}; color:{{ $isCurrent ? '#1a2f4e' : '#1a2f4e' }};">
                                                                                                                             {{ $t->getDisplayLabel() }}
                                                                                                                             @if($isCurrent)
-                                                                                                                                <span class="ml-2 text-xs text-indigo-600">(viewing)</span>
+                                                                                                                                <span style="margin-left:6px; font-size:10px; color:#64748b; font-weight:400;">(viewing)</span>
                                                                                                                             @endif
                                                                                                                         </td>
-                                                                                                                        <td class="px-4 py-3 text-gray-600 text-xs capitalize">{{ $t->getDisplayCategory() }}</td>
-                                                                                                                        <td class="px-4 py-3 text-gray-800 font-medium">
+                                                                                                                        <td style="padding:10px 16px; font-size:12px; color:#475569; text-transform:capitalize;">{{ $t->getDisplayCategory() }}</td>
+                                                                                                                        <td style="padding:10px 16px; font-size:12.5px; font-weight:600; color:#1a2f4e;">
                                                                                                                             {{ $t->result_value ?? '—' }}
                                                                                                                             @if($t->result_unit)
-                                                                                                                                <span class="text-gray-500 text-xs ml-1">{{ $t->result_unit }}</span>
+                                                                                                                                <span style="color:#94a3b8; font-size:11px; margin-left:4px;">{{ $t->result_unit }}</span>
                                                                                                                             @endif
                                                                                                                         </td>
-                                                                                                                        <td class="px-4 py-3">
-                                                                                                                            <span class="inline-flex px-2.5 py-1 text-xs font-semibold rounded-full capitalize border {{ $tQualColor }}">
+                                                                                                                        <td style="padding:10px 16px;">
+                                                                                                                            <span style="display:inline-flex; padding:3px 10px; font-size:10px; font-weight:700; border-radius:20px; text-transform:capitalize; {{ $tQualBg }}">
                                                                                                                                 {{ str_replace('_', ' ', $t->result_qualifier ?? '—') }}
                                                                                                                             </span>
                                                                                                                         </td>
@@ -483,15 +448,15 @@
                                                                                     </div>
 
                                                                                     {{-- Footer Actions --}}
-                                                                                    <div class="bg-gray-50 px-6 py-4 border-t-2 border-gray-200 flex justify-between items-center sticky bottom-0">
+                                                                                    <div style="background:#f8fafc; padding:16px 24px; border-top:1px solid #e2e8f0; display:flex; justify-content:space-between; align-items:center; position:sticky; bottom:0;">
                                                                                         <button type="button"
                                                                                                 @click="showModal = false"
-                                                                                                class="px-5 py-2.5 text-sm font-semibold text-gray-700 bg-white border-2 border-gray-300 rounded-lg hover:bg-gray-50 hover:border-gray-400 transition">
+                                                                                                style="padding:9px 20px; font-size:13px; font-weight:600; color:#475569; background:#fff; border:1px solid #e2e8f0; border-radius:3px; cursor:pointer;">
                                                                                             Close
                                                                                         </button>
                                                                                         <a href="{{ route('analyst.tests.show', $test->id) }}"
-                                                                                           class="px-5 py-2.5 text-sm font-semibold text-white bg-indigo-600 rounded-lg hover:bg-indigo-700 shadow-sm hover:shadow transition">
-                                                                                            View Full Test Details →
+                                                                                           style="padding:9px 20px; font-size:13px; font-weight:600; color:#fff; background:#1a2f4e; border-radius:3px; text-decoration:none;">
+                                                                                            View Full Test Details &rarr;
                                                                                         </a>
                                                                                     </div>
                                                                                 </div>
@@ -499,17 +464,17 @@
                                                                         </div>
                                                                     @endif
                                                                     @if(!$test->result_qualifier || $test->result_qualifier === 'pending')
-                                                                        <span class="text-gray-400">—</span>
+                                                                        <span style="color:#cbd5e1;">—</span>
                                                                     @endif
                                                                 </div>
                                                             @else
-                                                                <span class="text-gray-400">—</span>
+                                                                <span style="color:#cbd5e1;">—</span>
                                                             @endif
                                                         </td>
-                                                        <td class="px-4 py-2.5 text-right">
+                                                        <td style="padding:10px 16px; text-align:right;">
                                                             <a href="{{ route('analyst.tests.show', $test->id) }}"
-                                                               class="px-2.5 py-1 text-xs font-medium rounded-md transition
-                                                               {{ $test->status === 'completed' ? 'bg-gray-100 text-gray-600 hover:bg-gray-200' : ($test->status === 'flagged' ? 'bg-orange-100 text-orange-700 hover:bg-orange-200' : 'bg-indigo-600 text-white hover:bg-indigo-700') }}">
+                                                               style="display:inline-flex; padding:5px 12px; font-size:11px; font-weight:600; border-radius:3px; text-decoration:none; white-space:nowrap;
+                                                               {{ $test->status === 'completed' ? 'background:#f1f5f9; color:#475569; border:1px solid #e2e8f0;' : ($test->status === 'flagged' ? 'background:#fff7ed; color:#c2410c; border:1px solid #fed7aa;' : 'background:#1a2f4e; color:#fff; border:1px solid #1a2f4e;') }}">
                                                                 {{ $test->status === 'completed' ? 'View' : ($test->status === 'flagged' ? 'Review' : ($test->status === 'in_progress' ? 'Continue' : 'Start')) }}
                                                             </a>
                                                         </td>

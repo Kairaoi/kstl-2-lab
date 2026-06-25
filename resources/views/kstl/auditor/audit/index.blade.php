@@ -1,40 +1,57 @@
-{{-- resources/views/kstl/auditor/audit/index.blade.php --}}
+﻿{{-- resources/views/kstl/auditor/audit/index.blade.php --}}
 
 <x-app-layout>
     <x-slot name="header">
-        <div class="flex items-center justify-between">
-            <div>
-                <h2 class="font-semibold text-xl text-gray-800 leading-tight">Audit Log</h2>
-                <p class="text-xs text-gray-400 mt-0.5">ISO 17025 — Immutable append-only record of all system actions</p>
-            </div>
-            <div class="flex items-center gap-6 text-sm">
-                <div class="text-center">
-                    <p class="text-2xl font-bold text-gray-900">{{ number_format($summary['today']) }}</p>
-                    <p class="text-xs text-gray-400">Today</p>
-                </div>
-                <div class="text-center">
-                    <p class="text-2xl font-bold text-gray-900">{{ number_format($summary['this_week']) }}</p>
-                    <p class="text-xs text-gray-400">This week</p>
-                </div>
-                <div class="text-center">
-                    <p class="text-2xl font-bold text-gray-900">{{ number_format($summary['total']) }}</p>
-                    <p class="text-xs text-gray-400">All time</p>
+        <div style="position:relative;overflow:hidden;background:linear-gradient(135deg,#0f2240 0%,#1a2f4e 60%,#1e3a5f 100%);">
+            <div style="height:3px;background:linear-gradient(90deg,#1a2f4e,#b8922a 30%,#b8922a 70%,#1a2f4e);"></div>
+            <div style="max-width:80rem;margin:0 auto;padding:28px 2rem 32px;">
+                <div style="display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:16px;">
+                    <div style="display:flex;align-items:center;gap:20px;">
+                        <img src="{{ asset('images/mfor-logo.png') }}" alt="MFOR" style="filter:brightness(0) invert(1);opacity:.92;width:56px;height:56px;flex-shrink:0;">
+                        <div>
+                            <p style="font-size:9px;font-weight:700;letter-spacing:.18em;text-transform:uppercase;color:#b8922a;margin:0 0 4px;">Audit Portal</p>
+                            <h1 style="font-family:'Georgia',serif;font-size:22px;font-weight:700;color:#fff;margin:0 0 6px;line-height:1.2;">Audit Log</h1>
+                            <p style="font-size:12px;color:#94a3b8;margin:0;">ISO 17025 — Immutable append-only record of all system actions</p>
+                        </div>
+                    </div>
+                    <div style="display:flex;align-items:center;gap:24px;flex-wrap:wrap;">
+                        <div style="text-align:center;">
+                            <p style="font-size:24px;font-weight:700;color:#fff;margin:0 0 2px;">{{ number_format($summary['today']) }}</p>
+                            <p style="font-size:11px;color:#94a3b8;margin:0;">Today</p>
+                        </div>
+                        <div style="text-align:center;">
+                            <p style="font-size:24px;font-weight:700;color:#fff;margin:0 0 2px;">{{ number_format($summary['this_week']) }}</p>
+                            <p style="font-size:11px;color:#94a3b8;margin:0;">This week</p>
+                        </div>
+                        <div style="text-align:center;">
+                            <p style="font-size:24px;font-weight:700;color:#fff;margin:0 0 2px;">{{ number_format($summary['total']) }}</p>
+                            <p style="font-size:11px;color:#94a3b8;margin:0;">All time</p>
+                        </div>
+                    </div>
                 </div>
             </div>
         </div>
     </x-slot>
 
-    <div class="py-8">
-        <div class="max-w-7xl mx-auto sm:px-6 lg:px-8 space-y-5">
+    @push('styles')
+    <style>
+        .page-hdr { padding: 0 !important; }
+        .page-hdr-inner { max-width: 100% !important; padding: 0 !important; }
+        .app-main { padding-left:0 !important; padding-right:0 !important; padding-top:0 !important; max-width:100% !important; }
+    </style>
+    @endpush
+
+    <div style="background:#f1f5f9;min-height:100vh;padding:52px 0 56px;">
+        <div style="max-width:80rem;margin:0 auto;padding:0 2rem;">
 
             {{-- Filters --}}
             <form method="GET" action="{{ route('auditor.audit.index') }}"
-                  class="bg-white rounded-xl border border-gray-100 px-5 py-4 flex flex-wrap items-end gap-3">
+                  style="background:#fff;border:1px solid #e2e8f0;border-radius:4px;padding:20px 24px;display:flex;flex-wrap:wrap;align-items:flex-end;gap:12px;margin-bottom:20px;">
 
                 <div>
-                    <label class="block text-xs text-gray-500 mb-1">Event</label>
+                    <label style="display:block;font-size:11px;font-weight:600;color:#64748b;margin-bottom:4px;text-transform:uppercase;letter-spacing:.06em;">Event</label>
                     <select name="event"
-                            class="border-gray-300 rounded-lg text-sm focus:border-indigo-500 focus:ring-indigo-500">
+                            style="border:1px solid #cbd5e1;border-radius:3px;font-size:13px;padding:7px 10px;color:#374151;background:#fff;">
                         <option value="">All Events</option>
                         @foreach([
                             'login'          => 'Login',
@@ -58,16 +75,16 @@
                 </div>
 
                 <div>
-                    <label class="block text-xs text-gray-500 mb-1">User</label>
+                    <label style="display:block;font-size:11px;font-weight:600;color:#64748b;margin-bottom:4px;text-transform:uppercase;letter-spacing:.06em;">User</label>
                     <input type="text" name="user" value="{{ request('user') }}"
                            placeholder="Name..."
-                           class="border-gray-300 rounded-lg text-sm focus:border-indigo-500 focus:ring-indigo-500 w-40"/>
+                           style="border:1px solid #cbd5e1;border-radius:3px;font-size:13px;padding:7px 10px;color:#374151;width:160px;"/>
                 </div>
 
                 <div>
-                    <label class="block text-xs text-gray-500 mb-1">Entity Type</label>
+                    <label style="display:block;font-size:11px;font-weight:600;color:#64748b;margin-bottom:4px;text-transform:uppercase;letter-spacing:.06em;">Entity Type</label>
                     <select name="entity"
-                            class="border-gray-300 rounded-lg text-sm focus:border-indigo-500 focus:ring-indigo-500">
+                            style="border:1px solid #cbd5e1;border-radius:3px;font-size:13px;padding:7px 10px;color:#374151;background:#fff;">
                         <option value="">All</option>
                         @foreach(['Client','Submission','Result','Invoice','Complaint'] as $entity)
                             <option value="{{ $entity }}" {{ request('entity') == $entity ? 'selected' : '' }}>
@@ -78,107 +95,105 @@
                 </div>
 
                 <div>
-                    <label class="block text-xs text-gray-500 mb-1">From</label>
+                    <label style="display:block;font-size:11px;font-weight:600;color:#64748b;margin-bottom:4px;text-transform:uppercase;letter-spacing:.06em;">From</label>
                     <input type="date" name="from" value="{{ request('from') }}"
-                           class="border-gray-300 rounded-lg text-sm focus:border-indigo-500 focus:ring-indigo-500"/>
+                           style="border:1px solid #cbd5e1;border-radius:3px;font-size:13px;padding:7px 10px;color:#374151;"/>
                 </div>
 
                 <div>
-                    <label class="block text-xs text-gray-500 mb-1">To</label>
+                    <label style="display:block;font-size:11px;font-weight:600;color:#64748b;margin-bottom:4px;text-transform:uppercase;letter-spacing:.06em;">To</label>
                     <input type="date" name="to" value="{{ request('to') }}"
-                           class="border-gray-300 rounded-lg text-sm focus:border-indigo-500 focus:ring-indigo-500"/>
+                           style="border:1px solid #cbd5e1;border-radius:3px;font-size:13px;padding:7px 10px;color:#374151;"/>
                 </div>
 
                 <button type="submit"
-                        class="px-4 py-2 bg-indigo-600 text-white text-sm font-medium rounded-lg hover:bg-indigo-700 transition">
+                        style="display:inline-flex;align-items:center;gap:8px;padding:8px 20px;background:#1a2f4e;color:#fff;font-size:12px;font-weight:700;letter-spacing:.06em;text-transform:uppercase;border-radius:3px;border:none;cursor:pointer;">
                     Filter
                 </button>
 
                 @if(request()->hasAny(['event','user','entity','from','to']))
                     <a href="{{ route('auditor.audit.index') }}"
-                       class="px-4 py-2 bg-gray-100 text-gray-600 text-sm rounded-lg hover:bg-gray-200 transition">
+                       style="display:inline-flex;align-items:center;gap:8px;padding:8px 20px;background:#fff;color:#1a2f4e;font-size:12px;font-weight:700;letter-spacing:.06em;border:1px solid #1a2f4e;border-radius:3px;text-decoration:none;">
                         Clear
                     </a>
                 @endif
             </form>
 
             {{-- Log Table --}}
-            <div class="bg-white rounded-xl border border-gray-100 overflow-hidden">
-                <div class="px-6 py-4 border-b border-gray-100">
-                    <h3 class="text-sm font-medium text-gray-800">
+            <div style="background:#fff;border:1px solid #e2e8f0;border-radius:4px;overflow:hidden;">
+                <div style="padding:20px 24px;border-bottom:1px solid #e2e8f0;">
+                    <h3 style="font-family:'Georgia',serif;font-size:14px;font-weight:700;color:#1a2f4e;margin:0;">
                         {{ number_format($logs->total()) }} entries
                         @if(request()->hasAny(['event','user','entity','from','to']))
-                            <span class="text-xs text-gray-400 ml-2">(filtered)</span>
+                            <span style="font-size:12px;color:#94a3b8;font-family:sans-serif;font-weight:400;margin-left:8px;">(filtered)</span>
                         @endif
                     </h3>
                 </div>
 
                 @if($logs->isEmpty())
-                    <div class="px-6 py-16 text-center">
-                        <svg class="w-10 h-10 text-gray-200 mx-auto mb-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <div style="padding:64px 24px;text-align:center;">
+                        <svg style="width:40px;height:40px;color:#e2e8f0;margin:0 auto 12px;" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2"/>
                         </svg>
-                        <p class="text-sm text-gray-400">No audit log entries found.</p>
+                        <p style="font-size:13px;color:#94a3b8;margin:0;">No audit log entries found.</p>
                     </div>
                 @else
-                    <div class="overflow-x-auto">
-                        <table class="w-full text-sm">
-                            <thead class="bg-gray-50 border-b border-gray-100">
-                                <tr>
-                                    <th class="text-left px-5 py-3 text-xs font-medium text-gray-500 uppercase tracking-wide">Timestamp</th>
-                                    <th class="text-left px-5 py-3 text-xs font-medium text-gray-500 uppercase tracking-wide">User</th>
-                                    <th class="text-left px-5 py-3 text-xs font-medium text-gray-500 uppercase tracking-wide">Event</th>
-                                    <th class="text-left px-5 py-3 text-xs font-medium text-gray-500 uppercase tracking-wide">Description</th>
-                                    <th class="text-left px-5 py-3 text-xs font-medium text-gray-500 uppercase tracking-wide">Entity</th>
-                                    <th class="text-left px-5 py-3 text-xs font-medium text-gray-500 uppercase tracking-wide">IP Address</th>
-                                    <th class="px-5 py-3"></th>
+                    <div style="overflow-x:auto;">
+                        <table style="width:100%;border-collapse:collapse;">
+                            <thead>
+                                <tr style="background:#1a2f4e;">
+                                    <th style="padding:10px 16px;text-align:left;font-size:9px;font-weight:700;letter-spacing:.12em;text-transform:uppercase;color:#e2e8f0;">Timestamp</th>
+                                    <th style="padding:10px 16px;text-align:left;font-size:9px;font-weight:700;letter-spacing:.12em;text-transform:uppercase;color:#e2e8f0;">User</th>
+                                    <th style="padding:10px 16px;text-align:left;font-size:9px;font-weight:700;letter-spacing:.12em;text-transform:uppercase;color:#e2e8f0;">Event</th>
+                                    <th style="padding:10px 16px;text-align:left;font-size:9px;font-weight:700;letter-spacing:.12em;text-transform:uppercase;color:#e2e8f0;">Description</th>
+                                    <th style="padding:10px 16px;text-align:left;font-size:9px;font-weight:700;letter-spacing:.12em;text-transform:uppercase;color:#e2e8f0;">Entity</th>
+                                    <th style="padding:10px 16px;text-align:left;font-size:9px;font-weight:700;letter-spacing:.12em;text-transform:uppercase;color:#e2e8f0;">IP Address</th>
+                                    <th style="padding:10px 16px;"></th>
                                 </tr>
                             </thead>
-                            <tbody class="divide-y divide-gray-50">
+                            <tbody>
                                 @foreach($logs as $log)
                                     @php
-                                        $eventColors = [
-                                            'login'          => 'bg-blue-50 text-blue-700',
-                                            'submitted'      => 'bg-indigo-50 text-indigo-700',
-                                            'status_changed' => 'bg-yellow-50 text-yellow-700',
-                                            'signed'         => 'bg-purple-50 text-purple-700',
-                                            'countersigned'  => 'bg-purple-100 text-purple-800',
-                                            'authorised'     => 'bg-green-50 text-green-700',
-                                            'queried'        => 'bg-orange-50 text-orange-700',
-                                            'generated'      => 'bg-teal-50 text-teal-700',
-                                            'responded'      => 'bg-sky-50 text-sky-700',
-                                            'created'        => 'bg-gray-100 text-gray-600',
-                                            'updated'        => 'bg-gray-100 text-gray-600',
-                                            'deleted'        => 'bg-red-50 text-red-700',
-                                        ];
-                                        $color  = $eventColors[$log->event] ?? 'bg-gray-100 text-gray-500';
+                                        $eventBadgeStyle = match($log->event) {
+                                            'login'          => 'background:#eff6ff;color:#1d4ed8;',
+                                            'submitted'      => 'background:#eef2ff;color:#4338ca;',
+                                            'status_changed' => 'background:#fefce8;color:#854d0e;',
+                                            'signed'         => 'background:#faf5ff;color:#7e22ce;',
+                                            'countersigned'  => 'background:#f3e8ff;color:#6b21a8;',
+                                            'authorised'     => 'background:#f0fdf4;color:#166534;',
+                                            'queried'        => 'background:#fff7ed;color:#9a3412;',
+                                            'generated'      => 'background:#f0fdfa;color:#134e4a;',
+                                            'responded'      => 'background:#f0f9ff;color:#075985;',
+                                            'deleted'        => 'background:#fef2f2;color:#991b1b;',
+                                            default          => 'background:#f1f5f9;color:#475569;',
+                                        };
                                         $entity = class_basename($log->auditable_type ?? '');
                                     @endphp
-                                    <tr class="hover:bg-gray-50 transition">
-                                        <td class="px-5 py-3.5 text-xs text-gray-500 whitespace-nowrap font-mono">
+                                    <tr style="border-bottom:1px solid #f1f5f9;{{ $loop->even ? 'background:#f8fafc;' : '' }}">
+                                        <td style="padding:12px 16px;font-family:monospace;font-size:11px;color:#64748b;white-space:nowrap;">
                                             {{ $log->created_at->format('d M Y') }}<br>
-                                            <span class="text-gray-400">{{ $log->created_at->format('H:i:s') }}</span>
+                                            <span style="color:#94a3b8;">{{ $log->created_at->format('H:i:s') }}</span>
                                         </td>
-                                        <td class="px-5 py-3.5">
-                                            <p class="text-gray-800 font-medium text-sm">{{ $log->user_name ?? 'System' }}</p>
+                                        <td style="padding:12px 16px;">
+                                            <p style="font-size:13px;font-weight:600;color:#1e293b;margin:0;">{{ $log->user_name ?? 'System' }}</p>
                                         </td>
-                                        <td class="px-5 py-3.5">
-                                            <span class="inline-flex px-2 py-0.5 text-xs font-semibold rounded-full {{ $color }} capitalize whitespace-nowrap">
+                                        <td style="padding:12px 16px;">
+                                            <span style="display:inline-flex;align-items:center;padding:3px 10px;border-radius:20px;font-size:10px;font-weight:700;text-transform:capitalize;white-space:nowrap;{{ $eventBadgeStyle }}">
                                                 {{ str_replace('_', ' ', $log->event) }}
                                             </span>
                                         </td>
-                                        <td class="px-5 py-3.5 text-gray-700 text-sm max-w-xs">
+                                        <td style="padding:12px 16px;font-size:13px;color:#374151;max-width:280px;">
                                             {{ $log->description }}
                                         </td>
-                                        <td class="px-5 py-3.5 text-xs text-gray-400 whitespace-nowrap">
+                                        <td style="padding:12px 16px;font-size:12px;color:#94a3b8;white-space:nowrap;">
                                             {{ $entity ?: '—' }}
                                         </td>
-                                        <td class="px-5 py-3.5 text-xs font-mono text-gray-400 whitespace-nowrap">
+                                        <td style="padding:12px 16px;font-family:monospace;font-size:12px;color:#94a3b8;white-space:nowrap;">
                                             {{ $log->ip_address ?? '—' }}
                                         </td>
-                                        <td class="px-5 py-3.5 text-right">
+                                        <td style="padding:12px 16px;text-align:right;">
                                             <a href="{{ route('auditor.audit.show', $log->id) }}"
-                                               class="text-xs text-indigo-600 hover:text-indigo-800 transition">
+                                               style="display:inline-flex;align-items:center;gap:8px;padding:5px 14px;background:#fff;color:#1a2f4e;font-size:11px;font-weight:700;letter-spacing:.06em;border:1px solid #1a2f4e;border-radius:3px;text-decoration:none;">
                                                 Detail
                                             </a>
                                         </td>
@@ -188,7 +203,7 @@
                         </table>
                     </div>
 
-                    <div class="px-5 py-4 border-t border-gray-100">
+                    <div style="padding:16px 20px;border-top:1px solid #e2e8f0;">
                         {{ $logs->withQueryString()->links() }}
                     </div>
                 @endif

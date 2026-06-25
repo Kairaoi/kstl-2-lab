@@ -1,4 +1,4 @@
-{{-- resources/views/kstl/reception/submissions/consent.blade.php --}}
+﻿{{-- resources/views/kstl/reception/submissions/consent.blade.php --}}
 {{--
     Shown when a submission status = 'rejected'.
     Reception contacts the client, records their decision:
@@ -8,126 +8,126 @@
 
 <x-app-layout>
     <x-slot name="header">
-        <div class="flex items-center justify-between">
-            <div class="flex items-center gap-3">
-                <a href="{{ route('reception.dashboard') }}"
-                   class="text-gray-400 hover:text-gray-600 transition">
-                    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7"/>
-                    </svg>
-                </a>
-                <div>
-                    <h2 class="font-semibold text-xl text-gray-800 leading-tight">
-                        Client Consent — {{ $submission->reference_number }}
-                    </h2>
-                    <p class="text-sm text-gray-500 mt-0.5">
-                        Record client decision for rejected sample(s)
-                    </p>
+        <div style="position:relative;overflow:hidden;background:linear-gradient(135deg,#0f2240 0%,#1a2f4e 60%,#1e3a5f 100%);">
+            <div style="height:3px;background:linear-gradient(90deg,#1a2f4e,#b8922a 30%,#b8922a 70%,#1a2f4e);"></div>
+            <div style="max-width:80rem;margin:0 auto;padding:28px 2rem 32px;">
+                <div style="display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:16px;">
+                    <div style="display:flex;align-items:center;gap:20px;">
+                        <img src="{{ asset('images/mfor-logo.png') }}" alt="MFOR" style="filter:brightness(0) invert(1);opacity:.92;width:56px;height:56px;flex-shrink:0;">
+                        <div>
+                            <p style="font-size:9px;font-weight:700;letter-spacing:.18em;text-transform:uppercase;color:#b8922a;margin:0 0 4px;">Consent to Proceed</p>
+                            <h1 style="font-family:'Georgia',serif;font-size:22px;font-weight:700;color:#fff;margin:0 0 6px;line-height:1.2;">Client Consent &mdash; {{ $submission->reference_number }}</h1>
+                            <p style="font-size:12px;color:#94a3b8;margin:0;">Record client decision for rejected sample(s)</p>
+                        </div>
+                    </div>
+                    <div style="display:flex;align-items:center;gap:10px;flex-wrap:wrap;">
+                        <span style="display:inline-flex;align-items:center;padding:5px 12px;background:#dc2626;color:#fff;font-size:10px;font-weight:700;letter-spacing:.08em;text-transform:uppercase;border-radius:20px;">
+                            Awaiting Client Decision
+                        </span>
+                        <a href="{{ route('reception.dashboard') }}"
+                           style="display:inline-flex;align-items:center;gap:8px;padding:8px 20px;background:rgba(255,255,255,.12);color:#e2e8f0;font-size:12px;font-weight:700;letter-spacing:.06em;text-transform:uppercase;border-radius:3px;text-decoration:none;border:1px solid rgba(255,255,255,.2);">
+                            &larr; Dashboard
+                        </a>
+                    </div>
                 </div>
             </div>
-            <span class="inline-flex items-center px-3 py-1 rounded-full text-xs font-medium bg-red-50 text-red-700 ring-1 ring-inset ring-red-600/20">
-                Awaiting Client Decision
-            </span>
         </div>
     </x-slot>
 
-    <div class="py-8">
-        <div class="max-w-7xl mx-auto sm:px-6 lg:px-8 space-y-6">
+    @push('styles')
+    <style>
+        .page-hdr { padding: 0 !important; }
+        .page-hdr-inner { max-width: 100% !important; padding: 0 !important; }
+        .app-main { padding-left:0 !important; padding-right:0 !important; padding-top:0 !important; max-width:100% !important; }
+    </style>
+    @endpush
+
+    <div style="background:#f1f5f9;min-height:100vh;padding:52px 0 56px;">
+        <div style="max-width:80rem;margin:0 auto;padding:0 2rem;">
 
             {{-- Flash --}}
             @if(session('success'))
-                <div class="bg-green-50 border-l-4 border-green-400 p-4 rounded-lg flex items-center gap-3">
-                    <svg class="w-4 h-4 text-green-500 shrink-0" fill="currentColor" viewBox="0 0 20 20">
-                        <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.857-9.809a.75.75 0 00-1.214-.882l-3.483 4.79-1.88-1.88a.75.75 0 10-1.06 1.061l2.5 2.5a.75.75 0 001.137-.089l4-5.5z" clip-rule="evenodd"/>
-                    </svg>
-                    <p class="text-sm text-green-800">{{ session('success') }}</p>
-                </div>
+                <div style="background:#f0fdf4;border:1px solid #bbf7d0;border-left:4px solid #16a34a;border-radius:4px;padding:12px 16px;margin-bottom:20px;font-size:13px;color:#166534;">{{ session('success') }}</div>
             @endif
-
             @if(session('error'))
-                <div class="bg-red-50 border-l-4 border-red-400 p-4 rounded-lg flex items-center gap-3">
-                    <svg class="w-4 h-4 text-red-500 shrink-0" fill="currentColor" viewBox="0 0 20 20">
-                        <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm-1-9a1 1 0 112 0v4a1 1 0 11-2 0V9zm1-5a1 1 0 100 2 1 1 0 000-2z" clip-rule="evenodd"/>
-                    </svg>
-                    <p class="text-sm text-red-800">{{ session('error') }}</p>
-                </div>
+                <div style="background:#fef2f2;border:1px solid #fecaca;border-left:4px solid #dc2626;border-radius:4px;padding:12px 16px;margin-bottom:20px;font-size:13px;color:#991b1b;">{{ session('error') }}</div>
             @endif
 
             {{-- ── Instructions Banner ──────────────────────────────── --}}
-            <div class="bg-amber-50 border border-amber-200 rounded-xl p-5">
-                <div class="flex items-start gap-3">
-                    <svg class="w-5 h-5 text-amber-500 shrink-0 mt-0.5" fill="currentColor" viewBox="0 0 20 20">
+            <div style="background:#fffbeb;border:1px solid #fde68a;border-left:4px solid #d97706;border-radius:4px;padding:16px 20px;margin-bottom:24px;">
+                <div style="display:flex;align-items:flex-start;gap:12px;">
+                    <svg style="width:18px;height:18px;color:#d97706;flex-shrink:0;margin-top:2px;" fill="currentColor" viewBox="0 0 20 20">
                         <path fill-rule="evenodd" d="M8.485 2.495c.673-1.167 2.357-1.167 3.03 0l6.28 10.875c.673 1.167-.17 2.625-1.516 2.625H3.72c-1.347 0-2.189-1.458-1.515-2.625L8.485 2.495zM10 5a.75.75 0 01.75.75v3.5a.75.75 0 01-1.5 0v-3.5A.75.75 0 0110 5zm0 9a1 1 0 100-2 1 1 0 000 2z" clip-rule="evenodd"/>
                     </svg>
                     <div>
-                        <p class="text-sm font-semibold text-amber-800">Action Required — Contact Client</p>
-                        <p class="text-sm text-amber-700 mt-1">
+                        <p style="font-size:13px;font-weight:700;color:#92400e;margin:0 0 4px;">Action Required &mdash; Contact Client</p>
+                        <p style="font-size:13px;color:#78350f;margin:0;">
                             One or more samples failed the assessment. Contact
-                            <span class="font-medium">{{ $submission->client->responsible_officer_name ?? $submission->client->company_name }}</span>
-                            at <span class="font-medium">{{ $submission->client->company_phone ?? $submission->client->user->email ?? '—' }}</span>
+                            <span style="font-weight:700;">{{ $submission->client->responsible_officer_name ?? $submission->client->company_name }}</span>
+                            at <span style="font-weight:700;">{{ $submission->client->company_phone ?? $submission->client->user->email ?? '—' }}</span>
                             to inform them of the rejection and record their decision below.
                         </p>
                     </div>
                 </div>
             </div>
 
-            <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
+            <div style="display:grid;grid-template-columns:1fr 2fr;gap:24px;align-items:flex-start;">
 
                 {{-- ── Left: Submission Summary ──────────────────────── --}}
-                <div class="space-y-5">
+                <div style="display:flex;flex-direction:column;gap:20px;">
 
                     {{-- Client contact card --}}
-                    <div class="bg-white rounded-xl border border-gray-100 overflow-hidden">
-                        <div class="px-5 py-3.5 border-b border-gray-100">
-                            <h3 class="text-sm font-medium text-gray-800">Client Contact</h3>
+                    <div style="background:#fff;border:1px solid #e2e8f0;border-radius:4px;overflow:hidden;">
+                        <div style="padding:14px 20px;border-bottom:1px solid #e2e8f0;">
+                            <h3 style="font-family:'Georgia',serif;font-size:14px;font-weight:700;color:#1a2f4e;margin:0;">Client Contact</h3>
                         </div>
-                        <dl class="px-5 py-4 space-y-3 text-sm">
+                        <dl style="padding:16px 20px;display:flex;flex-direction:column;gap:12px;">
                             <div>
-                                <dt class="text-xs text-gray-400 uppercase tracking-wide">Company</dt>
-                                <dd class="font-medium text-gray-800 mt-0.5">{{ $submission->client->company_name }}</dd>
+                                <dt style="font-size:10px;font-weight:600;letter-spacing:.07em;text-transform:uppercase;color:#64748b;margin-bottom:3px;">Company</dt>
+                                <dd style="font-size:13px;font-weight:600;color:#1e293b;margin:0;">{{ $submission->client->company_name }}</dd>
                             </div>
                             <div>
-                                <dt class="text-xs text-gray-400 uppercase tracking-wide">Officer</dt>
-                                <dd class="text-gray-700 mt-0.5">{{ $submission->client->responsible_officer_name ?? '—' }}</dd>
+                                <dt style="font-size:10px;font-weight:600;letter-spacing:.07em;text-transform:uppercase;color:#64748b;margin-bottom:3px;">Officer</dt>
+                                <dd style="font-size:13px;color:#374151;margin:0;">{{ $submission->client->responsible_officer_name ?? '—' }}</dd>
                             </div>
                             <div>
-                                <dt class="text-xs text-gray-400 uppercase tracking-wide">Phone</dt>
-                                <dd class="text-gray-700 mt-0.5">{{ $submission->client->company_phone ?? '—' }}</dd>
+                                <dt style="font-size:10px;font-weight:600;letter-spacing:.07em;text-transform:uppercase;color:#64748b;margin-bottom:3px;">Phone</dt>
+                                <dd style="font-size:13px;color:#374151;margin:0;">{{ $submission->client->company_phone ?? '—' }}</dd>
                             </div>
                             <div>
-                                <dt class="text-xs text-gray-400 uppercase tracking-wide">Email</dt>
-                                <dd class="text-gray-700 mt-0.5">{{ $submission->client->user->email ?? '—' }}</dd>
+                                <dt style="font-size:10px;font-weight:600;letter-spacing:.07em;text-transform:uppercase;color:#64748b;margin-bottom:3px;">Email</dt>
+                                <dd style="font-size:13px;color:#374151;margin:0;word-break:break-all;">{{ $submission->client->user->email ?? '—' }}</dd>
                             </div>
                         </dl>
                     </div>
 
                     {{-- Submission ref --}}
-                    <div class="bg-white rounded-xl border border-gray-100 overflow-hidden">
-                        <div class="px-5 py-3.5 border-b border-gray-100">
-                            <h3 class="text-sm font-medium text-gray-800">Submission</h3>
+                    <div style="background:#fff;border:1px solid #e2e8f0;border-radius:4px;overflow:hidden;">
+                        <div style="padding:14px 20px;border-bottom:1px solid #e2e8f0;">
+                            <h3 style="font-family:'Georgia',serif;font-size:14px;font-weight:700;color:#1a2f4e;margin:0;">Submission</h3>
                         </div>
-                        <dl class="px-5 py-4 space-y-3 text-sm">
+                        <dl style="padding:16px 20px;display:flex;flex-direction:column;gap:12px;">
                             <div>
-                                <dt class="text-xs text-gray-400 uppercase tracking-wide">Reference</dt>
-                                <dd class="font-mono font-medium text-gray-800 mt-0.5">{{ $submission->reference_number }}</dd>
+                                <dt style="font-size:10px;font-weight:600;letter-spacing:.07em;text-transform:uppercase;color:#64748b;margin-bottom:3px;">Reference</dt>
+                                <dd style="font-family:monospace;font-size:13px;font-weight:600;color:#1e293b;margin:0;">{{ $submission->reference_number }}</dd>
                             </div>
                             <div>
-                                <dt class="text-xs text-gray-400 uppercase tracking-wide">Sample</dt>
-                                <dd class="text-gray-700 mt-0.5">{{ $submission->sample_name }}</dd>
+                                <dt style="font-size:10px;font-weight:600;letter-spacing:.07em;text-transform:uppercase;color:#64748b;margin-bottom:3px;">Sample</dt>
+                                <dd style="font-size:13px;color:#374151;margin:0;">{{ $submission->sample_name }}</dd>
                             </div>
                             <div>
-                                <dt class="text-xs text-gray-400 uppercase tracking-wide">Submitted</dt>
-                                <dd class="text-gray-700 mt-0.5">
+                                <dt style="font-size:10px;font-weight:600;letter-spacing:.07em;text-transform:uppercase;color:#64748b;margin-bottom:3px;">Submitted</dt>
+                                <dd style="font-size:13px;color:#374151;margin:0;">
                                     {{ $submission->submitted_at?->format('d M Y') ?? '—' }}
                                 </dd>
                             </div>
                             <div>
-                                <dt class="text-xs text-gray-400 uppercase tracking-wide">Priority</dt>
-                                <dd class="mt-0.5">
+                                <dt style="font-size:10px;font-weight:600;letter-spacing:.07em;text-transform:uppercase;color:#64748b;margin-bottom:3px;">Priority</dt>
+                                <dd style="margin:0;">
                                     @php
-                                        $pc = ['routine' => 'bg-gray-100 text-gray-600', 'urgent' => 'bg-amber-50 text-amber-700', 'emergency' => 'bg-red-50 text-red-700'];
+                                        $pc = ['routine' => 'background:#f1f5f9;color:#475569;', 'urgent' => 'background:#fffbeb;color:#92400e;', 'emergency' => 'background:#fef2f2;color:#991b1b;'];
                                     @endphp
-                                    <span class="inline-flex px-2 py-0.5 text-xs font-medium rounded-full {{ $pc[$submission->priority ?? 'routine'] ?? 'bg-gray-100 text-gray-600' }} capitalize">
+                                    <span style="display:inline-flex;padding:3px 10px;border-radius:20px;font-size:10px;font-weight:700;letter-spacing:.08em;text-transform:capitalize;{{ $pc[$submission->priority ?? 'routine'] ?? 'background:#f1f5f9;color:#475569;' }}">
                                         {{ $submission->priority ?? 'Routine' }}
                                     </span>
                                 </dd>
@@ -138,36 +138,36 @@
                 </div>
 
                 {{-- ── Right: Rejected Samples + Consent Forms ──────── --}}
-                <div class="lg:col-span-2 space-y-5">
+                <div style="display:flex;flex-direction:column;gap:20px;">
 
                     @foreach($samples as $sample)
                         @if($sample->status === 'rejected' && $sample->assessment)
 
-                            <div class="bg-white rounded-xl border border-red-100 overflow-hidden">
+                            <div style="background:#fff;border:1px solid #fecaca;border-radius:4px;overflow:hidden;">
 
                                 {{-- Sample header --}}
-                                <div class="px-6 py-4 bg-red-50 border-b border-red-100 flex items-center justify-between">
+                                <div style="padding:16px 24px;background:#fef2f2;border-bottom:1px solid #fecaca;display:flex;align-items:center;justify-content:space-between;">
                                     <div>
-                                        <h3 class="font-medium text-gray-900">
-                                            {{ $sample->sample_code }} — {{ $sample->common_name }}
+                                        <h3 style="font-size:14px;font-weight:700;color:#1e293b;margin:0 0 3px;">
+                                            {{ $sample->sample_code }} &mdash; {{ $sample->common_name }}
                                         </h3>
-                                        <p class="text-xs text-gray-500 mt-0.5">
+                                        <p style="font-size:12px;color:#64748b;margin:0;">
                                             {{ $sample->quantity }} {{ $sample->quantity_unit }}
                                             @if($sample->scientific_name)
-                                                · <em>{{ $sample->scientific_name }}</em>
+                                                &middot; <em>{{ $sample->scientific_name }}</em>
                                             @endif
                                         </p>
                                     </div>
-                                    <span class="inline-flex px-2.5 py-1 text-xs font-medium bg-red-100 text-red-700 rounded-full">
+                                    <span style="display:inline-flex;align-items:center;padding:3px 10px;border-radius:20px;font-size:10px;font-weight:700;letter-spacing:.08em;text-transform:uppercase;background:#fecaca;color:#991b1b;">
                                         Rejected
                                     </span>
                                 </div>
 
-                                <div class="px-6 py-5 space-y-5">
+                                <div style="padding:20px 24px;display:flex;flex-direction:column;gap:20px;">
 
                                     {{-- Assessment summary --}}
                                     <div>
-                                        <p class="text-xs font-medium text-gray-500 uppercase tracking-wide mb-3">Assessment Results</p>
+                                        <p style="font-size:10px;font-weight:700;letter-spacing:.08em;text-transform:uppercase;color:#64748b;margin:0 0 12px;">Assessment Results</p>
                                         @php
                                             $a = $sample->assessment;
                                             $criteria = [
@@ -180,35 +180,35 @@
                                                 'Weight'       => $a->weight_ok,
                                             ];
                                         @endphp
-                                        <div class="grid grid-cols-2 sm:grid-cols-4 gap-2">
+                                        <div style="display:grid;grid-template-columns:repeat(4,1fr);gap:8px;">
                                             @foreach($criteria as $label => $passed)
-                                                <div class="flex items-center gap-1.5 text-xs">
+                                                <div style="display:flex;align-items:center;gap:6px;font-size:12px;">
                                                     @if($passed)
-                                                        <svg class="w-3.5 h-3.5 text-green-500 shrink-0" fill="currentColor" viewBox="0 0 20 20">
+                                                        <svg style="width:14px;height:14px;color:#16a34a;flex-shrink:0;" fill="currentColor" viewBox="0 0 20 20">
                                                             <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.857-9.809a.75.75 0 00-1.214-.882l-3.483 4.79-1.88-1.88a.75.75 0 10-1.06 1.061l2.5 2.5a.75.75 0 001.137-.089l4-5.5z" clip-rule="evenodd"/>
                                                         </svg>
-                                                        <span class="text-gray-600">{{ $label }}</span>
+                                                        <span style="color:#374151;">{{ $label }}</span>
                                                     @else
-                                                        <svg class="w-3.5 h-3.5 text-red-500 shrink-0" fill="currentColor" viewBox="0 0 20 20">
+                                                        <svg style="width:14px;height:14px;color:#dc2626;flex-shrink:0;" fill="currentColor" viewBox="0 0 20 20">
                                                             <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm-1-9a1 1 0 112 0v4a1 1 0 11-2 0V9zm1-5a1 1 0 100 2 1 1 0 000-2z" clip-rule="evenodd"/>
                                                         </svg>
-                                                        <span class="text-red-700 font-medium">{{ $label }}</span>
+                                                        <span style="color:#dc2626;font-weight:700;">{{ $label }}</span>
                                                     @endif
                                                 </div>
                                             @endforeach
                                         </div>
 
                                         @if($a->rejection_reason)
-                                            <div class="mt-3 bg-red-50 rounded-lg p-3">
-                                                <p class="text-xs font-medium text-red-700 mb-1">Rejection Reason</p>
-                                                <p class="text-sm text-red-800">{{ $a->rejection_reason }}</p>
+                                            <div style="margin-top:12px;background:#fef2f2;border-radius:3px;padding:10px 12px;">
+                                                <p style="font-size:11px;font-weight:700;color:#dc2626;margin:0 0 4px;">Rejection Reason</p>
+                                                <p style="font-size:13px;color:#991b1b;margin:0;">{{ $a->rejection_reason }}</p>
                                             </div>
                                         @endif
 
                                         @if($a->additional_observations)
-                                            <div class="mt-2 bg-gray-50 rounded-lg p-3">
-                                                <p class="text-xs font-medium text-gray-500 mb-1">Additional Observations</p>
-                                                <p class="text-sm text-gray-700">{{ $a->additional_observations }}</p>
+                                            <div style="margin-top:8px;background:#f8fafc;border-radius:3px;padding:10px 12px;">
+                                                <p style="font-size:11px;font-weight:700;color:#64748b;margin:0 0 4px;">Additional Observations</p>
+                                                <p style="font-size:13px;color:#374151;margin:0;">{{ $a->additional_observations }}</p>
                                             </div>
                                         @endif
                                     </div>
@@ -216,23 +216,17 @@
                                     {{-- Client Decision --}}
                                     @if($a->client_decision)
                                         {{-- Already recorded --}}
-                                        <div class="rounded-lg border p-4
-                                            {{ $a->client_decision === 'consent_to_proceed'
-                                                ? 'bg-orange-50 border-orange-200'
-                                                : 'bg-gray-50 border-gray-200' }}">
-                                            <div class="flex items-center justify-between">
+                                        <div style="border-radius:4px;border:1px solid {{ $a->client_decision === 'consent_to_proceed' ? '#fed7aa' : '#e2e8f0' }};background:{{ $a->client_decision === 'consent_to_proceed' ? '#fff7ed' : '#f8fafc' }};padding:16px;">
+                                            <div style="display:flex;align-items:center;justify-content:space-between;">
                                                 <div>
-                                                    <p class="text-sm font-semibold
-                                                        {{ $a->client_decision === 'consent_to_proceed'
-                                                            ? 'text-orange-800'
-                                                            : 'text-gray-700' }}">
+                                                    <p style="font-size:13px;font-weight:700;color:{{ $a->client_decision === 'consent_to_proceed' ? '#9a3412' : '#374151' }};margin:0 0 3px;">
                                                         @if($a->client_decision === 'consent_to_proceed')
-                                                            ✓ Client consented to proceed despite rejection
+                                                            &#10003; Client consented to proceed despite rejection
                                                         @else
-                                                            ✗ Client confirmed rejection — no testing
+                                                            &#10007; Client confirmed rejection &mdash; no testing
                                                         @endif
                                                     </p>
-                                                    <p class="text-xs text-gray-400 mt-0.5">
+                                                    <p style="font-size:11px;color:#94a3b8;margin:0;">
                                                         Recorded {{ $a->client_decision_at?->format('d M Y \a\t H:i') ?? '—' }}
                                                     </p>
                                                 </div>
@@ -241,28 +235,28 @@
 
                                     @else
                                         {{-- Send Email Button --}}
-                                        <div class="mb-5 p-4 bg-blue-50 border border-blue-200 rounded-xl">
-                                            <p class="text-sm font-medium text-blue-800 mb-1">Notify Client by Email</p>
-                                            <p class="text-xs text-gray-500 mb-3">
+                                        <div style="padding:16px;background:#eff6ff;border:1px solid #bfdbfe;border-radius:4px;">
+                                            <p style="font-size:13px;font-weight:700;color:#1e40af;margin:0 0 4px;">Notify Client by Email</p>
+                                            <p style="font-size:12px;color:#64748b;margin:0 0 12px;">
                                                 Send an email to <strong>{{ $submission->client->user->email ?? '—' }}</strong>
                                                 with a secure link for the client to record their own decision.
                                             </p>
                                             @if($a->consent_notified_at)
-                                                <div class="flex items-center justify-between">
-                                                    <span class="text-xs text-green-700">
-                                                        ✓ Email sent {{ $a->consent_notified_at->format('d M Y \a\t H:i') }}
+                                                <div style="display:flex;align-items:center;justify-content:space-between;">
+                                                    <span style="font-size:12px;color:#16a34a;font-weight:600;">
+                                                        &#10003; Email sent {{ $a->consent_notified_at->format('d M Y \a\t H:i') }}
                                                     </span>
                                                     <form method="POST" action="{{ route('reception.assessments.notify', $a->id) }}">
                                                         @csrf
-                                                        <button type="submit" class="text-xs text-blue-600 hover:underline">Resend</button>
+                                                        <button type="submit" style="font-size:12px;color:#1d4ed8;background:none;border:none;cursor:pointer;text-decoration:underline;">Resend</button>
                                                     </form>
                                                 </div>
                                             @else
                                                 <form method="POST" action="{{ route('reception.assessments.notify', $a->id) }}">
                                                     @csrf
                                                     <button type="submit"
-                                                            class="inline-flex items-center gap-2 px-4 py-2 bg-blue-600 text-white text-xs font-medium rounded-lg hover:bg-blue-700 transition">
-                                                        <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                            style="display:inline-flex;align-items:center;gap:8px;padding:8px 20px;background:#1a2f4e;color:#fff;font-size:12px;font-weight:700;letter-spacing:.06em;text-transform:uppercase;border-radius:3px;border:none;cursor:pointer;">
+                                                        <svg style="width:14px;height:14px;" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z"/>
                                                         </svg>
                                                         Send Email to Client
@@ -271,18 +265,18 @@
                                             @endif
                                         </div>
 
-                                        <div class="relative mb-4">
-                                            <div class="absolute inset-0 flex items-center">
-                                                <div class="w-full border-t border-gray-200"></div>
+                                        <div style="position:relative;margin:4px 0;">
+                                            <div style="position:absolute;inset:0;display:flex;align-items:center;">
+                                                <div style="width:100%;border-top:1px solid #e2e8f0;"></div>
                                             </div>
-                                            <div class="relative flex justify-center text-xs">
-                                                <span class="bg-white px-3 text-gray-400">or record manually after phone/in-person contact</span>
+                                            <div style="position:relative;display:flex;justify-content:center;">
+                                                <span style="background:#fff;padding:0 12px;font-size:11px;color:#94a3b8;">or record manually after phone/in-person contact</span>
                                             </div>
                                         </div>
 
                                         {{-- Consent form --}}
                                         <div>
-                                            <p class="text-xs font-medium text-gray-500 uppercase tracking-wide mb-3">
+                                            <p style="font-size:10px;font-weight:700;letter-spacing:.08em;text-transform:uppercase;color:#64748b;margin:0 0 12px;">
                                                 Record Client Decision
                                             </p>
 
@@ -291,23 +285,23 @@
                                                   x-data="{ decision: '' }">
                                                 @csrf
 
-                                                <div class="space-y-3 mb-4">
+                                                <div style="display:flex;flex-direction:column;gap:10px;margin-bottom:16px;">
 
                                                     {{-- Option 1: Consent to proceed --}}
-                                                    <label class="flex items-start gap-3 p-4 rounded-xl border-2 cursor-pointer transition"
-                                                           :class="decision === 'consent_to_proceed'
-                                                               ? 'border-orange-400 bg-orange-50'
-                                                               : 'border-gray-200 hover:border-gray-300'">
+                                                    <label style="display:flex;align-items:flex-start;gap:12px;padding:16px;border-radius:3px;border:2px solid transparent;cursor:pointer;transition:border-color .15s;"
+                                                           :style="decision === 'consent_to_proceed'
+                                                               ? 'border-color:#ea580c;background:#fff7ed;'
+                                                               : 'border-color:#e2e8f0;background:#fff;'">
                                                         <input type="radio"
                                                                name="decision"
                                                                value="consent_to_proceed"
                                                                x-model="decision"
-                                                               class="mt-0.5 text-orange-600 focus:ring-orange-500">
+                                                               style="margin-top:2px;accent-color:#ea580c;width:16px;height:16px;">
                                                         <div>
-                                                            <p class="text-sm font-medium text-gray-800">
+                                                            <p style="font-size:13px;font-weight:700;color:#1e293b;margin:0 0 3px;">
                                                                 Consent to Proceed
                                                             </p>
-                                                            <p class="text-xs text-gray-500 mt-0.5">
+                                                            <p style="font-size:12px;color:#64748b;margin:0;">
                                                                 Client acknowledges the issue but requests testing continues.
                                                                 Results will include a note about the assessment findings.
                                                             </p>
@@ -315,20 +309,20 @@
                                                     </label>
 
                                                     {{-- Option 2: Confirm rejection --}}
-                                                    <label class="flex items-start gap-3 p-4 rounded-xl border-2 cursor-pointer transition"
-                                                           :class="decision === 'confirm_rejection'
-                                                               ? 'border-red-400 bg-red-50'
-                                                               : 'border-gray-200 hover:border-gray-300'">
+                                                    <label style="display:flex;align-items:flex-start;gap:12px;padding:16px;border-radius:3px;border:2px solid transparent;cursor:pointer;transition:border-color .15s;"
+                                                           :style="decision === 'confirm_rejection'
+                                                               ? 'border-color:#dc2626;background:#fef2f2;'
+                                                               : 'border-color:#e2e8f0;background:#fff;'">
                                                         <input type="radio"
                                                                name="decision"
                                                                value="confirm_rejection"
                                                                x-model="decision"
-                                                               class="mt-0.5 text-red-600 focus:ring-red-500">
+                                                               style="margin-top:2px;accent-color:#dc2626;width:16px;height:16px;">
                                                         <div>
-                                                            <p class="text-sm font-medium text-gray-800">
+                                                            <p style="font-size:13px;font-weight:700;color:#1e293b;margin:0 0 3px;">
                                                                 Confirm Rejection
                                                             </p>
-                                                            <p class="text-xs text-gray-500 mt-0.5">
+                                                            <p style="font-size:12px;color:#64748b;margin:0;">
                                                                 Client accepts the rejection. Sample will not be tested.
                                                                 Client will need to resubmit with a new sample.
                                                             </p>
@@ -339,12 +333,12 @@
 
                                                 <button type="submit"
                                                         x-bind:disabled="!decision"
-                                                        x-bind:class="decision
+                                                        :style="decision
                                                             ? (decision === 'consent_to_proceed'
-                                                                ? 'bg-orange-600 hover:bg-orange-700 text-white'
-                                                                : 'bg-red-600 hover:bg-red-700 text-white')
-                                                            : 'bg-gray-100 text-gray-400 cursor-not-allowed'"
-                                                        class="w-full py-2.5 text-sm font-medium rounded-lg transition">
+                                                                ? 'background:#b8922a;color:#fff;cursor:pointer;'
+                                                                : 'background:#dc2626;color:#fff;cursor:pointer;')
+                                                            : 'background:#f1f5f9;color:#94a3b8;cursor:not-allowed;'"
+                                                        style="width:100%;padding:10px;font-size:13px;font-weight:700;letter-spacing:.06em;text-transform:uppercase;border-radius:3px;border:none;transition:background .15s;">
                                                     <span x-text="decision === 'consent_to_proceed'
                                                         ? 'Record: Consent to Proceed'
                                                         : (decision === 'confirm_rejection'
@@ -362,24 +356,25 @@
 
                         @elseif($sample->status === 'accepted')
                             {{-- Show accepted samples briefly --}}
-                            <div class="bg-white rounded-xl border border-green-100 px-6 py-4 flex items-center justify-between">
+                            <div style="background:#fff;border:1px solid #bbf7d0;border-radius:4px;padding:16px 24px;display:flex;align-items:center;justify-content:space-between;">
                                 <div>
-                                    <p class="text-sm font-medium text-gray-800">
-                                        {{ $sample->sample_code }} — {{ $sample->common_name }}
+                                    <p style="font-size:13px;font-weight:600;color:#1e293b;margin:0 0 2px;">
+                                        {{ $sample->sample_code }} &mdash; {{ $sample->common_name }}
                                     </p>
-                                    <p class="text-xs text-gray-400 mt-0.5">{{ $sample->quantity }} {{ $sample->quantity_unit }}</p>
+                                    <p style="font-size:11px;color:#94a3b8;margin:0;">{{ $sample->quantity }} {{ $sample->quantity_unit }}</p>
                                 </div>
-                                <span class="inline-flex px-2.5 py-1 text-xs font-medium bg-green-50 text-green-700 rounded-full">
-                                    Accepted ✓
+                                <span style="display:inline-flex;align-items:center;padding:3px 10px;border-radius:20px;font-size:10px;font-weight:700;letter-spacing:.08em;text-transform:uppercase;background:#dcfce7;color:#166534;">
+                                    Accepted &#10003;
                                 </span>
                             </div>
                         @endif
                     @endforeach
 
                     {{-- Actions --}}
-                    <div class="flex items-center justify-between pt-2 pb-8">
-                        <a href="{{ route('reception.dashboard') }}">
-                            <x-secondary-button>← Back to Dashboard</x-secondary-button>
+                    <div style="display:flex;align-items:center;justify-content:space-between;padding-top:8px;padding-bottom:16px;">
+                        <a href="{{ route('reception.dashboard') }}"
+                           style="display:inline-flex;align-items:center;gap:8px;padding:8px 20px;background:#fff;color:#1a2f4e;font-size:12px;font-weight:700;letter-spacing:.06em;border:1px solid #1a2f4e;border-radius:3px;text-decoration:none;">
+                            &larr; Back to Dashboard
                         </a>
 
                         @php
@@ -400,30 +395,30 @@
                                     @csrf
                                     <button type="submit"
                                             onclick="return confirm('Send this submission to the testing queue?')"
-                                            class="inline-flex items-center gap-2 px-5 py-2.5 bg-indigo-600 text-white text-sm font-medium rounded-lg hover:bg-indigo-700 transition">
-                                        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                            style="display:inline-flex;align-items:center;gap:8px;padding:8px 20px;background:#0d9488;color:#fff;font-size:12px;font-weight:700;letter-spacing:.06em;text-transform:uppercase;border-radius:3px;border:none;cursor:pointer;">
+                                        <svg style="width:16px;height:16px;" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 7l5 5m0 0l-5 5m5-5H6"/>
                                         </svg>
                                         Send to Testing Queue
                                     </button>
                                 </form>
                             @elseif($submission->status === 'testing')
-                                <span class="inline-flex items-center gap-2 text-sm text-indigo-700 font-medium">
-                                    <svg class="w-4 h-4" fill="currentColor" viewBox="0 0 20 20">
+                                <span style="display:inline-flex;align-items:center;gap:8px;font-size:13px;color:#0d9488;font-weight:700;">
+                                    <svg style="width:16px;height:16px;" fill="currentColor" viewBox="0 0 20 20">
                                         <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.857-9.809a.75.75 0 00-1.214-.882l-3.483 4.79-1.88-1.88a.75.75 0 10-1.06 1.061l2.5 2.5a.75.75 0 001.137-.089l4-5.5z" clip-rule="evenodd"/>
                                     </svg>
                                     Sent to testing queue
                                 </span>
                             @else
-                                <span class="inline-flex items-center gap-2 text-sm text-green-700 font-medium">
-                                    <svg class="w-4 h-4" fill="currentColor" viewBox="0 0 20 20">
+                                <span style="display:inline-flex;align-items:center;gap:8px;font-size:13px;color:#16a34a;font-weight:700;">
+                                    <svg style="width:16px;height:16px;" fill="currentColor" viewBox="0 0 20 20">
                                         <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.857-9.809a.75.75 0 00-1.214-.882l-3.483 4.79-1.88-1.88a.75.75 0 10-1.06 1.061l2.5 2.5a.75.75 0 001.137-.089l4-5.5z" clip-rule="evenodd"/>
                                     </svg>
                                     All decisions recorded
                                 </span>
                             @endif
                         @else
-                            <span class="text-xs text-amber-600">
+                            <span style="font-size:12px;color:#d97706;font-weight:600;">
                                 {{ $pendingDecisions }} decision{{ $pendingDecisions !== 1 ? 's' : '' }} pending
                             </span>
                         @endif

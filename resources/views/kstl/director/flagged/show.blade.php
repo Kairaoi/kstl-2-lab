@@ -1,135 +1,142 @@
-{{-- resources/views/kstl/director/invoices/show.blade.php --}}
+﻿{{-- resources/views/kstl/director/invoices/show.blade.php --}}
 
 <x-app-layout>
     <x-slot name="header">
-        <div class="flex items-center justify-between">
-            <div class="flex items-center gap-3">
-                <a href="{{ route('director.invoices.index') }}"
-                   class="text-gray-400 hover:text-gray-600 transition">
-                    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7"/>
-                    </svg>
-                </a>
-                <div>
-                    <h2 class="font-semibold text-xl text-gray-800 leading-tight">
-                        {{ $invoice->invoice_number }}
-                    </h2>
-                    <p class="text-sm text-gray-500 mt-0.5">
-                        Issued {{ $invoice->invoice_date->format('d M Y') }}
-                        · Due {{ $invoice->payment_due_date->format('d M Y') }}
-                    </p>
+        <div style="position:relative;overflow:hidden;background:linear-gradient(135deg,#0f2240 0%,#1a2f4e 60%,#1e3a5f 100%);">
+            <div style="height:3px;background:linear-gradient(90deg,#1a2f4e,#b8922a 30%,#b8922a 70%,#1a2f4e);"></div>
+            <div style="max-width:80rem;margin:0 auto;padding:28px 2rem 32px;">
+                <div style="display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:16px;">
+                    <div style="display:flex;align-items:center;gap:20px;">
+                        <img src="{{ asset('images/mfor-logo.png') }}" alt="MFOR" style="filter:brightness(0) invert(1);opacity:.92;width:56px;height:56px;flex-shrink:0;">
+                        <div>
+                            <p style="font-size:9px;font-weight:700;letter-spacing:.18em;text-transform:uppercase;color:#b8922a;margin:0 0 4px;">Director Portal</p>
+                            <h1 style="font-family:'Georgia',serif;font-size:22px;font-weight:700;color:#fff;margin:0 0 6px;line-height:1.2;">{{ $invoice->invoice_number }}</h1>
+                            <p style="font-size:12px;color:#94a3b8;margin:0;">Issued {{ $invoice->invoice_date->format('d M Y') }} &middot; Due {{ $invoice->payment_due_date->format('d M Y') }}</p>
+                        </div>
+                    </div>
+                    <div style="display:flex;align-items:center;gap:10px;flex-wrap:wrap;">
+                        @php
+                            $sc = [
+                                'unpaid'  => 'background:#fef9c3;color:#854d0e;border:1px solid #fde047;',
+                                'paid'    => 'background:#dcfce7;color:#166534;border:1px solid #86efac;',
+                                'overdue' => 'background:#fee2e2;color:#991b1b;border:1px solid #fca5a5;',
+                                'waived'  => 'background:#f1f5f9;color:#64748b;border:1px solid #cbd5e1;',
+                            ];
+                        @endphp
+                        <span style="display:inline-flex;align-items:center;padding:5px 14px;border-radius:3px;font-size:11px;font-weight:700;letter-spacing:.06em;text-transform:uppercase;{{ $sc[$invoice->payment_status] ?? 'background:#f1f5f9;color:#64748b;border:1px solid #cbd5e1;' }}">
+                            {{ $invoice->payment_status }}
+                        </span>
+                        <a href="{{ route('director.invoices.index') }}"
+                           style="display:inline-flex;align-items:center;gap:8px;padding:8px 20px;background:#fff;color:#1a2f4e;font-size:12px;font-weight:700;letter-spacing:.06em;border:1px solid #1a2f4e;border-radius:3px;text-decoration:none;">
+                            &larr; All Invoices
+                        </a>
+                    </div>
                 </div>
             </div>
-            @php
-                $sc = [
-                    'unpaid'  => 'bg-yellow-50 text-yellow-700 ring-yellow-600/20',
-                    'paid'    => 'bg-green-50 text-green-700 ring-green-600/20',
-                    'overdue' => 'bg-red-50 text-red-700 ring-red-600/20',
-                    'waived'  => 'bg-gray-50 text-gray-500 ring-gray-500/20',
-                ];
-            @endphp
-            <span class="inline-flex items-center px-3 py-1 rounded-full text-xs font-medium ring-1 ring-inset {{ $sc[$invoice->payment_status] ?? 'bg-gray-50 text-gray-500' }} capitalize">
-                {{ $invoice->payment_status }}
-            </span>
         </div>
     </x-slot>
 
-    <div class="py-8">
-        <div class="max-w-4xl mx-auto sm:px-6 lg:px-8 space-y-6">
+    @push('styles')
+    <style>
+        .page-hdr { padding: 0 !important; }
+        .page-hdr-inner { max-width: 100% !important; padding: 0 !important; }
+        .app-main { padding-left:0 !important; padding-right:0 !important; padding-top:0 !important; max-width:100% !important; }
+    </style>
+    @endpush
+
+    <div style="background:#f1f5f9;min-height:100vh;padding:52px 0 56px;">
+        <div style="max-width:80rem;margin:0 auto;padding:0 2rem;">
 
             @if(session('success'))
-                <div class="bg-green-50 border-l-4 border-green-400 p-4 rounded-lg text-sm text-green-800">
-                    {{ session('success') }}
-                </div>
+                <div style="background:#f0fdf4;border:1px solid #bbf7d0;border-left:4px solid #16a34a;border-radius:4px;padding:12px 16px;margin-bottom:20px;font-size:13px;color:#166534;">{{ session('success') }}</div>
+            @endif
+            @if(session('error'))
+                <div style="background:#fef2f2;border:1px solid #fecaca;border-left:4px solid #dc2626;border-radius:4px;padding:12px 16px;margin-bottom:20px;font-size:13px;color:#991b1b;">{{ session('error') }}</div>
             @endif
             @if(session('info'))
-                <div class="bg-blue-50 border-l-4 border-blue-400 p-4 rounded-lg text-sm text-blue-800">
-                    {{ session('info') }}
-                </div>
+                <div style="background:#eff6ff;border:1px solid #bfdbfe;border-left:4px solid #2563eb;border-radius:4px;padding:12px 16px;margin-bottom:20px;font-size:13px;color:#1e40af;">{{ session('info') }}</div>
             @endif
 
             {{-- ── Invoice Document ─────────────────────────────── --}}
-            <div class="bg-white rounded-xl border border-gray-200 overflow-hidden">
+            <div style="background:#fff;border:1px solid #e2e8f0;border-radius:4px;overflow:hidden;margin-bottom:24px;">
 
                 {{-- Header --}}
-                <div class="px-8 py-6 border-b border-gray-100 flex items-start justify-between">
+                <div style="padding:24px 32px;border-bottom:1px solid #e2e8f0;display:flex;align-items:flex-start;justify-content:space-between;">
                     <div>
-                        <p class="text-xs font-medium text-gray-400 uppercase tracking-widest mb-1">
-                            Kiribati Seafood Toxicology Laboratory
-                        </p>
-                        <h2 class="text-2xl font-bold text-gray-900">TAX INVOICE</h2>
+                        <p style="font-size:9px;font-weight:700;letter-spacing:.18em;text-transform:uppercase;color:#b8922a;margin:0 0 6px;">Kiribati Seafood Toxicology Laboratory</p>
+                        <h2 style="font-family:'Georgia',serif;font-size:24px;font-weight:700;color:#1a2f4e;margin:0;">TAX INVOICE</h2>
                     </div>
-                    <div class="text-right text-sm">
-                        <p class="font-mono font-bold text-lg text-gray-800">{{ $invoice->invoice_number }}</p>
-                        <p class="text-gray-500 mt-1">Date: {{ $invoice->invoice_date->format('d M Y') }}</p>
-                        <p class="text-gray-500">Due: {{ $invoice->payment_due_date->format('d M Y') }}</p>
+                    <div style="text-align:right;">
+                        <p style="font-family:monospace;font-size:18px;font-weight:700;color:#1a2f4e;margin:0 0 6px;">{{ $invoice->invoice_number }}</p>
+                        <p style="font-size:12px;color:#64748b;margin:0 0 2px;">Date: {{ $invoice->invoice_date->format('d M Y') }}</p>
+                        <p style="font-size:12px;color:#64748b;margin:0;">Due: {{ $invoice->payment_due_date->format('d M Y') }}</p>
                     </div>
                 </div>
 
                 {{-- Bill To --}}
-                <div class="px-8 py-5 border-b border-gray-100 grid grid-cols-2 gap-8">
+                <div style="padding:20px 32px;border-bottom:1px solid #e2e8f0;display:grid;grid-template-columns:1fr 1fr;gap:32px;">
                     <div>
-                        <p class="text-xs font-medium text-gray-400 uppercase tracking-wide mb-2">Bill To</p>
-                        <p class="font-semibold text-gray-900">{{ $invoice->bill_to_company }}</p>
-                        <p class="text-sm text-gray-600 mt-1 whitespace-pre-line">{{ $invoice->bill_to_address }}</p>
+                        <p style="font-size:9px;font-weight:700;letter-spacing:.12em;text-transform:uppercase;color:#64748b;margin:0 0 8px;">Bill To</p>
+                        <p style="font-size:14px;font-weight:700;color:#1e293b;margin:0 0 4px;">{{ $invoice->bill_to_company }}</p>
+                        <p style="font-size:13px;color:#475569;margin:0 0 4px;white-space:pre-line;">{{ $invoice->bill_to_address }}</p>
                         @if($invoice->bill_to_phone)
-                            <p class="text-sm text-gray-500 mt-1">{{ $invoice->bill_to_phone }}</p>
+                            <p style="font-size:13px;color:#64748b;margin:0 0 2px;">{{ $invoice->bill_to_phone }}</p>
                         @endif
                         @if($invoice->bill_to_email)
-                            <p class="text-sm text-gray-500">{{ $invoice->bill_to_email }}</p>
+                            <p style="font-size:13px;color:#64748b;margin:0;">{{ $invoice->bill_to_email }}</p>
                         @endif
                     </div>
                     <div>
-                        <p class="text-xs font-medium text-gray-400 uppercase tracking-wide mb-2">Submission</p>
-                        <p class="font-mono text-sm font-medium text-gray-800">
+                        <p style="font-size:9px;font-weight:700;letter-spacing:.12em;text-transform:uppercase;color:#64748b;margin:0 0 8px;">Submission</p>
+                        <p style="font-family:monospace;font-size:13px;font-weight:600;color:#1e293b;margin:0 0 4px;">
                             {{ $invoice->submission->reference_number }}
                         </p>
-                        <p class="text-sm text-gray-600 mt-1">{{ $invoice->submission->sample_name }}</p>
-                        <p class="text-xs text-gray-400 mt-1">
+                        <p style="font-size:13px;color:#475569;margin:0 0 4px;">{{ $invoice->submission->sample_name }}</p>
+                        <p style="font-size:11px;color:#94a3b8;margin:0;">
                             Issued by: {{ $invoice->issuedBy?->name ?? 'System' }}
                         </p>
                     </div>
                 </div>
 
                 {{-- Line Items --}}
-                <div class="overflow-x-auto">
-                    <table class="w-full text-sm">
-                        <thead class="bg-gray-50 border-b border-gray-100">
-                            <tr>
-                                <th class="text-left px-8 py-3 text-xs font-medium text-gray-500 uppercase tracking-wide">Description</th>
-                                <th class="text-left px-4 py-3 text-xs font-medium text-gray-500 uppercase tracking-wide">Category</th>
-                                <th class="text-right px-4 py-3 text-xs font-medium text-gray-500 uppercase tracking-wide">Qty</th>
-                                <th class="text-right px-4 py-3 text-xs font-medium text-gray-500 uppercase tracking-wide">Unit Price</th>
-                                <th class="text-right px-8 py-3 text-xs font-medium text-gray-500 uppercase tracking-wide">Total</th>
+                <div style="overflow-x:auto;">
+                    <table style="width:100%;border-collapse:collapse;">
+                        <thead>
+                            <tr style="background:#1a2f4e;">
+                                <th style="padding:10px 32px 10px 32px;text-align:left;font-size:9px;font-weight:700;letter-spacing:.12em;text-transform:uppercase;color:#e2e8f0;">Description</th>
+                                <th style="padding:10px 16px;text-align:left;font-size:9px;font-weight:700;letter-spacing:.12em;text-transform:uppercase;color:#e2e8f0;">Category</th>
+                                <th style="padding:10px 16px;text-align:right;font-size:9px;font-weight:700;letter-spacing:.12em;text-transform:uppercase;color:#e2e8f0;">Qty</th>
+                                <th style="padding:10px 16px;text-align:right;font-size:9px;font-weight:700;letter-spacing:.12em;text-transform:uppercase;color:#e2e8f0;">Unit Price</th>
+                                <th style="padding:10px 32px 10px 16px;text-align:right;font-size:9px;font-weight:700;letter-spacing:.12em;text-transform:uppercase;color:#e2e8f0;">Total</th>
                             </tr>
                         </thead>
-                        <tbody class="divide-y divide-gray-50">
+                        <tbody>
                             @foreach($invoice->items->groupBy('category') as $category => $items)
                                 {{-- Category subheader --}}
                                 @if($category)
-                                    <tr class="bg-gray-50/50">
-                                        <td colspan="5" class="px-8 py-2 text-xs font-semibold text-gray-500 uppercase tracking-wide">
+                                    <tr style="background:#f8fafc;">
+                                        <td colspan="5" style="padding:8px 32px;font-size:11px;font-weight:700;color:#64748b;text-transform:uppercase;letter-spacing:.08em;">
                                             {{ $category }}
                                         </td>
                                     </tr>
                                 @endif
                                 @foreach($items as $item)
-                                    <tr class="hover:bg-gray-50">
-                                        <td class="px-8 py-3 text-gray-800">{{ $item->item_description }}</td>
-                                        <td class="px-4 py-3 text-gray-500 text-xs">{{ $item->category ?? '—' }}</td>
-                                        <td class="px-4 py-3 text-right text-gray-700">{{ $item->quantity }}</td>
-                                        <td class="px-4 py-3 text-right text-gray-700">A$ {{ number_format($item->unit_price_aud, 2) }}</td>
-                                        <td class="px-8 py-3 text-right font-medium text-gray-800">A$ {{ number_format($item->total_price_aud, 2) }}</td>
+                                    <tr style="border-bottom:1px solid #f1f5f9;{{ $loop->even ? 'background:#f8fafc;' : '' }}">
+                                        <td style="padding:10px 32px;font-size:13px;color:#374151;">{{ $item->item_description }}</td>
+                                        <td style="padding:10px 16px;font-size:12px;color:#64748b;">{{ $item->category ?? '—' }}</td>
+                                        <td style="padding:10px 16px;text-align:right;font-size:13px;color:#374151;">{{ $item->quantity }}</td>
+                                        <td style="padding:10px 16px;text-align:right;font-size:13px;color:#374151;">A$ {{ number_format($item->unit_price_aud, 2) }}</td>
+                                        <td style="padding:10px 32px 10px 16px;text-align:right;font-size:13px;font-weight:600;color:#1e293b;">A$ {{ number_format($item->total_price_aud, 2) }}</td>
                                     </tr>
                                 @endforeach
                             @endforeach
                         </tbody>
-                        <tfoot class="border-t-2 border-gray-200">
-                            <tr class="bg-gray-50">
-                                <td colspan="4" class="px-8 py-4 text-sm font-semibold text-gray-700 text-right">
+                        <tfoot style="border-top:2px solid #e2e8f0;">
+                            <tr style="background:#f8fafc;">
+                                <td colspan="4" style="padding:16px 32px;font-size:13px;font-weight:700;color:#374151;text-align:right;text-transform:uppercase;letter-spacing:.06em;">
                                     TOTAL (AUD)
                                 </td>
-                                <td class="px-8 py-4 text-right text-xl font-bold text-gray-900">
+                                <td style="padding:16px 32px 16px 16px;text-align:right;font-size:22px;font-weight:700;color:#1a2f4e;">
                                     A$ {{ number_format($invoice->total_amount_aud, 2) }}
                                 </td>
                             </tr>
@@ -138,26 +145,26 @@
                 </div>
 
                 {{-- Payment Instructions --}}
-                <div class="px-8 py-5 border-t border-gray-100 bg-blue-50/30">
-                    <p class="text-xs font-semibold text-gray-600 uppercase tracking-wide mb-2">Payment Instructions</p>
-                    <p class="text-sm text-gray-600">
+                <div style="padding:20px 32px;border-top:1px solid #e2e8f0;background:#f8fafc;">
+                    <p style="font-size:9px;font-weight:700;letter-spacing:.12em;text-transform:uppercase;color:#475569;margin:0 0 8px;">Payment Instructions</p>
+                    <p style="font-size:13px;color:#475569;margin:0;">
                         Payment is due within <strong>10 working days</strong> by bank transfer.
                         Please include the invoice number <strong>{{ $invoice->invoice_number }}</strong> as your payment reference.
                     </p>
                     @if($invoice->notes)
-                        <p class="text-sm text-gray-500 mt-2 italic">{{ $invoice->notes }}</p>
+                        <p style="font-size:13px;color:#64748b;margin:8px 0 0;font-style:italic;">{{ $invoice->notes }}</p>
                     @endif
                 </div>
 
                 {{-- Payment Status --}}
                 @if($invoice->isPaid())
-                    <div class="px-8 py-4 border-t border-gray-100 bg-green-50 flex items-center justify-between">
+                    <div style="padding:16px 32px;border-top:1px solid #e2e8f0;background:#f0fdf4;display:flex;align-items:center;justify-content:space-between;">
                         <div>
-                            <p class="text-sm font-semibold text-green-800">✓ Payment Received</p>
-                            <p class="text-xs text-green-600 mt-0.5">
+                            <p style="font-size:13px;font-weight:700;color:#166534;margin:0 0 4px;">&#10003; Payment Received</p>
+                            <p style="font-size:12px;color:#16a34a;margin:0;">
                                 Ref: {{ $invoice->payment_reference }}
-                                · {{ $invoice->payment_received_at?->format('d M Y \a\t H:i') }}
-                                · Verified by {{ $invoice->paymentVerifiedBy?->name }}
+                                &middot; {{ $invoice->payment_received_at?->format('d M Y \a\t H:i') }}
+                                &middot; Verified by {{ $invoice->paymentVerifiedBy?->name }}
                             </p>
                         </div>
                     </div>
@@ -167,18 +174,19 @@
 
             {{-- ── Mark as Paid Form ────────────────────────────── --}}
             @if($invoice->isUnpaid() || $invoice->isOverdue())
-                <div class="bg-white rounded-xl border border-gray-100 overflow-hidden">
-                    <div class="px-6 py-4 border-b border-gray-100">
-                        <h3 class="text-sm font-medium text-gray-800">Record Payment</h3>
-                        <p class="text-xs text-gray-400 mt-0.5">Enter the client's bank transfer reference to mark as paid.</p>
+                <div style="background:#fff;border:1px solid #e2e8f0;border-radius:4px;overflow:hidden;margin-bottom:24px;">
+                    <div style="padding:16px 24px;border-bottom:1px solid #e2e8f0;">
+                        <h3 style="font-family:'Georgia',serif;font-size:14px;font-weight:700;color:#1a2f4e;margin:0 0 4px;">Record Payment</h3>
+                        <p style="font-size:12px;color:#94a3b8;margin:0;">Enter the client's bank transfer reference to mark as paid.</p>
                     </div>
                     <form method="POST"
                           action="{{ route('director.invoices.paid', $invoice->id) }}"
-                          class="px-6 py-5"
+                          style="padding:20px 24px;"
                           x-data="{ ref: '' }">
                         @csrf
-                        <div class="flex gap-3">
-                            <div class="flex-1">
+                        <div style="display:flex;gap:12px;">
+                            <div style="flex:1;">
+                                <label style="display:block;font-size:11px;font-weight:700;letter-spacing:.08em;text-transform:uppercase;color:#475569;margin-bottom:6px;">Payment Reference</label>
                                 <x-input type="text"
                                          name="payment_reference"
                                          x-model="ref"
@@ -190,21 +198,16 @@
                             <button type="submit"
                                     :disabled="ref.trim().length < 3"
                                     @click.prevent="if(ref.trim().length >= 3 && confirm('Mark {{ $invoice->invoice_number }} as paid with reference ' + ref.trim() + '?')) $el.closest('form').submit()"
-                                    :class="ref.trim().length >= 3
-                                        ? 'bg-green-600 hover:bg-green-700 text-white cursor-pointer'
-                                        : 'bg-gray-200 text-gray-400 cursor-not-allowed'"
-                                    class="inline-flex items-center gap-2 px-5 py-2.5 text-sm font-medium rounded-lg transition">
-                                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"/>
-                                </svg>
+                                    :style="ref.trim().length >= 3
+                                        ? 'background:#16a34a;color:#fff;cursor:pointer;'
+                                        : 'background:#e2e8f0;color:#94a3b8;cursor:not-allowed;'"
+                                    style="display:inline-flex;align-items:center;gap:8px;padding:9px 20px;font-size:12px;font-weight:700;letter-spacing:.06em;text-transform:uppercase;border-radius:3px;border:none;align-self:flex-end;">
                                 Mark as Paid
                             </button>
                         </div>
                     </form>
                 </div>
             @endif
-
-            <div class="pb-8"></div>
 
         </div>
     </div>

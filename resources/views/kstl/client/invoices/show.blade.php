@@ -1,4 +1,4 @@
-{{-- resources/views/kstl/client/invoices/show.blade.php --}}
+﻿{{-- resources/views/kstl/client/invoices/show.blade.php --}}
 
 <x-app-layout>
     <x-slot name="header">
@@ -15,113 +15,139 @@
         </div>
     </x-slot>
 
-    <div class="py-8">
-        <div class="max-w-4xl mx-auto sm:px-6 lg:px-8 space-y-6">
+    <div style="background:#f1f5f9; min-height:100vh; padding:52px 0 56px;">
+        <div style="max-width:80rem; margin:0 auto; padding:0 2rem;">
+
+            {{-- Page Header --}}
+            <div style="margin-bottom:24px; display:flex; align-items:flex-start; justify-content:space-between; flex-wrap:wrap; gap:12px;">
+                <div>
+                    <h1 style="font-family:'Georgia',serif; font-size:22px; font-weight:700; color:#1a2f4e; margin:0 0 4px;">
+                        Tax Invoice
+                    </h1>
+                    <p style="font-size:12.5px; color:#6b7280; margin:0;">
+                        {{ $invoice->invoice_number }}
+                    </p>
+                </div>
+                <a href="{{ route('client.invoices.index') }}"
+                   style="border:1px solid #e2e8f0; color:#374151; padding:8px 16px; border-radius:3px; font-size:12px; background:#fff; text-decoration:none; display:inline-flex; align-items:center; gap:6px;">
+                    <svg style="width:12px; height:12px;" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7"/>
+                    </svg>
+                    Back to Invoices
+                </a>
+            </div>
 
             @if(session('warning'))
-                <div class="bg-amber-50 border-l-4 border-amber-400 p-4 rounded-lg text-sm text-amber-800 flex items-start gap-3">
-                    <svg class="w-5 h-5 mt-0.5 shrink-0 text-amber-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <div style="border-left:4px solid #f59e0b; padding:12px 18px; border-radius:0 4px 4px 0; background:#fffbeb; color:#92400e; font-size:12.5px; margin-bottom:20px; display:flex; align-items:flex-start; gap:10px;">
+                    <svg style="width:16px; height:16px; flex-shrink:0; margin-top:1px; color:#d97706;" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01M10.29 3.86L1.82 18a2 2 0 001.71 3h16.94a2 2 0 001.71-3L13.71 3.86a2 2 0 00-3.42 0z"/>
                     </svg>
-                    <p>{{ session('warning') }}</p>
+                    <p style="margin:0;">{{ session('warning') }}</p>
                 </div>
             @endif
 
             {{-- Invoice Document --}}
-            <div class="bg-white rounded-xl border border-gray-200 overflow-hidden">
+            <div style="background:#fff; border:1px solid #e2e8f0; border-radius:4px; overflow:hidden; margin-bottom:20px;">
 
-                <div class="px-8 py-6 border-b border-gray-100 flex items-start justify-between">
+                {{-- Invoice Header --}}
+                <div style="padding:24px 28px; border-bottom:1px solid #e2e8f0; display:flex; align-items:flex-start; justify-content:space-between; flex-wrap:wrap; gap:16px;">
                     <div>
-                        <p class="text-xs font-medium text-gray-400 uppercase tracking-widest mb-1">
+                        <p style="font-size:9px; font-weight:700; letter-spacing:.14em; text-transform:uppercase; color:#9ca3af; margin:0 0 6px;">
                             Kiribati Seafood Toxicology Laboratory
                         </p>
-                        <h2 class="text-2xl font-bold text-gray-900">TAX INVOICE</h2>
+                        <h2 style="font-family:'Georgia',serif; font-size:20px; font-weight:700; color:#1a2f4e; margin:0;">TAX INVOICE</h2>
                     </div>
-                    <div class="text-right text-sm">
-                        <p class="font-mono font-bold text-lg text-gray-800">{{ $invoice->invoice_number }}</p>
-                        <p class="text-gray-500 mt-1">Date: {{ $invoice->invoice_date->format('d M Y') }}</p>
-                        <p class="{{ $invoice->isPaymentDue() ? 'text-red-600 font-semibold' : 'text-gray-500' }}">
+                    <div style="text-align:right;">
+                        <p style="font-family:monospace; font-size:16px; font-weight:700; color:#1a2f4e; margin:0 0 4px;">{{ $invoice->invoice_number }}</p>
+                        <p style="font-size:12px; color:#6b7280; margin:0 0 2px;">Date: {{ $invoice->invoice_date->format('d M Y') }}</p>
+                        <p style="font-size:12px; margin:0; {{ $invoice->isPaymentDue() ? 'color:#dc2626; font-weight:600;' : 'color:#6b7280;' }}">
                             Due: {{ $invoice->payment_due_date->format('d M Y') }}
-                            @if($invoice->isPaymentDue()) ⚠ Overdue @endif
+                            @if($invoice->isPaymentDue()) &#9888; Overdue @endif
                         </p>
                     </div>
                 </div>
 
-                <div class="px-8 py-5 border-b border-gray-100 grid grid-cols-2 gap-8">
+                {{-- Bill To / Reference --}}
+                <div style="padding:20px 28px; border-bottom:1px solid #e2e8f0; display:grid; grid-template-columns:1fr 1fr; gap:32px;">
                     <div>
-                        <p class="text-xs font-medium text-gray-400 uppercase tracking-wide mb-2">Bill To</p>
-                        <p class="font-semibold text-gray-900">{{ $invoice->bill_to_company }}</p>
-                        <p class="text-sm text-gray-600 mt-1 whitespace-pre-line">{{ $invoice->bill_to_address }}</p>
+                        <p style="font-size:9px; font-weight:700; letter-spacing:.14em; text-transform:uppercase; color:#9ca3af; margin:0 0 8px;">Bill To</p>
+                        <p style="font-size:13px; font-weight:700; color:#1a2f4e; margin:0 0 4px;">{{ $invoice->bill_to_company }}</p>
+                        <p style="font-size:12px; color:#6b7280; margin:0; white-space:pre-line;">{{ $invoice->bill_to_address }}</p>
                     </div>
                     <div>
-                        <p class="text-xs font-medium text-gray-400 uppercase tracking-wide mb-2">Reference</p>
-                        <p class="font-mono text-sm font-medium text-gray-800">
+                        <p style="font-size:9px; font-weight:700; letter-spacing:.14em; text-transform:uppercase; color:#9ca3af; margin:0 0 8px;">Submission Reference</p>
+                        <p style="font-family:monospace; font-size:13px; font-weight:600; color:#1a2f4e; margin:0 0 4px;">
                             {{ $invoice->submission->reference_number }}
                         </p>
-                        <p class="text-sm text-gray-600 mt-1">{{ $invoice->submission->sample_name }}</p>
+                        <p style="font-size:12px; color:#6b7280; margin:0;">{{ $invoice->submission->sample_name }}</p>
                     </div>
                 </div>
 
                 {{-- Line Items --}}
-                <div class="overflow-x-auto">
-                    <table class="w-full text-sm">
-                        <thead class="bg-gray-50 border-b border-gray-100">
-                            <tr>
-                                <th class="text-left px-8 py-3 text-xs font-medium text-gray-500 uppercase">Test Description</th>
-                                <th class="text-left px-4 py-3 text-xs font-medium text-gray-500 uppercase">Category</th>
-                                <th class="text-right px-4 py-3 text-xs font-medium text-gray-500 uppercase">Qty</th>
-                                <th class="text-right px-4 py-3 text-xs font-medium text-gray-500 uppercase">Unit Price</th>
-                                <th class="text-right px-8 py-3 text-xs font-medium text-gray-500 uppercase">Total</th>
+                <div style="overflow-x:auto;">
+                    <table style="width:100%; border-collapse:collapse;">
+                        <thead>
+                            <tr style="background:#1a2f4e;">
+                                <th style="text-align:left; padding:9px 28px; font-size:9px; font-weight:700; letter-spacing:.12em; text-transform:uppercase; color:#e2e8f0;">Test Description</th>
+                                <th style="text-align:left; padding:9px 16px; font-size:9px; font-weight:700; letter-spacing:.12em; text-transform:uppercase; color:#e2e8f0;">Category</th>
+                                <th style="text-align:right; padding:9px 16px; font-size:9px; font-weight:700; letter-spacing:.12em; text-transform:uppercase; color:#e2e8f0;">Qty</th>
+                                <th style="text-align:right; padding:9px 16px; font-size:9px; font-weight:700; letter-spacing:.12em; text-transform:uppercase; color:#e2e8f0;">Unit Price</th>
+                                <th style="text-align:right; padding:9px 28px; font-size:9px; font-weight:700; letter-spacing:.12em; text-transform:uppercase; color:#e2e8f0;">Total</th>
                             </tr>
                         </thead>
-                        <tbody class="divide-y divide-gray-50">
+                        <tbody>
                             @php
                                 $itemsBySample = $invoice->items->groupBy(fn($i) => $i->sampleTest?->sample_id ?? 'other');
                                 $multiSample   = $itemsBySample->count() > 1;
+                                $groupIndex    = 0;
                             @endphp
                             @foreach($itemsBySample as $sampleId => $items)
-                                @php $sample = $items->first()->sampleTest?->sample; @endphp
-                                {{-- Sample header --}}
-                                <tr class="bg-gray-50 border-t border-gray-100">
-                                    <td colspan="5" class="px-8 py-2.5">
-                                        <div class="flex flex-wrap items-center gap-2">
-                                            <span class="font-semibold text-gray-800 text-sm">
+                                @php
+                                    $sample = $items->first()->sampleTest?->sample;
+                                    $groupIndex++;
+                                @endphp
+                                {{-- Sample group header --}}
+                                <tr style="background:#f8fafc; border-top:1px solid #e2e8f0; border-bottom:1px solid #e2e8f0;">
+                                    <td colspan="5" style="padding:8px 28px;">
+                                        <div style="display:flex; flex-wrap:wrap; align-items:center; gap:8px;">
+                                            <span style="font-size:12.5px; font-weight:700; color:#1a2f4e;">
                                                 {{ $sample?->common_name ?? 'Other Charges' }}
                                             </span>
                                             @if($sample?->scientific_name)
-                                                <span class="text-xs italic text-gray-500">{{ $sample->scientific_name }}</span>
+                                                <span style="font-size:11px; font-style:italic; color:#6b7280;">{{ $sample->scientific_name }}</span>
                                             @endif
                                             @if($sample?->sample_code)
-                                                <span class="font-mono text-xs text-gray-400 bg-gray-100 px-1.5 py-0.5 rounded">{{ $sample->sample_code }}</span>
+                                                <span style="font-family:monospace; font-size:10px; color:#9ca3af; background:#f3f4f6; padding:1px 6px; border-radius:2px; border:1px solid #e2e8f0;">{{ $sample->sample_code }}</span>
                                             @endif
                                         </div>
                                     </td>
                                 </tr>
-                                @foreach($items as $item)
-                                    <tr class="hover:bg-gray-50/50">
-                                        <td class="px-8 py-2.5 pl-12 text-gray-700">{{ $item->item_description }}</td>
-                                        <td class="px-4 py-2.5 text-gray-500 text-xs">{{ $item->category ?? '—' }}</td>
-                                        <td class="px-4 py-2.5 text-right text-gray-700">{{ $item->quantity }}</td>
-                                        <td class="px-4 py-2.5 text-right text-gray-700">A$ {{ number_format($item->unit_price_aud, 2) }}</td>
-                                        <td class="px-8 py-2.5 text-right font-medium text-gray-800">A$ {{ number_format($item->total_price_aud, 2) }}</td>
+                                @foreach($items as $j => $item)
+                                    @php $itemBg = $j % 2 === 0 ? '#fff' : '#f8fafc'; @endphp
+                                    <tr style="background:{{ $itemBg }}; border-bottom:1px solid #f1f5f9;">
+                                        <td style="padding:10px 28px 10px 40px; font-size:12.5px; color:#374151;">{{ $item->item_description }}</td>
+                                        <td style="padding:10px 16px; font-size:11.5px; color:#6b7280;">{{ $item->category ?? '—' }}</td>
+                                        <td style="padding:10px 16px; font-size:12.5px; text-align:right; color:#374151;">{{ $item->quantity }}</td>
+                                        <td style="padding:10px 16px; font-size:12.5px; text-align:right; color:#374151;">A$ {{ number_format($item->unit_price_aud, 2) }}</td>
+                                        <td style="padding:10px 28px; font-size:12.5px; text-align:right; font-weight:600; color:#1a2f4e;">A$ {{ number_format($item->total_price_aud, 2) }}</td>
                                     </tr>
                                 @endforeach
                                 @if($multiSample)
-                                    <tr class="bg-blue-50/30">
-                                        <td colspan="4" class="px-8 py-1.5 text-xs text-gray-500 text-right italic">
+                                    <tr style="background:#f0f9ff; border-bottom:1px solid #e2e8f0;">
+                                        <td colspan="4" style="padding:7px 28px; font-size:11px; color:#6b7280; text-align:right; font-style:italic;">
                                             Subtotal — {{ $sample?->common_name ?? 'Other' }}
                                         </td>
-                                        <td class="px-8 py-1.5 text-right text-sm font-semibold text-gray-700">
+                                        <td style="padding:7px 28px; text-align:right; font-size:12.5px; font-weight:700; color:#1a2f4e;">
                                             A$ {{ number_format($items->sum('total_price_aud'), 2) }}
                                         </td>
                                     </tr>
                                 @endif
                             @endforeach
                         </tbody>
-                        <tfoot class="border-t-2 border-gray-200">
-                            <tr class="bg-gray-50">
-                                <td colspan="4" class="px-8 py-4 text-sm font-semibold text-gray-700 text-right">TOTAL (AUD)</td>
-                                <td class="px-8 py-4 text-right text-xl font-bold text-gray-900">
+                        <tfoot>
+                            <tr style="background:#1a2f4e; border-top:2px solid #b8922a;">
+                                <td colspan="4" style="padding:14px 28px; font-size:11px; font-weight:700; letter-spacing:.12em; text-transform:uppercase; color:#e2e8f0; text-align:right;">Total (AUD)</td>
+                                <td style="padding:14px 28px; text-align:right; font-size:18px; font-weight:700; color:#fff;">
                                     A$ {{ number_format($invoice->total_amount_aud, 2) }}
                                 </td>
                             </tr>
@@ -130,92 +156,95 @@
                 </div>
 
                 {{-- Payment Instructions --}}
-                <div class="px-8 py-5 border-t border-gray-100 bg-blue-50/30">
-                    <p class="text-xs font-semibold text-gray-600 uppercase tracking-wide mb-2">How to Pay</p>
-                    <p class="text-sm text-gray-600">
+                <div style="padding:18px 28px; border-top:1px solid #e2e8f0; background:#f8fafc;">
+                    <p style="font-size:9px; font-weight:700; letter-spacing:.14em; text-transform:uppercase; color:#9ca3af; margin:0 0 6px;">How to Pay</p>
+                    <p style="font-size:12.5px; color:#374151; margin:0;">
                         Please pay by bank transfer within <strong>10 working days</strong>.
                         Use <strong>{{ $invoice->invoice_number }}</strong> as your payment reference.
                         Contact the lab for bank account details.
                     </p>
                 </div>
 
-                {{-- Paid notice --}}
+                {{-- Payment status notices --}}
                 @if($invoice->isPaid())
-                    <div class="px-8 py-4 border-t border-gray-100 bg-green-50">
-                        <p class="text-sm font-semibold text-green-800">✓ Payment Confirmed</p>
-                        <p class="text-xs text-green-600 mt-0.5">
+                    <div style="border-left:4px solid #16a34a; padding:12px 18px; border-radius:0 4px 4px 0; background:#f0fdf4; margin:0 28px 20px; color:#15803d;">
+                        <p style="font-size:13px; font-weight:700; margin:0 0 3px;">&#10003; Payment Confirmed</p>
+                        <p style="font-size:11.5px; margin:0; color:#16a34a;">
                             Ref: {{ $invoice->payment_reference }}
-                            · {{ $invoice->payment_received_at?->format('d M Y') }}
+                            &middot; {{ $invoice->payment_received_at?->format('d M Y') }}
                         </p>
                     </div>
                 @elseif($invoice->hasSubmittedPayment())
-                    <div class="px-8 py-4 border-t border-gray-100 bg-blue-50">
-                        <p class="text-sm font-semibold text-blue-800">⏳ Payment Details Submitted — Awaiting Confirmation</p>
-                        <p class="text-xs text-blue-600 mt-0.5">
-                            TT Reference: <span class="font-mono font-semibold">{{ $invoice->payment_submitted_reference }}</span>
-                            · Submitted {{ $invoice->payment_submitted_at?->format('d M Y \a\t H:i') }}
+                    <div style="border-left:4px solid #3b82f6; padding:12px 18px; border-radius:0 4px 4px 0; background:#eff6ff; margin:0 28px 20px; color:#1d4ed8;">
+                        <p style="font-size:13px; font-weight:700; margin:0 0 3px;">Payment Details Submitted — Awaiting Confirmation</p>
+                        <p style="font-size:11.5px; margin:0 0 2px; color:#2563eb;">
+                            TT Reference: <span style="font-family:monospace; font-weight:700;">{{ $invoice->payment_submitted_reference }}</span>
+                            &middot; Submitted {{ $invoice->payment_submitted_at?->format('d M Y \a\t H:i') }}
                         </p>
-                        <p class="text-xs text-blue-500 mt-1">The laboratory will verify your payment and confirm shortly.</p>
+                        <p style="font-size:11px; margin:0; color:#3b82f6;">The laboratory will verify your payment and confirm shortly.</p>
                     </div>
                 @endif
 
             </div>
 
-            {{-- ── Submit Payment Details ──────────────────────────── --}}
+            {{-- Submit Payment Details --}}
             @if(! $invoice->isPaid() && ! $invoice->hasSubmittedPayment())
-                <div class="bg-white rounded-xl border border-gray-200 overflow-hidden">
-                    <div class="px-6 py-4 border-b border-gray-100">
-                        <h3 class="text-sm font-semibold text-gray-800">Submit Payment Details</h3>
-                        <p class="text-xs text-gray-500 mt-0.5">
+                <div style="background:#fff; border:1px solid #e2e8f0; border-radius:4px; overflow:hidden; margin-bottom:20px;">
+
+                    <div style="padding:16px 24px 14px;">
+                        <h3 style="font-family:'Georgia',serif; font-size:15px; font-weight:700; color:#1a2f4e; border-bottom:2px solid #b8922a; padding-bottom:8px; margin-bottom:8px;">
+                            Submit Payment Details
+                        </h3>
+                        <p style="font-size:12px; color:#6b7280; margin:0;">
                             After completing your bank transfer, enter your Telegraphic Transfer (TT) reference number below.
                             The laboratory will verify and confirm receipt.
                         </p>
                     </div>
 
                     @if(session('success'))
-                        <div class="mx-6 mt-4 bg-green-50 border-l-4 border-green-400 p-3 rounded text-sm text-green-800">
+                        <div style="border-left:4px solid #16a34a; padding:12px 18px; border-radius:0 4px 4px 0; background:#f0fdf4; color:#15803d; font-size:12.5px; margin:0 24px 12px;">
                             {{ session('success') }}
                         </div>
                     @endif
 
                     <form method="POST"
                           action="{{ route('client.invoices.payment-reference', $invoice->id) }}"
-                          class="px-6 py-5">
+                          style="padding:16px 24px 20px;">
                         @csrf
-                        <div class="flex gap-3">
-                            <div class="flex-1">
-                                <label class="block text-xs font-medium text-gray-600 mb-1">
-                                    TT Reference Number <span class="text-red-500">*</span>
+                        <div style="display:flex; gap:12px; align-items:flex-end; flex-wrap:wrap;">
+                            <div style="flex:1; min-width:220px;">
+                                <label style="display:block; font-size:9px; font-weight:700; letter-spacing:.14em; text-transform:uppercase; color:#9ca3af; margin-bottom:6px;">
+                                    TT Reference Number <span style="color:#dc2626;">*</span>
                                 </label>
                                 <input type="text"
                                        name="tt_reference"
                                        value="{{ old('tt_reference') }}"
                                        placeholder="e.g. TT-20260608-001"
                                        required
-                                       class="w-full border-gray-300 rounded-lg text-sm font-mono focus:border-teal-500 focus:ring-teal-500 @error('tt_reference') border-red-400 @enderror"/>
+                                       style="width:100%; box-sizing:border-box; border:1px solid #e2e8f0; border-radius:3px; padding:9px 12px; font-size:12.5px; font-family:monospace; color:#374151; outline:none; @error('tt_reference') border-color:#dc2626; @enderror"
+                                       class="focus:border-teal-500 focus:ring-teal-500 @error('tt_reference') border-red-400 @enderror"/>
                                 @error('tt_reference')
-                                    <p class="text-xs text-red-600 mt-1">{{ $message }}</p>
+                                    <p style="font-size:11px; color:#dc2626; margin:4px 0 0;">{{ $message }}</p>
                                 @enderror
-                                <p class="text-xs text-gray-400 mt-1">
-                                    Use the invoice number <strong>{{ $invoice->invoice_number }}</strong> as your payment reference when making the transfer.
+                                <p style="font-size:11px; color:#9ca3af; margin:5px 0 0;">
+                                    Use invoice number <strong style="color:#374151;">{{ $invoice->invoice_number }}</strong> as your payment reference when making the transfer.
                                 </p>
                             </div>
-                            <div class="flex items-end">
+                            <div>
                                 <button type="submit"
                                         onclick="return confirm('Submit TT reference {{ $invoice->invoice_number }}?')"
-                                        class="inline-flex items-center gap-2 px-5 py-2.5 bg-teal-600 text-white text-sm font-medium rounded-lg hover:bg-teal-700 transition">
-                                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        style="background:#0d9488; color:#fff; padding:9px 20px; border-radius:3px; font-size:12px; font-weight:600; border:none; cursor:pointer; display:inline-flex; align-items:center; gap:6px;">
+                                    <svg style="width:13px; height:13px;" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 19l9 2-9-18-9 18 9-2zm0 0v-8"/>
                                     </svg>
-                                    Submit
+                                    Submit Payment Details
                                 </button>
                             </div>
                         </div>
                     </form>
+
                 </div>
             @endif
-
-            <div class="pb-8"></div>
 
         </div>
     </div>

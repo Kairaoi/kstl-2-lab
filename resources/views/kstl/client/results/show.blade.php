@@ -378,11 +378,10 @@
                                 <table class="coa-tbl">
                                     <thead>
                                         <tr>
-                                            <th style="width:28%;">Test</th>
-                                            <th style="width:16%;">Result</th>
-                                            <th style="width:10%;">Unit</th>
-                                            <th style="width:26%;">Method Reference</th>
-                                            <th style="width:20%;">Outcome</th>
+                                            <th style="width:34%;">Test</th>
+                                            <th style="width:20%;">Result</th>
+                                            <th style="width:12%;">Unit</th>
+                                            <th style="width:34%;">Method Reference</th>
                                         </tr>
                                     </thead>
                                     <tbody>
@@ -400,8 +399,8 @@
                                                 };
                                                 $sopCode = \App\Models\Kstl\SampleTest::TEST_SOPS[$test->test_key] ?? null;
                                                 $sopDoc  = $sopCode ? ($sopDocuments[$sopCode] ?? null) : null;
-                                                $isPass  = in_array($test->result_qualifier, ['pass','not_detected']);
                                                 $isFail  = in_array($test->result_qualifier, ['fail','detected']);
+                                                $isPass  = in_array($test->result_qualifier, ['pass','not_detected']);
                                             @endphp
                                             <tr>
                                                 <td style="font-weight:600;">{{ $test->getDisplayLabel() }}</td>
@@ -422,15 +421,6 @@
                                                         <span style="font-family:'Courier New',monospace; font-size:11px; color:#6b7280;">{{ $sopCode }}</span>
                                                     @else
                                                         <span style="color:#9ca3af;">—</span>
-                                                    @endif
-                                                </td>
-                                                <td>
-                                                    @if($test->director_outcome === 'pass')
-                                                        <span class="badge-pass">Pass</span>
-                                                    @elseif($test->director_outcome === 'fail')
-                                                        <span class="badge-fail">Fail</span>
-                                                    @else
-                                                        <span style="color:#9ca3af; font-size:10.5px;">—</span>
                                                     @endif
                                                 </td>
                                             </tr>

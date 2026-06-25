@@ -1,181 +1,164 @@
-{{-- resources/views/kstl/reception/submissions/show.blade.php --}}
+﻿{{-- resources/views/kstl/reception/submissions/show.blade.php --}}
 
 <x-app-layout>
     <x-slot name="header">
-        <div class="flex items-center gap-3">
-            <a href="{{ route('reception.dashboard') }}"
-               class="text-gray-400 hover:text-gray-600 transition">
-                <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7"/>
-                </svg>
-            </a>
-            <div>
-                <p class="rs-eyebrow">Reception &middot; Sample Intake Record</p>
-                <h2 class="rs-title text-xl font-bold leading-tight mt-0.5">{{ $submission->reference_number }}</h2>
+        <div style="position:relative;overflow:hidden;background:linear-gradient(135deg,#0f2240 0%,#1a2f4e 60%,#1e3a5f 100%);">
+            <div style="height:3px;background:linear-gradient(90deg,#1a2f4e,#b8922a 30%,#b8922a 70%,#1a2f4e);"></div>
+            <div style="max-width:80rem;margin:0 auto;padding:28px 2rem 32px;">
+                <div style="display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:16px;">
+                    <div style="display:flex;align-items:center;gap:20px;">
+                        <img src="{{ asset('images/mfor-logo.png') }}" alt="MFOR" style="filter:brightness(0) invert(1);opacity:.92;width:56px;height:56px;flex-shrink:0;">
+                        <div>
+                            <p style="font-size:9px;font-weight:700;letter-spacing:.18em;text-transform:uppercase;color:#b8922a;margin:0 0 4px;">Submission Review</p>
+                            <h1 style="font-family:'Georgia',serif;font-size:22px;font-weight:700;color:#fff;margin:0 0 6px;line-height:1.2;">{{ $submission->reference_number }}</h1>
+                            <p style="font-size:12px;color:#94a3b8;margin:0;">Reception &middot; Sample Intake Record</p>
+                        </div>
+                    </div>
+                    <div style="display:flex;align-items:center;gap:10px;flex-wrap:wrap;">
+                        <a href="{{ route('reception.dashboard') }}"
+                           style="display:inline-flex;align-items:center;gap:8px;padding:8px 20px;background:rgba(255,255,255,.12);color:#e2e8f0;font-size:12px;font-weight:700;letter-spacing:.06em;text-transform:uppercase;border-radius:3px;text-decoration:none;border:1px solid rgba(255,255,255,.2);">
+                            &larr; Dashboard
+                        </a>
+                    </div>
+                </div>
             </div>
         </div>
     </x-slot>
 
     @push('styles')
     <style>
-        .rs-eyebrow { letter-spacing: .16em; text-transform: uppercase; font-size: 10px; color: var(--gold); font-weight: 700; }
-        .rs-title { font-family: 'Noto Serif', serif; color: var(--navy); letter-spacing: .01em; }
-        .rs-doc { background: var(--surface); border: 1px solid var(--border); }
-        .rs-letterhead {
-            border-bottom: 3px double var(--navy);
-            background: linear-gradient(180deg, #fbfaf8 0%, #ffffff 100%);
-        }
-        .rs-crest {
-            width: 46px; height: 46px; border-radius: 50%;
-            border: 2px solid var(--gold);
-            display: flex; align-items: center; justify-content: center;
-        }
-        .rs-crest svg { width: 23px; height: 23px; stroke: var(--navy); fill: none; }
-        .rs-lab-title { font-family: 'Noto Serif', serif; color: var(--navy); letter-spacing: .01em; }
-        .rs-section-title {
-            font-family: 'Noto Serif', serif; color: var(--navy);
-            font-size: 13px; font-weight: 700; letter-spacing: .02em;
-            display: flex; align-items: center; gap: 8px;
-        }
-        .rs-section-title::before {
-            content: ''; width: 3px; height: 14px; background: var(--gold); border-radius: 2px; display: inline-block;
-        }
-        .rs-meta-label { letter-spacing: .07em; text-transform: uppercase; font-size: 10px; color: var(--subtle); font-weight: 600; }
+        .page-hdr { padding: 0 !important; }
+        .page-hdr-inner { max-width: 100% !important; padding: 0 !important; }
+        .app-main { padding-left:0 !important; padding-right:0 !important; padding-top:0 !important; max-width:100% !important; }
     </style>
     @endpush
 
-    <div class="py-8">
-        <div class="max-w-5xl mx-auto sm:px-6 lg:px-8 space-y-6">
+    <div style="background:#f1f5f9;min-height:100vh;padding:52px 0 56px;">
+        <div style="max-width:80rem;margin:0 auto;padding:0 2rem;">
 
             {{-- Flash --}}
             @if(session('success'))
-                <div class="bg-green-50 border-l-4 border-green-400 p-4 rounded-lg flex items-center gap-3">
-                    <svg class="w-4 h-4 text-green-500 shrink-0" fill="currentColor" viewBox="0 0 20 20">
-                        <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.857-9.809a.75.75 0 00-1.214-.882l-3.483 4.79-1.88-1.88a.75.75 0 10-1.06 1.061l2.5 2.5a.75.75 0 001.137-.089l4-5.5z" clip-rule="evenodd"/>
-                    </svg>
-                    <p class="text-sm text-green-800">{{ session('success') }}</p>
-                </div>
+                <div style="background:#f0fdf4;border:1px solid #bbf7d0;border-left:4px solid #16a34a;border-radius:4px;padding:12px 16px;margin-bottom:20px;font-size:13px;color:#166534;">{{ session('success') }}</div>
             @endif
             @if(session('error'))
-                <div class="bg-red-50 border-l-4 border-red-400 p-4 rounded-lg flex items-center gap-3">
-                    <svg class="w-4 h-4 text-red-500 shrink-0" fill="currentColor" viewBox="0 0 20 20">
-                        <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm-1-9a1 1 0 112 0v4a1 1 0 11-2 0V9zm1-5a1 1 0 100 2 1 1 0 000-2z" clip-rule="evenodd"/>
-                    </svg>
-                    <p class="text-sm text-red-800">{{ session('error') }}</p>
-                </div>
+                <div style="background:#fef2f2;border:1px solid #fecaca;border-left:4px solid #dc2626;border-radius:4px;padding:12px 16px;margin-bottom:20px;font-size:13px;color:#991b1b;">{{ session('error') }}</div>
             @endif
 
             {{-- ════════ INTAKE RECORD DOCUMENT ════════ --}}
-            <div class="rs-doc rounded-xl shadow-sm overflow-hidden">
+            <div style="background:#fff;border:1px solid #e2e8f0;border-radius:4px;overflow:hidden;margin-bottom:24px;">
 
                 {{-- Letterhead band --}}
-                <div class="rs-letterhead px-8 py-6">
-                    <div class="flex items-start justify-between gap-6">
-                        <div class="flex items-start gap-4">
-                            <div class="rs-crest">
-                                <svg viewBox="0 0 24 24" stroke-width="1.5">
+                <div style="padding:24px 32px;border-bottom:3px double #1a2f4e;background:linear-gradient(180deg,#fbfaf8 0%,#ffffff 100%);">
+                    <div style="display:flex;align-items:flex-start;justify-content:space-between;gap:24px;">
+                        <div style="display:flex;align-items:flex-start;gap:16px;">
+                            <div style="width:46px;height:46px;border-radius:50%;border:2px solid #b8922a;display:flex;align-items:center;justify-content:center;flex-shrink:0;">
+                                <svg style="width:23px;height:23px;stroke:#1a2f4e;fill:none;" viewBox="0 0 24 24" stroke-width="1.5">
                                     <path stroke-linecap="round" stroke-linejoin="round" d="M3.75 21h16.5M4.5 3h15M5.25 3v18m13.5-18v18M9 6.75h1.5m-1.5 3h1.5m-1.5 3h1.5m3-6H15m-1.5 3H15m-1.5 3H15M9 21v-3.375c0-.621.504-1.125 1.125-1.125h3.75c.621 0 1.125.504 1.125 1.125V21"/>
                                 </svg>
                             </div>
                             <div>
-                                <p class="rs-eyebrow">Government of Kiribati &middot; Ministry of Fisheries &amp; Ocean Resources</p>
-                                <h1 class="rs-lab-title text-lg font-bold mt-1">Kiribati Seafood Toxicology Laboratory</h1>
-                                <p class="text-xs text-gray-500 mt-0.5">Sample Intake Record</p>
+                                <p style="font-size:9px;font-weight:700;letter-spacing:.18em;text-transform:uppercase;color:#b8922a;margin:0 0 4px;">Government of Kiribati &middot; Ministry of Fisheries &amp; Ocean Resources</p>
+                                <h2 style="font-family:'Georgia',serif;font-size:18px;font-weight:700;color:#1a2f4e;margin:0 0 3px;">Kiribati Seafood Toxicology Laboratory</h2>
+                                <p style="font-size:11px;color:#64748b;margin:0;">Sample Intake Record</p>
                             </div>
                         </div>
-                        <div class="text-right shrink-0">
-                            <p class="font-mono text-sm font-semibold text-gray-800">{{ $submission->reference_number }}</p>
-                            <p class="text-xs text-gray-400 mt-0.5">
+                        <div style="text-align:right;flex-shrink:0;">
+                            <p style="font-family:monospace;font-size:14px;font-weight:700;color:#1e293b;margin:0 0 3px;">{{ $submission->reference_number }}</p>
+                            <p style="font-size:11px;color:#94a3b8;margin:0 0 8px;">
                                 Submitted {{ $submission->submitted_at?->format('d M Y') ?? $submission->created_at->format('d M Y') }}
                             </p>
-                            <div class="mt-2 flex justify-end">
-                                <x-kstl.status-badge :status="$submission->status" />
-                            </div>
+                            <x-kstl.status-badge :status="$submission->status" />
                         </div>
                     </div>
                 </div>
 
                 {{-- Particulars — Client + Submission side by side --}}
-                <div class="px-8 py-6 grid grid-cols-1 md:grid-cols-2 gap-x-10 gap-y-6 border-b border-gray-100">
+                <div style="padding:24px 32px;display:grid;grid-template-columns:1fr 1fr;gap:40px 40px;border-bottom:1px solid #e2e8f0;">
 
                     {{-- Client --}}
                     <div>
-                        <p class="rs-section-title mb-3">Client</p>
-                        <dl class="grid grid-cols-2 gap-x-4 gap-y-3 text-sm">
+                        <h3 style="font-family:'Georgia',serif;font-size:13px;font-weight:700;color:#1a2f4e;margin:0 0 14px;display:flex;align-items:center;gap:8px;">
+                            <span style="display:inline-block;width:3px;height:14px;background:#b8922a;border-radius:2px;"></span>
+                            Client
+                        </h3>
+                        <dl style="display:grid;grid-template-columns:1fr 1fr;gap:8px 16px;">
                             <div>
-                                <dt class="rs-meta-label">Company</dt>
-                                <dd class="font-medium text-gray-800 mt-0.5">{{ $submission->client->company_name ?? '—' }}</dd>
+                                <dt style="font-size:10px;font-weight:600;letter-spacing:.07em;text-transform:uppercase;color:#64748b;">Company</dt>
+                                <dd style="font-size:13px;font-weight:600;color:#1e293b;margin:3px 0 0;">{{ $submission->client->company_name ?? '—' }}</dd>
                             </div>
                             <div>
-                                <dt class="rs-meta-label">Responsible Officer</dt>
-                                <dd class="text-gray-700 mt-0.5">{{ $submission->client->responsible_officer_name ?? '—' }}</dd>
+                                <dt style="font-size:10px;font-weight:600;letter-spacing:.07em;text-transform:uppercase;color:#64748b;">Responsible Officer</dt>
+                                <dd style="font-size:13px;color:#374151;margin:3px 0 0;">{{ $submission->client->responsible_officer_name ?? '—' }}</dd>
                             </div>
                             <div>
-                                <dt class="rs-meta-label">Contact</dt>
-                                <dd class="text-gray-700 mt-0.5">{{ $submission->client->company_phone ?? '—' }}</dd>
+                                <dt style="font-size:10px;font-weight:600;letter-spacing:.07em;text-transform:uppercase;color:#64748b;">Contact</dt>
+                                <dd style="font-size:13px;color:#374151;margin:3px 0 0;">{{ $submission->client->company_phone ?? '—' }}</dd>
                             </div>
                             <div>
-                                <dt class="rs-meta-label">Email</dt>
-                                <dd class="text-gray-700 mt-0.5 break-words">{{ $submission->client->user->email ?? '—' }}</dd>
+                                <dt style="font-size:10px;font-weight:600;letter-spacing:.07em;text-transform:uppercase;color:#64748b;">Email</dt>
+                                <dd style="font-size:13px;color:#374151;margin:3px 0 0;word-break:break-all;">{{ $submission->client->user->email ?? '—' }}</dd>
                             </div>
                         </dl>
                     </div>
 
                     {{-- Submission --}}
                     <div>
-                        <p class="rs-section-title mb-3">Submission Details</p>
-                        <dl class="grid grid-cols-2 gap-x-4 gap-y-3 text-sm">
+                        <h3 style="font-family:'Georgia',serif;font-size:13px;font-weight:700;color:#1a2f4e;margin:0 0 14px;display:flex;align-items:center;gap:8px;">
+                            <span style="display:inline-block;width:3px;height:14px;background:#b8922a;border-radius:2px;"></span>
+                            Submission Details
+                        </h3>
+                        <dl style="display:grid;grid-template-columns:1fr 1fr;gap:8px 16px;">
                             <div>
-                                <dt class="rs-meta-label">Priority</dt>
-                                <dd class="mt-0.5"><x-kstl.priority-badge :priority="$submission->priority" /></dd>
+                                <dt style="font-size:10px;font-weight:600;letter-spacing:.07em;text-transform:uppercase;color:#64748b;">Priority</dt>
+                                <dd style="margin:3px 0 0;"><x-kstl.priority-badge :priority="$submission->priority" /></dd>
                             </div>
                             <div>
-                                <dt class="rs-meta-label">Transport</dt>
-                                <dd class="text-gray-700 mt-0.5 capitalize">
+                                <dt style="font-size:10px;font-weight:600;letter-spacing:.07em;text-transform:uppercase;color:#64748b;">Transport</dt>
+                                <dd style="font-size:13px;color:#374151;margin:3px 0 0;text-transform:capitalize;">
                                     {{ $submission->transport_method }}
                                     @if($submission->transport_detail)
-                                        <span class="text-gray-400">— {{ str_replace('_', ' ', $submission->transport_detail) }}</span>
+                                        <span style="color:#94a3b8;">&mdash; {{ str_replace('_', ' ', $submission->transport_detail) }}</span>
                                     @endif
                                 </dd>
                             </div>
                             <div>
-                                <dt class="rs-meta-label">Collection Date</dt>
-                                <dd class="text-gray-700 mt-0.5">{{ $submission->collected_at?->format('d M Y') ?? '—' }}</dd>
+                                <dt style="font-size:10px;font-weight:600;letter-spacing:.07em;text-transform:uppercase;color:#64748b;">Collection Date</dt>
+                                <dd style="font-size:13px;color:#374151;margin:3px 0 0;">{{ $submission->collected_at?->format('d M Y') ?? '—' }}</dd>
                             </div>
                             @if($submission->collection_location)
                             <div>
-                                <dt class="rs-meta-label">Collection Location</dt>
-                                <dd class="text-gray-700 mt-0.5">{{ $submission->collection_location }}</dd>
+                                <dt style="font-size:10px;font-weight:600;letter-spacing:.07em;text-transform:uppercase;color:#64748b;">Collection Location</dt>
+                                <dd style="font-size:13px;color:#374151;margin:3px 0 0;">{{ $submission->collection_location }}</dd>
                             </div>
                             @endif
                         </dl>
 
                         {{-- Per-sample summary table --}}
                         @if($submission->sample_items && count($submission->sample_items))
-                            <div class="mt-4">
-                                <dt class="rs-meta-label mb-2">Samples ({{ count($submission->sample_items) }})</dt>
-                                <div class="rounded-lg border border-gray-100 overflow-hidden divide-y divide-gray-50">
+                            <div style="margin-top:16px;">
+                                <dt style="font-size:10px;font-weight:600;letter-spacing:.07em;text-transform:uppercase;color:#64748b;display:block;margin-bottom:8px;">Samples ({{ count($submission->sample_items) }})</dt>
+                                <div style="border:1px solid #e2e8f0;border-radius:4px;overflow:hidden;">
                                     @foreach($submission->sample_items as $si => $item)
-                                        <div class="px-3 py-2 flex items-center justify-between gap-3 text-xs">
-                                            <div class="flex items-center gap-2 min-w-0">
-                                                <span class="inline-flex items-center justify-center w-5 h-5 rounded-full bg-indigo-100 text-indigo-700 font-bold shrink-0">{{ $si + 1 }}</span>
-                                                <div class="min-w-0">
-                                                    <p class="font-medium text-gray-800 truncate">{{ $item['name'] ?? '—' }}</p>
+                                        <div style="padding:8px 12px;display:flex;align-items:center;justify-content:space-between;gap:12px;font-size:12px;{{ !$loop->last ? 'border-bottom:1px solid #f1f5f9;' : '' }}background:{{ $loop->even ? '#f8fafc' : '#fff' }};">
+                                            <div style="display:flex;align-items:center;gap:8px;min-width:0;">
+                                                <span style="display:inline-flex;align-items:center;justify-content:center;width:20px;height:20px;border-radius:50%;background:#dbeafe;color:#1e40af;font-size:10px;font-weight:700;flex-shrink:0;">{{ $si + 1 }}</span>
+                                                <div style="min-width:0;">
+                                                    <p style="font-weight:600;color:#1e293b;margin:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;">{{ $item['name'] ?? '—' }}</p>
                                                     @if(!empty($item['scientific_name']))
-                                                        <p class="text-gray-400 italic truncate">{{ $item['scientific_name'] }}</p>
+                                                        <p style="color:#94a3b8;font-style:italic;margin:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;">{{ $item['scientific_name'] }}</p>
                                                     @endif
                                                 </div>
                                             </div>
-                                            <div class="text-right shrink-0 text-gray-500 space-y-0.5">
+                                            <div style="text-align:right;flex-shrink:0;color:#64748b;">
                                                 @if(!empty($item['ref']))
-                                                    <span class="font-mono bg-gray-100 px-1.5 py-0.5 rounded">{{ $item['ref'] }}</span>
+                                                    <span style="font-family:monospace;background:#f1f5f9;padding:2px 6px;border-radius:3px;">{{ $item['ref'] }}</span>
                                                 @endif
                                                 @if(isset($item['qty']) && $item['qty'] !== '')
-                                                    <span class="ml-1">{{ $item['qty'] }} {{ $item['unit'] ?? '' }}</span>
+                                                    <span style="margin-left:4px;">{{ $item['qty'] }} {{ $item['unit'] ?? '' }}</span>
                                                 @endif
                                                 @php $tCount = count($item['tests'] ?? []); @endphp
                                                 @if($tCount)
-                                                    <span class="ml-1 text-purple-600">{{ $tCount }} test{{ $tCount > 1 ? 's' : '' }}</span>
+                                                    <span style="margin-left:4px;color:#0d9488;">{{ $tCount }} test{{ $tCount > 1 ? 's' : '' }}</span>
                                                 @endif
                                             </div>
                                         </div>
@@ -183,11 +166,11 @@
                                 </div>
                             </div>
                         @elseif($submission->sample_name)
-                            <div class="mt-3">
-                                <dt class="rs-meta-label mb-1">Sample</dt>
-                                <dd class="font-medium text-gray-800">{{ $submission->sample_name }}</dd>
+                            <div style="margin-top:12px;">
+                                <dt style="font-size:10px;font-weight:600;letter-spacing:.07em;text-transform:uppercase;color:#64748b;display:block;margin-bottom:4px;">Sample</dt>
+                                <dd style="font-size:13px;font-weight:600;color:#1e293b;">{{ $submission->sample_name }}</dd>
                                 @if($submission->scientific_name)
-                                    <dd class="text-gray-500 italic text-xs">{{ $submission->scientific_name }}</dd>
+                                    <dd style="font-size:11px;color:#64748b;font-style:italic;">{{ $submission->scientific_name }}</dd>
                                 @endif
                             </div>
                         @endif
@@ -195,79 +178,88 @@
                 </div>
 
                 {{-- Tests Requested — full width band --}}
-                <div class="px-8 py-6 {{ ($submission->special_instructions || $submission->client_notes) ? 'border-b border-gray-100' : '' }}">
-                    <p class="rs-section-title mb-3">Tests Requested</p>
+                <div style="padding:24px 32px;{{ ($submission->special_instructions || $submission->client_notes) ? 'border-bottom:1px solid #e2e8f0;' : '' }}">
+                    <h3 style="font-family:'Georgia',serif;font-size:13px;font-weight:700;color:#1a2f4e;margin:0 0 14px;display:flex;align-items:center;gap:8px;">
+                        <span style="display:inline-block;width:3px;height:14px;background:#b8922a;border-radius:2px;"></span>
+                        Tests Requested
+                    </h3>
                     @php
                         $tests = is_array($submission->tests_requested)
                             ? $submission->tests_requested
                             : json_decode($submission->tests_requested ?? '[]', true) ?? [];
 
                         $allTestLabels = [
-                            'total_coliforms' => 'Total Coliforms',
-                            'e_coli'          => 'E. coli',
-                            'enterococci'     => 'Enterococci & Faecal Coliforms',
-                            'yeast_mold'      => 'Yeast & Mould',
-                            'apc'             => 'APC (Aerobic Plate Count)',
-                            'e_coli_coliform' => 'E. coli & Coliform',
-                            'staph_aureus'    => 'Staphylococcus aureus',
-                            'salmonella_spp'  => 'Salmonella species',
-                            'listeria_mono'   => 'Listeria monocytogenes',
-                            'listeria_spp'    => 'Listeria species',
-                            'moisture'        => 'Moisture Content',
-                            'histamine'       => 'ELISA Histamine Rapid Kit',
-                            'ph'              => 'pH',
-                            'conductivity'    => 'Conductivity',
-                            'water_activity'  => 'Water Activity',
+                            'total_coliforms'        => 'Total Coliforms',
+                            'e_coli'                 => 'E. coli',
+                            'enterococci'            => 'Enterococci',
+                            'faecal_coliforms'       => 'Faecal Coliforms',
+                            'yeast_mold'             => 'Yeast & Mould',
+                            'apc'                    => 'APC (Aerobic Plate Count)',
+                            'e_coli_coliform'        => 'E. coli & Coliform',
+                            'staph_aureus'           => 'Staphylococcus aureus',
+                            'salmonella_spp'         => 'Salmonella species',
+                            'listeria_mono'          => 'Listeria monocytogenes',
+                            'listeria_spp'           => 'Listeria species',
+                            'e_coli_colilert'        => 'E. coli (Colilert)',
+                            'enterococci_enterolert' => 'Enterococci (Enterolert)',
+                            'moisture'               => 'Moisture Content',
+                            'histamine'              => 'ELISA Histamine Rapid Kit',
+                            'ph'                     => 'pH',
+                            'conductivity'           => 'Conductivity',
+                            'water_activity'         => 'Water Activity',
                         ];
-                        $microKeys = ['total_coliforms','e_coli','enterococci','yeast_mold','apc','e_coli_coliform','staph_aureus','salmonella_spp','listeria_mono','listeria_spp'];
+                        $microKeys = ['total_coliforms','e_coli','enterococci','faecal_coliforms','yeast_mold','apc','e_coli_coliform','staph_aureus','salmonella_spp','listeria_mono','listeria_spp','e_coli_colilert','enterococci_enterolert'];
                         $chemKeys  = ['moisture','histamine','ph','conductivity','water_activity'];
                         $micro = array_filter($tests, fn($t) => in_array($t, $microKeys));
                         $chem  = array_filter($tests, fn($t) => in_array($t, $chemKeys));
                     @endphp
 
-                    <div class="grid grid-cols-1 sm:grid-cols-2 gap-6">
+                    <div style="display:grid;grid-template-columns:1fr 1fr;gap:24px;">
                         <div>
-                            <p class="rs-meta-label mb-1.5">Microbiological</p>
+                            <p style="font-size:10px;font-weight:600;letter-spacing:.07em;text-transform:uppercase;color:#64748b;margin:0 0 8px;">Microbiological</p>
                             @if(count($micro))
-                                <div class="flex flex-wrap gap-1">
+                                <div style="display:flex;flex-wrap:wrap;gap:6px;">
                                     @foreach($micro as $t)
-                                        <span class="inline-flex px-2 py-0.5 text-xs bg-purple-50 text-purple-700 rounded-full">{{ $allTestLabels[$t] ?? ucwords(str_replace('_', ' ', $t)) }}</span>
+                                        <span style="display:inline-flex;padding:3px 10px;border-radius:20px;font-size:11px;font-weight:600;background:#f5f3ff;color:#6d28d9;">{{ $allTestLabels[$t] ?? ucwords(str_replace('_', ' ', $t)) }}</span>
                                     @endforeach
                                 </div>
                             @else
-                                <p class="text-xs text-gray-400">None requested.</p>
+                                <p style="font-size:12px;color:#94a3b8;">None requested.</p>
                             @endif
                         </div>
                         <div>
-                            <p class="rs-meta-label mb-1.5">Chemical</p>
+                            <p style="font-size:10px;font-weight:600;letter-spacing:.07em;text-transform:uppercase;color:#64748b;margin:0 0 8px;">Chemical</p>
                             @if(count($chem))
-                                <div class="flex flex-wrap gap-1">
+                                <div style="display:flex;flex-wrap:wrap;gap:6px;">
                                     @foreach($chem as $t)
-                                        <span class="inline-flex px-2 py-0.5 text-xs bg-blue-50 text-blue-700 rounded-full">{{ $allTestLabels[$t] ?? ucwords(str_replace('_', ' ', $t)) }}</span>
+                                        <span style="display:inline-flex;padding:3px 10px;border-radius:20px;font-size:11px;font-weight:600;background:#dbeafe;color:#1e40af;">{{ $allTestLabels[$t] ?? ucwords(str_replace('_', ' ', $t)) }}</span>
                                     @endforeach
                                 </div>
                             @else
-                                <p class="text-xs text-gray-400">None requested.</p>
+                                <p style="font-size:12px;color:#94a3b8;">None requested.</p>
                             @endif
                         </div>
                     </div>
 
                     @if($submission->tests_other)
-                        <p class="text-xs text-gray-500 mt-3 bg-gray-50 rounded p-2">
-                            <span class="font-medium">Other:</span> {{ $submission->tests_other }}
+                        <p style="font-size:12px;color:#64748b;margin-top:12px;background:#f8fafc;border-radius:3px;padding:8px 12px;">
+                            <span style="font-weight:600;">Other:</span> {{ $submission->tests_other }}
                         </p>
                     @endif
                 </div>
 
                 {{-- Instructions — full width band (only if present) --}}
                 @if($submission->special_instructions || $submission->client_notes)
-                    <div class="px-8 py-6">
-                        <p class="rs-section-title mb-3">Instructions</p>
+                    <div style="padding:24px 32px;">
+                        <h3 style="font-family:'Georgia',serif;font-size:13px;font-weight:700;color:#1a2f4e;margin:0 0 14px;display:flex;align-items:center;gap:8px;">
+                            <span style="display:inline-block;width:3px;height:14px;background:#b8922a;border-radius:2px;"></span>
+                            Instructions
+                        </h3>
                         @if($submission->special_instructions)
-                            <p class="text-sm text-gray-700">{{ $submission->special_instructions }}</p>
+                            <p style="font-size:13px;color:#374151;margin:0 0 6px;">{{ $submission->special_instructions }}</p>
                         @endif
                         @if($submission->client_notes)
-                            <p class="text-xs text-gray-500 mt-2">{{ $submission->client_notes }}</p>
+                            <p style="font-size:12px;color:#64748b;margin:0;">{{ $submission->client_notes }}</p>
                         @endif
                     </div>
                 @endif
@@ -284,68 +276,68 @@
                       @submit.prevent="submitForm($el)">
                     @csrf
 
-                    <div class="bg-white rounded-2xl border border-gray-100 shadow-sm overflow-hidden mb-5">
-                        <div class="px-6 py-4 border-b border-gray-100">
-                            <h3 class="rs-section-title">Log Physical Sample Arrival</h3>
-                            <p class="text-xs text-gray-400 mt-1">
+                    <div style="background:#fff;border:1px solid #e2e8f0;border-radius:4px;overflow:hidden;margin-bottom:20px;">
+                        <div style="padding:16px 24px;border-bottom:1px solid #e2e8f0;">
+                            <h3 style="font-family:'Georgia',serif;font-size:14px;font-weight:700;color:#1a2f4e;margin:0 0 4px;">Log Physical Sample Arrival</h3>
+                            <p style="font-size:11px;color:#94a3b8;margin:0;">
                                 Enter details for each physical sample received. Add a row per specimen.
                             </p>
                         </div>
 
                         {{-- Sample Rows --}}
-                        <div class="divide-y divide-gray-50">
+                        <div>
                             <template x-for="(row, index) in rows" :key="index">
-                                <div class="px-6 py-5">
-                                    <div class="flex items-center justify-between mb-4">
-                                        <p class="text-sm font-medium text-gray-700">
+                                <div style="padding:20px 24px;border-bottom:1px solid #f1f5f9;">
+                                    <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:16px;">
+                                        <p style="font-size:13px;font-weight:600;color:#374151;margin:0;">
                                             Sample <span x-text="index + 1"></span>
                                         </p>
                                         <button type="button"
                                                 @click="removeRow(index)"
                                                 x-show="rows.length > 1"
-                                                class="text-xs text-red-500 hover:text-red-700 transition">
+                                                style="font-size:11px;color:#dc2626;background:none;border:none;cursor:pointer;font-weight:600;">
                                             Remove
                                         </button>
                                     </div>
 
-                                    <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                                    <div style="display:grid;grid-template-columns:1fr 1fr;gap:16px;">
 
                                         {{-- Common Name --}}
                                         <div>
-                                            <label class="block text-xs font-medium text-gray-600 mb-1">Common Name *</label>
+                                            <label style="display:block;font-size:11px;font-weight:700;letter-spacing:.08em;text-transform:uppercase;color:#475569;margin-bottom:6px;">Common Name *</label>
                                             <input type="text"
                                                    :name="`samples[${index}][common_name]`"
                                                    x-model="row.common_name"
                                                    placeholder="e.g. Yellowfin Tuna"
                                                    required
-                                                   class="w-full text-sm border-gray-300 rounded-md shadow-sm focus:border-indigo-500 focus:ring-indigo-500"/>
+                                                   style="width:100%;padding:8px 12px;border:1px solid #cbd5e1;border-radius:3px;font-size:13px;color:#1e293b;background:#fff;box-sizing:border-box;"/>
                                         </div>
 
                                         {{-- Scientific Name --}}
                                         <div>
-                                            <label class="block text-xs font-medium text-gray-600 mb-1">Scientific Name</label>
+                                            <label style="display:block;font-size:11px;font-weight:700;letter-spacing:.08em;text-transform:uppercase;color:#475569;margin-bottom:6px;">Scientific Name</label>
                                             <input type="text"
                                                    :name="`samples[${index}][scientific_name]`"
                                                    x-model="row.scientific_name"
                                                    placeholder="e.g. Thunnus albacares"
-                                                   class="w-full text-sm border-gray-300 rounded-md shadow-sm focus:border-indigo-500 focus:ring-indigo-500"/>
+                                                   style="width:100%;padding:8px 12px;border:1px solid #cbd5e1;border-radius:3px;font-size:13px;color:#1e293b;background:#fff;box-sizing:border-box;"/>
                                         </div>
 
                                         {{-- Sampling Date --}}
                                         <div>
-                                            <label class="block text-xs font-medium text-gray-600 mb-1">Sampling Date *</label>
+                                            <label style="display:block;font-size:11px;font-weight:700;letter-spacing:.08em;text-transform:uppercase;color:#475569;margin-bottom:6px;">Sampling Date *</label>
                                             <input type="date"
                                                    :name="`samples[${index}][sampling_date]`"
                                                    x-model="row.sampling_date"
                                                    :max="today"
                                                    required
-                                                   class="w-full text-sm border-gray-300 rounded-md shadow-sm focus:border-indigo-500 focus:ring-indigo-500"/>
+                                                   style="width:100%;padding:8px 12px;border:1px solid #cbd5e1;border-radius:3px;font-size:13px;color:#1e293b;background:#fff;box-sizing:border-box;"/>
                                         </div>
 
                                         {{-- Quantity --}}
                                         <div>
-                                            <label class="block text-xs font-medium text-gray-600 mb-1">Quantity *</label>
-                                            <div class="flex rounded-md shadow-sm">
+                                            <label style="display:block;font-size:11px;font-weight:700;letter-spacing:.08em;text-transform:uppercase;color:#475569;margin-bottom:6px;">Quantity *</label>
+                                            <div style="display:flex;">
                                                 <input type="number"
                                                        :name="`samples[${index}][quantity]`"
                                                        x-model="row.quantity"
@@ -353,10 +345,10 @@
                                                        min="0"
                                                        step="0.01"
                                                        required
-                                                       class="flex-1 min-w-0 text-sm border-gray-300 rounded-l-md focus:border-indigo-500 focus:ring-indigo-500"/>
+                                                       style="flex:1;min-width:0;padding:8px 12px;border:1px solid #cbd5e1;border-right:none;border-radius:3px 0 0 3px;font-size:13px;color:#1e293b;background:#fff;"/>
                                                 <select :name="`samples[${index}][quantity_unit]`"
                                                         x-model="row.quantity_unit"
-                                                        class="border-l-0 border-gray-300 rounded-r-md text-sm px-2 focus:border-indigo-500 focus:ring-indigo-500">
+                                                        style="border:1px solid #cbd5e1;border-radius:0 3px 3px 0;font-size:13px;padding:8px 10px;color:#1e293b;background:#fff;">
                                                     <option value="g">g</option>
                                                     <option value="kg">kg</option>
                                                     <option value="ml">ml</option>
@@ -367,13 +359,13 @@
                                         </div>
 
                                         {{-- Notes --}}
-                                        <div class="sm:col-span-2">
-                                            <label class="block text-xs font-medium text-gray-600 mb-1">Notes</label>
+                                        <div style="grid-column:span 2;">
+                                            <label style="display:block;font-size:11px;font-weight:700;letter-spacing:.08em;text-transform:uppercase;color:#475569;margin-bottom:6px;">Notes</label>
                                             <input type="text"
                                                    :name="`samples[${index}][notes]`"
                                                    x-model="row.notes"
-                                                   placeholder="Condition, packaging observations..."
-                                                   class="w-full text-sm border-gray-300 rounded-md shadow-sm focus:border-indigo-500 focus:ring-indigo-500"/>
+                                                   placeholder="Condition, packaging observations, client instructions..."
+                                                   style="width:100%;padding:8px 12px;border:1px solid #cbd5e1;border-radius:3px;font-size:13px;color:#1e293b;background:#fff;box-sizing:border-box;"/>
                                         </div>
 
                                     </div>
@@ -385,13 +377,14 @@
                         <x-validation-errors class="mx-6 mb-4 bg-red-50 border border-red-200 rounded-xl p-4"/>
                     </div>
 
-                    <div class="flex items-center justify-between">
-                        <a href="{{ route('reception.dashboard') }}">
-                            <x-secondary-button type="button">Cancel</x-secondary-button>
+                    <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:24px;">
+                        <a href="{{ route('reception.dashboard') }}"
+                           style="display:inline-flex;align-items:center;gap:8px;padding:8px 20px;background:#fff;color:#1a2f4e;font-size:12px;font-weight:700;letter-spacing:.06em;border:1px solid #1a2f4e;border-radius:3px;text-decoration:none;">
+                            Cancel
                         </a>
                         <button type="submit"
-                                class="inline-flex items-center gap-2 px-5 py-2.5 bg-blue-600 text-white text-sm font-medium rounded-lg hover:bg-blue-700 transition">
-                            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                style="display:inline-flex;align-items:center;gap:8px;padding:8px 20px;background:#1a2f4e;color:#fff;font-size:12px;font-weight:700;letter-spacing:.06em;text-transform:uppercase;border-radius:3px;border:none;cursor:pointer;">
+                            <svg style="width:16px;height:16px;" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"/>
                             </svg>
                             Confirm Receipt &amp; Continue to Assessment
@@ -402,47 +395,47 @@
 
             @elseif($submission->status === 'received')
                 {{-- Already received — prompt to assess --}}
-                <div class="bg-blue-50 border border-blue-200 rounded-2xl p-6 text-center">
-                    <svg class="w-10 h-10 text-blue-400 mx-auto mb-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <div style="background:#eff6ff;border:1px solid #bfdbfe;border-radius:4px;padding:24px;text-align:center;margin-bottom:20px;">
+                    <svg style="width:40px;height:40px;color:#60a5fa;margin:0 auto 12px;" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2"/>
                     </svg>
-                    <p class="text-sm font-medium text-blue-800">Samples received. Ready for assessment.</p>
-                    <p class="text-xs text-blue-600 mt-1 mb-4">
+                    <p style="font-size:13px;font-weight:700;color:#1e40af;margin:0 0 4px;">Samples received. Ready for assessment.</p>
+                    <p style="font-size:12px;color:#3b82f6;margin:0 0 16px;">
                         {{ $samples->count() }} sample{{ $samples->count() !== 1 ? 's' : '' }} logged.
                     </p>
                     <a href="{{ route('reception.submissions.assess', $submission->id) }}"
-                       class="inline-flex items-center gap-2 px-5 py-2.5 bg-blue-600 text-white text-sm font-medium rounded-lg hover:bg-blue-700 transition">
-                        Start Assessment →
+                       style="display:inline-flex;align-items:center;gap:8px;padding:8px 20px;background:#1a2f4e;color:#fff;font-size:12px;font-weight:700;letter-spacing:.06em;text-transform:uppercase;border-radius:3px;text-decoration:none;">
+                        Start Assessment &rarr;
                     </a>
                 </div>
 
                 @if($samples->isNotEmpty())
-                    <div class="bg-white rounded-2xl border border-gray-100 shadow-sm overflow-hidden mt-5">
-                        <div class="px-5 py-3.5 border-b border-gray-100">
-                            <h3 class="rs-section-title">Logged Samples</h3>
+                    <div style="background:#fff;border:1px solid #e2e8f0;border-radius:4px;overflow:hidden;margin-bottom:20px;">
+                        <div style="padding:14px 20px;border-bottom:1px solid #e2e8f0;">
+                            <h3 style="font-family:'Georgia',serif;font-size:14px;font-weight:700;color:#1a2f4e;margin:0;">Logged Samples</h3>
                         </div>
-                        <div class="overflow-x-auto">
-                            <table class="w-full text-sm">
-                                <thead class="bg-gray-50 border-b border-gray-100">
-                                    <tr>
-                                        <th class="text-left px-5 py-3 text-xs font-medium text-gray-500 uppercase">Code</th>
-                                        <th class="text-left px-5 py-3 text-xs font-medium text-gray-500 uppercase">Name</th>
-                                        <th class="text-left px-5 py-3 text-xs font-medium text-gray-500 uppercase">Qty</th>
-                                        <th class="text-left px-5 py-3 text-xs font-medium text-gray-500 uppercase">Status</th>
+                        <div style="overflow-x:auto;">
+                            <table style="width:100%;border-collapse:collapse;">
+                                <thead>
+                                    <tr style="background:#1a2f4e;">
+                                        <th style="padding:10px 16px;text-align:left;font-size:9px;font-weight:700;letter-spacing:.12em;text-transform:uppercase;color:#e2e8f0;">Code</th>
+                                        <th style="padding:10px 16px;text-align:left;font-size:9px;font-weight:700;letter-spacing:.12em;text-transform:uppercase;color:#e2e8f0;">Name</th>
+                                        <th style="padding:10px 16px;text-align:left;font-size:9px;font-weight:700;letter-spacing:.12em;text-transform:uppercase;color:#e2e8f0;">Qty</th>
+                                        <th style="padding:10px 16px;text-align:left;font-size:9px;font-weight:700;letter-spacing:.12em;text-transform:uppercase;color:#e2e8f0;">Status</th>
                                     </tr>
                                 </thead>
-                                <tbody class="divide-y divide-gray-50">
+                                <tbody>
                                     @foreach($samples as $sample)
-                                        <tr>
-                                            <td class="px-5 py-3 font-mono text-xs text-gray-600">{{ $sample->sample_code ?? '—' }}</td>
-                                            <td class="px-5 py-3">
-                                                <p class="font-medium text-gray-800">{{ $sample->common_name }}</p>
+                                        <tr style="border-bottom:1px solid #f1f5f9;background:{{ $loop->even ? '#f8fafc' : '#fff' }};">
+                                            <td style="padding:11px 16px;font-family:monospace;font-size:12px;color:#374151;">{{ $sample->sample_code ?? '—' }}</td>
+                                            <td style="padding:11px 16px;">
+                                                <p style="font-size:13px;font-weight:600;color:#1e293b;margin:0 0 2px;">{{ $sample->common_name }}</p>
                                                 @if($sample->scientific_name)
-                                                    <p class="text-xs text-gray-400 italic">{{ $sample->scientific_name }}</p>
+                                                    <p style="font-size:11px;color:#94a3b8;font-style:italic;margin:0;">{{ $sample->scientific_name }}</p>
                                                 @endif
                                             </td>
-                                            <td class="px-5 py-3 text-gray-700">{{ $sample->quantity }} {{ $sample->quantity_unit }}</td>
-                                            <td class="px-5 py-3"><x-kstl.status-badge :status="$sample->status" /></td>
+                                            <td style="padding:11px 16px;font-size:13px;color:#374151;">{{ $sample->quantity }} {{ $sample->quantity_unit }}</td>
+                                            <td style="padding:11px 16px;"><x-kstl.status-badge :status="$sample->status" /></td>
                                         </tr>
                                     @endforeach
                                 </tbody>
@@ -453,14 +446,14 @@
 
             @elseif($submission->status === 'rejected')
                 {{-- ── Consent pending — awaiting client decision ── --}}
-                <div class="bg-red-50 border border-red-200 rounded-2xl p-6">
-                    <div class="flex items-start gap-3 mb-5">
-                        <svg class="w-6 h-6 text-red-500 shrink-0 mt-0.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <div style="background:#fef2f2;border:1px solid #fecaca;border-radius:4px;padding:24px;margin-bottom:20px;">
+                    <div style="display:flex;align-items:flex-start;gap:12px;margin-bottom:20px;">
+                        <svg style="width:22px;height:22px;color:#dc2626;flex-shrink:0;margin-top:2px;" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01M10.29 3.86L1.82 18a2 2 0 001.71 3h16.94a2 2 0 001.71-3L13.71 3.86a2 2 0 00-3.42 0z"/>
                         </svg>
                         <div>
-                            <p class="text-sm font-semibold text-red-800">Sample(s) Rejected — Awaiting Client Decision</p>
-                            <p class="text-sm text-red-700 mt-0.5">
+                            <p style="font-size:13px;font-weight:700;color:#991b1b;margin:0 0 4px;">Sample(s) Rejected — Awaiting Client Decision</p>
+                            <p style="font-size:13px;color:#dc2626;margin:0;">
                                 Send the client a consent request so they can choose to proceed with testing or cancel the submission.
                             </p>
                         </div>
@@ -468,58 +461,57 @@
 
                     @foreach($samples->filter(fn($s) => $s->assessment?->outcome === 'rejected') as $sample)
                         @php $a = $sample->assessment; @endphp
-                        <div class="bg-white border border-red-100 rounded-xl p-4 mb-3 last:mb-0">
-                            <div class="flex items-center justify-between mb-3">
+                        <div style="background:#fff;border:1px solid #fecaca;border-radius:4px;padding:16px;margin-bottom:12px;">
+                            <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:12px;">
                                 <div>
-                                    <p class="text-sm font-semibold text-gray-800">{{ $sample->common_name }}</p>
-                                    <p class="text-xs font-mono text-gray-400">{{ $sample->sample_code }}</p>
+                                    <p style="font-size:13px;font-weight:700;color:#1e293b;margin:0 0 2px;">{{ $sample->common_name }}</p>
+                                    <p style="font-size:11px;font-family:monospace;color:#94a3b8;margin:0;">{{ $sample->sample_code }}</p>
                                 </div>
                                 @if($a->client_decision)
-                                    <span class="inline-flex items-center px-2.5 py-1 text-xs font-semibold rounded-full
-                                        {{ $a->client_decision === 'consent_to_proceed' ? 'bg-green-50 text-green-700' : 'bg-gray-100 text-gray-600' }}">
+                                    <span style="display:inline-flex;align-items:center;padding:3px 10px;border-radius:20px;font-size:10px;font-weight:700;letter-spacing:.08em;text-transform:uppercase;{{ $a->client_decision === 'consent_to_proceed' ? 'background:#dcfce7;color:#166534;' : 'background:#f1f5f9;color:#475569;' }}">
                                         {{ $a->client_decision === 'consent_to_proceed' ? 'Client: Proceed' : 'Client: Cancelled' }}
                                     </span>
                                 @elseif($a->consent_token)
-                                    <span class="inline-flex items-center px-2.5 py-1 text-xs font-semibold rounded-full bg-amber-50 text-amber-700">
+                                    <span style="display:inline-flex;align-items:center;padding:3px 10px;border-radius:20px;font-size:10px;font-weight:700;letter-spacing:.08em;text-transform:uppercase;background:#fef3c7;color:#92400e;">
                                         Awaiting Response
                                     </span>
                                 @else
-                                    <span class="inline-flex items-center px-2.5 py-1 text-xs font-semibold rounded-full bg-gray-100 text-gray-500">
+                                    <span style="display:inline-flex;align-items:center;padding:3px 10px;border-radius:20px;font-size:10px;font-weight:700;letter-spacing:.08em;text-transform:uppercase;background:#f1f5f9;color:#64748b;">
                                         Not Notified Yet
                                     </span>
                                 @endif
                             </div>
 
                             @if($a->rejection_reason)
-                                <p class="text-xs text-red-600 mb-3 italic">Reason: {{ $a->rejection_reason }}</p>
+                                <p style="font-size:12px;color:#dc2626;margin:0 0 12px;font-style:italic;">Reason: {{ $a->rejection_reason }}</p>
                             @endif
 
                             @if(! $a->client_decision)
                                 @if($a->consent_token)
                                     {{-- Consent link already generated — show copyable URL + resend --}}
-                                    <div class="mb-3">
-                                        <label class="block text-xs font-medium text-gray-500 mb-1">Consent Link (share with client)</label>
-                                        <div class="flex gap-2">
+                                    <div style="margin-bottom:12px;">
+                                        <label style="display:block;font-size:11px;font-weight:700;letter-spacing:.08em;text-transform:uppercase;color:#475569;margin-bottom:6px;">Consent Link (share with client)</label>
+                                        <div style="display:flex;gap:8px;">
                                             <input type="text"
                                                    id="consent-link-{{ $a->id }}"
                                                    readonly
                                                    value="{{ route('client.consent.show', $a->consent_token) }}"
-                                                   class="flex-1 text-xs font-mono border border-gray-200 rounded-lg px-3 py-2 bg-gray-50 text-gray-700 focus:outline-none"/>
+                                                   style="flex:1;font-size:11px;font-family:monospace;border:1px solid #e2e8f0;border-radius:3px;padding:8px 12px;background:#f8fafc;color:#374151;outline:none;"/>
                                             <button type="button"
                                                     onclick="navigator.clipboard.writeText('{{ route('client.consent.show', $a->consent_token) }}'); this.textContent='Copied!'; setTimeout(()=>this.textContent='Copy',2000)"
-                                                    class="shrink-0 px-3 py-2 text-xs font-medium bg-gray-100 hover:bg-gray-200 rounded-lg transition">
+                                                    style="flex-shrink:0;padding:8px 16px;font-size:11px;font-weight:700;background:#f1f5f9;border:1px solid #e2e8f0;border-radius:3px;cursor:pointer;">
                                                 Copy
                                             </button>
                                         </div>
                                         @if($a->consent_token_expires_at)
-                                            <p class="text-xs text-gray-400 mt-1">Link expires {{ \Carbon\Carbon::parse($a->consent_token_expires_at)->format('d M Y') }}</p>
+                                            <p style="font-size:11px;color:#94a3b8;margin:4px 0 0;">Link expires {{ \Carbon\Carbon::parse($a->consent_token_expires_at)->format('d M Y') }}</p>
                                         @endif
                                     </div>
-                                    <form method="POST" action="{{ route('reception.assessments.notify', $a->id) }}" class="inline">
+                                    <form method="POST" action="{{ route('reception.assessments.notify', $a->id) }}" style="display:inline;">
                                         @csrf
                                         <button type="submit"
-                                                class="inline-flex items-center gap-1.5 px-3 py-1.5 text-xs font-medium bg-amber-500 text-white rounded-lg hover:bg-amber-600 transition">
-                                            <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                style="display:inline-flex;align-items:center;gap:6px;padding:6px 16px;background:#b8922a;color:#fff;font-size:11px;font-weight:700;letter-spacing:.06em;text-transform:uppercase;border-radius:3px;border:none;cursor:pointer;">
+                                            <svg style="width:14px;height:14px;" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z"/>
                                             </svg>
                                             Resend Email
@@ -530,8 +522,8 @@
                                     <form method="POST" action="{{ route('reception.assessments.notify', $a->id) }}">
                                         @csrf
                                         <button type="submit"
-                                                class="inline-flex items-center gap-2 px-4 py-2 text-sm font-medium bg-red-600 text-white rounded-lg hover:bg-red-700 transition">
-                                            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                style="display:inline-flex;align-items:center;gap:8px;padding:8px 20px;background:#dc2626;color:#fff;font-size:12px;font-weight:700;letter-spacing:.06em;text-transform:uppercase;border-radius:3px;border:none;cursor:pointer;">
+                                            <svg style="width:16px;height:16px;" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2H5a2 2 0 00-2 2v10a2 2 0 002 2z"/>
                                             </svg>
                                             Send Consent Request to Client
@@ -545,14 +537,14 @@
 
             @elseif($submission->status === 'accepted')
                 {{-- All samples passed — send to testing --}}
-                <div class="bg-green-50 border border-green-200 rounded-2xl p-6">
-                    <div class="flex items-start gap-3 mb-5">
-                        <svg class="w-6 h-6 text-green-500 shrink-0 mt-0.5" fill="currentColor" viewBox="0 0 20 20">
+                <div style="background:#f0fdf4;border:1px solid #bbf7d0;border-radius:4px;padding:24px;margin-bottom:20px;">
+                    <div style="display:flex;align-items:flex-start;gap:12px;margin-bottom:20px;">
+                        <svg style="width:22px;height:22px;color:#16a34a;flex-shrink:0;margin-top:2px;" fill="currentColor" viewBox="0 0 20 20">
                             <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.857-9.809a.75.75 0 00-1.214-.882l-3.483 4.79-1.88-1.88a.75.75 0 10-1.06 1.061l2.5 2.5a.75.75 0 001.137-.089l4-5.5z" clip-rule="evenodd"/>
                         </svg>
                         <div>
-                            <p class="text-sm font-semibold text-green-800">All Samples Accepted</p>
-                            <p class="text-sm text-green-700 mt-0.5">
+                            <p style="font-size:13px;font-weight:700;color:#166534;margin:0 0 4px;">All Samples Accepted</p>
+                            <p style="font-size:13px;color:#16a34a;margin:0;">
                                 All {{ $samples->count() }} sample{{ $samples->count() !== 1 ? 's' : '' }}
                                 passed the assessment. Ready to send to the testing queue.
                             </p>
@@ -564,8 +556,8 @@
                           onsubmit="return confirm('Send all accepted samples to the testing queue?')">
                         @csrf
                         <button type="submit"
-                                class="inline-flex items-center gap-2 px-5 py-2.5 bg-indigo-600 text-white text-sm font-medium rounded-lg hover:bg-indigo-700 transition">
-                            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                style="display:inline-flex;align-items:center;gap:8px;padding:8px 20px;background:#0d9488;color:#fff;font-size:12px;font-weight:700;letter-spacing:.06em;text-transform:uppercase;border-radius:3px;border:none;cursor:pointer;">
+                            <svg style="width:16px;height:16px;" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 7l5 5m0 0l-5 5m5-5H6"/>
                             </svg>
                             Send to Testing Queue
@@ -574,32 +566,32 @@
                 </div>
 
                 @if($samples->isNotEmpty())
-                    <div class="bg-white rounded-2xl border border-gray-100 shadow-sm overflow-hidden mt-5">
-                        <div class="px-5 py-3.5 border-b border-gray-100">
-                            <h3 class="rs-section-title">Accepted Samples ({{ $samples->count() }})</h3>
+                    <div style="background:#fff;border:1px solid #e2e8f0;border-radius:4px;overflow:hidden;margin-bottom:20px;">
+                        <div style="padding:14px 20px;border-bottom:1px solid #e2e8f0;">
+                            <h3 style="font-family:'Georgia',serif;font-size:14px;font-weight:700;color:#1a2f4e;margin:0;">Accepted Samples ({{ $samples->count() }})</h3>
                         </div>
-                        <div class="overflow-x-auto">
-                            <table class="w-full text-sm">
-                                <thead class="bg-gray-50 border-b border-gray-100">
-                                    <tr>
-                                        <th class="text-left px-5 py-3 text-xs font-medium text-gray-500 uppercase">Code</th>
-                                        <th class="text-left px-5 py-3 text-xs font-medium text-gray-500 uppercase">Name</th>
-                                        <th class="text-left px-5 py-3 text-xs font-medium text-gray-500 uppercase">Qty</th>
-                                        <th class="text-left px-5 py-3 text-xs font-medium text-gray-500 uppercase">Status</th>
+                        <div style="overflow-x:auto;">
+                            <table style="width:100%;border-collapse:collapse;">
+                                <thead>
+                                    <tr style="background:#1a2f4e;">
+                                        <th style="padding:10px 16px;text-align:left;font-size:9px;font-weight:700;letter-spacing:.12em;text-transform:uppercase;color:#e2e8f0;">Code</th>
+                                        <th style="padding:10px 16px;text-align:left;font-size:9px;font-weight:700;letter-spacing:.12em;text-transform:uppercase;color:#e2e8f0;">Name</th>
+                                        <th style="padding:10px 16px;text-align:left;font-size:9px;font-weight:700;letter-spacing:.12em;text-transform:uppercase;color:#e2e8f0;">Qty</th>
+                                        <th style="padding:10px 16px;text-align:left;font-size:9px;font-weight:700;letter-spacing:.12em;text-transform:uppercase;color:#e2e8f0;">Status</th>
                                     </tr>
                                 </thead>
-                                <tbody class="divide-y divide-gray-50">
+                                <tbody>
                                     @foreach($samples as $sample)
-                                        <tr>
-                                            <td class="px-5 py-3 font-mono text-xs text-gray-600">{{ $sample->sample_code ?? '—' }}</td>
-                                            <td class="px-5 py-3">
-                                                <p class="font-medium text-gray-800">{{ $sample->common_name }}</p>
+                                        <tr style="border-bottom:1px solid #f1f5f9;background:{{ $loop->even ? '#f8fafc' : '#fff' }};">
+                                            <td style="padding:11px 16px;font-family:monospace;font-size:12px;color:#374151;">{{ $sample->sample_code ?? '—' }}</td>
+                                            <td style="padding:11px 16px;">
+                                                <p style="font-size:13px;font-weight:600;color:#1e293b;margin:0 0 2px;">{{ $sample->common_name }}</p>
                                                 @if($sample->scientific_name)
-                                                    <p class="text-xs text-gray-400 italic">{{ $sample->scientific_name }}</p>
+                                                    <p style="font-size:11px;color:#94a3b8;font-style:italic;margin:0;">{{ $sample->scientific_name }}</p>
                                                 @endif
                                             </td>
-                                            <td class="px-5 py-3 text-gray-700">{{ $sample->quantity }} {{ $sample->quantity_unit }}</td>
-                                            <td class="px-5 py-3"><x-kstl.status-badge :status="$sample->status" /></td>
+                                            <td style="padding:11px 16px;font-size:13px;color:#374151;">{{ $sample->quantity }} {{ $sample->quantity_unit }}</td>
+                                            <td style="padding:11px 16px;"><x-kstl.status-badge :status="$sample->status" /></td>
                                         </tr>
                                     @endforeach
                                 </tbody>
@@ -610,14 +602,14 @@
 
             @elseif($submission->status === 'consent_to_proceed')
                 {{-- Client consented — send to testing --}}
-                <div class="bg-orange-50 border border-orange-200 rounded-2xl p-6">
-                    <div class="flex items-start gap-3 mb-5">
-                        <svg class="w-6 h-6 text-orange-500 shrink-0 mt-0.5" fill="currentColor" viewBox="0 0 20 20">
+                <div style="background:#fff7ed;border:1px solid #fed7aa;border-radius:4px;padding:24px;margin-bottom:20px;">
+                    <div style="display:flex;align-items:flex-start;gap:12px;margin-bottom:20px;">
+                        <svg style="width:22px;height:22px;color:#ea580c;flex-shrink:0;margin-top:2px;" fill="currentColor" viewBox="0 0 20 20">
                             <path fill-rule="evenodd" d="M8.485 2.495c.673-1.167 2.357-1.167 3.03 0l6.28 10.875c.673 1.167-.17 2.625-1.516 2.625H3.72c-1.347 0-2.189-1.458-1.515-2.625L8.485 2.495zM10 5a.75.75 0 01.75.75v3.5a.75.75 0 01-1.5 0v-3.5A.75.75 0 0110 5zm0 9a1 1 0 100-2 1 1 0 000 2z" clip-rule="evenodd"/>
                         </svg>
                         <div>
-                            <p class="text-sm font-semibold text-orange-800">Client Consented to Proceed</p>
-                            <p class="text-sm text-orange-700 mt-0.5">
+                            <p style="font-size:13px;font-weight:700;color:#9a3412;margin:0 0 4px;">Client Consented to Proceed</p>
+                            <p style="font-size:13px;color:#ea580c;margin:0;">
                                 The client has acknowledged the assessment findings and consented to proceed with testing.
                                 Click below to send the sample(s) to the testing queue.
                             </p>
@@ -629,8 +621,8 @@
                           onsubmit="return confirm('Send consented samples to the testing queue?')">
                         @csrf
                         <button type="submit"
-                                class="inline-flex items-center gap-2 px-5 py-2.5 bg-indigo-600 text-white text-sm font-medium rounded-lg hover:bg-indigo-700 transition">
-                            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                style="display:inline-flex;align-items:center;gap:8px;padding:8px 20px;background:#0d9488;color:#fff;font-size:12px;font-weight:700;letter-spacing:.06em;text-transform:uppercase;border-radius:3px;border:none;cursor:pointer;">
+                            <svg style="width:16px;height:16px;" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 7l5 5m0 0l-5 5m5-5H6"/>
                             </svg>
                             Send to Testing Queue
@@ -639,25 +631,25 @@
                 </div>
 
                 @if($samples->isNotEmpty())
-                    <div class="bg-white rounded-2xl border border-gray-100 shadow-sm overflow-hidden mt-5">
-                        <div class="px-5 py-3.5 border-b border-gray-100">
-                            <h3 class="rs-section-title">Samples</h3>
+                    <div style="background:#fff;border:1px solid #e2e8f0;border-radius:4px;overflow:hidden;margin-bottom:20px;">
+                        <div style="padding:14px 20px;border-bottom:1px solid #e2e8f0;">
+                            <h3 style="font-family:'Georgia',serif;font-size:14px;font-weight:700;color:#1a2f4e;margin:0;">Samples</h3>
                         </div>
-                        <div class="overflow-x-auto">
-                            <table class="w-full text-sm">
-                                <thead class="bg-gray-50 border-b border-gray-100">
-                                    <tr>
-                                        <th class="text-left px-5 py-3 text-xs font-medium text-gray-500 uppercase">Code</th>
-                                        <th class="text-left px-5 py-3 text-xs font-medium text-gray-500 uppercase">Name</th>
-                                        <th class="text-left px-5 py-3 text-xs font-medium text-gray-500 uppercase">Status</th>
+                        <div style="overflow-x:auto;">
+                            <table style="width:100%;border-collapse:collapse;">
+                                <thead>
+                                    <tr style="background:#1a2f4e;">
+                                        <th style="padding:10px 16px;text-align:left;font-size:9px;font-weight:700;letter-spacing:.12em;text-transform:uppercase;color:#e2e8f0;">Code</th>
+                                        <th style="padding:10px 16px;text-align:left;font-size:9px;font-weight:700;letter-spacing:.12em;text-transform:uppercase;color:#e2e8f0;">Name</th>
+                                        <th style="padding:10px 16px;text-align:left;font-size:9px;font-weight:700;letter-spacing:.12em;text-transform:uppercase;color:#e2e8f0;">Status</th>
                                     </tr>
                                 </thead>
-                                <tbody class="divide-y divide-gray-50">
+                                <tbody>
                                     @foreach($samples as $sample)
-                                        <tr>
-                                            <td class="px-5 py-3 font-mono text-xs">{{ $sample->sample_code }}</td>
-                                            <td class="px-5 py-3 font-medium text-gray-800">{{ $sample->common_name }}</td>
-                                            <td class="px-5 py-3"><x-kstl.status-badge :status="$sample->status" /></td>
+                                        <tr style="border-bottom:1px solid #f1f5f9;background:{{ $loop->even ? '#f8fafc' : '#fff' }};">
+                                            <td style="padding:11px 16px;font-family:monospace;font-size:12px;color:#374151;">{{ $sample->sample_code }}</td>
+                                            <td style="padding:11px 16px;font-size:13px;font-weight:600;color:#1e293b;">{{ $sample->common_name }}</td>
+                                            <td style="padding:11px 16px;"><x-kstl.status-badge :status="$sample->status" /></td>
                                         </tr>
                                     @endforeach
                                 </tbody>
@@ -668,46 +660,46 @@
 
             @else
                 {{-- Any other status — read only --}}
-                <div class="bg-white rounded-2xl border border-gray-100 shadow-sm p-6">
-                    <p class="text-sm text-gray-500">
+                <div style="background:#fff;border:1px solid #e2e8f0;border-radius:4px;padding:24px;margin-bottom:20px;">
+                    <p style="font-size:13px;color:#64748b;margin:0 0 6px;">
                         This submission is currently
-                        <span class="font-medium text-gray-800 capitalize">{{ str_replace('_', ' ', $submission->status) }}</span>
+                        <span style="font-weight:700;color:#1e293b;text-transform:capitalize;">{{ str_replace('_', ' ', $submission->status) }}</span>
                         and is no longer pending reception action.
                     </p>
                     @if($submission->received_at)
-                        <p class="text-xs text-gray-400 mt-2">
+                        <p style="font-size:12px;color:#94a3b8;margin:0;">
                             Received: {{ $submission->received_at->format('d M Y \a\t H:i') }}
                         </p>
                     @endif
                 </div>
 
                 @if($samples->isNotEmpty())
-                    <div class="bg-white rounded-2xl border border-gray-100 shadow-sm overflow-hidden mt-5">
-                        <div class="px-5 py-3.5 border-b border-gray-100">
-                            <h3 class="rs-section-title">Samples ({{ $samples->count() }})</h3>
+                    <div style="background:#fff;border:1px solid #e2e8f0;border-radius:4px;overflow:hidden;margin-bottom:20px;">
+                        <div style="padding:14px 20px;border-bottom:1px solid #e2e8f0;">
+                            <h3 style="font-family:'Georgia',serif;font-size:14px;font-weight:700;color:#1a2f4e;margin:0;">Samples ({{ $samples->count() }})</h3>
                         </div>
-                        <div class="overflow-x-auto">
-                            <table class="w-full text-sm">
-                                <thead class="bg-gray-50 border-b border-gray-100">
-                                    <tr>
-                                        <th class="text-left px-5 py-3 text-xs font-medium text-gray-500 uppercase">Code</th>
-                                        <th class="text-left px-5 py-3 text-xs font-medium text-gray-500 uppercase">Name</th>
-                                        <th class="text-left px-5 py-3 text-xs font-medium text-gray-500 uppercase">Qty</th>
-                                        <th class="text-left px-5 py-3 text-xs font-medium text-gray-500 uppercase">Status</th>
+                        <div style="overflow-x:auto;">
+                            <table style="width:100%;border-collapse:collapse;">
+                                <thead>
+                                    <tr style="background:#1a2f4e;">
+                                        <th style="padding:10px 16px;text-align:left;font-size:9px;font-weight:700;letter-spacing:.12em;text-transform:uppercase;color:#e2e8f0;">Code</th>
+                                        <th style="padding:10px 16px;text-align:left;font-size:9px;font-weight:700;letter-spacing:.12em;text-transform:uppercase;color:#e2e8f0;">Name</th>
+                                        <th style="padding:10px 16px;text-align:left;font-size:9px;font-weight:700;letter-spacing:.12em;text-transform:uppercase;color:#e2e8f0;">Qty</th>
+                                        <th style="padding:10px 16px;text-align:left;font-size:9px;font-weight:700;letter-spacing:.12em;text-transform:uppercase;color:#e2e8f0;">Status</th>
                                     </tr>
                                 </thead>
-                                <tbody class="divide-y divide-gray-50">
+                                <tbody>
                                     @foreach($samples as $sample)
-                                        <tr>
-                                            <td class="px-5 py-3 font-mono text-xs text-gray-600">{{ $sample->sample_code ?? '—' }}</td>
-                                            <td class="px-5 py-3">
-                                                <p class="font-medium text-gray-800">{{ $sample->common_name }}</p>
+                                        <tr style="border-bottom:1px solid #f1f5f9;background:{{ $loop->even ? '#f8fafc' : '#fff' }};">
+                                            <td style="padding:11px 16px;font-family:monospace;font-size:12px;color:#374151;">{{ $sample->sample_code ?? '—' }}</td>
+                                            <td style="padding:11px 16px;">
+                                                <p style="font-size:13px;font-weight:600;color:#1e293b;margin:0 0 2px;">{{ $sample->common_name }}</p>
                                                 @if($sample->scientific_name)
-                                                    <p class="text-xs text-gray-400 italic">{{ $sample->scientific_name }}</p>
+                                                    <p style="font-size:11px;color:#94a3b8;font-style:italic;margin:0;">{{ $sample->scientific_name }}</p>
                                                 @endif
                                             </td>
-                                            <td class="px-5 py-3 text-gray-700">{{ $sample->quantity }} {{ $sample->quantity_unit }}</td>
-                                            <td class="px-5 py-3"><x-kstl.status-badge :status="$sample->status" /></td>
+                                            <td style="padding:11px 16px;font-size:13px;color:#374151;">{{ $sample->quantity }} {{ $sample->quantity_unit }}</td>
+                                            <td style="padding:11px 16px;"><x-kstl.status-badge :status="$sample->status" /></td>
                                         </tr>
                                     @endforeach
                                 </tbody>
@@ -720,24 +712,22 @@
                 $assessedSamples = $samples->filter(fn($s) => $s->assessment !== null);
             @endphp
             @if($assessedSamples->isNotEmpty())
-                <div class="bg-white rounded-2xl border border-gray-100 shadow-sm overflow-hidden">
-                    <div class="px-6 py-4 border-b border-gray-100 flex items-center justify-between">
+                <div style="background:#fff;border:1px solid #e2e8f0;border-radius:4px;overflow:hidden;margin-bottom:20px;">
+                    <div style="padding:16px 24px;border-bottom:1px solid #e2e8f0;display:flex;align-items:center;justify-content:space-between;">
                         <div>
-                            <h3 class="rs-section-title">Assessment Record</h3>
-                            <p class="text-xs text-gray-400 mt-1">Physical sample inspection results logged by reception.</p>
+                            <h3 style="font-family:'Georgia',serif;font-size:14px;font-weight:700;color:#1a2f4e;margin:0 0 2px;">Assessment Record</h3>
+                            <p style="font-size:11px;color:#94a3b8;margin:0;">Physical sample inspection results logged by reception.</p>
                         </div>
                         @php
                             $allPassed = $assessedSamples->every(fn($s) => $s->assessment->outcome === 'accepted');
                             $anyFailed = $assessedSamples->some(fn($s)  => $s->assessment->outcome === 'rejected');
                         @endphp
                         @if($allPassed)
-                            <span class="inline-flex items-center gap-1.5 px-2.5 py-1 text-xs font-semibold rounded-full bg-green-50 text-green-700 ring-1 ring-green-600/20">
-                                <svg class="w-3 h-3" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M5 13l4 4L19 7"/></svg>
+                            <span style="display:inline-flex;align-items:center;gap:6px;padding:4px 12px;border-radius:20px;font-size:10px;font-weight:700;letter-spacing:.08em;text-transform:uppercase;background:#dcfce7;color:#166534;">
                                 All Accepted
                             </span>
                         @elseif($anyFailed)
-                            <span class="inline-flex items-center gap-1.5 px-2.5 py-1 text-xs font-semibold rounded-full bg-red-50 text-red-700 ring-1 ring-red-600/20">
-                                <svg class="w-3 h-3" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12"/></svg>
+                            <span style="display:inline-flex;align-items:center;gap:6px;padding:4px 12px;border-radius:20px;font-size:10px;font-weight:700;letter-spacing:.08em;text-transform:uppercase;background:#fef2f2;color:#991b1b;">
                                 Rejected
                             </span>
                         @endif
@@ -745,24 +735,24 @@
 
                     @foreach($assessedSamples as $sample)
                         @php $a = $sample->assessment; @endphp
-                        <div class="px-6 py-5 {{ !$loop->last ? 'border-b border-gray-100' : '' }}">
+                        <div style="padding:20px 24px;{{ !$loop->last ? 'border-bottom:1px solid #e2e8f0;' : '' }}">
 
                             {{-- Sample header --}}
-                            <div class="flex items-center justify-between mb-4">
+                            <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:16px;">
                                 <div>
-                                    <p class="text-sm font-semibold text-gray-800">{{ $sample->common_name }}</p>
-                                    <p class="text-xs text-gray-400 font-mono mt-0.5">{{ $sample->sample_code }}</p>
+                                    <p style="font-size:13px;font-weight:700;color:#1e293b;margin:0 0 2px;">{{ $sample->common_name }}</p>
+                                    <p style="font-size:11px;color:#94a3b8;font-family:monospace;margin:0;">{{ $sample->sample_code }}</p>
                                 </div>
-                                <div class="flex items-center gap-3 text-right">
+                                <div style="display:flex;align-items:center;gap:12px;text-align:right;">
                                     @if($a->outcome === 'accepted')
-                                        <span class="inline-flex items-center gap-1 px-2 py-0.5 text-xs font-semibold bg-green-50 text-green-700 rounded-full">Accepted</span>
+                                        <span style="display:inline-flex;align-items:center;padding:3px 10px;border-radius:20px;font-size:10px;font-weight:700;letter-spacing:.08em;text-transform:uppercase;background:#dcfce7;color:#166534;">Accepted</span>
                                     @else
-                                        <span class="inline-flex items-center gap-1 px-2 py-0.5 text-xs font-semibold bg-red-50 text-red-700 rounded-full">Rejected</span>
+                                        <span style="display:inline-flex;align-items:center;padding:3px 10px;border-radius:20px;font-size:10px;font-weight:700;letter-spacing:.08em;text-transform:uppercase;background:#fef2f2;color:#991b1b;">Rejected</span>
                                     @endif
                                     @if($a->assessedBy)
-                                        <div class="text-right">
-                                            <p class="text-xs text-gray-500">{{ $a->assessedBy->name }}</p>
-                                            <p class="text-xs text-gray-400">{{ $a->assessed_at?->format('d M Y H:i') ?? $a->created_at->format('d M Y H:i') }}</p>
+                                        <div style="text-align:right;">
+                                            <p style="font-size:12px;color:#64748b;margin:0 0 1px;">{{ $a->assessedBy->name }}</p>
+                                            <p style="font-size:11px;color:#94a3b8;margin:0;">{{ $a->assessed_at?->format('d M Y H:i') ?? $a->created_at->format('d M Y H:i') }}</p>
                                         </div>
                                     @endif
                                 </div>
@@ -779,25 +769,19 @@
                                     'Weight / Quantity'    => [$a->weight_ok,      $a->weight_notes],
                                 ];
                             @endphp
-                            <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3">
+                            <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:10px;">
                                 @foreach($criteria as $label => [$pass, $notes])
-                                    <div class="rounded-lg border {{ $pass ? 'border-green-100 bg-green-50/40' : 'border-red-100 bg-red-50/40' }} px-3 py-2.5">
-                                        <div class="flex items-center justify-between gap-2">
-                                            <span class="text-xs font-medium text-gray-700">{{ $label }}</span>
+                                    <div style="border-radius:3px;border:1px solid {{ $pass ? '#bbf7d0' : '#fecaca' }};background:{{ $pass ? '#f0fdf4' : '#fef2f2' }};padding:10px 12px;">
+                                        <div style="display:flex;align-items:center;justify-content:space-between;gap:8px;">
+                                            <span style="font-size:12px;font-weight:600;color:#374151;">{{ $label }}</span>
                                             @if($pass)
-                                                <span class="text-xs font-semibold text-green-600 flex items-center gap-0.5">
-                                                    <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M5 13l4 4L19 7"/></svg>
-                                                    Pass
-                                                </span>
+                                                <span style="font-size:11px;font-weight:700;color:#16a34a;white-space:nowrap;">&#10003; Pass</span>
                                             @else
-                                                <span class="text-xs font-semibold text-red-600 flex items-center gap-0.5">
-                                                    <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12"/></svg>
-                                                    Fail
-                                                </span>
+                                                <span style="font-size:11px;font-weight:700;color:#dc2626;white-space:nowrap;">&#10007; Fail</span>
                                             @endif
                                         </div>
                                         @if($notes)
-                                            <p class="text-xs text-gray-500 mt-1 leading-snug">{{ $notes }}</p>
+                                            <p style="font-size:11px;color:#64748b;margin:4px 0 0;line-height:1.4;">{{ $notes }}</p>
                                         @endif
                                     </div>
                                 @endforeach
@@ -805,16 +789,16 @@
 
                             {{-- Additional observations --}}
                             @if($a->additional_observations)
-                                <div class="mt-3 bg-gray-50 rounded-lg px-3 py-2.5 text-xs text-gray-600">
-                                    <span class="font-medium text-gray-700">Additional Observations:</span>
+                                <div style="margin-top:12px;background:#f8fafc;border-radius:3px;padding:10px 12px;font-size:12px;color:#374151;">
+                                    <span style="font-weight:700;color:#1e293b;">Additional Observations:</span>
                                     {{ $a->additional_observations }}
                                 </div>
                             @endif
 
                             {{-- Rejection reason --}}
                             @if($a->rejection_reason)
-                                <div class="mt-3 bg-red-50 border border-red-100 rounded-lg px-3 py-2.5 text-xs text-red-700">
-                                    <span class="font-semibold">Rejection Reason:</span>
+                                <div style="margin-top:10px;background:#fef2f2;border:1px solid #fecaca;border-radius:3px;padding:10px 12px;font-size:12px;color:#991b1b;">
+                                    <span style="font-weight:700;">Rejection Reason:</span>
                                     {{ $a->rejection_reason }}
                                 </div>
                             @endif
@@ -831,26 +815,52 @@
 
     @push('scripts')
     @php
-        // Pre-populate rows from sample_items (multi-sample submissions).
-        // Fall back to the legacy single-sample fields for older records.
-        $collectedDate = $submission->collected_at?->format('Y-m-d') ?? '';
+        // Pre-populate rows from sample_items. Always fall back to the legacy
+        // top-level fields so seeded or older submissions still pre-fill.
+        $collectedDate     = $submission->collected_at?->format('Y-m-d') ?? '';
+        $legacyName        = $submission->sample_name         ?? '';
+        $legacySci         = $submission->scientific_name     ?? '';
+        $legacyQty         = $submission->sample_quantity     ?? '';
+        $legacyUnit        = $submission->sample_quantity_unit ?? 'g';
+        $clientNote        = trim(implode(' | ', array_filter([
+            $submission->special_instructions,
+            $submission->client_notes,
+        ])));
+
         if ($submission->sample_items && count($submission->sample_items)) {
-            $initialRows = array_map(fn($item) => [
-                'common_name'     => $item['name']            ?? '',
-                'scientific_name' => $item['scientific_name'] ?? '',
-                'sampling_date'   => $collectedDate,
-                'quantity'        => $item['qty']             ?? '',
-                'quantity_unit'   => $item['unit']            ?? 'kg',
-                'notes'           => '',
-            ], $submission->sample_items);
+            $items   = array_values($submission->sample_items);
+            $isMulti = count($items) > 1;
+            $initialRows = array_map(function($item, $idx) use (
+                $legacyName, $legacySci, $legacyQty, $legacyUnit, $collectedDate, $clientNote, $isMulti
+            ) {
+                // For single-sample submissions fall back to legacy top-level fields when item fields are blank
+                $name = $item['name'] ?? '';
+                $sci  = $item['scientific_name'] ?? '';
+                $qty  = isset($item['qty']) && $item['qty'] !== '' ? $item['qty'] : '';
+                $unit = $item['unit'] ?? 'kg';
+                if (!$isMulti && $idx === 0) {
+                    $name = $name ?: $legacyName;
+                    $sci  = $sci  ?: $legacySci;
+                    $qty  = $qty  !== '' ? $qty : $legacyQty;
+                    $unit = $unit ?: $legacyUnit;
+                }
+                return [
+                    'common_name'     => $name,
+                    'scientific_name' => $sci,
+                    'sampling_date'   => $collectedDate,
+                    'quantity'        => $qty,
+                    'quantity_unit'   => $unit,
+                    'notes'           => $idx === 0 ? $clientNote : '',
+                ];
+            }, $items, array_keys($items));
         } else {
             $initialRows = [[
-                'common_name'     => $submission->sample_name             ?? '',
-                'scientific_name' => $submission->scientific_name          ?? '',
+                'common_name'     => $legacyName,
+                'scientific_name' => $legacySci,
                 'sampling_date'   => $collectedDate,
-                'quantity'        => $submission->sample_quantity          ?? '',
-                'quantity_unit'   => $submission->sample_quantity_unit     ?? 'g',
-                'notes'           => '',
+                'quantity'        => $legacyQty,
+                'quantity_unit'   => $legacyUnit,
+                'notes'           => $clientNote,
             ]];
         }
     @endphp

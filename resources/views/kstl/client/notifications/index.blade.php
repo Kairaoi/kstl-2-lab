@@ -1,29 +1,52 @@
-{{-- resources/views/kstl/client/notifications/index.blade.php --}}
+﻿{{-- resources/views/kstl/client/notifications/index.blade.php --}}
 
 <x-app-layout>
     <x-slot name="header">
-        <div class="flex items-center justify-between">
-            <h2 class="font-semibold text-xl text-gray-800 leading-tight">Notifications</h2>
-            @if(\DB::table('notifications')->where('notifiable_type', 'App\\Models\\User')
-                    ->where('notifiable_id', auth()->id())->whereNull('read_at')->exists())
-                <form method="POST" action="{{ route('client.notifications.read-all') }}">
-                    @csrf
-                    <button type="submit"
-                            class="text-xs text-blue-600 hover:underline">
-                        Mark all as read
-                    </button>
-                </form>
-            @endif
+        <div style="position:relative;overflow:hidden;background:linear-gradient(135deg,#0f2240 0%,#1a2f4e 60%,#1e3a5f 100%);">
+            <div style="height:3px;background:linear-gradient(90deg,#1a2f4e,#b8922a 30%,#b8922a 70%,#1a2f4e);"></div>
+            <div style="max-width:80rem;margin:0 auto;padding:28px 2rem 32px;">
+                <div style="display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:16px;">
+                    <div style="display:flex;align-items:center;gap:20px;">
+                        <img src="{{ asset('images/mfor-logo.png') }}" alt="MFOR" style="filter:brightness(0) invert(1);opacity:.92;width:56px;height:56px;flex-shrink:0;">
+                        <div>
+                            <p style="font-size:9px;font-weight:700;letter-spacing:.18em;text-transform:uppercase;color:#b8922a;margin:0 0 4px;">Client Portal</p>
+                            <h1 style="font-family:'Georgia',serif;font-size:22px;font-weight:700;color:#fff;margin:0 0 6px;line-height:1.2;">Notifications</h1>
+                            <p style="font-size:12px;color:#94a3b8;margin:0;">Updates on your submissions, invoices, and results</p>
+                        </div>
+                    </div>
+                    <div style="display:flex;align-items:center;gap:10px;flex-wrap:wrap;">
+                        @if(\DB::table('notifications')->where('notifiable_type', 'App\\Models\\User')
+                                ->where('notifiable_id', auth()->id())->whereNull('read_at')->exists())
+                            <form method="POST" action="{{ route('client.notifications.read-all') }}">
+                                @csrf
+                                <button type="submit"
+                                        style="display:inline-flex;align-items:center;gap:8px;padding:8px 20px;background:#fff;color:#1a2f4e;font-size:12px;font-weight:700;letter-spacing:.06em;border:1px solid #1a2f4e;border-radius:3px;cursor:pointer;">
+                                    Mark all as read
+                                </button>
+                            </form>
+                        @endif
+                    </div>
+                </div>
+            </div>
         </div>
     </x-slot>
 
-    <div class="py-8">
-        <div class="max-w-4xl mx-auto sm:px-6 lg:px-8 space-y-3">
+    @push('styles')
+    <style>
+        .page-hdr { padding: 0 !important; }
+        .page-hdr-inner { max-width: 100% !important; padding: 0 !important; }
+        .app-main { padding-left:0 !important; padding-right:0 !important; padding-top:0 !important; max-width:100% !important; }
+    </style>
+    @endpush
+
+    <div style="background:#f1f5f9;min-height:100vh;padding:52px 0 56px;">
+        <div style="max-width:80rem;margin:0 auto;padding:0 2rem;">
 
             @if(session('success'))
-                <div class="bg-green-50 border-l-4 border-green-400 p-4 rounded-lg text-sm text-green-800">
-                    {{ session('success') }}
-                </div>
+                <div style="background:#f0fdf4;border:1px solid #bbf7d0;border-left:4px solid #16a34a;border-radius:4px;padding:12px 16px;margin-bottom:20px;font-size:13px;color:#166534;">{{ session('success') }}</div>
+            @endif
+            @if(session('error'))
+                <div style="background:#fef2f2;border:1px solid #fecaca;border-left:4px solid #dc2626;border-radius:4px;padding:12px 16px;margin-bottom:20px;font-size:13px;color:#991b1b;">{{ session('error') }}</div>
             @endif
 
             @php
@@ -35,70 +58,67 @@
             @endphp
 
             @if($notifications->isEmpty())
-                <div class="bg-white rounded-xl border border-gray-100 px-6 py-16 text-center">
-                    <svg class="w-10 h-10 text-gray-200 mx-auto mb-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <div style="background:#fff;border:1px solid #e2e8f0;border-radius:4px;padding:64px 24px;text-align:center;">
+                    <svg style="width:40px;height:40px;color:#cbd5e1;margin:0 auto 12px;" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M15 17h5l-1.405-1.405A2.032 2.032 0 0118 14.158V11a6.002 6.002 0 00-4-5.659V5a2 2 0 10-4 0v.341C7.67 6.165 6 8.388 6 11v3.159c0 .538-.214 1.055-.595 1.436L4 17h5m6 0v1a3 3 0 11-6 0v-1m6 0H9"/>
                     </svg>
-                    <p class="text-sm text-gray-400">No notifications yet</p>
+                    <p style="font-size:14px;color:#94a3b8;margin:0;">No notifications yet</p>
                 </div>
             @else
-                @foreach($notifications as $notification)
-                    @php
-                        $isUnread = is_null($notification->read_at);
-                        $icon = match(json_decode($notification->data)->notification_type ?? 'info') {
-                            'results_ready'          => ['color' => 'text-green-500',  'bg' => 'bg-green-50',  'path' => 'M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z'],
-                            'invoice_issued'         => ['color' => 'text-blue-500',   'bg' => 'bg-blue-50',   'path' => 'M9 14l6-6m-5.5.5h.01m4.99 5h.01M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16l3.5-2 3.5 2 3.5-2 3.5 2z'],
-                            'awaiting_authorisation' => ['color' => 'text-amber-500',  'bg' => 'bg-amber-50',  'path' => 'M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z'],
-                            'sample_rejected'        => ['color' => 'text-red-500',    'bg' => 'bg-red-50',    'path' => 'M10 14l2-2m0 0l2-2m-2 2l-2-2m2 2l2 2m7-2a9 9 0 11-18 0 9 9 0 0118 0z'],
-                            default                  => ['color' => 'text-gray-400',   'bg' => 'bg-gray-50',   'path' => 'M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z'],
-                        };
-                    @endphp
+                <div style="display:flex;flex-direction:column;gap:8px;">
+                    @foreach($notifications as $notification)
+                        @php
+                            $isUnread = is_null($notification->read_at);
+                            $notifData = json_decode($notification->data);
+                            $notifType = $notifData->notification_type ?? 'info';
+                            $iconColors = match($notifType) {
+                                'results_ready'          => ['border' => '#16a34a', 'bg' => '#f0fdf4', 'color' => '#166534'],
+                                'invoice_issued'         => ['border' => '#1a2f4e', 'bg' => '#eff6ff', 'color' => '#1e40af'],
+                                'awaiting_authorisation' => ['border' => '#b8922a', 'bg' => '#fffbeb', 'color' => '#92400e'],
+                                'sample_rejected'        => ['border' => '#dc2626', 'bg' => '#fef2f2', 'color' => '#991b1b'],
+                                default                  => ['border' => '#64748b', 'bg' => '#f8fafc', 'color' => '#475569'],
+                            };
+                        @endphp
 
-                    <div class="bg-white rounded-xl border {{ $isUnread ? 'border-blue-200 shadow-sm' : 'border-gray-100' }} px-5 py-4 flex items-start gap-4">
+                        <div style="background:#fff;border:1px solid {{ $isUnread ? '#bfdbfe' : '#e2e8f0' }};border-left:4px solid {{ $iconColors['border'] }};border-radius:4px;padding:16px 20px;display:flex;align-items:flex-start;gap:16px;">
 
-                        {{-- Icon --}}
-                        <div class="w-9 h-9 rounded-full {{ $icon['bg'] }} flex items-center justify-center shrink-0 mt-0.5">
-                            <svg class="w-4.5 h-4.5 {{ $icon['color'] }}" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="{{ $icon['path'] }}"/>
-                            </svg>
-                        </div>
-
-                        {{-- Content --}}
-                        <div class="flex-1 min-w-0">
-                            <div class="flex items-start justify-between gap-2">
-                                <p class="text-sm font-{{ $isUnread ? 'semibold' : 'medium' }} text-gray-800">
-                                    {{ json_decode($notification->data)->subject ?? $notification->type }}
-                                    @if($isUnread)
-                                        <span class="ml-2 inline-flex w-2 h-2 bg-blue-500 rounded-full"></span>
-                                    @endif
-                                </p>
-                                <span class="text-xs text-gray-400 shrink-0 mt-0.5">
-                                    {{ \Carbon\Carbon::parse($notification->created_at)->diffForHumans() }}
-                                </span>
+                            {{-- Content --}}
+                            <div style="flex:1;min-width:0;">
+                                <div style="display:flex;align-items:flex-start;justify-content:space-between;gap:8px;margin-bottom:4px;">
+                                    <p style="font-size:13px;font-weight:{{ $isUnread ? '700' : '600' }};color:#1a2f4e;margin:0;">
+                                        {{ $notifData->subject ?? $notification->type }}
+                                        @if($isUnread)
+                                            <span style="display:inline-block;width:8px;height:8px;background:#3b82f6;border-radius:50%;margin-left:6px;vertical-align:middle;"></span>
+                                        @endif
+                                    </p>
+                                    <span style="font-size:11px;color:#94a3b8;white-space:nowrap;flex-shrink:0;">
+                                        {{ \Carbon\Carbon::parse($notification->created_at)->diffForHumans() }}
+                                    </span>
+                                </div>
+                                @if($notifData->message ?? '')
+                                    <p style="font-size:12px;color:#64748b;margin:0;line-height:1.5;">{{ $notifData->message }}</p>
+                                @endif
                             </div>
-                            @if(json_decode($notification->data)->message ?? '')
-                                <p class="text-xs text-gray-500 mt-0.5 leading-relaxed">{{ json_decode($notification->data)->message ?? '' }}</p>
+
+                            {{-- Mark read --}}
+                            @if($isUnread)
+                                <form method="POST"
+                                      action="{{ route('client.notifications.read', $notification->id) }}"
+                                      style="flex-shrink:0;">
+                                    @csrf
+                                    <button type="submit"
+                                            style="background:none;border:none;cursor:pointer;font-size:12px;color:#94a3b8;padding:0;"
+                                            title="Mark as read">
+                                        âœ“
+                                    </button>
+                                </form>
                             @endif
+
                         </div>
+                    @endforeach
+                </div>
 
-                        {{-- Mark read --}}
-                        @if($isUnread)
-                            <form method="POST"
-                                  action="{{ route('client.notifications.read', $notification->id) }}"
-                                  class="shrink-0">
-                                @csrf
-                                <button type="submit"
-                                        class="text-xs text-gray-400 hover:text-gray-600 transition"
-                                        title="Mark as read">
-                                    ✓
-                                </button>
-                            </form>
-                        @endif
-
-                    </div>
-                @endforeach
-
-                <div class="mt-4">
+                <div style="margin-top:20px;">
                     {{ $notifications->links() }}
                 </div>
             @endif

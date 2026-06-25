@@ -1,31 +1,32 @@
-{{-- resources/views/kstl/director/submissions/show.blade.php --}}
+﻿{{-- resources/views/kstl/director/submissions/show.blade.php --}}
 {{-- Director review page: test results + file preview modal + per-test notes + text highlight --}}
 
 <x-app-layout>
     <x-slot name="header">
-        <div class="flex items-center justify-between">
-            <div class="flex items-center gap-3">
+        <div style="display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:12px;">
+            <div style="display:flex;align-items:center;gap:12px;">
                 <a href="{{ route('director.dashboard') }}"
-                   class="text-gray-400 hover:text-gray-600 transition">
-                    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                   style="color:#9ca3af;text-decoration:none;display:flex;align-items:center;">
+                    <svg style="width:18px;height:18px;" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7"/>
                     </svg>
                 </a>
                 <div>
-                    <h2 class="font-semibold text-xl text-gray-800 leading-tight">
+                    <p style="font-size:9px;font-weight:700;letter-spacing:.14em;text-transform:uppercase;color:#b8922a;margin:0 0 3px;">Director &middot; Review</p>
+                    <h2 style="font-family:'Georgia',serif;font-size:17px;font-weight:700;color:#1a2f4e;margin:0 0 3px;line-height:1.2;">
                         Review Results — {{ $submission->reference_number }}
                     </h2>
-                    <p class="text-sm text-gray-500 mt-0.5">
-                        {{ $submission->client->company_name }} · {{ $samples->count() }} sample{{ $samples->count() !== 1 ? 's' : '' }}
+                    <p style="font-size:11px;color:#6b7280;margin:0;">
+                        {{ $submission->client->company_name }} &middot; {{ $samples->count() }} sample{{ $samples->count() !== 1 ? 's' : '' }}
                     </p>
                 </div>
             </div>
             @if($existingResult)
-                <span class="inline-flex items-center px-3 py-1 rounded-full text-xs font-medium bg-green-50 text-green-700 ring-1 ring-inset ring-green-600/20">
+                <span style="display:inline-flex;align-items:center;padding:4px 12px;border-radius:20px;background:#d1fae5;color:#065f46;font-size:10px;font-weight:700;letter-spacing:.08em;text-transform:uppercase;">
                     Authorised
                 </span>
             @else
-                <span class="inline-flex items-center px-3 py-1 rounded-full text-xs font-medium bg-amber-50 text-amber-700 ring-1 ring-inset ring-amber-600/20">
+                <span style="display:inline-flex;align-items:center;padding:4px 12px;border-radius:20px;background:#fffbeb;color:#92400e;border:1px solid #fbbf24;font-size:10px;font-weight:700;letter-spacing:.08em;text-transform:uppercase;">
                     Awaiting Authorisation
                 </span>
             @endif
@@ -66,8 +67,8 @@
     </style>
     @endpush
 
-    <div class="py-8">
-        <div class="max-w-7xl mx-auto sm:px-6 lg:px-8 space-y-6"
+    <div style="background:#f1f5f9;min-height:100vh;padding:52px 0 56px;">
+        <div style="max-width:80rem;margin:0 auto;padding:0 2rem;" class="space-y-5"
              x-data="{
                 selectedTests: [],
                 queryMode: false,
@@ -113,64 +114,72 @@
              }">
 
             @if(session('success'))
-                <div class="bg-green-50 border-l-4 border-green-400 p-4 rounded-lg text-sm text-green-800">
+                <div style="background:#f0fdf4;border-left:4px solid #22c55e;padding:14px 18px;border-radius:4px;font-size:13px;color:#166534;">
                     {{ session('success') }}
                 </div>
             @endif
 
             @if(session('error'))
-                <div class="bg-red-50 border-l-4 border-red-400 p-4 rounded-lg text-sm text-red-800">
+                <div style="background:#fef2f2;border-left:4px solid #ef4444;padding:14px 18px;border-radius:4px;font-size:13px;color:#991b1b;">
                     {{ session('error') }}
                 </div>
             @endif
 
             {{-- ── Already authorised notice ─────────────────────── --}}
             @if($existingResult)
-                <div class="bg-green-50 border border-green-200 rounded-xl p-5 flex items-center justify-between gap-4">
-                    <div class="flex items-center gap-3">
-                        <svg class="w-6 h-6 text-green-500 shrink-0" fill="currentColor" viewBox="0 0 20 20">
+                <div style="background:#f0fdf4;border:1px solid #bbf7d0;border-left:4px solid #0d9488;border-radius:4px;padding:16px 20px;display:flex;align-items:center;justify-content:space-between;gap:16px;flex-wrap:wrap;">
+                    <div style="display:flex;align-items:center;gap:12px;">
+                        <svg style="width:20px;height:20px;color:#16a34a;flex-shrink:0;" fill="currentColor" viewBox="0 0 20 20">
                             <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.857-9.809a.75.75 0 00-1.214-.882l-3.483 4.79-1.88-1.88a.75.75 0 10-1.06 1.061l2.5 2.5a.75.75 0 001.137-.089l4-5.5z" clip-rule="evenodd"/>
                         </svg>
                         <div>
-                            <p class="text-sm font-semibold text-green-800">
+                            <p style="font-size:13px;font-weight:700;color:#166534;margin:0 0 3px;">
                                 Authorised — {{ ucfirst($existingResult->overall_outcome) }}
                             </p>
-                            <p class="text-xs text-green-600 mt-0.5">
+                            <p style="font-size:11px;color:#15803d;margin:0;">
                                 By {{ $existingResult->authorisedBy?->name }} on {{ $existingResult->authorised_at?->format('d M Y \a\t H:i') }}
                                 &middot; All {{ $samples->sum(fn($s) => ($testsBySample[$s->id] ?? collect())->count()) }} test result{{ $samples->sum(fn($s) => ($testsBySample[$s->id] ?? collect())->count()) !== 1 ? 's' : '' }} are shown below.
                             </p>
                         </div>
                     </div>
                     <a href="{{ route('director.results.show', $submission->id) }}"
-                       class="shrink-0 inline-flex items-center gap-2 px-4 py-2 bg-indigo-600 text-white text-sm font-medium rounded-lg hover:bg-indigo-700 transition">
-                        View Full Report →
+                       style="flex-shrink:0;display:inline-flex;align-items:center;gap:6px;padding:8px 18px;background:#1a2f4e;color:#fff;border-radius:3px;font-size:12px;font-weight:600;text-decoration:none;">
+                        View Full Report &rarr;
                     </a>
                 </div>
             @endif
 
             {{-- ── Submission summary strip ─────────────────────── --}}
-            <div class="bg-white rounded-xl border border-gray-100 overflow-hidden">
-                <div class="px-6 py-4 grid grid-cols-2 sm:grid-cols-4 gap-4 text-sm">
+            <div style="background:#fff;border:1px solid #e2e8f0;border-radius:4px;overflow:hidden;">
+                <div style="padding:14px 20px;border-bottom:2px solid #b8922a;">
+                    <p style="font-family:'Georgia',serif;font-size:15px;font-weight:700;color:#1a2f4e;margin:0;">Submission Details</p>
+                </div>
+                <div style="padding:16px 20px;display:grid;grid-template-columns:repeat(4,1fr);gap:20px;">
                     <div>
-                        <p class="text-xs text-gray-400 uppercase tracking-wide">Client</p>
-                        <p class="font-medium text-gray-800 mt-0.5">{{ $submission->client->company_name }}</p>
+                        <p style="font-size:9px;font-weight:700;letter-spacing:.14em;text-transform:uppercase;color:#9ca3af;margin:0 0 5px;">Client</p>
+                        <p style="font-size:13px;font-weight:600;color:#374151;margin:0;">{{ $submission->client->company_name }}</p>
                     </div>
                     <div>
-                        <p class="text-xs text-gray-400 uppercase tracking-wide">Sample</p>
-                        <p class="font-medium text-gray-800 mt-0.5">{{ $submission->sample_name }}</p>
+                        <p style="font-size:9px;font-weight:700;letter-spacing:.14em;text-transform:uppercase;color:#9ca3af;margin:0 0 5px;">Sample</p>
+                        <p style="font-size:13px;font-weight:600;color:#374151;margin:0;">{{ $submission->sample_name }}</p>
                     </div>
                     <div>
-                        <p class="text-xs text-gray-400 uppercase tracking-wide">Priority</p>
-                        <p class="mt-0.5">
-                            @php $pc = ['routine' => 'bg-gray-100 text-gray-600', 'urgent' => 'bg-amber-50 text-amber-700', 'emergency' => 'bg-red-50 text-red-700']; @endphp
-                            <span class="inline-flex px-2 py-0.5 text-xs font-medium rounded-full capitalize {{ $pc[$submission->priority ?? 'routine'] }}">
-                                {{ $submission->priority ?? 'Routine' }}
-                            </span>
-                        </p>
+                        <p style="font-size:9px;font-weight:700;letter-spacing:.14em;text-transform:uppercase;color:#9ca3af;margin:0 0 5px;">Priority</p>
+                        @php
+                            $pc = [
+                                'routine'   => ['bg' => '#f3f4f6', 'color' => '#374151'],
+                                'urgent'    => ['bg' => '#fffbeb', 'color' => '#92400e'],
+                                'emergency' => ['bg' => '#fef2f2', 'color' => '#b91c1c'],
+                            ];
+                            $pd = $pc[$submission->priority ?? 'routine'] ?? $pc['routine'];
+                        @endphp
+                        <span style="display:inline-flex;padding:2px 8px;border-radius:20px;background:{{ $pd['bg'] }};color:{{ $pd['color'] }};font-size:10px;font-weight:700;text-transform:capitalize;">
+                            {{ $submission->priority ?? 'Routine' }}
+                        </span>
                     </div>
                     <div>
-                        <p class="text-xs text-gray-400 uppercase tracking-wide">Results Required By</p>
-                        <p class="font-medium text-gray-800 mt-0.5">
+                        <p style="font-size:9px;font-weight:700;letter-spacing:.14em;text-transform:uppercase;color:#9ca3af;margin:0 0 5px;">Results Required By</p>
+                        <p style="font-size:13px;font-weight:600;color:#374151;margin:0;">
                             {{ $submission->results_required_by?->format('d M Y') ?? 'No deadline' }}
                         </p>
                     </div>
@@ -201,17 +210,17 @@
             @foreach($samples as $sample)
                 @php $tests = $testsBySample[$sample->id] ?? collect(); @endphp
 
-                <div class="bg-white rounded-xl border border-gray-100 overflow-hidden">
+                <div style="background:#fff;border:1px solid #e2e8f0;border-radius:4px;overflow:hidden;">
 
                     {{-- Sample header --}}
-                    <div class="px-6 py-4 border-b border-gray-100 bg-gray-50 flex items-center justify-between">
+                    <div style="padding:14px 20px;border-bottom:2px solid #b8922a;background:#f8fafc;display:flex;align-items:center;justify-content:space-between;">
                         <div>
-                            <h3 class="font-semibold text-gray-900">
-                                {{ $sample->sample_code }} — {{ $sample->common_name }}
+                            <h3 style="font-family:'Georgia',serif;font-size:14px;font-weight:700;color:#1a2f4e;margin:0 0 3px;">
+                                {{ $sample->sample_code }} &mdash; {{ $sample->common_name }}
                             </h3>
-                            <p class="text-xs text-gray-500 mt-0.5">
+                            <p style="font-size:11px;color:#6b7280;margin:0;">
                                 {{ $sample->quantity }} {{ $sample->quantity_unit }}
-                                @if($sample->scientific_name) · <em>{{ $sample->scientific_name }}</em> @endif
+                                @if($sample->scientific_name) &middot; <em>{{ $sample->scientific_name }}</em> @endif
                             </p>
                         </div>
                         @if(!$existingResult)
@@ -220,22 +229,22 @@
                                 $doneThis    = collect($testsBySample[$sample->id] ?? [])->filter(fn($t) =>  $t->director_outcome)->count();
                             @endphp
                             @if($pendingThis > 0)
-                                <span class="inline-flex items-center gap-1 px-2.5 py-1 text-xs bg-amber-50 text-amber-700 rounded-full font-medium">
+                                <span style="display:inline-flex;align-items:center;padding:3px 10px;border-radius:20px;background:#fffbeb;color:#92400e;font-size:10px;font-weight:700;">
                                     {{ $pendingThis }} pending
                                 </span>
                             @else
-                                <span class="inline-flex px-2.5 py-1 text-xs bg-green-50 text-green-700 rounded-full">
+                                <span style="display:inline-flex;padding:3px 10px;border-radius:20px;background:#d1fae5;color:#065f46;font-size:10px;font-weight:700;">
                                     All authorised
                                 </span>
                             @endif
                         @else
                             @php $flaggedCount = $tests->where('status', 'flagged')->count(); @endphp
                             @if($flaggedCount)
-                                <span class="inline-flex items-center gap-1 px-2.5 py-1 text-xs bg-red-50 text-red-700 rounded-full font-medium">
-                                    ⚑ {{ $flaggedCount }} flagged
+                                <span style="display:inline-flex;align-items:center;padding:3px 10px;border-radius:20px;background:#fee2e2;color:#dc2626;font-size:10px;font-weight:700;">
+                                    {{ $flaggedCount }} flagged
                                 </span>
                             @else
-                                <span class="inline-flex px-2.5 py-1 text-xs bg-green-50 text-green-700 rounded-full">
+                                <span style="display:inline-flex;padding:3px 10px;border-radius:20px;background:#d1fae5;color:#065f46;font-size:10px;font-weight:700;">
                                     All complete
                                 </span>
                             @endif
@@ -244,34 +253,37 @@
 
                     {{-- Tests table --}}
                     @if($tests->isEmpty())
-                        <div class="px-6 py-6 text-sm text-gray-400">No tests recorded for this sample.</div>
+                        <div style="padding:20px 20px;font-size:12.5px;color:#9ca3af;">No tests recorded for this sample.</div>
                     @else
-                        <div class="overflow-x-auto">
-                            <table class="w-full text-sm">
-                                <thead class="bg-gray-50 border-b border-gray-100">
-                                    <tr>
+                        <div style="overflow-x:auto;">
+                            <table style="width:100%;border-collapse:collapse;">
+                                <thead>
+                                    <tr style="background:#1a2f4e;">
                                         @if(!$existingResult)
-                                            <th class="px-4 py-3 w-10">
+                                            <th style="padding:9px 12px;width:36px;">
                                                 <span class="sr-only">Select for query</span>
                                             </th>
                                         @endif
-                                        <th class="text-left px-4 py-3 text-xs font-medium text-gray-500 uppercase">Test</th>
-                                        <th class="text-left px-4 py-3 text-xs font-medium text-gray-500 uppercase">Result</th>
-                                        <th class="text-left px-4 py-3 text-xs font-medium text-gray-500 uppercase">Value</th>
-                                        <th class="text-left px-4 py-3 text-xs font-medium text-gray-500 uppercase">Notes</th>
-                                        <th class="text-left px-4 py-3 text-xs font-medium text-gray-500 uppercase">Analyst</th>
-                                        <th class="text-left px-4 py-3 text-xs font-medium text-gray-500 uppercase">
+                                        <th style="text-align:left;padding:9px 16px;font-size:9px;font-weight:700;letter-spacing:.12em;text-transform:uppercase;color:#e2e8f0;">Test</th>
+                                        <th style="text-align:left;padding:9px 16px;font-size:9px;font-weight:700;letter-spacing:.12em;text-transform:uppercase;color:#e2e8f0;">Result</th>
+                                        <th style="text-align:left;padding:9px 16px;font-size:9px;font-weight:700;letter-spacing:.12em;text-transform:uppercase;color:#e2e8f0;">Value</th>
+                                        <th style="text-align:left;padding:9px 16px;font-size:9px;font-weight:700;letter-spacing:.12em;text-transform:uppercase;color:#e2e8f0;">Notes</th>
+                                        <th style="text-align:left;padding:9px 16px;font-size:9px;font-weight:700;letter-spacing:.12em;text-transform:uppercase;color:#e2e8f0;">Analyst</th>
+                                        <th style="text-align:left;padding:9px 16px;font-size:9px;font-weight:700;letter-spacing:.12em;text-transform:uppercase;color:#e2e8f0;">
                                             Director Outcome
                                         </th>
                                     </tr>
                                 </thead>
-                                <tbody class="divide-y divide-gray-50">
-                                    @foreach($tests as $test)
+                                <tbody>
+                                    @foreach($tests as $ti => $test)
                                         @php
-                                            $isDone = (bool) $test->director_outcome;
-                                            $rowBg  = $isDone ? 'bg-green-50/20' : ($test->status === 'flagged' ? 'bg-red-50/40' : '');
+                                            $isDone   = (bool) $test->director_outcome;
+                                            $baseRow  = $ti % 2 === 0 ? '#fff' : '#f8fafc';
+                                            $rowStyle = $isDone
+                                                ? 'background:#f0fdf4;'
+                                                : ($test->status === 'flagged' ? 'background:#fff5f5;' : 'background:'.$baseRow.';');
                                         @endphp
-                                        <tr class="{{ $rowBg }} hover:bg-gray-50/50 transition">
+                                        <tr style="{{ $rowStyle }}border-bottom:1px solid #f1f5f9;">
 
                                             {{-- Select checkbox (for query analyst) --}}
                                             @if(!$existingResult)
@@ -391,7 +403,7 @@
                                         @php $colspan = $existingResult ? 6 : 7; @endphp
 
                                         @if($test->attachments->isNotEmpty())
-                                            <tr class="{{ $test->status === 'flagged' ? 'bg-red-50/20' : 'bg-gray-50/40' }}">
+                                            <tr style="{{ $test->status === 'flagged' ? 'background:#fff5f5;' : 'background:#f8fafc;' }}border-bottom:1px solid #f1f5f9;">
                                                 <td colspan="{{ $colspan }}" class="px-4 pb-3 pt-0">
                                                     <div class="ml-1 rounded-lg border border-gray-100 bg-white px-3 py-2.5">
                                                         <p class="text-xs font-medium text-gray-500 mb-2 flex items-center gap-1.5">
@@ -484,7 +496,7 @@
                                                     setTimeout(() => this.saved = false, 2500);
                                                 }
                                             }"
-                                             class="bg-gray-50/30 border-t border-dashed border-gray-100">
+                                             style="background:#fafafa;border-top:1px dashed #f1f5f9;">
                                             <td colspan="{{ $colspan }}" class="px-4 py-1.5">
                                                 <div class="flex items-center gap-2">
                                                     <button type="button" @click="open = !open"
@@ -496,7 +508,7 @@
                                                         <span x-text="open ? 'Hide note' : (note ? 'View note' : 'Add director note')"></span>
                                                         <span x-show="note && !open" class="w-2 h-2 rounded-full bg-indigo-400 inline-block"></span>
                                                     </button>
-                                                    <span x-show="saved" x-cloak class="text-xs text-green-600 font-medium">Saved ✓</span>
+                                                    <span x-show="saved" x-cloak class="text-xs text-green-600 font-medium">Saved âœ“</span>
                                                 </div>
                                                 <div x-show="open" x-cloak class="mt-2 space-y-2">
                                                     <textarea x-model="note" rows="2"
@@ -530,52 +542,52 @@
 
             {{-- ── Bottom panels ──────────────────────────────────── --}}
             @if(!$existingResult)
-                <div class="grid grid-cols-1 lg:grid-cols-2 gap-5">
+                <div style="display:grid;grid-template-columns:1fr 1fr;gap:20px;">
 
-                    {{-- Authorise panel (submit button uses form="auth-form" to associate externally) --}}
-                    <div class="bg-white rounded-xl border border-gray-100 overflow-hidden"
+                    {{-- Authorise panel --}}
+                    <div style="background:#fff;border:1px solid #e2e8f0;border-radius:4px;overflow:hidden;"
                          x-show="!queryMode">
-                        <div class="px-6 py-4 border-b border-gray-100">
-                            <div class="flex items-center justify-between">
-                                <h3 class="text-sm font-medium text-gray-800">Authorise Tests</h3>
-                                @if($authorisedCount > 0)
-                                    <span class="text-xs text-green-600 font-medium">
-                                        {{ $authorisedCount }} of {{ $totalTestCount }} authorised
-                                    </span>
-                                @endif
-                            </div>
-                            <p class="text-xs text-gray-400 mt-0.5">
+                        <div style="padding:14px 20px;border-bottom:2px solid #b8922a;display:flex;align-items:center;justify-content:space-between;">
+                            <p style="font-family:'Georgia',serif;font-size:15px;font-weight:700;color:#1a2f4e;margin:0;">Authorise Tests</p>
+                            @if($authorisedCount > 0)
+                                <span style="font-size:11px;color:#16a34a;font-weight:600;">
+                                    {{ $authorisedCount }} of {{ $totalTestCount }} authorised
+                                </span>
+                            @endif
+                        </div>
+                        <div style="padding:14px 20px;background:#f8fafc;border-bottom:1px solid #f1f5f9;">
+                            <p style="font-size:11px;color:#9ca3af;margin:0;">
                                 Set an outcome in the table above for each test you want to authorise now.
                                 Tests left on "decide later" stay pending for your next visit.
                             </p>
                         </div>
-                        <div class="px-6 py-5">
-                            <label for="director_comments" class="block text-sm font-medium text-gray-700 mb-1">
-                                Director Comments <span class="text-gray-400 font-normal">(optional)</span>
+                        <div style="padding:16px 20px;">
+                            <label for="director_comments" style="display:block;font-size:9px;font-weight:700;letter-spacing:.14em;text-transform:uppercase;color:#9ca3af;margin-bottom:8px;">
+                                Director Comments <span style="color:#d1d5db;font-weight:400;text-transform:none;letter-spacing:0;">(optional)</span>
                             </label>
                             <textarea id="director_comments"
                                       name="director_comments"
                                       form="auth-form"
                                       rows="3"
-                                      class="w-full border-gray-300 rounded-lg text-sm focus:border-teal-500 focus:ring-teal-500"
+                                      style="width:100%;border:1px solid #e2e8f0;border-radius:3px;padding:9px 12px;font-size:12.5px;color:#374151;resize:vertical;box-sizing:border-box;outline:none;"
                                       placeholder="Comments to include in the final report..."></textarea>
                         </div>
-                        <div class="px-6 py-4 border-t border-gray-100 bg-gray-50 flex items-center justify-between">
+                        <div style="padding:12px 20px;border-top:1px solid #f1f5f9;background:#f8fafc;display:flex;align-items:center;justify-content:space-between;">
                             <button type="button"
                                     @click="queryMode = true"
                                     x-show="selectedTests.length > 0"
                                     x-cloak
-                                    class="text-sm text-amber-600 hover:text-amber-800 font-medium">
-                                Query analyst about selected →
+                                    style="font-size:12px;color:#b8922a;font-weight:600;background:none;border:none;cursor:pointer;">
+                                Query analyst about selected &rarr;
                             </button>
-                            <p class="text-xs text-gray-400"
+                            <p style="font-size:11px;color:#9ca3af;margin:0;"
                                x-show="selectedTests.length === 0">
                                 Tick rows above to query the analyst
                             </p>
                             <button type="submit"
                                     form="auth-form"
-                                    class="inline-flex items-center gap-2 px-6 py-2.5 text-sm font-medium rounded-lg transition bg-teal-600 hover:bg-teal-700 text-white">
-                                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    style="display:inline-flex;align-items:center;gap:6px;padding:8px 18px;background:#0d9488;color:#fff;border-radius:3px;font-size:12px;font-weight:600;border:none;cursor:pointer;">
+                                <svg style="width:14px;height:14px;" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z"/>
                                 </svg>
                                 Authorise
@@ -584,12 +596,12 @@
                     </div>
 
                     {{-- Query Analyst form --}}
-                    <div class="bg-white rounded-xl border border-amber-200 overflow-hidden"
+                    <div style="background:#fff;border:1px solid #fbbf24;border-radius:4px;overflow:hidden;"
                          x-show="queryMode"
                          x-cloak>
-                        <div class="px-6 py-4 border-b border-amber-100 bg-amber-50">
-                            <h3 class="text-sm font-medium text-amber-800">Query Analyst</h3>
-                            <p class="text-xs text-amber-600 mt-0.5">
+                        <div style="padding:14px 20px;border-bottom:2px solid #b8922a;background:#fffbeb;">
+                            <p style="font-family:'Georgia',serif;font-size:15px;font-weight:700;color:#92400e;margin:0;">Query Analyst</p>
+                            <p style="font-size:11px;color:#b45309;margin:4px 0 0;">
                                 <span x-text="selectedTests.length"></span> test(s) selected. Describe your concern.
                             </p>
                         </div>
@@ -599,26 +611,24 @@
                             <template x-for="testId in selectedTests" :key="testId">
                                 <input type="hidden" name="test_ids[]" :value="testId">
                             </template>
-                            <div class="px-6 py-5 space-y-4">
-                                <div>
-                                    <label class="block text-sm font-medium text-gray-700 mb-1">
-                                        Query / Concern <span class="text-red-500">*</span>
-                                    </label>
-                                    <textarea name="query_notes" rows="4" required
-                                              class="w-full border-amber-300 rounded-lg text-sm focus:border-amber-500 focus:ring-amber-500"
-                                              placeholder="Describe what needs clarification from the analyst..."></textarea>
-                                </div>
+                            <div style="padding:16px 20px;">
+                                <label style="display:block;font-size:9px;font-weight:700;letter-spacing:.14em;text-transform:uppercase;color:#9ca3af;margin-bottom:8px;">
+                                    Query / Concern <span style="color:#ef4444;">*</span>
+                                </label>
+                                <textarea name="query_notes" rows="4" required
+                                          style="width:100%;border:1px solid #fbbf24;border-radius:3px;padding:9px 12px;font-size:12.5px;color:#374151;resize:vertical;box-sizing:border-box;outline:none;"
+                                          placeholder="Describe what needs clarification from the analyst..."></textarea>
                             </div>
-                            <div class="px-6 py-4 border-t border-amber-100 bg-amber-50 flex items-center justify-between">
+                            <div style="padding:12px 20px;border-top:1px solid #fef3c7;background:#fffbeb;display:flex;align-items:center;justify-content:space-between;">
                                 <button type="button"
                                         @click="queryMode = false"
-                                        class="text-sm text-gray-500 hover:text-gray-700">
-                                    ← Back to authorise
+                                        style="font-size:12px;color:#6b7280;background:none;border:none;cursor:pointer;">
+                                    &larr; Back to authorise
                                 </button>
                                 <button type="submit"
                                         x-bind:disabled="selectedTests.length === 0"
-                                        x-bind:class="selectedTests.length === 0 ? 'bg-gray-100 text-gray-400 cursor-not-allowed' : 'bg-amber-600 hover:bg-amber-700 text-white'"
-                                        class="inline-flex items-center gap-2 px-5 py-2.5 text-sm font-medium rounded-lg transition">
+                                        x-bind:style="selectedTests.length === 0 ? 'background:#f3f4f6;color:#9ca3af;cursor:not-allowed;' : 'background:#b8922a;color:#fff;cursor:pointer;'"
+                                        style="display:inline-flex;align-items:center;gap:6px;padding:8px 18px;border-radius:3px;font-size:12px;font-weight:600;border:none;">
                                     Send Query to Analyst
                                 </button>
                             </div>
@@ -630,14 +640,14 @@
 
             {{-- ── Internal Report Link ─────────────────────────────── --}}
             @if($existingResult)
-                <div class="bg-white rounded-xl border border-gray-100 p-5 flex items-center justify-between">
+                <div style="background:#fff;border:1px solid #e2e8f0;border-radius:4px;padding:18px 20px;display:flex;align-items:center;justify-content:space-between;gap:16px;flex-wrap:wrap;">
                     <div>
-                        <p class="text-sm font-medium text-gray-800">Internal Report</p>
-                        <p class="text-xs text-gray-400 mt-0.5">Full result report with determination and analyst details — Director use only.</p>
+                        <p style="font-size:13px;font-weight:700;color:#1a2f4e;margin:0 0 3px;">Internal Report</p>
+                        <p style="font-size:11px;color:#9ca3af;margin:0;">Full result report with determination and analyst details — Director use only.</p>
                     </div>
                     <a href="{{ route('director.results.show', $submission->id) }}"
-                       class="inline-flex items-center gap-2 px-4 py-2 bg-indigo-600 text-white text-sm font-medium rounded-lg hover:bg-indigo-700 transition">
-                        View Internal Report →
+                       style="display:inline-flex;align-items:center;gap:6px;padding:8px 18px;background:#1a2f4e;color:#fff;border-radius:3px;font-size:12px;font-weight:600;text-decoration:none;white-space:nowrap;">
+                        View Internal Report &rarr;
                     </a>
                 </div>
             @endif
@@ -645,10 +655,10 @@
             {{-- ── Generate Invoice (if authorised) ──────────────── --}}
             @if($existingResult && $submission->status === 'authorised')
                 @php $existingInvoice = $submission->invoice ?? null; @endphp
-                <div class="bg-white rounded-xl border border-gray-100 p-5 flex items-center justify-between">
+                <div style="background:#fff;border:1px solid #e2e8f0;border-radius:4px;padding:18px 20px;display:flex;align-items:center;justify-content:space-between;gap:16px;flex-wrap:wrap;">
                     <div>
-                        <p class="text-sm font-medium text-gray-800">Invoice</p>
-                        <p class="text-xs text-gray-400 mt-0.5">
+                        <p style="font-size:13px;font-weight:700;color:#1a2f4e;margin:0 0 3px;">Invoice</p>
+                        <p style="font-size:11px;color:#9ca3af;margin:0;">
                             @if($existingInvoice)
                                 Invoice {{ $existingInvoice->invoice_number }} already generated.
                             @else
@@ -658,8 +668,8 @@
                     </div>
                     @if($existingInvoice)
                         <a href="{{ route('director.invoices.show', $existingInvoice->id) }}"
-                           class="inline-flex items-center gap-2 px-4 py-2 bg-gray-100 text-gray-700 text-sm font-medium rounded-lg hover:bg-gray-200 transition">
-                            View Invoice →
+                           style="display:inline-flex;align-items:center;gap:6px;padding:8px 18px;background:#f3f4f6;color:#374151;border-radius:3px;font-size:12px;font-weight:600;text-decoration:none;white-space:nowrap;">
+                            View Invoice &rarr;
                         </a>
                     @else
                         <form method="POST"
@@ -667,8 +677,8 @@
                               onsubmit="return confirm('Generate invoice for this submission?')">
                             @csrf
                             <button type="submit"
-                                    class="inline-flex items-center gap-2 px-4 py-2 bg-blue-600 text-white text-sm font-medium rounded-lg hover:bg-blue-700 transition">
-                                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    style="display:inline-flex;align-items:center;gap:6px;padding:8px 18px;background:#1a2f4e;color:#fff;border-radius:3px;font-size:12px;font-weight:600;border:none;cursor:pointer;">
+                                <svg style="width:14px;height:14px;" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 14l6-6m-5.5.5h.01m4.99 5h.01M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16l3.5-2 3.5 2 3.5-2 3.5 2z"/>
                                 </svg>
                                 Generate Invoice
@@ -825,7 +835,7 @@
         <button title="Green"  style="background:#bbf7d0" onclick="applyHighlight('hl-green')"></button>
         <button title="Blue"   style="background:#bfdbfe" onclick="applyHighlight('hl-blue')"></button>
         <button title="Pink"   style="background:#fbcfe8" onclick="applyHighlight('hl-pink')"></button>
-        <button class="hl-tb-clear" title="Remove highlight" onclick="removeHighlight()">✕</button>
+        <button class="hl-tb-clear" title="Remove highlight" onclick="removeHighlight()">âœ•</button>
     </div>
 
     @push('scripts')
