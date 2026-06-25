@@ -50,6 +50,7 @@ class SubmissionRepository extends BaseRepository
     {
         $submission = $this->model->create([
             'reference_number'      => Submission::generateReference(),
+            'client_reference'      => $input['client_reference']      ?? null,
             'client_id'             => $input['client_id'],
             'received_by'           => $input['received_by']           ?? null,
 

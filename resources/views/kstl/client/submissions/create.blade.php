@@ -132,6 +132,20 @@
                                 </div>
                                 <div class="px-6 py-5 space-y-5">
 
+                                    {{-- Client Reference --}}
+                                    <div class="bg-blue-50 border border-blue-100 rounded-lg p-4">
+                                        <x-label for="client_reference" value="Your Reference Number"/>
+                                        <p class="text-xs text-gray-500 mt-0.5 mb-2">
+                                            Enter your organisation's internal reference for this submission (e.g. MFOR-2026-001). This will appear on your Certificate of Analysis.
+                                        </p>
+                                        <x-input id="client_reference" type="text" name="client_reference"
+                                                 value="{{ old('client_reference') }}"
+                                                 class="mt-1 block w-full font-mono"
+                                                 placeholder="e.g. MFOR-2026-001"
+                                                 autofocus/>
+                                        <x-input-error for="client_reference" class="mt-1"/>
+                                    </div>
+
                                     <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
                                         <div>
                                             <x-label for="collected_at" value="Collection Date *"/>

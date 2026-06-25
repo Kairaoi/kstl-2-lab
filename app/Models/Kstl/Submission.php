@@ -21,6 +21,7 @@ class Submission extends Model
     protected $fillable = [
         // Core
         'reference_number',
+        'client_reference',
         'client_id',
         'received_by',
 

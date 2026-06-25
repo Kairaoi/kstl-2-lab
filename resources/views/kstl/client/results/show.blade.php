@@ -2,7 +2,7 @@
 
 <x-app-layout>
     <x-slot name="header">
-        <div class="flex items-center justify-between gap-3">
+        <div class="flex items-center justify-between gap-3 flex-wrap">
             <div class="flex items-center gap-3">
                 <a href="{{ route('client.results.index') }}"
                    class="text-gray-400 hover:text-gray-600 transition no-print">
@@ -12,13 +12,14 @@
                 </a>
                 <div>
                     <h2 class="font-semibold text-xl text-gray-800 leading-tight">Certificate of Analysis</h2>
-                    <p class="text-xs text-gray-400 mt-0.5">{{ $submission->reference_number }}</p>
+                    <p class="text-xs text-gray-400 mt-0.5 font-mono">{{ $submission->reference_number }}</p>
                 </div>
             </div>
             <button onclick="window.print()"
-                    class="no-print inline-flex items-center gap-2 px-3 py-1.5 text-xs font-medium text-gray-600 border border-gray-200 rounded-lg hover:bg-gray-50 transition">
+                    class="no-print inline-flex items-center gap-2 px-4 py-2 text-xs font-medium text-gray-600 border border-gray-200 rounded-lg hover:bg-gray-50 transition">
                 <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 17h2a2 2 0 002-2v-4a2 2 0 00-2-2H5a2 2 0 00-2 2v4a2 2 0 002 2h2m2 4h6a2 2 0 002-2v-4a2 2 0 00-2-2H9a2 2 0 00-2 2v4a2 2 0 002 2zm8-12V5a2 2 0 00-2-2H9a2 2 0 00-2 2v4h10z"/>
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                          d="M17 17h2a2 2 0 002-2v-4a2 2 0 00-2-2H5a2 2 0 00-2 2v4a2 2 0 002 2h2m2 4h6a2 2 0 002-2v-4a2 2 0 00-2-2H9a2 2 0 00-2 2v4a2 2 0 002 2zm8-12V5a2 2 0 00-2-2H9a2 2 0 00-2 2v4h10z"/>
                 </svg>
                 Print / Save PDF
             </button>
@@ -27,307 +28,467 @@
 
     @push('styles')
     <style>
-        .coa-doc { background: #fff; border: 1px solid #d1d5db; font-family: 'Noto Sans', sans-serif; }
-
-        /* Letterhead */
-        .coa-lh-left  { font-size: 11px; color: #374151; line-height: 1.6; }
-        .coa-lh-right { font-size: 10px; color: #6b7280; text-align: right; line-height: 1.7; }
-        .coa-org      { font-size: 8.5px; font-weight: 700; letter-spacing: .15em; text-transform: uppercase; color: #6b7280; }
-        .coa-lab-name { font-family: 'Noto Serif', serif; font-size: 22px; font-weight: 700; color: #1e3a5f; }
-        .coa-crest    { width: 52px; height: 52px; border-radius: 50%; border: 2px solid #b8922a; display: flex; align-items: center; justify-content: center; flex-shrink: 0; }
-        .coa-crest svg { width: 26px; height: 26px; stroke: #1e3a5f; fill: none; }
-
-        /* Title */
-        .coa-title { font-family: 'Noto Serif', serif; font-size: 28px; font-weight: 400; color: #1e3a5f; letter-spacing: .01em; }
-
-        /* Metadata blocks */
-        .coa-addr-block  { font-size: 11px; color: #374151; line-height: 1.8; }
-        .coa-ref-block   { font-size: 11px; color: #374151; line-height: 1.8; text-align: right; }
-        .coa-meta-row    { border-top: 1px solid #e5e7eb; border-bottom: 1px solid #e5e7eb; }
-        .coa-meta-cell   { padding: 10px 0; }
-        .coa-meta-key    { font-size: 9px; font-weight: 700; letter-spacing: .12em; text-transform: uppercase; color: #9ca3af; }
-        .coa-meta-val    { font-size: 13px; font-weight: 600; color: #111827; margin-top: 2px; }
-        .coa-period-bar  { font-size: 11px; color: #374151; padding: 6px 0; border-bottom: 1px solid #e5e7eb; }
-
-        /* Results section */
-        .coa-results-heading {
-            font-family: 'Noto Serif', serif; font-size: 18px; font-weight: 600; color: #1e3a5f;
-            border-bottom: 2px solid #0d9488; padding-bottom: 6px; margin-bottom: 10px;
+        /* ── Base ──────────────────────────────────────────────── */
+        .coa-wrap  { background: #eef2f7; }
+        .coa-paper {
+            background: #ffffff;
+            max-width: 860px;
+            margin: 0 auto;
+            border: 1px solid #c9d1d9;
+            border-radius: 6px;
+            box-shadow: 0 4px 32px rgba(0,0,0,.12);
+            overflow: hidden;
         }
-        .coa-disclaimer { font-size: 11px; color: #6b7280; font-style: italic; margin-bottom: 16px; }
+        .coa-inner { padding: 40px 48px; }
 
-        /* Sample block */
-        .coa-sample-header {
-            background: #1e3a5f; color: #fff; padding: 8px 12px;
-            display: flex; justify-content: space-between; align-items: center;
+        /* ── Letterhead ─────────────────────────────────────────── */
+        .coa-lh          { display: flex; align-items: flex-start; gap: 16px; }
+        .coa-lh-body     { flex: 1; min-width: 0; }
+        .coa-lh-contact  {
+            flex: 0 0 auto;
+            max-width: 200px;
+            text-align: right;
+            font-size: 10px;
+            color: #6b7280;
+            line-height: 1.8;
+            word-break: break-word;
+            overflow-wrap: break-word;
         }
-        .coa-sample-header .label { font-size: 11px; font-weight: 700; letter-spacing: .04em; }
-        .coa-sample-header .code  { font-family: monospace; font-size: 11px; font-weight: 600; }
-        .coa-sample-desc { background: #f8fafc; border: 1px solid #e2e8f0; border-top: none; padding: 6px 12px; font-size: 10.5px; color: #374151; }
+        .coa-lh-contact strong { font-weight: 600; color: #374151; }
+        .coa-org-line    { font-size: 8px; font-weight: 700; letter-spacing: .18em;
+                           text-transform: uppercase; color: #9ca3af; margin-bottom: 5px; }
+        .coa-lab-name    { font-family: 'Georgia', 'Times New Roman', serif;
+                           font-size: 19px; font-weight: 700; color: #1a2f4e;
+                           line-height: 1.25; }
 
-        /* Results table */
-        .coa-table { width: 100%; border-collapse: collapse; font-size: 11.5px; margin-top: 0; }
-        .coa-table thead tr { background: #1e3a5f; color: #fff; }
-        .coa-table thead th { padding: 8px 12px; text-align: left; font-size: 10px; font-weight: 700; letter-spacing: .1em; text-transform: uppercase; }
-        .coa-table tbody tr { border-bottom: 1px solid #e5e7eb; }
-        .coa-table tbody tr:last-child { border-bottom: none; }
-        .coa-table tbody td { padding: 9px 12px; color: #1f2937; vertical-align: middle; }
-        .coa-table tbody tr:nth-child(even) { background: #f9fafb; }
+        /* ── Rules ──────────────────────────────────────────────── */
+        .coa-rule-gold {
+            height: 3px;
+            background: linear-gradient(90deg, #1a2f4e 0%, #b8922a 40%, #b8922a 60%, #1a2f4e 100%);
+            margin: 16px 0;
+        }
+        .coa-rule-thin {
+            height: 1px;
+            background: linear-gradient(90deg, transparent 0%, #b8922a 50%, transparent 100%);
+            margin: 4px 0 16px;
+        }
 
-        /* Outcome badge */
-        .coa-outcome-pass { display: inline-flex; align-items: center; border: 1.5px solid #16a34a; border-radius: 999px; padding: 2px 14px; font-size: 11px; font-weight: 700; color: #16a34a; letter-spacing: .06em; }
-        .coa-outcome-fail { display: inline-flex; align-items: center; border: 1.5px solid #dc2626; border-radius: 999px; padding: 2px 14px; font-size: 11px; font-weight: 700; color: #dc2626; letter-spacing: .06em; }
+        /* ── Certificate title ──────────────────────────────────── */
+        .coa-title-wrap { text-align: center; padding: 12px 0 14px; }
+        .coa-title      { font-family: 'Georgia', 'Times New Roman', serif;
+                          font-size: 28px; font-weight: 400; color: #1a2f4e;
+                          letter-spacing: .01em; }
+        .coa-subtitle   { display: flex; align-items: center; gap: 16px;
+                          justify-content: center; margin-top: 7px; }
+        .coa-subtitle hr { flex: 1; max-width: 130px; border: none;
+                           border-top: 1px solid #b8922a; }
+        .coa-subtitle p  { font-size: 8px; font-weight: 700; letter-spacing: .22em;
+                           text-transform: uppercase; color: #b8922a; white-space: nowrap; }
 
-        /* Footer */
-        .coa-foot { border-top: 2px solid #1e3a5f; margin-top: 24px; padding-top: 14px; }
-        .coa-sig-name { font-family: 'Noto Serif', serif; font-size: 17px; font-weight: 700; color: #1e3a5f; }
-        .coa-sig-line { border-top: 1px solid #374151; width: 220px; margin-bottom: 4px; }
-        .coa-sig-role { font-size: 10.5px; color: #6b7280; }
-        .coa-auth-status { font-size: 11px; }
-        .coa-auth-status .label { color: #6b7280; }
-        .coa-auth-status .value { font-weight: 700; color: #16a34a; }
+        /* ── Prepared-for row ───────────────────────────────────── */
+        .coa-for-row    { display: flex; justify-content: space-between;
+                          flex-wrap: wrap; gap: 8px; margin-bottom: 14px; }
+        .coa-for-block  { min-width: 0; }
 
+        /* ── Three-cell meta ────────────────────────────────────── */
+        .coa-meta       { display: grid; grid-template-columns: repeat(3,1fr);
+                          border: 1px solid #e5e7eb; border-radius: 6px;
+                          overflow: hidden; margin-bottom: 12px; }
+        .coa-meta-cell  { padding: 12px 16px; }
+        .coa-meta-cell + .coa-meta-cell { border-left: 1px solid #e5e7eb; }
+        .coa-meta-cell:nth-child(2) { background: #f8fafc; }
+        .coa-meta-key   { font-size: 8px; font-weight: 700; letter-spacing: .14em;
+                          text-transform: uppercase; color: #9ca3af; margin-bottom: 4px; }
+        .coa-meta-val   { font-size: 14px; font-weight: 700; color: #1a2f4e;
+                          font-family: 'Georgia', serif; }
+
+        /* ── Details band ───────────────────────────────────────── */
+        .coa-details    { background: #f8fafc; border: 1px solid #e5e7eb;
+                          border-radius: 6px; padding: 9px 16px;
+                          margin-bottom: 22px; overflow: hidden; }
+        .coa-details-row { display: flex; flex-wrap: wrap; gap: 4px 24px;
+                           font-size: 10.5px; color: #374151; line-height: 1.9; }
+        .coa-details-row strong { color: #9ca3af; font-weight: 600; }
+
+        /* ── Results heading ────────────────────────────────────── */
+        .coa-results-h   { display: flex; align-items: center; gap: 14px;
+                           margin-bottom: 8px; }
+        .coa-results-h h3 { font-family: 'Georgia', serif; font-size: 20px;
+                            font-weight: 600; color: #1a2f4e; white-space: nowrap; }
+        .coa-results-h hr { flex: 1; border: none; border-top: 2px solid #0d9488; }
+        .coa-disclaimer  { font-size: 11px; color: #9ca3af; font-style: italic;
+                           margin-bottom: 18px; }
+
+        /* ── Sample card ────────────────────────────────────────── */
+        .coa-sample     { border: 1px solid #d1d5db; border-radius: 6px;
+                          overflow: hidden; margin-bottom: 18px;
+                          box-shadow: 0 1px 6px rgba(0,0,0,.07); }
+        .coa-smp-hdr    { background: #1a2f4e; padding: 9px 14px;
+                          display: flex; justify-content: space-between;
+                          align-items: center; gap: 12px; flex-wrap: wrap; }
+        .coa-smp-hdr .nm { font-size: 11.5px; font-weight: 700; color: #ffffff;
+                           min-width: 0; word-break: break-word; }
+        .coa-smp-hdr .cd { font-family: 'Courier New', monospace; font-size: 10.5px;
+                           color: #93c5fd; flex-shrink: 0; }
+        .coa-smp-desc   { background: #f8fafc; border-bottom: 1px solid #e5e7eb;
+                          padding: 7px 14px; display: flex; gap: 24px;
+                          flex-wrap: wrap; font-size: 10.5px; color: #374151; }
+        .coa-smp-desc strong { color: #6b7280; font-weight: 600; }
+
+        /* ── Results table ──────────────────────────────────────── */
+        .coa-tbl        { width: 100%; border-collapse: collapse; font-size: 11.5px; }
+        .coa-tbl thead tr { background: #243d5e; }
+        .coa-tbl thead th { padding: 8px 14px; text-align: left; font-size: 9px;
+                            font-weight: 700; letter-spacing: .12em;
+                            text-transform: uppercase; color: #e2e8f0; }
+        .coa-tbl tbody tr { border-bottom: 1px solid #f1f5f9; }
+        .coa-tbl tbody tr:last-child { border-bottom: none; }
+        .coa-tbl tbody td { padding: 10px 14px; color: #1f2937; vertical-align: middle; }
+        .coa-tbl tbody tr:nth-child(even) td { background: #fafafa; }
+
+        /* ── Badges ─────────────────────────────────────────────── */
+        .badge-pass { display: inline-flex; align-items: center; gap: 5px;
+                      border: 1.5px solid #16a34a; border-radius: 999px;
+                      padding: 2px 12px; font-size: 10px; font-weight: 700;
+                      color: #16a34a; letter-spacing: .05em; }
+        .badge-pass::before { content: ''; width: 5px; height: 5px;
+                              border-radius: 50%; background: #16a34a; }
+        .badge-fail { display: inline-flex; align-items: center; gap: 5px;
+                      border: 1.5px solid #dc2626; border-radius: 999px;
+                      padding: 2px 12px; font-size: 10px; font-weight: 700;
+                      color: #dc2626; letter-spacing: .05em; }
+        .badge-fail::before { content: ''; width: 5px; height: 5px;
+                              border-radius: 50%; background: #dc2626; }
+
+        /* ── Signature footer ───────────────────────────────────── */
+        .coa-foot       { border-top: 1px solid #e5e7eb; margin-top: 28px;
+                          padding-top: 18px; display: flex;
+                          justify-content: space-between; align-items: flex-end;
+                          flex-wrap: wrap; gap: 16px; }
+        .coa-auth-pill  { display: inline-flex; align-items: center; gap: 7px;
+                          border: 1.5px solid #0d9488; border-radius: 6px;
+                          padding: 6px 14px; }
+        .coa-auth-pill svg { width: 14px; height: 14px; stroke: #0d9488; fill: none; }
+        .coa-auth-pill p { font-size: 11px; font-weight: 700; color: #0d9488; }
+        .coa-sig-name   { font-family: 'Georgia', serif; font-size: 19px;
+                          font-weight: 700; color: #1a2f4e; text-align: right; }
+        .coa-sig-line   { border-top: 1px solid #9ca3af; margin-bottom: 6px; }
+        .coa-sig-role   { font-size: 9.5px; color: #9ca3af; text-align: right; }
+
+        /* ── Document footer strip ──────────────────────────────── */
+        .coa-doc-strip  { background: #1a2f4e; padding: 10px 48px;
+                          display: flex; justify-content: space-between;
+                          align-items: center; flex-wrap: wrap; gap: 6px; }
+        .coa-doc-strip p { font-size: 9px; color: #93c5fd; letter-spacing: .03em; }
+        .coa-doc-strip .ref { font-family: 'Courier New', monospace;
+                              font-size: 9px; color: #e2e8f0; }
+
+        /* ── Print ──────────────────────────────────────────────── */
         @media print {
             .no-print { display: none !important; }
-            body { background: #fff !important; }
-            .coa-doc { border: none !important; box-shadow: none !important; }
-            .page-hdr, .gov-stripe, .gov-top, nav, .app-footer { display: none !important; }
-            .coa-outcome-pass, .coa-outcome-fail { -webkit-print-color-adjust: exact; print-color-adjust: exact; }
-            .coa-table thead tr { -webkit-print-color-adjust: exact; print-color-adjust: exact; }
-            .coa-sample-header { -webkit-print-color-adjust: exact; print-color-adjust: exact; }
+            body, .coa-wrap { background: #fff !important; }
+            .coa-paper { border: none !important; box-shadow: none !important;
+                         max-width: 100% !important; }
+            .coa-inner { padding: 20px 28px !important; }
+            .coa-smp-hdr, .coa-tbl thead tr, .coa-doc-strip,
+            .badge-pass, .badge-fail {
+                -webkit-print-color-adjust: exact;
+                print-color-adjust: exact;
+            }
         }
+        @page { size: A4; margin: 10mm; }
     </style>
     @endpush
 
-    <div class="py-8">
-        <div class="max-w-4xl mx-auto sm:px-6 lg:px-8">
+    <div class="coa-wrap py-8">
+        <div class="max-w-5xl mx-auto px-4">
+            <div class="coa-paper">
+                <div class="coa-inner">
 
-            <div class="coa-doc rounded-xl shadow-sm overflow-hidden px-10 py-8">
-
-                {{-- ── Letterhead ──────────────────────────────────────────── --}}
-                <div style="display:flex; justify-content:space-between; align-items:flex-start; margin-bottom:16px;">
-                    <div style="display:flex; align-items:flex-start; gap:14px;">
-                        <div class="coa-crest">
-                            <svg viewBox="0 0 24 24" stroke-width="1.5">
-                                <path stroke-linecap="round" stroke-linejoin="round" d="M3.75 21h16.5M4.5 3h15M5.25 3v18m13.5-18v18M9 6.75h1.5m-1.5 3h1.5m-1.5 3h1.5m3-6H15m-1.5 3H15m-1.5 3H15M9 21v-3.375c0-.621.504-1.125 1.125-1.125h3.75c.621 0 1.125.504 1.125 1.125V21"/>
-                            </svg>
-                        </div>
-                        <div>
-                            <p class="coa-org">Government of Kiribati &middot; Ministry of Fisheries &amp; Ocean Resources</p>
-                            <h1 class="coa-lab-name" style="margin-top:3px;">Kiribati Seafood Toxicology Laboratory</h1>
-                        </div>
-                    </div>
-                    <div class="coa-lh-right" style="padding-top:4px;">
-                        <p style="font-weight:600; color:#374151;">Seafood Toxicology Laboratory</p>
-                        <p>National Fisheries, Tarawa, Kiribati</p>
-                        <p>t. +686 [Your Number]</p>
-                        <p>e. stld@fisheries.gov.ki</p>
-                        <p>w. stld.fisheries.gov.ki</p>
-                    </div>
-                </div>
-
-                {{-- ── CoA Title ───────────────────────────────────────────── --}}
-                <div style="text-align:center; border-top:1px solid #e5e7eb; border-bottom:1px solid #e5e7eb; padding:14px 0; margin-bottom:16px;">
-                    <h2 class="coa-title">Certificate of Analysis</h2>
-                </div>
-
-                {{-- ── Address + Ref block ─────────────────────────────────── --}}
-                <div style="display:flex; justify-content:space-between; gap:24px; margin-bottom:14px;">
-                    <div class="coa-addr-block">
-                        <strong>Kiribati Seafood Toxicology Laboratory</strong><br>
-                        National Fisheries Authority<br>
-                        Tanaea, Tarawa<br>
-                        Republic of Kiribati
-                    </div>
-                    <div class="coa-ref-block">
-                        <p>Submission Reference: <strong style="color:#1d4ed8;">{{ $submission->reference_number }}</strong></p>
-                        <p style="font-weight:700; color:#111827;">Final Report</p>
-                        <p>Document Ref: {{ $submission->reference_number }}</p>
-                        <p>STLD &middot; Official Portal</p>
-                    </div>
-                </div>
-
-                {{-- ── Metadata row: Report Issued / KSTL Reference / Samples Received ── --}}
-                <div class="coa-meta-row" style="display:grid; grid-template-columns:1fr 1fr 1fr; gap:0; margin-bottom:0;">
-                    <div class="coa-meta-cell" style="border-right:1px solid #e5e7eb; padding-right:16px;">
-                        <p class="coa-meta-key">Report Issued</p>
-                        <p class="coa-meta-val">{{ $result?->authorised_at?->format('d M Y') ?? now()->format('d M Y') }}</p>
-                    </div>
-                    <div class="coa-meta-cell" style="padding-left:16px; border-right:1px solid #e5e7eb; padding-right:16px;">
-                        <p class="coa-meta-key">KSTL Reference</p>
-                        <p class="coa-meta-val" style="font-family:monospace;">{{ $submission->reference_number }}</p>
-                    </div>
-                    <div class="coa-meta-cell" style="padding-left:16px;">
-                        <p class="coa-meta-key">Sample(s) Received</p>
-                        <p class="coa-meta-val">{{ $submission->received_at?->format('d M Y H:i') ?? $submission->submitted_at?->format('d M Y H:i') ?? '—' }}</p>
-                    </div>
-                </div>
-
-                {{-- ── Testing period / dates bar ──────────────────────────── --}}
-                <div class="coa-period-bar" style="margin-top:0; margin-bottom:20px;">
-                    @php
-                        $testStart = $samples->map(fn($s) => $s->sampleTests->min('completed_at'))->filter()->min();
-                        $testEnd   = $samples->map(fn($s) => $s->sampleTests->max('completed_at'))->filter()->max();
-                    @endphp
-                    @if($testStart && $testEnd)
-                        <strong>Testing Period:</strong>
-                        {{ \Carbon\Carbon::parse($testStart)->format('d M Y') }} to
-                        {{ \Carbon\Carbon::parse($testEnd)->format('d M Y') }}
-                        &nbsp;&middot;&nbsp; <em>Date of analysis is available on request.</em>
-                    @endif
-                    &nbsp;&nbsp;
-                    <strong>Collected:</strong> {{ $submission->collected_at?->format('d M Y') ?? '—' }}
-                    @if($submission->delivered_at)
-                        &nbsp;&middot;&nbsp; <strong>Delivered:</strong> {{ $submission->delivered_at->format('d M Y') }}
-                    @endif
-                    &nbsp;&middot;&nbsp; <strong>Submitted:</strong> {{ $submission->submitted_at?->format('d M Y') ?? '—' }}
-                    &nbsp;&middot;&nbsp; <strong>Prepared for:</strong> {{ $submission->client->company_name }} ({{ $submission->client->user->email ?? '' }})
-                </div>
-
-                {{-- ── Results section ─────────────────────────────────────── --}}
-                <h3 class="coa-results-heading">Results</h3>
-                <p class="coa-disclaimer">The tests were performed on the samples as received.</p>
-
-                @php
-                    $sopDocuments = \App\Models\Kstl\Document::where('category', 'sop')
-                        ->whereIn('reference_code', array_values(\App\Models\Kstl\SampleTest::TEST_SOPS))
-                        ->get()
-                        ->keyBy('reference_code');
-                @endphp
-
-                @foreach($samples as $sample)
-                    @php $tests = $testsBySample[$sample->id] ?? collect(); @endphp
-                    <div style="margin-bottom:24px;">
-
-                        {{-- Sample header bar --}}
-                        <div class="coa-sample-header">
-                            <span class="label">Customer Sample Name: {{ $sample->common_name ?? $submission->sample_name ?? '—' }}</span>
-                            <span class="code">Sample Code: {{ $sample->sample_code }}</span>
+                    {{-- ────────── Letterhead ────────── --}}
+                    <div class="coa-lh">
+                        {{-- MFOR logo --}}
+                        <div style="flex-shrink:0;">
+                            <img src="{{ asset('images/mfor-logo.png') }}"
+                                 alt="Ministry of Fisheries &amp; Ocean Resources"
+                                 style="width:72px; height:72px; object-fit:contain;">
                         </div>
 
-                        {{-- Sample description row --}}
-                        <div class="coa-sample-desc" style="display:flex; gap:32px; flex-wrap:wrap;">
+                        {{-- Name + org --}}
+                        <div class="coa-lh-body">
+                            <p class="coa-org-line">Government of Kiribati &nbsp;·&nbsp; Ministry of Fisheries &amp; Ocean Resources</p>
+                            <h1 class="coa-lab-name">Kiribati Seafood Toxicology Laboratory</h1>
+                        </div>
+
+                        {{-- Contact --}}
+                        <div class="coa-lh-contact">
+                            <strong>Seafood Toxicology Laboratory</strong><br>
+                            National Fisheries, Tarawa,<br>Kiribati<br>
+                            t. +686 [Your Number]<br>
+                            e. stld@fisheries.gov.ki<br>
+                            w. stld.fisheries.gov.ki
+                        </div>
+                    </div>
+
+                    {{-- Gold rule --}}
+                    <div class="coa-rule-gold"></div>
+
+                    {{-- ────────── Title ────────── --}}
+                    <div class="coa-title-wrap">
+                        <h2 class="coa-title">Certificate of Analysis</h2>
+                        <div class="coa-subtitle">
+                            <hr><p>Final Report &nbsp;·&nbsp; Official Document</p><hr>
+                        </div>
+                    </div>
+                    <div class="coa-rule-thin"></div>
+
+                    {{-- ────────── Prepared for / Ref ────────── --}}
+                    <div class="coa-for-row">
+                        <div class="coa-for-block">
+                            <p style="font-size:8px; font-weight:700; letter-spacing:.14em; text-transform:uppercase; color:#9ca3af; margin-bottom:3px;">Prepared for</p>
+                            <p style="font-size:12.5px; font-weight:700; color:#111827;">{{ $submission->client->company_name }}</p>
+                            <p style="font-size:10.5px; color:#6b7280;">{{ $submission->client->user->email }}</p>
+                        </div>
+                        <div class="coa-for-block" style="text-align:right;">
+                            @if($submission->client_reference)
+                                <p style="font-size:8px; font-weight:700; letter-spacing:.14em; text-transform:uppercase; color:#9ca3af; margin-bottom:2px;">Client Reference</p>
+                                <p style="font-family:'Courier New',monospace; font-size:13px; font-weight:700; color:#111827; margin-bottom:8px;">{{ $submission->client_reference }}</p>
+                            @endif
+                            <p style="font-size:8px; font-weight:700; letter-spacing:.14em; text-transform:uppercase; color:#9ca3af; margin-bottom:3px;">KSTL Reference</p>
+                            <p style="font-family:'Courier New',monospace; font-size:14px; font-weight:700; color:#1d4ed8;">{{ $submission->reference_number }}</p>
+                        </div>
+                    </div>
+
+                    {{-- ────────── Three-cell meta ────────── --}}
+                    <div class="coa-meta">
+                        <div class="coa-meta-cell">
+                            <p class="coa-meta-key">Report Issued</p>
+                            <p class="coa-meta-val">
+                                {{ $result?->authorised_at?->format('d M Y') ?? now()->format('d M Y') }}
+                            </p>
+                        </div>
+                        <div class="coa-meta-cell">
+                            @if($submission->client_reference)
+                                <p class="coa-meta-key">Client Reference</p>
+                                <p class="coa-meta-val" style="font-family:'Courier New',monospace; font-size:12px; margin-bottom:8px;">
+                                    {{ $submission->client_reference }}
+                                </p>
+                            @endif
+                            <p class="coa-meta-key">KSTL Reference</p>
+                            <p class="coa-meta-val" style="font-family:'Courier New',monospace; font-size:12px;">
+                                {{ $submission->reference_number }}
+                            </p>
+                        </div>
+                        <div class="coa-meta-cell">
+                            <p class="coa-meta-key">Sample(s) Received</p>
+                            <p class="coa-meta-val" style="font-size:13px;">
+                                {{ $submission->received_at?->format('d M Y')
+                                   ?? $submission->submitted_at?->format('d M Y') ?? '—' }}
+                            </p>
+                        </div>
+                    </div>
+
+                    {{-- ────────── Details band ────────── --}}
+                    <div class="coa-details">
+                        @php
+                            $testStart = $samples->map(fn($s) => $testsBySample[$s->id]?->min('completed_at'))->filter()->min();
+                            $testEnd   = $samples->map(fn($s) => $testsBySample[$s->id]?->max('completed_at'))->filter()->max();
+                        @endphp
+                        <div class="coa-details-row">
                             <span>
-                                <strong>Sample Description:</strong>
-                                @if($sample->scientific_name)
-                                    <em>{{ $sample->scientific_name }}</em>
-                                    @if($sample->common_name) ({{ $sample->common_name }})@endif
-                                @else
-                                    {{ $sample->common_name ?? '—' }}
-                                @endif
+                                <strong>Collected:</strong>
+                                {{ $submission->collected_at?->format('d M Y') ?? '—' }}
                             </span>
-                            @if($sample->quantity)
-                                <span><strong>Quantity:</strong> {{ $sample->quantity }} {{ $sample->quantity_unit ?? '' }}</span>
+                            @if($submission->delivered_at)
+                                <span>
+                                    <strong>Delivered:</strong>
+                                    {{ $submission->delivered_at->format('d M Y') }}
+                                </span>
                             @endif
-                            @if($sample->condition ?? $sample->sample_condition ?? null)
-                                <span><strong>Sample Condition:</strong> {{ ucfirst($sample->condition ?? $sample->sample_condition) }}</span>
+                            <span>
+                                <strong>Submitted:</strong>
+                                {{ $submission->submitted_at?->format('d M Y') ?? '—' }}
+                            </span>
+                            @if($testStart && $testEnd)
+                                <span>
+                                    <strong>Testing Period:</strong>
+                                    {{ \Carbon\Carbon::parse($testStart)->format('d M Y') }}
+                                    – {{ \Carbon\Carbon::parse($testEnd)->format('d M Y') }}
+                                </span>
+                            @endif
+                            <span style="color:#9ca3af; font-style:italic; font-size:9.5px;">
+                                Date of analysis available on request.
+                            </span>
+                        </div>
+                    </div>
+
+                    {{-- ────────── Results section ────────── --}}
+                    <div class="coa-results-h">
+                        <h3>Results</h3>
+                        <hr>
+                    </div>
+                    <p class="coa-disclaimer">The tests were performed on the samples as received.</p>
+
+                    @php
+                        $sopDocuments = \App\Models\Kstl\Document::where('category', 'sop')
+                            ->whereIn('reference_code', array_values(\App\Models\Kstl\SampleTest::TEST_SOPS))
+                            ->get()
+                            ->keyBy('reference_code');
+                    @endphp
+
+                    @foreach($samples as $sample)
+                        @php $tests = $testsBySample[$sample->id] ?? collect(); @endphp
+                        <div class="coa-sample">
+
+                            {{-- Header bar --}}
+                            <div class="coa-smp-hdr">
+                                <span class="nm">Customer Sample Name: {{ $sample->common_name ?? $submission->sample_name ?? '—' }}</span>
+                                <span class="cd">Sample Code: {{ $sample->sample_code }}</span>
+                            </div>
+
+                            {{-- Description row --}}
+                            <div class="coa-smp-desc">
+                                <span>
+                                    <strong>Sample Description:</strong>&nbsp;
+                                    @if($sample->scientific_name)
+                                        <em>{{ $sample->scientific_name }}</em>
+                                        @if($sample->common_name) ({{ $sample->common_name }})@endif
+                                    @else
+                                        {{ $sample->common_name ?? '—' }}
+                                    @endif
+                                </span>
+                                @if($sample->quantity)
+                                    <span>
+                                        <strong>Quantity:</strong>
+                                        {{ $sample->quantity }}&nbsp;{{ $sample->quantity_unit ?? 'kg' }}
+                                    </span>
+                                @endif
+                                <span>
+                                    <strong>Sample Condition:</strong>
+                                    {{ ucfirst($sample->condition ?? $sample->sample_condition ?? 'Acceptable') }}
+                                </span>
+                            </div>
+
+                            {{-- Tests --}}
+                            @if($tests->isEmpty())
+                                <p style="font-size:11px; color:#9ca3af; padding:12px 14px; font-style:italic;">
+                                    No test results recorded.
+                                </p>
                             @else
-                                <span><strong>Sample Condition:</strong> Acceptable</span>
+                                <table class="coa-tbl">
+                                    <thead>
+                                        <tr>
+                                            <th style="width:28%;">Test</th>
+                                            <th style="width:16%;">Result</th>
+                                            <th style="width:10%;">Unit</th>
+                                            <th style="width:26%;">Method Reference</th>
+                                            <th style="width:20%;">Outcome</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        @foreach($tests as $test)
+                                            @php
+                                                $resultText = match($test->result_qualifier) {
+                                                    'detected'     => 'Detected',
+                                                    'not_detected' => 'Not Detected',
+                                                    'pass'         => 'Pass',
+                                                    'fail'         => 'Fail',
+                                                    'less_than'    => '< '.$test->result_value,
+                                                    'greater_than' => '> '.$test->result_value,
+                                                    'equal_to'     => $test->result_value,
+                                                    default        => ($test->result_value ?: '—'),
+                                                };
+                                                $sopCode = \App\Models\Kstl\SampleTest::TEST_SOPS[$test->test_key] ?? null;
+                                                $sopDoc  = $sopCode ? ($sopDocuments[$sopCode] ?? null) : null;
+                                                $isPass  = in_array($test->result_qualifier, ['pass','not_detected']);
+                                                $isFail  = in_array($test->result_qualifier, ['fail','detected']);
+                                            @endphp
+                                            <tr>
+                                                <td style="font-weight:600;">{{ $test->getDisplayLabel() }}</td>
+                                                <td style="font-weight:700; color:{{ $isFail ? '#dc2626' : ($isPass ? '#16a34a' : '#1f2937') }};">
+                                                    {{ $resultText }}
+                                                </td>
+                                                <td style="color:#6b7280; font-size:10.5px;">
+                                                    {{ $test->result_unit ?: '—' }}
+                                                </td>
+                                                <td>
+                                                    @if($sopCode && $sopDoc)
+                                                        <a href="{{ route('client.documents.download', $sopDoc->id) }}"
+                                                           target="_blank"
+                                                           style="font-family:'Courier New',monospace; font-size:11px; color:#1d4ed8; text-decoration:none; font-weight:600;">
+                                                            {{ $sopCode }}
+                                                        </a>
+                                                    @elseif($sopCode)
+                                                        <span style="font-family:'Courier New',monospace; font-size:11px; color:#6b7280;">{{ $sopCode }}</span>
+                                                    @else
+                                                        <span style="color:#9ca3af;">—</span>
+                                                    @endif
+                                                </td>
+                                                <td>
+                                                    @if($test->director_outcome === 'pass')
+                                                        <span class="badge-pass">Pass</span>
+                                                    @elseif($test->director_outcome === 'fail')
+                                                        <span class="badge-fail">Fail</span>
+                                                    @else
+                                                        <span style="color:#9ca3af; font-size:10.5px;">—</span>
+                                                    @endif
+                                                </td>
+                                            </tr>
+                                        @endforeach
+                                    </tbody>
+                                </table>
+                            @endif
+                        </div>{{-- /coa-sample --}}
+                    @endforeach
+
+                    {{-- Director remarks --}}
+                    @if($result?->director_comments)
+                        <div style="background:#f0fdf4; border:1px solid #bbf7d0; border-radius:6px; padding:12px 16px; margin-bottom:18px;">
+                            <p style="font-size:8px; font-weight:700; letter-spacing:.14em; text-transform:uppercase; color:#16a34a; margin-bottom:6px;">Director's Remarks</p>
+                            <p style="font-size:11.5px; color:#166534; line-height:1.7; white-space:pre-line;">{{ $result->director_comments }}</p>
+                        </div>
+                    @endif
+
+                    {{-- ────────── Signature footer ────────── --}}
+                    <div class="coa-foot">
+                        <div>
+                            @if($result?->authorised_at)
+                                <div class="coa-auth-pill">
+                                    <svg viewBox="0 0 24 24" stroke-width="2.5">
+                                        <path stroke-linecap="round" stroke-linejoin="round"
+                                              d="M9 12.75L11.25 15 15 9.75M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/>
+                                    </svg>
+                                    <p>Authorisation Status: Authorised</p>
+                                </div>
+                            @else
+                                <div class="coa-auth-pill" style="border-color:#d1d5db;">
+                                    <p style="color:#9ca3af;">Authorisation Status: Pending</p>
+                                </div>
                             @endif
                         </div>
 
-                        {{-- Results table --}}
-                        @if($tests->isEmpty())
-                            <p style="font-size:11px; color:#9ca3af; padding:10px 12px; border:1px solid #e5e7eb; border-top:none; font-style:italic;">No test results available.</p>
-                        @else
-                            <table class="coa-table">
-                                <thead>
-                                    <tr>
-                                        <th style="width:30%;">Test</th>
-                                        <th style="width:15%;">Result</th>
-                                        <th style="width:10%;">Unit</th>
-                                        <th style="width:25%;">Method Reference</th>
-                                        <th style="width:20%;">Outcome</th>
-                                    </tr>
-                                </thead>
-                                <tbody>
-                                    @foreach($tests as $test)
-                                        @php
-                                            $unit = $test->result_unit ?: '';
-                                            $resultText = match($test->result_qualifier) {
-                                                'detected'     => 'Detected',
-                                                'not_detected' => 'Not Detected',
-                                                'pass'         => 'Pass',
-                                                'fail'         => 'Fail',
-                                                'less_than'    => '< ' . $test->result_value,
-                                                'greater_than' => '> ' . $test->result_value,
-                                                'equal_to'     => $test->result_value,
-                                                default        => ($test->result_value ?: '—'),
-                                            };
-                                            $sopCode = \App\Models\Kstl\SampleTest::TEST_SOPS[$test->test_key] ?? null;
-                                            $sopDoc  = $sopCode ? ($sopDocuments[$sopCode] ?? null) : null;
-                                            $isPass  = in_array($test->result_qualifier, ['pass', 'not_detected']);
-                                            $isFail  = in_array($test->result_qualifier, ['fail', 'detected']);
-                                        @endphp
-                                        <tr>
-                                            <td style="font-weight:600;">{{ $test->getDisplayLabel() }}</td>
-                                            <td style="color: {{ $isFail ? '#dc2626' : ($isPass ? '#16a34a' : '#1f2937') }}; font-weight:600;">
-                                                {{ $resultText }}
-                                            </td>
-                                            <td style="color:#6b7280;">{{ $unit ?: '—' }}</td>
-                                            <td>
-                                                @if($sopCode && $sopDoc)
-                                                    <a href="{{ route('client.documents.download', $sopDoc->id) }}"
-                                                       target="_blank"
-                                                       style="font-family:monospace; font-size:11px; color:#1d4ed8; text-decoration:none;">
-                                                        {{ $sopCode }}
-                                                    </a>
-                                                @elseif($sopCode)
-                                                    <span style="font-family:monospace; font-size:11px; color:#6b7280;">{{ $sopCode }}</span>
-                                                @else
-                                                    <span style="color:#9ca3af;">—</span>
-                                                @endif
-                                            </td>
-                                            <td>
-                                                @if($test->director_outcome === 'pass')
-                                                    <span class="coa-outcome-pass">Pass</span>
-                                                @elseif($test->director_outcome === 'fail')
-                                                    <span class="coa-outcome-fail">Fail</span>
-                                                @else
-                                                    <span style="color:#9ca3af; font-size:11px;">—</span>
-                                                @endif
-                                            </td>
-                                        </tr>
-                                    @endforeach
-                                </tbody>
-                            </table>
+                        @if($result?->authorised_at)
+                            <div style="min-width:220px;">
+                                <div class="coa-sig-line"></div>
+                                <p class="coa-sig-name">{{ $result->authorisedBy?->name ?? 'Laboratory Director' }}</p>
+                                <p class="coa-sig-role">
+                                    Laboratory Director &nbsp;·&nbsp;
+                                    {{ $result->authorised_at->format('d M Y \a\t H:i') }}
+                                </p>
+                            </div>
                         @endif
                     </div>
-                @endforeach
 
-                {{-- ── Director's remarks ───────────────────────────────────── --}}
-                @if($result?->director_comments)
-                    <div style="border-top:1px solid #e5e7eb; padding-top:14px; margin-bottom:20px;">
-                        <p style="font-size:10px; font-weight:700; letter-spacing:.1em; text-transform:uppercase; color:#9ca3af; margin-bottom:6px;">Director's Remarks</p>
-                        <p style="font-size:11.5px; color:#374151; line-height:1.7; white-space:pre-line;">{{ $result->director_comments }}</p>
-                    </div>
-                @endif
+                </div>{{-- /coa-inner --}}
 
-                {{-- ── Footer: Authorisation status + Director signature ────── --}}
-                <div class="coa-foot" style="display:flex; justify-content:space-between; align-items:flex-end; gap:16px;">
-                    <div class="coa-auth-status">
-                        <p class="label">Authorisation Status:
-                            @if($result?->authorised_at)
-                                <span class="value">Authorised</span>
-                            @else
-                                <span style="color:#9ca3af; font-weight:600;">Pending</span>
-                            @endif
-                        </p>
-                    </div>
-
-                    @if($result?->authorised_at)
-                        <div style="text-align:right;">
-                            <p class="coa-sig-name">{{ $result->authorisedBy?->name ?? 'Laboratory Director' }}</p>
-                            <div class="coa-sig-line" style="margin-left:auto;"></div>
-                            <p class="coa-sig-role">Laboratory Director &middot; {{ $result->authorised_at->format('d M Y \a\t H:i') }}</p>
-                        </div>
-                    @endif
+                {{-- ────────── Doc strip footer ────────── --}}
+                <div class="coa-doc-strip">
+                    <p class="ref">{{ $submission->reference_number }} &nbsp;·&nbsp; FINAL REPORT</p>
+                    <p>Results are confidential and intended solely for the submitting client.</p>
+                    <p>Kiribati Seafood Toxicology Laboratory &nbsp;·&nbsp; stld.fisheries.gov.ki</p>
                 </div>
 
-            </div>{{-- /coa-doc --}}
-
-            <div class="pb-8"></div>
-
+            </div>{{-- /coa-paper --}}
         </div>
     </div>
 </x-app-layout>

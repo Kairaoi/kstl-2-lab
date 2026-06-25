@@ -139,6 +139,9 @@ class ClientController extends Controller
 
         try {
             $validated = $request->validate([
+                // Client's own reference number (appears on CoA)
+                'client_reference'      => ['nullable', 'string', 'max:150'],
+
                 // Sample info (Schedule 1: Sample table)
                 'sample_name'           => ['nullable', 'string', 'max:255'],
                 'scientific_name'       => ['nullable', 'string', 'max:255'],
@@ -203,6 +206,7 @@ class ClientController extends Controller
             $submission = DB::transaction(function () use ($validated, $client, $mergedTests, $mergedOther, $sampleItemsData) {
                 return $this->submissionRepo->create([
                     'client_id'             => $client->id,
+                    'client_reference'      => $validated['client_reference'] ?? null,
                     'sample_name'           => $sampleItemsData[0]['name'] ?? ($validated['sample_name'] ?? null),
                     'scientific_name'       => $sampleItemsData[0]['scientific_name'] ?? ($validated['scientific_name'] ?? null),
                     'sample_description'    => $validated['sample_description']    ?? null,
