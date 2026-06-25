@@ -86,7 +86,7 @@
                         </p>
                         <p class="text-sm text-gray-600 mt-1">{{ $invoice->submission->sample_name }}</p>
                         <p class="text-xs text-gray-400 mt-1">
-                            Issued by: {{ $invoice->issuedBy?->name }}
+                            Issued by: {{ $invoice->issuedBy?->name ?? 'System' }}
                         </p>
                     </div>
                 </div>
@@ -174,20 +174,26 @@
                     </div>
                     <form method="POST"
                           action="{{ route('director.invoices.paid', $invoice->id) }}"
-                          class="px-6 py-5">
+                          class="px-6 py-5"
+                          x-data="{ ref: '' }">
                         @csrf
                         <div class="flex gap-3">
                             <div class="flex-1">
                                 <x-input type="text"
                                          name="payment_reference"
+                                         x-model="ref"
                                          placeholder="e.g. TT-20260414-001"
                                          class="w-full"
                                          required/>
                                 <x-input-error for="payment_reference" class="mt-1"/>
                             </div>
                             <button type="submit"
-                                    onclick="return confirm('Mark this invoice as paid?')"
-                                    class="inline-flex items-center gap-2 px-5 py-2.5 bg-green-600 text-white text-sm font-medium rounded-lg hover:bg-green-700 transition">
+                                    :disabled="ref.trim().length < 3"
+                                    @click.prevent="if(ref.trim().length >= 3 && confirm('Mark {{ $invoice->invoice_number }} as paid with reference ' + ref.trim() + '?')) $el.closest('form').submit()"
+                                    :class="ref.trim().length >= 3
+                                        ? 'bg-green-600 hover:bg-green-700 text-white cursor-pointer'
+                                        : 'bg-gray-200 text-gray-400 cursor-not-allowed'"
+                                    class="inline-flex items-center gap-2 px-5 py-2.5 text-sm font-medium rounded-lg transition">
                                 <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"/>
                                 </svg>

@@ -143,13 +143,21 @@
                                             <x-input-error for="collected_at" class="mt-1"/>
                                         </div>
                                         <div>
-                                            <x-label for="collection_location" value="Collection Location"/>
-                                            <x-input id="collection_location" type="text" name="collection_location"
-                                                     value="{{ old('collection_location') }}"
-                                                     class="mt-1 block w-full"
-                                                     placeholder="e.g. South Tarawa Lagoon"/>
-                                            <x-input-error for="collection_location" class="mt-1"/>
+                                            <x-label for="delivered_at" value="Delivery Date"/>
+                                            <x-input id="delivered_at" type="date" name="delivered_at"
+                                                     value="{{ old('delivered_at') }}"
+                                                     class="mt-1 block w-full"/>
+                                            <x-input-error for="delivered_at" class="mt-1"/>
                                         </div>
+                                    </div>
+
+                                    <div>
+                                        <x-label for="collection_location" value="Collection Location"/>
+                                        <x-input id="collection_location" type="text" name="collection_location"
+                                                 value="{{ old('collection_location') }}"
+                                                 class="mt-1 block w-full"
+                                                 placeholder="e.g. South Tarawa Lagoon"/>
+                                        <x-input-error for="collection_location" class="mt-1"/>
                                     </div>
 
                                     <div>
@@ -260,6 +268,16 @@
                                                         <option value="L">L</option>
                                                     </select>
                                                 </div>
+                                            </div>
+
+                                            {{-- "Other" type description --}}
+                                            <div x-show="item.type === 'other'" x-cloak class="mt-1">
+                                                <label class="block text-xs font-medium text-gray-700 mb-1">Other — please describe *</label>
+                                                <input type="text"
+                                                       :name="`sample_items[${index}][type_notes]`"
+                                                       x-model="item.type_notes"
+                                                       class="block w-full border-gray-300 focus:border-indigo-500 focus:ring-indigo-500 rounded-md shadow-sm text-sm"
+                                                       placeholder="Describe the sample type…"/>
                                             </div>
 
                                             {{-- Tests for this sample --}}
@@ -559,7 +577,7 @@
     </div>
 
     @php
-        $blankSample = ['name' => '', 'scientific_name' => '', 'type' => '', 'ref' => 'S-001', 'qty' => '', 'unit' => 'kg', 'tests' => [], 'tests_other' => ''];
+        $blankSample = ['name' => '', 'scientific_name' => '', 'type' => '', 'type_notes' => '', 'ref' => 'S-001', 'qty' => '', 'unit' => 'kg', 'tests' => [], 'tests_other' => ''];
         $rawItems = old('sample_items', [$blankSample]);
         $defaultSampleItems = array_map(fn($i) => array_merge($blankSample, $i), $rawItems);
     @endphp
@@ -590,7 +608,7 @@
                 addSample() {
                     if (this.sampleItems.length < 9) {
                         const nextRef = 'S-' + String(this.sampleItems.length + 1).padStart(3, '0');
-                        this.sampleItems.push({ name: '', scientific_name: '', type: '', ref: nextRef, qty: '', unit: 'kg', tests: [], tests_other: '' });
+                        this.sampleItems.push({ name: '', scientific_name: '', type: '', type_notes: '', ref: nextRef, qty: '', unit: 'kg', tests: [], tests_other: '' });
                         this.$nextTick(() => this.saveDraft());
                     }
                 },

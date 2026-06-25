@@ -147,7 +147,12 @@ class ClientController extends Controller
                 'sample_quantity'       => ['nullable', 'numeric', 'min:0'],
                 'sample_quantity_unit'  => ['nullable', 'in:g,kg,ml,L'],
                 'collected_at'          => ['required', 'date', 'before_or_equal:today'],
+                'delivered_at'          => ['nullable', 'date'],
                 'collection_location'   => ['nullable', 'string', 'max:255'],
+
+                // Submission-level sample types (multi-select)
+                'submission_types'      => ['nullable', 'array'],
+                'submission_types.*'    => ['string', 'in:fish,shellfish,seaweed,water,sediment,other'],
 
                 // Tests requested (Schedule 1: Chemical / Microbiology)
                 'tests_requested'       => ['nullable', 'array'],
@@ -165,6 +170,7 @@ class ClientController extends Controller
                 'sample_items.*.tests'               => ['nullable', 'array'],
                 'sample_items.*.tests.*'             => ['string', 'in:total_coliforms,e_coli,enterococci,yeast_mold,apc,e_coli_coliform,staph_aureus,salmonella_spp,listeria_mono,listeria_spp,moisture,histamine,ph,conductivity,water_activity'],
                 'sample_items.*.tests_other'         => ['nullable', 'string', 'max:1000'],
+                'sample_items.*.type_notes'          => ['nullable', 'string', 'max:500'],
 
                 // Transport method (Schedule 1: Frozen / Chill / Fresh)
                 'transport_method'      => ['required', 'in:frozen,chilled'],
@@ -201,9 +207,11 @@ class ClientController extends Controller
                     'scientific_name'       => $sampleItemsData[0]['scientific_name'] ?? ($validated['scientific_name'] ?? null),
                     'sample_description'    => $validated['sample_description']    ?? null,
                     'sample_type'           => $sampleItemsData[0]['type'] ?? ($validated['sample_type'] ?? null),
+                    'sample_types'          => $validated['submission_types'] ?? null,
                     'sample_quantity'       => $validated['sample_quantity'] ?? null,
                     'sample_quantity_unit'  => $validated['sample_quantity_unit'] ?? null,
                     'collected_at'          => $validated['collected_at'],
+                    'delivered_at'          => $validated['delivered_at'] ?? null,
                     'collection_location'   => $validated['collection_location']   ?? null,
                     'tests_requested'       => $mergedTests,
                     'tests_other'           => $mergedOther ? implode('; ', $mergedOther) : null,
@@ -228,6 +236,16 @@ class ClientController extends Controller
             ]);
 
             $this->auditService->logSubmissionCreated($submission);
+
+            // Auto-generate invoice immediately on submission
+            try {
+                $this->invoiceRepo->generateForNewSubmission($submission->id);
+            } catch (\Throwable $e) {
+                Log::warning('Auto-invoice generation failed after submission', [
+                    'submission_id' => $submission->id,
+                    'error'         => $e->getMessage(),
+                ]);
+            }
 
             return redirect()
                 ->route('client.submissions.show', $submission->id)

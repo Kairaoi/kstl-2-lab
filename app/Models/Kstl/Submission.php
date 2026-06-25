@@ -29,10 +29,12 @@ class Submission extends Model
         'scientific_name',       // Scientific Name
         'sample_description',
         'sample_type',           // fish, shellfish, seaweed, water, sediment, other
+        'sample_types',          // JSON array for multi-type submission (fish + water etc.)
         'sample_quantity',
         'sample_quantity_unit',
         'sample_items',          // JSON array of {ref, qty, unit} per sample (up to 9)
         'collected_at',          // Sampling Date
+        'delivered_at',          // Date sample was delivered to the lab
         'collection_location',
 
         // Tests Requested (Schedule 1: Chemical / Microbiology)
@@ -71,8 +73,10 @@ class Submission extends Model
         return [
             'tests_requested'    => 'array',
             'sample_items'       => 'array',
+            'sample_types'       => 'array',
             'application_date'   => 'date',
             'collected_at'       => 'date',
+            'delivered_at'       => 'date',
             'results_required_by'=> 'date',
             'submitted_at'       => 'datetime',
             'received_at'        => 'datetime',

@@ -105,6 +105,69 @@ class InvoiceRepository extends BaseRepository
     }
 
     /**
+     * Generate a proforma invoice at submission time from requested sample_items.
+     * No SampleTest records exist yet; line items are created from the JSON payload.
+     */
+    public function generateForNewSubmission(string $submissionId): Invoice
+    {
+        $submission = Submission::with('client.user')->findOrFail($submissionId);
+        $client     = $submission->client;
+        $items      = $submission->sample_items ?? [];
+
+        $invoice = DB::transaction(function () use ($submission, $client, $items) {
+            $invoice = $this->model->create([
+                'invoice_number'   => Invoice::generateNumber(),
+                'submission_id'    => $submission->id,
+                'result_id'        => null,
+                'issued_by'        => null,
+                'bill_to_company'  => $client->company_name,
+                'bill_to_address'  => $client->address,
+                'bill_to_phone'    => $client->company_phone,
+                'bill_to_email'    => $client->user->email,
+                'invoice_date'     => now()->toDateString(),
+                'payment_due_date' => Invoice::calculateDueDate(now()),
+                'payment_status'   => Invoice::STATUS_UNPAID,
+                'total_amount_aud' => 0,
+            ]);
+
+            $total = 0;
+            foreach ($items as $sampleItem) {
+                foreach ($sampleItem['tests'] ?? [] as $testKey) {
+                    $price = Invoice::TEST_PRICES[$testKey] ?? 0;
+                    $label = SampleTest::TEST_LABELS[$testKey]
+                        ?? str_replace('_', ' ', ucfirst($testKey));
+                    $cat   = SampleTest::TEST_CATEGORIES[$testKey] ?? null;
+
+                    InvoiceItem::create([
+                        'invoice_id'       => $invoice->id,
+                        'sample_test_id'   => null,
+                        'item_description' => $label,
+                        'category'         => $cat ? ucfirst($cat) : null,
+                        'unit_price_aud'   => $price,
+                        'quantity'         => 1,
+                        'total_price_aud'  => $price,
+                    ]);
+
+                    $total += $price;
+                }
+            }
+
+            $invoice->update(['total_amount_aud' => $total]);
+
+            return $invoice;
+        });
+
+        Log::info('Proforma invoice generated on submission', [
+            'invoice_id'     => $invoice->id,
+            'invoice_number' => $invoice->invoice_number,
+            'submission_id'  => $submissionId,
+            'total_aud'      => $invoice->total_amount_aud,
+        ]);
+
+        return $invoice->load('items');
+    }
+
+    /**
      * Mark invoice as paid.
      */
     public function markPaid(string $id, string $reference): Invoice

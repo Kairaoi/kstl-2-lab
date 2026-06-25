@@ -151,6 +151,12 @@
                             <dt class="ir-meta-label">Collected</dt>
                             <dd class="text-gray-700 mt-1">{{ $submission->collected_at?->format('d M Y') ?? '—' }}</dd>
                         </div>
+                        @if($submission->delivered_at)
+                        <div>
+                            <dt class="ir-meta-label">Delivered</dt>
+                            <dd class="text-gray-700 mt-1">{{ $submission->delivered_at->format('d M Y') }}</dd>
+                        </div>
+                        @endif
                         <div>
                             <dt class="ir-meta-label">Submitted</dt>
                             <dd class="text-gray-700 mt-1">{{ $submission->submitted_at?->format('d M Y') ?? '—' }}</dd>

@@ -123,7 +123,7 @@ class SampleTestRepository extends BaseRepository
             'result_qualifier' => $input['result_qualifier'],
             'result_notes'     => $analystNotes,
             'completed_at'     => now(),
-            'status'           => $input['flag']
+            'status'           => ($input['flag'] ?? false)
                 ? SampleTest::STATUS_FLAGGED
                 : SampleTest::STATUS_COMPLETED,
         ]);
