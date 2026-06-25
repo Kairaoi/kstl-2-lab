@@ -199,88 +199,121 @@
 
             </div>
 
-            {{-- ── Confirm Payment (client submitted TT ref) ───────── --}}
-            @if(($invoice->isUnpaid() || $invoice->isOverdue()) && $invoice->hasSubmittedPayment())
-                <div class="bg-blue-50 rounded-xl border border-blue-200 overflow-hidden">
-                    <div class="px-6 py-4 border-b border-blue-100">
-                        <h3 class="text-sm font-semibold text-blue-800">Confirm Client Payment</h3>
-                        <p class="text-xs text-blue-600 mt-0.5">
-                            {{ $invoice->bill_to_company }} has submitted TT reference
-                            <span class="font-mono font-semibold">{{ $invoice->payment_submitted_reference }}</span>.
-                            Verify this against your bank records, then confirm below.
-                        </p>
-                    </div>
-                    <form method="POST"
-                          action="{{ route('director.invoices.paid', $invoice->id) }}"
-                          class="px-6 py-5"
-                          x-data="{ ref: '{{ $invoice->payment_submitted_reference }}' }">
-                        @csrf
-                        <div class="flex gap-3 items-end">
-                            <div class="flex-1">
-                                <label class="block text-xs font-medium text-gray-600 mb-1">TT Reference (pre-filled from client)</label>
-                                <input type="text"
-                                       name="payment_reference"
-                                       x-model="ref"
-                                       class="w-full border-blue-300 rounded-lg text-sm font-mono focus:border-teal-500 focus:ring-teal-500"
-                                       required/>
-                                @error('payment_reference')
-                                    <p class="text-xs text-red-600 mt-1">{{ $message }}</p>
-                                @enderror
-                            </div>
-                            <button type="submit"
-                                    :disabled="ref.trim().length < 3"
-                                    @click.prevent="if(ref.trim().length >= 3 && confirm('Confirm payment for {{ $invoice->invoice_number }} with reference ' + ref.trim() + '?')) $el.closest('form').submit()"
-                                    :class="ref.trim().length >= 3
-                                        ? 'bg-green-600 hover:bg-green-700 text-white cursor-pointer'
-                                        : 'bg-gray-200 text-gray-400 cursor-not-allowed'"
-                                    class="inline-flex items-center gap-2 px-5 py-2.5 text-sm font-medium rounded-lg transition">
-                                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"/>
-                                </svg>
-                                Confirm Payment
-                            </button>
-                        </div>
-                    </form>
-                </div>
+            {{-- ── Payment section ──────────────────────────────────── --}}
+            @if($invoice->isUnpaid() || $invoice->isOverdue())
+                <div class="rounded-xl overflow-hidden {{ $invoice->hasSubmittedPayment() ? 'border-2 border-teal-400 bg-teal-50' : 'border border-gray-100 bg-white' }}">
 
-            {{-- ── Manual payment entry (no client submission yet) ──── --}}
-            @elseif($invoice->isUnpaid() || $invoice->isOverdue())
-                <div class="bg-white rounded-xl border border-gray-100 overflow-hidden">
-                    <div class="px-6 py-4 border-b border-gray-100">
-                        <h3 class="text-sm font-medium text-gray-800">Record Payment Manually</h3>
-                        <p class="text-xs text-gray-400 mt-0.5">Client has not yet submitted payment details. You may record payment manually if received outside the portal.</p>
-                    </div>
-                    <form method="POST"
-                          action="{{ route('director.invoices.paid', $invoice->id) }}"
-                          class="px-6 py-5"
-                          x-data="{ ref: '' }">
-                        @csrf
-                        <div class="flex gap-3">
-                            <div class="flex-1">
-                                <input type="text"
-                                       name="payment_reference"
-                                       x-model="ref"
-                                       placeholder="e.g. TT-20260608-001"
-                                       class="w-full border-gray-300 rounded-lg text-sm font-mono focus:border-teal-500 focus:ring-teal-500"
-                                       required/>
-                                @error('payment_reference')
-                                    <p class="text-xs text-red-600 mt-1">{{ $message }}</p>
-                                @enderror
+                    {{-- Status banner --}}
+                    @if($invoice->hasSubmittedPayment())
+                        <div class="px-6 py-4 bg-teal-500 flex items-start gap-3">
+                            <svg class="w-5 h-5 text-white mt-0.5 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"/>
+                            </svg>
+                            <div>
+                                <p class="text-sm font-bold text-white">Client Payment Reference Received</p>
+                                <p class="text-xs text-teal-100 mt-0.5">
+                                    {{ $invoice->bill_to_company }} submitted this reference on
+                                    {{ $invoice->payment_submitted_at?->format('d M Y \a\t H:i') }}.
+                                    Verify it against your bank records before confirming.
+                                </p>
                             </div>
-                            <button type="submit"
-                                    :disabled="ref.trim().length < 3"
-                                    @click.prevent="if(ref.trim().length >= 3 && confirm('Mark {{ $invoice->invoice_number }} as paid with reference ' + ref.trim() + '?')) $el.closest('form').submit()"
-                                    :class="ref.trim().length >= 3
-                                        ? 'bg-green-600 hover:bg-green-700 text-white cursor-pointer'
-                                        : 'bg-gray-200 text-gray-400 cursor-not-allowed'"
-                                    class="inline-flex items-center gap-2 px-5 py-2.5 text-sm font-medium rounded-lg transition">
-                                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"/>
-                                </svg>
-                                Mark as Paid
-                            </button>
                         </div>
-                    </form>
+
+                        {{-- Submitted reference display --}}
+                        <div class="px-6 py-4 border-b border-teal-200 flex items-center gap-4">
+                            <div class="flex-1">
+                                <p class="text-xs font-semibold text-gray-500 uppercase tracking-wide mb-1">Client's TT Reference</p>
+                                <p class="font-mono text-xl font-bold text-gray-900 tracking-wide">
+                                    {{ $invoice->payment_submitted_reference }}
+                                </p>
+                                @if($invoice->paymentSubmittedBy)
+                                    <p class="text-xs text-gray-400 mt-1">Submitted by {{ $invoice->paymentSubmittedBy->name }}</p>
+                                @endif
+                            </div>
+                        </div>
+
+                        {{-- Verify & confirm form --}}
+                        <form method="POST"
+                              action="{{ route('director.invoices.paid', $invoice->id) }}"
+                              class="px-6 py-5"
+                              x-data="{ ref: '{{ $invoice->payment_submitted_reference }}' }">
+                            @csrf
+                            <p class="text-xs text-gray-500 mb-3">The reference is pre-filled. You may edit it if needed before confirming.</p>
+                            <div class="flex gap-3 items-end">
+                                <div class="flex-1">
+                                    <label class="block text-xs font-medium text-gray-600 mb-1">TT Reference to Record</label>
+                                    <input type="text"
+                                           name="payment_reference"
+                                           x-model="ref"
+                                           class="w-full border-teal-300 rounded-lg text-sm font-mono focus:border-teal-500 focus:ring-teal-500"
+                                           required/>
+                                    @error('payment_reference')
+                                        <p class="text-xs text-red-600 mt-1">{{ $message }}</p>
+                                    @enderror
+                                </div>
+                                <button type="submit"
+                                        :disabled="ref.trim().length < 3"
+                                        @click.prevent="if(ref.trim().length >= 3 && confirm('Confirm payment for {{ $invoice->invoice_number }} with reference ' + ref.trim() + '?')) $el.closest('form').submit()"
+                                        :class="ref.trim().length >= 3
+                                            ? 'bg-teal-600 hover:bg-teal-700 text-white cursor-pointer'
+                                            : 'bg-gray-200 text-gray-400 cursor-not-allowed'"
+                                        class="inline-flex items-center gap-2 px-5 py-2.5 text-sm font-semibold rounded-lg transition">
+                                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"/>
+                                    </svg>
+                                    Confirm &amp; Mark as Paid
+                                </button>
+                            </div>
+                        </form>
+
+                    @else
+                        {{-- No client reference yet — awaiting + manual fallback --}}
+                        <div class="px-6 py-4 border-b border-gray-100 flex items-center gap-3">
+                            <svg class="w-5 h-5 text-amber-400 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"/>
+                            </svg>
+                            <div>
+                                <p class="text-sm font-semibold text-gray-800">Awaiting Client Payment Reference</p>
+                                <p class="text-xs text-gray-400 mt-0.5">
+                                    The client has not yet submitted their TT reference on the portal.
+                                    You may record payment manually below if payment was received outside the portal.
+                                </p>
+                            </div>
+                        </div>
+                        <form method="POST"
+                              action="{{ route('director.invoices.paid', $invoice->id) }}"
+                              class="px-6 py-5"
+                              x-data="{ ref: '' }">
+                            @csrf
+                            <div class="flex gap-3">
+                                <div class="flex-1">
+                                    <label class="block text-xs font-medium text-gray-600 mb-1">Payment Reference (manual entry)</label>
+                                    <input type="text"
+                                           name="payment_reference"
+                                           x-model="ref"
+                                           placeholder="e.g. TT-20260608-001"
+                                           class="w-full border-gray-300 rounded-lg text-sm font-mono focus:border-teal-500 focus:ring-teal-500"
+                                           required/>
+                                    @error('payment_reference')
+                                        <p class="text-xs text-red-600 mt-1">{{ $message }}</p>
+                                    @enderror
+                                </div>
+                                <button type="submit"
+                                        :disabled="ref.trim().length < 3"
+                                        @click.prevent="if(ref.trim().length >= 3 && confirm('Mark {{ $invoice->invoice_number }} as paid with reference ' + ref.trim() + '?')) $el.closest('form').submit()"
+                                        :class="ref.trim().length >= 3
+                                            ? 'bg-green-600 hover:bg-green-700 text-white cursor-pointer'
+                                            : 'bg-gray-200 text-gray-400 cursor-not-allowed'"
+                                        class="inline-flex items-center gap-2 px-5 py-2.5 text-sm font-medium rounded-lg transition">
+                                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"/>
+                                    </svg>
+                                    Mark as Paid
+                                </button>
+                            </div>
+                        </form>
+                    @endif
+
                 </div>
             @endif
 
