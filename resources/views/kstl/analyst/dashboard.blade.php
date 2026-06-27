@@ -1,4 +1,4 @@
-﻿{{-- resources/views/kstl/analyst/dashboard.blade.php --}}
+{{-- resources/views/kstl/analyst/dashboard.blade.php --}}
 
 <x-app-layout>
     <x-slot name="header">
@@ -7,9 +7,12 @@
             $flaggedTotal = $counts['flagged'] ?? 0;
         @endphp
         {{-- Navy hero banner --}}
-        <div style="background:linear-gradient(135deg,#0f2240 0%,#1a2f4e 60%,#1e3a5f 100%); position:relative; overflow:hidden;">
-            <div style="height:3px; background:linear-gradient(90deg,#b8922a,#d4a843,#b8922a);"></div>
-            <div style="max-width:80rem; margin:0 auto; padding:28px 2rem 32px;">
+        <div style="background:linear-gradient(135deg,#0f2240 0%,#1a2f4e 60%,#1e3a5f 100%); position:relative; overflow:hidden; margin:-1px;">
+            {{-- dot pattern overlay --}}
+            <div style="position:absolute; inset:0; background-image:radial-gradient(circle,rgba(255,255,255,.06) 1px,transparent 1px); background-size:20px 20px; pointer-events:none;"></div>
+            {{-- gold accent stripe --}}
+            <div style="position:absolute; top:0; left:0; right:0; height:3px; background:linear-gradient(90deg,#b8922a,#d4a843,#b8922a);"></div>
+            <div style="max-width:80rem; margin:0 auto; padding:28px 2rem;">
                 <div style="display:flex; align-items:center; justify-content:space-between; gap:24px; flex-wrap:wrap;">
                     <div style="display:flex; align-items:center; gap:20px;">
                         <img src="{{ asset('images/mfor-logo.png') }}" alt="MFOR"
@@ -28,14 +31,14 @@
                     </div>
                     <div style="display:flex; align-items:center; gap:8px; flex-wrap:wrap;">
                         @if($flaggedTotal > 0)
-                            <span style="display:inline-flex; align-items:center; gap:6px; font-size:11px; font-weight:700; color:#fbbf24; background:rgba(251,191,36,.12); border:1px solid rgba(251,191,36,.3); padding:5px 12px; border-radius:20px;">
+                            <span style="display:inline-flex; align-items:center; gap:6px; font-size:11px; font-weight:700; color:#fbbf24; background:rgba(251,191,36,.12); border:1px solid rgba(251,191,36,.3); padding:5px 12px; border-radius:3px;">
                                 {{ $flaggedTotal }} flagged
                             </span>
                         @endif
-                        <span style="display:inline-flex; align-items:center; gap:6px; font-size:11px; font-weight:600; color:#cbd5e1; background:rgba(255,255,255,.08); border:1px solid rgba(255,255,255,.12); padding:5px 12px; border-radius:20px;">
+                        <span style="display:inline-flex; align-items:center; gap:6px; font-size:11px; font-weight:600; color:#cbd5e1; background:rgba(255,255,255,.08); border:1px solid rgba(255,255,255,.12); padding:5px 12px; border-radius:3px;">
                             {{ $activeCount }} active
                         </span>
-                        <span style="display:inline-flex; align-items:center; gap:6px; font-size:11px; font-weight:700; color:#b8922a; background:rgba(184,146,42,.12); border:1px solid rgba(184,146,42,.3); padding:5px 12px; border-radius:20px;">
+                        <span style="display:inline-flex; align-items:center; gap:6px; font-size:11px; font-weight:700; color:#b8922a; background:rgba(184,146,42,.12); border:1px solid rgba(184,146,42,.3); padding:5px 12px; border-radius:3px;">
                             <span style="width:6px; height:6px; background:#b8922a; border-radius:50%; display:inline-block;"></span>
                             Analyst
                         </span>
@@ -50,47 +53,77 @@
     .page-hdr { padding: 0 !important; }
     .page-hdr-inner { max-width: 100% !important; padding: 0 !important; }
     .app-main { padding-left:0 !important; padding-right:0 !important; padding-top:0 !important; max-width:100% !important; }
+
+    :root {
+        --gov-navy:   #1a2f4e;
+        --gov-gold:   #b8922a;
+        --gov-teal:   #0d9488;
+        --gov-slate:  #f1f5f9;
+        --gov-border: #e2e8f0;
+    }
+    .gov-section-label {
+        font-size:9px; font-weight:700; letter-spacing:.12em;
+        text-transform:uppercase; color:#64748b; margin:0 0 10px;
+    }
+    .gov-stat {
+        background:#fff; border:1px solid var(--gov-border);
+        border-radius:4px; padding:18px 20px; display:block; text-decoration:none;
+    }
+    .gov-stat-label {
+        font-size:9px; font-weight:700; letter-spacing:.12em;
+        text-transform:uppercase; color:#64748b; margin:0 0 8px;
+    }
+    .gov-stat-num {
+        font-size:36px; font-weight:700; color:var(--gov-navy);
+        margin:0; font-family:'Georgia',serif; line-height:1;
+    }
+    .gov-stat-sub { font-size:11px; color:#94a3b8; margin:4px 0 0; }
+    .gov-card-hdr {
+        padding:16px 20px; border-bottom:1px solid var(--gov-border);
+        display:flex; align-items:center; justify-content:space-between; flex-wrap:wrap; gap:12px;
+    }
+    .gov-card-hdr h3 {
+        font-family:'Georgia',serif; font-size:15px; font-weight:700;
+        color:var(--gov-navy); border-bottom:2px solid var(--gov-gold);
+        padding-bottom:8px; margin:0 0 4px; display:inline-block;
+    }
+    .gov-card-hdr p { font-size:11px; color:#94a3b8; margin:0; }
     </style>
     @endpush
 
     <div style="background:#f1f5f9; min-height:100vh; padding:52px 0 56px;">
-        <div style="max-width:80rem; margin:0 auto; padding:0 2rem;">
+        <div style="max-width:80rem; margin:0 auto; padding:0 2rem; display:flex; flex-direction:column; gap:24px;">
 
             <x-kstl.flash />
 
             {{-- ── Summary Cards ─────────────────────────────────── --}}
-            <div style="display:grid; grid-template-columns:repeat(4,1fr); gap:16px; margin-bottom:24px;">
-                <a href="{{ route('analyst.tests.index') }}" style="text-decoration:none; display:block;">
-                    <div style="background:#fff; border:1px solid #e2e8f0; border-radius:4px; border-left:4px solid #d97706; padding:18px 20px;">
-                        <p style="font-size:9px; font-weight:700; letter-spacing:.12em; text-transform:uppercase; color:#64748b; margin:0 0 8px;">Queued</p>
-                        <p style="font-size:28px; font-weight:700; color:#1a2f4e; margin:0; font-family:'Georgia',serif;">{{ $counts['queued'] ?? 0 }}</p>
-                        <p style="font-size:11px; color:#94a3b8; margin:4px 0 0;">Awaiting analyst</p>
-                    </div>
-                </a>
+            <div style="margin-top:24px;">
+                <p class="gov-section-label">Test Overview</p>
+                <div style="display:grid; grid-template-columns:repeat(4,1fr); gap:16px;">
+                    <a href="{{ route('analyst.tests.index') }}" class="gov-stat" style="border-left:4px solid #d97706;">
+                        <p class="gov-stat-label">Queued</p>
+                        <p class="gov-stat-num">{{ $counts['queued'] ?? 0 }}</p>
+                        <p class="gov-stat-sub">Awaiting analyst</p>
+                    </a>
 
-                <a href="{{ route('analyst.tests.index') }}" style="text-decoration:none; display:block;">
-                    <div style="background:#fff; border:1px solid #e2e8f0; border-radius:4px; border-left:4px solid #2563eb; padding:18px 20px;">
-                        <p style="font-size:9px; font-weight:700; letter-spacing:.12em; text-transform:uppercase; color:#64748b; margin:0 0 8px;">In Progress</p>
-                        <p style="font-size:28px; font-weight:700; color:#1a2f4e; margin:0; font-family:'Georgia',serif;">{{ $counts['in_progress'] ?? 0 }}</p>
-                        <p style="font-size:11px; color:#94a3b8; margin:4px 0 0;">Currently running</p>
-                    </div>
-                </a>
+                    <a href="{{ route('analyst.tests.index') }}" class="gov-stat" style="border-left:4px solid #2563eb;">
+                        <p class="gov-stat-label">In Progress</p>
+                        <p class="gov-stat-num">{{ $counts['in_progress'] ?? 0 }}</p>
+                        <p class="gov-stat-sub">Currently running</p>
+                    </a>
 
-                <a href="{{ route('analyst.results.index') }}" style="text-decoration:none; display:block;">
-                    <div style="background:#fff; border:1px solid #e2e8f0; border-radius:4px; border-left:4px solid #16a34a; padding:18px 20px;">
-                        <p style="font-size:9px; font-weight:700; letter-spacing:.12em; text-transform:uppercase; color:#64748b; margin:0 0 8px;">Completed</p>
-                        <p style="font-size:28px; font-weight:700; color:#1a2f4e; margin:0; font-family:'Georgia',serif;">{{ $counts['completed'] ?? 0 }}</p>
-                        <p style="font-size:11px; color:#94a3b8; margin:4px 0 0;">Results entered</p>
-                    </div>
-                </a>
+                    <a href="{{ route('analyst.results.index') }}" class="gov-stat" style="border-left:4px solid #16a34a;">
+                        <p class="gov-stat-label">Completed</p>
+                        <p class="gov-stat-num">{{ $counts['completed'] ?? 0 }}</p>
+                        <p class="gov-stat-sub">Results entered</p>
+                    </a>
 
-                <a href="{{ route('analyst.tests.index') }}" style="text-decoration:none; display:block;">
-                    <div style="background:#fff; border:1px solid #e2e8f0; border-radius:4px; border-left:4px solid #dc2626; padding:18px 20px;">
-                        <p style="font-size:9px; font-weight:700; letter-spacing:.12em; text-transform:uppercase; color:#64748b; margin:0 0 8px;">Flagged</p>
-                        <p style="font-size:28px; font-weight:700; color:#1a2f4e; margin:0; font-family:'Georgia',serif;">{{ $counts['flagged'] ?? 0 }}</p>
-                        <p style="font-size:11px; color:#94a3b8; margin:4px 0 0;">Needs review</p>
-                    </div>
-                </a>
+                    <a href="{{ route('analyst.tests.index') }}" class="gov-stat" style="border-left:4px solid #dc2626;">
+                        <p class="gov-stat-label">Flagged</p>
+                        <p class="gov-stat-num">{{ $counts['flagged'] ?? 0 }}</p>
+                        <p class="gov-stat-sub">Needs review</p>
+                    </a>
+                </div>
             </div>
 
             {{-- ── Result Summary Cards ─────────────────────────── --}}
@@ -104,21 +137,24 @@
             @endphp
 
             @if($totalCompleted > 0)
-                <div style="display:grid; grid-template-columns:repeat(3,1fr); gap:16px; margin-bottom:24px;">
-                    <div style="background:#fff; border:1px solid #e2e8f0; border-radius:4px; border-left:4px solid #16a34a; padding:18px 20px;">
-                        <p style="font-size:9px; font-weight:700; letter-spacing:.12em; text-transform:uppercase; color:#64748b; margin:0 0 8px;">Pass / Not Detected</p>
-                        <p style="font-size:28px; font-weight:700; color:#15803d; margin:0; font-family:'Georgia',serif;">{{ $passCount }}</p>
-                        <p style="font-size:11px; color:#94a3b8; margin:4px 0 0;">{{ $totalCompleted > 0 ? round(($passCount / $totalCompleted) * 100) : 0 }}% of completed</p>
-                    </div>
-                    <div style="background:#fff; border:1px solid #e2e8f0; border-radius:4px; border-left:4px solid #dc2626; padding:18px 20px;">
-                        <p style="font-size:9px; font-weight:700; letter-spacing:.12em; text-transform:uppercase; color:#64748b; margin:0 0 8px;">Fail / Detected</p>
-                        <p style="font-size:28px; font-weight:700; color:#dc2626; margin:0; font-family:'Georgia',serif;">{{ $failCount }}</p>
-                        <p style="font-size:11px; color:#94a3b8; margin:4px 0 0;">{{ $totalCompleted > 0 ? round(($failCount / $totalCompleted) * 100) : 0 }}% of completed</p>
-                    </div>
-                    <div style="background:#fff; border:1px solid #e2e8f0; border-radius:4px; border-left:4px solid #64748b; padding:18px 20px;">
-                        <p style="font-size:9px; font-weight:700; letter-spacing:.12em; text-transform:uppercase; color:#64748b; margin:0 0 8px;">Other Results</p>
-                        <p style="font-size:28px; font-weight:700; color:#1a2f4e; margin:0; font-family:'Georgia',serif;">{{ $otherCount }}</p>
-                        <p style="font-size:11px; color:#94a3b8; margin:4px 0 0;">Less than, greater than, etc.</p>
+                <div>
+                    <p class="gov-section-label">Result Breakdown</p>
+                    <div style="display:grid; grid-template-columns:repeat(3,1fr); gap:16px;">
+                        <div class="gov-stat" style="border-left:4px solid #16a34a;">
+                            <p class="gov-stat-label">Pass / Not Detected</p>
+                            <p class="gov-stat-num" style="color:#15803d;">{{ $passCount }}</p>
+                            <p class="gov-stat-sub">{{ $totalCompleted > 0 ? round(($passCount / $totalCompleted) * 100) : 0 }}% of completed</p>
+                        </div>
+                        <div class="gov-stat" style="border-left:4px solid #dc2626;">
+                            <p class="gov-stat-label">Fail / Detected</p>
+                            <p class="gov-stat-num" style="color:#dc2626;">{{ $failCount }}</p>
+                            <p class="gov-stat-sub">{{ $totalCompleted > 0 ? round(($failCount / $totalCompleted) * 100) : 0 }}% of completed</p>
+                        </div>
+                        <div class="gov-stat" style="border-left:4px solid #64748b;">
+                            <p class="gov-stat-label">Other Results</p>
+                            <p class="gov-stat-num">{{ $otherCount }}</p>
+                            <p class="gov-stat-sub">Less than, greater than, etc.</p>
+                        </div>
                     </div>
                 </div>
             @endif
@@ -128,7 +164,7 @@
                 $flaggedGroups = $activeSubmissions->filter(fn($g) => ($g['flagged'] ?? 0) > 0);
             @endphp
             @if($flaggedGroups->isNotEmpty())
-                <div style="background:#fffbeb; border:1px solid #fcd34d; border-left:4px solid #d97706; border-radius:4px; padding:16px 20px; margin-bottom:24px;">
+                <div style="background:#fffbeb; border:1px solid #fcd34d; border-left:4px solid #d97706; border-radius:4px; padding:16px 20px;">
                     <div style="display:flex; align-items:flex-start; gap:12px;">
                         <svg style="width:18px; height:18px; flex-shrink:0; margin-top:2px;" fill="none" stroke="#d97706" viewBox="0 0 24 24">
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 21v-4m0 0V5a2 2 0 012-2h6.5l1 1H21l-3 6 3 6h-8.5l-1-1H5a2 2 0 00-2 2z"/>
@@ -163,7 +199,6 @@
 
             {{-- ── My Tests (Grouped by Submission) ──────────────────── --}}
             @php
-                // Triage: groups with flagged tests first, then by priority, then least-complete first.
                 $priorityRank = ['emergency' => 0, 'urgent' => 1, 'routine' => 2];
                 $activeSorted = $activeSubmissions->sortBy(fn($g) => [
                     ($g['flagged'] ?? 0) > 0 ? 0 : 1,
@@ -171,14 +206,14 @@
                     ($g['total'] ?? 0) > 0 ? ($g['done'] / $g['total']) : 1,
                 ])->values();
             @endphp
-            <div style="background:#fff; border:1px solid #e2e8f0; border-radius:4px; overflow:hidden; margin-bottom:24px;">
-                <div style="padding:16px 20px; border-bottom:1px solid #e2e8f0; display:flex; align-items:center; justify-content:space-between;">
+            <div style="background:#fff; border:1px solid #e2e8f0; border-radius:4px; overflow:hidden;">
+                <div class="gov-card-hdr">
                     <div>
-                        <h3 style="font-family:'Georgia',serif; font-size:15px; font-weight:700; color:#1a2f4e; border-bottom:2px solid #b8922a; padding-bottom:8px; margin:0 0 4px; display:inline-block;">My Tests</h3>
-                        <p style="font-size:11px; color:#94a3b8; margin:4px 0 0;">Grouped by submission — all tests assigned to or started by you</p>
+                        <h3>My Tests</h3>
+                        <p>Grouped by submission — all tests assigned to or started by you</p>
                     </div>
                     <a href="{{ route('analyst.tests.index') }}"
-                       style="font-size:12px; font-weight:600; color:#1a2f4e; text-decoration:none; background:#f1f5f9; border:1px solid #e2e8f0; padding:6px 14px; border-radius:3px;">
+                       style="font-size:12px; font-weight:600; color:#1a2f4e; text-decoration:none; background:#f1f5f9; border:1px solid #e2e8f0; padding:6px 14px; border-radius:3px; white-space:nowrap;">
                         View all tests &rarr;
                     </a>
                 </div>
@@ -347,10 +382,10 @@
 
             {{-- ── Historical Record ────────────────────────────────── --}}
             <div style="background:#fff; border:1px solid #e2e8f0; border-radius:4px; overflow:hidden;">
-                <div style="padding:16px 20px; border-bottom:1px solid #e2e8f0; display:flex; align-items:center; justify-content:space-between; flex-wrap:wrap; gap:12px;">
+                <div class="gov-card-hdr">
                     <div>
-                        <h3 style="font-family:'Georgia',serif; font-size:15px; font-weight:700; color:#1a2f4e; border-bottom:2px solid #b8922a; padding-bottom:8px; margin:0 0 4px; display:inline-block;">Testing History</h3>
-                        <p style="font-size:11px; color:#94a3b8; margin:4px 0 0;">
+                        <h3>Testing History</h3>
+                        <p>
                             @if(($search ?? '') !== '')
                                 Search results for reference "<span style="font-family:monospace; color:#475569;">{{ $search }}</span>" — searched across all records
                             @else
@@ -359,7 +394,6 @@
                         </p>
                     </div>
                     <div style="display:flex; align-items:center; gap:8px;">
-                        {{-- Reference number search (audit lookup across full history) --}}
                         <form method="GET" action="{{ route('analyst.dashboard') }}" style="display:flex; align-items:center; gap:8px;">
                             <div style="position:relative;">
                                 <svg style="width:14px; height:14px; position:absolute; left:9px; top:50%; transform:translateY(-50%);" fill="none" stroke="#94a3b8" viewBox="0 0 24 24">

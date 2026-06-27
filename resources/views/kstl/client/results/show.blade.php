@@ -2,32 +2,54 @@
 
 <x-app-layout>
     <x-slot name="header">
-        <div class="flex items-center justify-between gap-3 flex-wrap">
-            <div class="flex items-center gap-3">
-                <a href="{{ route('client.results.index') }}"
-                   class="text-gray-400 hover:text-gray-600 transition no-print">
-                    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7"/>
-                    </svg>
-                </a>
-                <div>
-                    <h2 class="font-semibold text-xl text-gray-800 leading-tight">Certificate of Analysis</h2>
-                    <p class="text-xs text-gray-400 mt-0.5 font-mono">{{ $submission->reference_number }}</p>
+        <div class="no-print" style="background:linear-gradient(135deg,#0f2240 0%,#1a2f4e 60%,#1e3a5f 100%); margin:-1px; padding:28px 2rem; position:relative; overflow:hidden;">
+            <div style="position:absolute;inset:0;opacity:.04;background-image:repeating-linear-gradient(45deg,#fff 0,#fff 1px,transparent 0,transparent 50%);background-size:12px 12px;pointer-events:none;"></div>
+            <div style="position:absolute;top:0;left:0;right:0;height:3px;background:linear-gradient(90deg,#1a2f4e,#b8922a 30%,#b8922a 70%,#1a2f4e);"></div>
+            <div style="max-width:80rem;margin:0 auto;width:100%;display:flex;align-items:center;justify-content:space-between;gap:20px;flex-wrap:wrap;position:relative;">
+                <div style="display:flex;align-items:center;gap:18px;">
+                    <img src="{{ asset('images/mfor-logo.png') }}"
+                         alt="Ministry of Fisheries &amp; Ocean Resources"
+                         style="width:56px;height:56px;object-fit:contain;filter:brightness(0) invert(1);opacity:.92;">
+                    <div>
+                        <p style="font-size:8.5px;font-weight:700;letter-spacing:.22em;text-transform:uppercase;color:#b8922a;margin-bottom:5px;">
+                            Client Portal &nbsp;·&nbsp; Seafood Toxicology Laboratory
+                        </p>
+                        <h1 style="font-family:'Georgia',serif;font-size:22px;font-weight:700;color:#ffffff;line-height:1.2;margin:0;">
+                            Certificate of Analysis
+                        </h1>
+                        <p style="font-family:'Courier New',monospace;font-size:11px;color:#94a3b8;margin-top:4px;">
+                            {{ $submission->reference_number }}
+                        </p>
+                    </div>
+                </div>
+                <div style="display:flex;align-items:center;gap:10px;flex-wrap:wrap;">
+                    <a href="{{ route('client.results.index') }}"
+                       style="display:inline-flex;align-items:center;gap:5px;font-size:11px;font-weight:600;color:#94a3b8;text-decoration:none;">
+                        <svg style="width:12px;height:12px;" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7"/>
+                        </svg>
+                        Back to Results
+                    </a>
+                    <button onclick="window.print()"
+                            style="display:inline-flex;align-items:center;gap:6px;background:rgba(255,255,255,.1);border:1px solid rgba(255,255,255,.2);color:#e2e8f0;padding:7px 16px;border-radius:3px;font-size:11px;font-weight:600;cursor:pointer;">
+                        <svg style="width:13px;height:13px;" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                  d="M17 17h2a2 2 0 002-2v-4a2 2 0 00-2-2H5a2 2 0 00-2 2v4a2 2 0 002 2h2m2 4h6a2 2 0 002-2v-4a2 2 0 00-2-2H9a2 2 0 00-2 2v4a2 2 0 002 2zm8-12V5a2 2 0 00-2-2H9a2 2 0 00-2 2v4h10z"/>
+                        </svg>
+                        Print / Save PDF
+                    </button>
                 </div>
             </div>
-            <button onclick="window.print()"
-                    class="no-print inline-flex items-center gap-2 px-4 py-2 text-xs font-medium text-gray-600 border border-gray-200 rounded-lg hover:bg-gray-50 transition">
-                <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                          d="M17 17h2a2 2 0 002-2v-4a2 2 0 00-2-2H5a2 2 0 00-2 2v4a2 2 0 002 2h2m2 4h6a2 2 0 002-2v-4a2 2 0 00-2-2H9a2 2 0 00-2 2v4a2 2 0 002 2zm8-12V5a2 2 0 00-2-2H9a2 2 0 00-2 2v4h10z"/>
-                </svg>
-                Print / Save PDF
-            </button>
         </div>
     </x-slot>
 
     @push('styles')
     <style>
+        .page-hdr { padding: 0 !important; }
+        .page-hdr-inner { max-width: 100% !important; padding: 0 !important; }
+        .app-main { padding-left: 0 !important; padding-right: 0 !important;
+                    padding-top: 0 !important; max-width: 100% !important; }
+
         /* ── Base ──────────────────────────────────────────────── */
         .coa-wrap  { background: #eef2f7; }
         .coa-paper {
@@ -200,7 +222,7 @@
     </style>
     @endpush
 
-    <div class="coa-wrap py-8">
+    <div class="coa-wrap" style="padding:52px 0 56px; margin-top:24px;">
         <div class="max-w-5xl mx-auto px-4">
             <div class="coa-paper">
                 <div class="coa-inner">

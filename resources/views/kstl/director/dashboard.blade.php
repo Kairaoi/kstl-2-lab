@@ -2,9 +2,10 @@
 <x-app-layout>
     <x-slot name="header">
         {{-- ── Navy hero banner ─────────────────────────────────── --}}
-        <div style="position:relative;overflow:hidden;background:linear-gradient(135deg,#0f2240 0%,#1a2f4e 60%,#1e3a5f 100%);">
-            <div style="height:3px;background:linear-gradient(90deg,#1a2f4e,#b8922a 30%,#b8922a 70%,#1a2f4e);"></div>
-            <div style="max-width:80rem;margin:0 auto;padding:28px 2rem 32px;">
+        <div style="position:relative;overflow:hidden;background:linear-gradient(135deg,#0f2240 0%,#1a2f4e 60%,#1e3a5f 100%);margin:-1px;">
+            <div style="position:absolute;inset:0;opacity:.04;background-image:repeating-linear-gradient(45deg,#fff 0,#fff 1px,transparent 0,transparent 50%);background-size:12px 12px;pointer-events:none;"></div>
+            <div style="position:absolute;top:0;left:0;right:0;height:3px;background:linear-gradient(90deg,#1a2f4e,#b8922a 30%,#b8922a 70%,#1a2f4e);"></div>
+            <div style="max-width:80rem;margin:0 auto;padding:28px 2rem;position:relative;">
                 <div style="display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:16px;">
                     <div style="display:flex;align-items:center;gap:20px;">
                         <img src="{{ asset('images/mfor-logo.png') }}"
@@ -40,14 +41,26 @@
     .page-hdr { padding: 0 !important; }
     .page-hdr-inner { max-width: 100% !important; padding: 0 !important; }
     .app-main { padding-left:0 !important; padding-right:0 !important; padding-top:0 !important; max-width:100% !important; }
+    :root {
+        --gov-navy:#1a2f4e; --gov-gold:#b8922a; --gov-teal:#0d9488;
+        --gov-text:#1f2937; --gov-muted:#6b7280; --gov-border:#e2e8f0;
+    }
+    .gov-stat { background:#fff; border:1px solid var(--gov-border); border-left:4px solid var(--gov-gold); border-radius:4px; padding:18px 20px; text-decoration:none; display:block; transition:border-left-color .15s,box-shadow .15s; }
+    .gov-stat:hover { border-left-color:var(--gov-navy); box-shadow:0 2px 12px rgba(0,0,0,.08); }
+    .gov-stat-label { font-size:9px; font-weight:700; letter-spacing:.16em; text-transform:uppercase; color:var(--gov-muted); margin-bottom:10px; }
+    .gov-stat-num { font-family:'Georgia',serif; font-size:36px; font-weight:700; color:var(--gov-navy); line-height:1; }
+    .gov-stat-sub { font-size:11px; color:var(--gov-muted); margin-top:5px; }
+    .gov-section-label { font-size:9px; font-weight:700; letter-spacing:.18em; text-transform:uppercase; color:#9ca3af; margin-bottom:12px; }
+    .gov-card-hdr { padding:16px 24px; border-bottom:2px solid var(--gov-gold); }
+    .gov-card-hdr h3 { font-family:'Georgia',serif; font-size:15px; font-weight:700; color:var(--gov-navy); margin:0; }
     </style>
     @endpush
 
     <div style="background:#f1f5f9;min-height:100vh;padding:52px 0 56px;">
-        <div style="max-width:80rem;margin:0 auto;padding:0 2rem;">
+        <div style="max-width:80rem;margin:0 auto;padding:0 2rem;display:flex;flex-direction:column;gap:24px;">
 
             {{-- ── Audit Search Bar ──────────────────────────────────── --}}
-            <div style="background:#fff;border:1px solid #e2e8f0;border-radius:4px;overflow:hidden;margin-bottom:24px;"
+            <div style="background:#fff;border:1px solid #e2e8f0;border-radius:4px;overflow:hidden;"
                  x-data="{ reference: '' }">
                 <div style="background:#1a2f4e;padding:14px 20px;">
                     <p style="font-family:'Georgia',serif;font-size:15px;font-weight:700;color:#fff;margin:0;">
@@ -109,70 +122,64 @@
             </div>
 
             {{-- ── Stat cards ─────────────────────────────────────────── --}}
-            <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(180px,1fr));gap:16px;margin-bottom:24px;">
+            <div style="margin-top:24px;">
+                <p class="gov-section-label">Laboratory Overview</p>
+                <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(180px,1fr));gap:12px;">
 
-                {{-- Awaiting Authorisation --}}
-                <a href="{{ route('director.submissions.index', ['status' => 'awaiting_authorisation']) }}"
-                   style="display:block;background:#fff;border:1px solid #e2e8f0;border-left:4px solid #b8922a;border-radius:4px;padding:18px 20px;text-decoration:none;">
-                    <p style="font-size:9px;font-weight:700;letter-spacing:.14em;text-transform:uppercase;color:#9ca3af;margin:0 0 8px;">Awaiting Authorisation</p>
-                    <p style="font-size:28px;font-weight:700;color:#1a2f4e;margin:0 0 4px;line-height:1;">{{ $pending->count() }}</p>
-                    @if($pending->isNotEmpty())
-                        <p style="font-size:11px;color:#6b7280;margin:0;">
-                            Oldest: {{ $pending->sortBy('created_at')->first()->created_at->diffForHumans() }}
+                    <a href="{{ route('director.submissions.index', ['status' => 'awaiting_authorisation']) }}"
+                       class="gov-stat" style="border-left-color:#b8922a;">
+                        <div class="gov-stat-label">Awaiting Authorisation</div>
+                        <p class="gov-stat-num">{{ $pending->count() }}</p>
+                        <p class="gov-stat-sub">
+                            @if($pending->isNotEmpty())
+                                Oldest: {{ $pending->sortBy('created_at')->first()->created_at->diffForHumans() }}
+                            @else
+                                All caught up
+                            @endif
                         </p>
-                    @else
-                        <p style="font-size:11px;color:#0d9488;margin:0;">All caught up</p>
-                    @endif
-                </a>
+                    </a>
 
-                {{-- Flagged Tests --}}
-                <a href="{{ route('director.flagged.index') }}"
-                   style="display:block;background:#fff;border:1px solid #e2e8f0;border-left:4px solid #dc2626;border-radius:4px;padding:18px 20px;text-decoration:none;">
-                    <p style="font-size:9px;font-weight:700;letter-spacing:.14em;text-transform:uppercase;color:#9ca3af;margin:0 0 8px;">Flagged Tests</p>
-                    <p style="font-size:28px;font-weight:700;color:#1a2f4e;margin:0 0 4px;line-height:1;">{{ $flagged }}</p>
-                    @if($flagged > 0)
-                        <p style="font-size:11px;color:#dc2626;margin:0;">Needs immediate review</p>
-                    @else
-                        <p style="font-size:11px;color:#0d9488;margin:0;">No issues flagged</p>
-                    @endif
-                </a>
+                    <a href="{{ route('director.flagged.index') }}"
+                       class="gov-stat" style="border-left-color:#dc2626;">
+                        <div class="gov-stat-label">Flagged Tests</div>
+                        <p class="gov-stat-num">{{ $flagged }}</p>
+                        <p class="gov-stat-sub" style="{{ $flagged > 0 ? 'color:#dc2626;' : 'color:#0d9488;' }}">
+                            {{ $flagged > 0 ? 'Needs immediate review' : 'No issues flagged' }}
+                        </p>
+                    </a>
 
-                {{-- Pending Payments --}}
-                <a href="{{ route('director.invoices.index') }}"
-                   style="display:block;background:#fff;border:1px solid #e2e8f0;border-left:4px solid #7c3aed;border-radius:4px;padding:18px 20px;text-decoration:none;">
-                    <p style="font-size:9px;font-weight:700;letter-spacing:.14em;text-transform:uppercase;color:#9ca3af;margin:0 0 8px;">Pending Payments</p>
-                    <p style="font-size:28px;font-weight:700;color:#1a2f4e;margin:0 0 4px;line-height:1;">{{ $unpaid_invoices }}</p>
-                    @if($unpaid_invoices > 0)
-                        <p style="font-size:11px;color:#6b7280;margin:0;">Awaiting payment confirmation</p>
-                    @else
-                        <p style="font-size:11px;color:#0d9488;margin:0;">All invoices settled</p>
-                    @endif
-                </a>
+                    <a href="{{ route('director.invoices.index') }}"
+                       class="gov-stat" style="border-left-color:#7c3aed;">
+                        <div class="gov-stat-label">Pending Payments</div>
+                        <p class="gov-stat-num">{{ $unpaid_invoices }}</p>
+                        <p class="gov-stat-sub" style="{{ $unpaid_invoices > 0 ? '' : 'color:#0d9488;' }}">
+                            {{ $unpaid_invoices > 0 ? 'Awaiting payment confirmation' : 'All invoices settled' }}
+                        </p>
+                    </a>
 
-                {{-- Authorised Today --}}
-                <div style="background:#fff;border:1px solid #e2e8f0;border-left:4px solid #0d9488;border-radius:4px;padding:18px 20px;">
-                    <p style="font-size:9px;font-weight:700;letter-spacing:.14em;text-transform:uppercase;color:#9ca3af;margin:0 0 8px;">Authorised Today</p>
-                    <p style="font-size:28px;font-weight:700;color:#1a2f4e;margin:0 0 4px;line-height:1;">{{ $authorised_today }}</p>
-                    <p style="font-size:11px;color:#6b7280;margin:0;">{{ now()->format('l, F j') }}</p>
+                    <div class="gov-stat" style="border-left-color:#0d9488;">
+                        <div class="gov-stat-label">Authorised Today</div>
+                        <p class="gov-stat-num">{{ $authorised_today }}</p>
+                        <p class="gov-stat-sub">{{ now()->format('l, F j') }}</p>
+                    </div>
+
+                    @php
+                        $thisWeekCount = $history->where('created_at', '>=', now()->startOfWeek())->count();
+                        $dailyAverage  = $thisWeekCount > 0 ? round($thisWeekCount / max(1, now()->dayOfWeek ?: 1), 1) : 0;
+                    @endphp
+                    <div class="gov-stat" style="border-left-color:#1a2f4e;">
+                        <div class="gov-stat-label">This Week</div>
+                        <p class="gov-stat-num">{{ $thisWeekCount }}</p>
+                        <p class="gov-stat-sub">Avg {{ $dailyAverage }}/day</p>
+                    </div>
+
                 </div>
-
-                {{-- This Week --}}
-                @php
-                    $thisWeekCount = $history->where('created_at', '>=', now()->startOfWeek())->count();
-                    $dailyAverage  = $thisWeekCount > 0 ? round($thisWeekCount / max(1, now()->dayOfWeek ?: 1), 1) : 0;
-                @endphp
-                <div style="background:#fff;border:1px solid #e2e8f0;border-left:4px solid #1a2f4e;border-radius:4px;padding:18px 20px;">
-                    <p style="font-size:9px;font-weight:700;letter-spacing:.14em;text-transform:uppercase;color:#9ca3af;margin:0 0 8px;">This Week</p>
-                    <p style="font-size:28px;font-weight:700;color:#1a2f4e;margin:0 0 4px;line-height:1;">{{ $thisWeekCount }}</p>
-                    <p style="font-size:11px;color:#6b7280;margin:0;">Avg {{ $dailyAverage }}/day</p>
-                </div>
-
             </div>
 
             {{-- ── Quick Actions ──────────────────────────────────────── --}}
-            <div style="background:#fff;border:1px solid #e2e8f0;border-radius:4px;overflow:hidden;margin-bottom:24px;">
-                <div style="padding:14px 20px;border-bottom:2px solid #b8922a;">
-                    <p style="font-family:'Georgia',serif;font-size:15px;font-weight:700;color:#1a2f4e;margin:0;">Quick Actions</p>
+            <div style="background:#fff;border:1px solid #e2e8f0;border-radius:4px;overflow:hidden;">
+                <div class="gov-card-hdr">
+                    <h3>Quick Actions</h3>
                 </div>
                 <div style="padding:16px 20px;display:flex;flex-wrap:wrap;gap:10px;align-items:center;">
                     @if($pending->isNotEmpty())
@@ -203,7 +210,7 @@
 
             {{-- ── Service Agreements Alert ───────────────────────────── --}}
             @if(isset($unsigned_agreements) && $unsigned_agreements > 0)
-            <div style="background:#fffbeb;border:1px solid #fbbf24;border-left:4px solid #b8922a;border-radius:4px;padding:18px 20px;margin-bottom:24px;display:flex;align-items:flex-start;justify-content:space-between;gap:16px;flex-wrap:wrap;">
+            <div style="background:#fffbeb;border:1px solid #fbbf24;border-left:4px solid #b8922a;border-radius:4px;padding:18px 20px;display:flex;align-items:flex-start;justify-content:space-between;gap:16px;flex-wrap:wrap;">
                 <div>
                     <p style="font-size:13px;font-weight:700;color:#92400e;margin:0 0 4px;">Service Agreements Awaiting Signature</p>
                     <p style="font-size:12px;color:#78350f;margin:0;">
@@ -222,8 +229,8 @@
 
                 {{-- Awaiting Authorisation panel --}}
                 <div style="background:#fff;border:1px solid #e2e8f0;border-radius:4px;overflow:hidden;">
-                    <div style="padding:14px 20px;border-bottom:2px solid #b8922a;">
-                        <p style="font-family:'Georgia',serif;font-size:15px;font-weight:700;color:#1a2f4e;margin:0;">Awaiting Your Authorisation</p>
+                    <div class="gov-card-hdr">
+                        <h3>Awaiting Your Authorisation</h3>
                     </div>
 
                     @if($pending->isEmpty())
@@ -282,8 +289,8 @@
 
                 {{-- Authorisation History panel --}}
                 <div style="background:#fff;border:1px solid #e2e8f0;border-radius:4px;overflow:hidden;" id="flagged-section">
-                    <div style="padding:14px 20px;border-bottom:2px solid #b8922a;">
-                        <p style="font-family:'Georgia',serif;font-size:15px;font-weight:700;color:#1a2f4e;margin:0;">Authorisation History</p>
+                    <div class="gov-card-hdr">
+                        <h3>Authorisation History</h3>
                     </div>
 
                     @if($history->isEmpty())
@@ -326,10 +333,10 @@
             </div>
 
             {{-- Search Results Area --}}
-            <div id="search-results" style="margin-top:24px;display:none;">
+            <div id="search-results" style="display:none;">
                 <div style="background:#fff;border:1px solid #e2e8f0;border-radius:4px;overflow:hidden;">
-                    <div style="padding:14px 20px;border-bottom:2px solid #b8922a;">
-                        <p style="font-family:'Georgia',serif;font-size:15px;font-weight:700;color:#1a2f4e;margin:0;">Search Results</p>
+                    <div class="gov-card-hdr">
+                        <h3>Search Results</h3>
                     </div>
                     <div id="search-results-content" style="padding:20px;"></div>
                 </div>

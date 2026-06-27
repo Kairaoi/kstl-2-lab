@@ -2,9 +2,10 @@
 
 <x-app-layout>
     <x-slot name="header">
-        <div style="position:relative;overflow:hidden;background:linear-gradient(135deg,#0f2240 0%,#1a2f4e 60%,#1e3a5f 100%);">
-            <div style="height:3px;background:linear-gradient(90deg,#1a2f4e,#b8922a 30%,#b8922a 70%,#1a2f4e);"></div>
-            <div style="max-width:80rem;margin:0 auto;padding:28px 2rem 32px;">
+        <div style="position:relative;overflow:hidden;background:linear-gradient(135deg,#0f2240 0%,#1a2f4e 60%,#1e3a5f 100%);margin:-1px;">
+            <div style="position:absolute;inset:0;opacity:.04;background-image:repeating-linear-gradient(45deg,#fff 0,#fff 1px,transparent 0,transparent 50%);background-size:12px 12px;pointer-events:none;"></div>
+            <div style="position:absolute;top:0;left:0;right:0;height:3px;background:linear-gradient(90deg,#1a2f4e,#b8922a 30%,#b8922a 70%,#1a2f4e);"></div>
+            <div style="max-width:80rem;margin:0 auto;padding:28px 2rem;position:relative;">
                 <div style="display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:16px;">
                     <div style="display:flex;align-items:center;gap:20px;">
                         <img src="{{ asset('images/mfor-logo.png') }}" alt="MFOR" style="filter:brightness(0) invert(1);opacity:.92;width:56px;height:56px;flex-shrink:0;">
@@ -42,47 +43,63 @@
         .page-hdr { padding: 0 !important; }
         .page-hdr-inner { max-width: 100% !important; padding: 0 !important; }
         .app-main { padding-left:0 !important; padding-right:0 !important; padding-top:0 !important; max-width:100% !important; }
+        :root {
+            --gov-navy:#1a2f4e; --gov-gold:#b8922a; --gov-teal:#0d9488;
+            --gov-text:#1f2937; --gov-muted:#6b7280; --gov-border:#e2e8f0;
+        }
+        .gov-stat { background:#fff; border:1px solid var(--gov-border); border-left:4px solid var(--gov-gold); border-radius:4px; padding:18px 20px; text-decoration:none; display:block; transition:border-left-color .15s,box-shadow .15s; }
+        .gov-stat:hover { border-left-color:var(--gov-navy); box-shadow:0 2px 12px rgba(0,0,0,.08); }
+        .gov-stat-label { font-size:9px; font-weight:700; letter-spacing:.16em; text-transform:uppercase; color:var(--gov-muted); margin-bottom:10px; display:flex; align-items:center; justify-content:space-between; }
+        .gov-stat-num { font-family:'Georgia',serif; font-size:36px; font-weight:700; color:var(--gov-navy); line-height:1; }
+        .gov-stat-sub { font-size:11px; color:var(--gov-muted); margin-top:5px; }
+        .gov-section-label { font-size:9px; font-weight:700; letter-spacing:.18em; text-transform:uppercase; color:#9ca3af; margin-bottom:12px; }
+        .gov-card-hdr { padding:16px 24px; border-bottom:2px solid var(--gov-gold); display:flex; align-items:center; justify-content:space-between; }
+        .gov-card-hdr h3 { font-family:'Georgia',serif; font-size:15px; font-weight:700; color:var(--gov-navy); margin:0; }
     </style>
     @endpush
 
     <div style="background:#f1f5f9;min-height:100vh;padding:52px 0 56px;">
-        <div style="max-width:80rem;margin:0 auto;padding:0 2rem;">
+        <div style="max-width:80rem;margin:0 auto;padding:0 2rem;display:flex;flex-direction:column;gap:24px;">
 
             {{-- Flash Messages --}}
-            @if(session('success'))
-                <div style="background:#f0fdf4;border:1px solid #bbf7d0;border-left:4px solid #16a34a;border-radius:4px;padding:12px 16px;margin-bottom:20px;font-size:13px;color:#166534;">{{ session('success') }}</div>
-            @endif
-            @if(session('error'))
-                <div style="background:#fef2f2;border:1px solid #fecaca;border-left:4px solid #dc2626;border-radius:4px;padding:12px 16px;margin-bottom:20px;font-size:13px;color:#991b1b;">{{ session('error') }}</div>
-            @endif
+            @foreach(['success' => ['#f0fdf4','#22c55e','#166534'], 'error' => ['#fef2f2','#ef4444','#991b1b'], 'info' => ['#eff6ff','#3b82f6','#1e40af'], 'warning' => ['#fffbeb','#f59e0b','#92400e']] as $type => [$bg,$border,$text])
+                @if(session($type))
+                    <div style="background:{{ $bg }};border-left:4px solid {{ $border }};padding:12px 18px;border-radius:0 4px 4px 0;">
+                        <p style="font-size:13px;color:{{ $text }};margin:0;">{{ session($type) }}</p>
+                    </div>
+                @endif
+            @endforeach
 
             {{-- ── Summary Cards ─────────────────────────────────────────── --}}
-            <div style="display:grid;grid-template-columns:repeat(4,1fr);gap:16px;margin-bottom:24px;">
+            <div style="margin-top:24px;">
+                <p class="gov-section-label">Submission Overview</p>
+                <div style="display:grid;grid-template-columns:repeat(4,1fr);gap:12px;">
 
-                <div style="background:#fff;border:1px solid #e2e8f0;border-radius:4px;border-left:4px solid #b8922a;padding:18px 20px;">
-                    <p style="font-size:9px;font-weight:700;letter-spacing:.12em;text-transform:uppercase;color:#64748b;margin:0 0 6px;">Awaiting Receipt</p>
-                    <p style="font-size:28px;font-weight:700;color:#1a2f4e;margin:0 0 2px;line-height:1;">{{ $pending->where('status', 'submitted')->count() }}</p>
-                    <p style="font-size:11px;color:#94a3b8;margin:0;">Submitted by client</p>
+                    <div class="gov-stat" style="border-left-color:#b8922a;">
+                        <div class="gov-stat-label">Awaiting Receipt</div>
+                        <p class="gov-stat-num">{{ $pending->where('status', 'submitted')->count() }}</p>
+                        <p class="gov-stat-sub">Submitted by client</p>
+                    </div>
+
+                    <div class="gov-stat" style="border-left-color:#0d9488;">
+                        <div class="gov-stat-label">Assessing</div>
+                        <p class="gov-stat-num">{{ $pending->where('status', 'assessing')->count() }}</p>
+                        <p class="gov-stat-sub">Sample assessment</p>
+                    </div>
+
+                    <div class="gov-stat" style="border-left-color:#dc2626;">
+                        <div class="gov-stat-label">Rejected</div>
+                        <p class="gov-stat-num">{{ $pending->where('status', 'rejected')->count() }}</p>
+                        <p class="gov-stat-sub">Awaiting client decision</p>
+                    </div>
+
+                    <div class="gov-stat" style="border-left-color:#1a2f4e;">
+                        <div class="gov-stat-label">Received Today</div>
+                        <p class="gov-stat-num">{{ $receivedToday ?? 0 }}</p>
+                        <p class="gov-stat-sub">Logged today</p>
+                    </div>
+
                 </div>
-
-                <div style="background:#fff;border:1px solid #e2e8f0;border-radius:4px;border-left:4px solid #0d9488;padding:18px 20px;">
-                    <p style="font-size:9px;font-weight:700;letter-spacing:.12em;text-transform:uppercase;color:#64748b;margin:0 0 6px;">Assessing</p>
-                    <p style="font-size:28px;font-weight:700;color:#1a2f4e;margin:0 0 2px;line-height:1;">{{ $pending->where('status', 'assessing')->count() }}</p>
-                    <p style="font-size:11px;color:#94a3b8;margin:0;">Sample assessment</p>
-                </div>
-
-                <div style="background:#fff;border:1px solid #e2e8f0;border-radius:4px;border-left:4px solid #dc2626;padding:18px 20px;">
-                    <p style="font-size:9px;font-weight:700;letter-spacing:.12em;text-transform:uppercase;color:#64748b;margin:0 0 6px;">Rejected</p>
-                    <p style="font-size:28px;font-weight:700;color:#1a2f4e;margin:0 0 2px;line-height:1;">{{ $pending->where('status', 'rejected')->count() }}</p>
-                    <p style="font-size:11px;color:#94a3b8;margin:0;">Awaiting client decision</p>
-                </div>
-
-                <div style="background:#fff;border:1px solid #e2e8f0;border-radius:4px;border-left:4px solid #1a2f4e;padding:18px 20px;">
-                    <p style="font-size:9px;font-weight:700;letter-spacing:.12em;text-transform:uppercase;color:#64748b;margin:0 0 6px;">Received Today</p>
-                    <p style="font-size:28px;font-weight:700;color:#1a2f4e;margin:0 0 2px;line-height:1;">{{ $receivedToday ?? 0 }}</p>
-                    <p style="font-size:11px;color:#94a3b8;margin:0;">Logged today</p>
-                </div>
-
             </div>
 
             {{-- ── Emergency / Urgent callout ──────────────────────────────── --}}
@@ -121,11 +138,11 @@
             @endif
 
             {{-- ── Pending Submissions Queue ──────────────────────────────── --}}
-            <div style="background:#fff;border:1px solid #e2e8f0;border-radius:4px;overflow:hidden;margin-bottom:24px;">
-                <div style="padding:16px 24px;border-bottom:1px solid #e2e8f0;display:flex;align-items:center;justify-content:space-between;">
+            <div style="background:#fff;border:1px solid #e2e8f0;border-radius:4px;overflow:hidden;">
+                <div class="gov-card-hdr">
                     <div>
-                        <h3 style="font-family:'Georgia',serif;font-size:14px;font-weight:700;color:#1a2f4e;margin:0 0 2px;">Submissions Queue</h3>
-                        <p style="font-size:11px;color:#94a3b8;margin:0;">Submissions requiring reception action &mdash; most urgent first</p>
+                        <h3>Submissions Queue</h3>
+                        <p style="font-size:11px;color:#94a3b8;margin:4px 0 0;">Submissions requiring reception action &mdash; most urgent first</p>
                     </div>
                     <span style="font-size:11px;color:#64748b;background:#f1f5f9;padding:4px 10px;border-radius:20px;border:1px solid #e2e8f0;">
                         {{ $pending->count() }} total
@@ -306,11 +323,11 @@
             </div>
 
             {{-- ── Recently Processed ──────────────────────────────────── --}}
-            <div style="background:#fff;border:1px solid #e2e8f0;border-radius:4px;overflow:hidden;margin-bottom:24px;">
-                <div style="padding:16px 24px;border-bottom:1px solid #e2e8f0;display:flex;align-items:center;justify-content:space-between;">
+            <div style="background:#fff;border:1px solid #e2e8f0;border-radius:4px;overflow:hidden;">
+                <div class="gov-card-hdr">
                     <div>
-                        <h3 style="font-family:'Georgia',serif;font-size:14px;font-weight:700;color:#1a2f4e;margin:0 0 2px;">Recently Processed</h3>
-                        <p style="font-size:11px;color:#94a3b8;margin:0;">Submissions sent to testing or completed &mdash; last 20 records</p>
+                        <h3>Recently Processed</h3>
+                        <p style="font-size:11px;color:#94a3b8;margin:4px 0 0;">Submissions sent to testing or completed &mdash; last 20 records</p>
                     </div>
                     <span style="font-size:11px;color:#64748b;background:#f1f5f9;padding:4px 10px;border-radius:20px;border:1px solid #e2e8f0;">
                         {{ $processed->count() }} records
@@ -387,6 +404,6 @@
                 @endif
             </div>
 
-        </div>
+        </div>{{-- end flex column --}}
     </div>
 </x-app-layout>

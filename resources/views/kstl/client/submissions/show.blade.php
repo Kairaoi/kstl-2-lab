@@ -1,66 +1,85 @@
 ﻿{{-- resources/views/kstl/client/submissions/show.blade.php --}}
 <x-app-layout>
     <x-slot name="header">
-        <div style="display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:12px;">
-            <div style="display:flex;align-items:center;gap:12px;">
-                <a href="{{ route('client.submissions.index') }}"
-                   style="display:flex;align-items:center;justify-content:center;width:32px;height:32px;border-radius:3px;border:1px solid #e2e8f0;color:#9ca3af;text-decoration:none;">
-                    <svg style="width:14px;height:14px;" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7"/>
-                    </svg>
-                </a>
-                <div>
-                    <h2 style="font-family:'Georgia',serif;font-size:18px;font-weight:700;color:#1a2f4e;margin:0;line-height:1.2;">
-                        {{ $submission->reference_number }}
-                    </h2>
-                    <p style="font-size:11px;color:#6b7280;margin:3px 0 0;">
-                        Submitted {{ $submission->submitted_at?->format('d M Y \a\t H:i') ?? $submission->created_at->format('d M Y \a\t H:i') }}
-                    </p>
+        @php
+            $statusConfig = [
+                'submitted'              => ['background:#fefce8;color:#854d0e;',  'Submitted'],
+                'received'               => ['background:#eff6ff;color:#1e40af;',  'Received'],
+                'assessing'              => ['background:#faf5ff;color:#6b21a8;',  'Under Assessment'],
+                'accepted'               => ['background:#f0fdf4;color:#166534;',  'Accepted'],
+                'rejected'               => ['background:#fef2f2;color:#991b1b;',  'Rejected'],
+                'consent_to_proceed'     => ['background:#fff7ed;color:#9a3412;',  'Consent Required'],
+                'testing'                => ['background:#eef2ff;color:#3730a3;',  'In Testing'],
+                'awaiting_authorisation' => ['background:#fffbeb;color:#92400e;',  'Awaiting Sign-off'],
+                'authorised'             => ['background:#f0fdfa;color:#065f46;',  'Authorised'],
+                'completed'              => ['background:#f0fdf4;color:#166534;',  'Completed'],
+                'cancelled'              => ['background:#f8fafc;color:#6b7280;',  'Cancelled'],
+            ];
+            $sc     = $statusConfig[$submission->status][0] ?? 'background:#f8fafc;color:#6b7280;';
+            $slabel = $statusConfig[$submission->status][1] ?? ucfirst($submission->status);
+        @endphp
+        <div style="position:relative;overflow:hidden;background:linear-gradient(135deg,#0f2240 0%,#1a2f4e 60%,#1e3a5f 100%);margin:-1px;">
+            <div style="position:absolute;inset:0;opacity:.04;background-image:repeating-linear-gradient(45deg,#fff 0,#fff 1px,transparent 0,transparent 50%);background-size:12px 12px;pointer-events:none;"></div>
+            <div style="position:absolute;top:0;left:0;right:0;height:3px;background:linear-gradient(90deg,#1a2f4e,#b8922a 30%,#b8922a 70%,#1a2f4e);"></div>
+            <div style="max-width:80rem;margin:0 auto;padding:28px 2rem;">
+                <div style="display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:20px;position:relative;">
+                    <div style="display:flex;align-items:center;gap:18px;">
+                        <img src="{{ asset('images/mfor-logo.png') }}" alt="Ministry of Fisheries &amp; Ocean Resources" style="width:56px;height:56px;object-fit:contain;filter:brightness(0) invert(1);opacity:.92;">
+                        <div>
+                            <p style="font-size:8.5px;font-weight:700;letter-spacing:.22em;text-transform:uppercase;color:#b8922a;margin-bottom:5px;">
+                                Client Portal &nbsp;·&nbsp; My Submissions
+                            </p>
+                            <h1 style="font-family:'Georgia',serif;font-size:22px;font-weight:700;color:#ffffff;line-height:1.2;margin:0;">
+                                {{ $submission->reference_number }}
+                            </h1>
+                            <p style="font-size:11px;color:#94a3b8;margin-top:4px;">
+                                Submitted {{ $submission->submitted_at?->format('d M Y \a\t H:i') ?? $submission->created_at->format('d M Y \a\t H:i') }}
+                            </p>
+                        </div>
+                    </div>
+                    <div style="display:flex;align-items:center;gap:8px;flex-wrap:wrap;">
+                        <span style="display:inline-flex;align-items:center;border-radius:999px;padding:3px 14px;font-size:10px;font-weight:700;{{ $sc }}">
+                            {{ $slabel }}
+                        </span>
+                        @if($submission->isEditable())
+                            <a href="{{ route('client.submissions.edit', $submission->id) }}"
+                               style="display:inline-flex;align-items:center;gap:6px;padding:7px 14px;border-radius:3px;font-size:12px;font-weight:600;text-decoration:none;background:rgba(255,255,255,.12);color:#fff;border:1px solid rgba(255,255,255,.25);">
+                                <svg style="width:12px;height:12px;" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"/>
+                                </svg>
+                                Edit
+                            </a>
+                        @endif
+                        @if($submission->isCancellable())
+                            <form method="POST" action="{{ route('client.submissions.destroy', $submission->id) }}"
+                                  onsubmit="return confirm('Cancel this submission?')" style="margin:0;">
+                                @csrf @method('DELETE')
+                                <button type="submit"
+                                        style="display:inline-flex;align-items:center;padding:7px 14px;border-radius:3px;font-size:12px;font-weight:600;cursor:pointer;background:rgba(220,38,38,.2);color:#fca5a5;border:1px solid rgba(252,165,165,.3);">
+                                    Cancel
+                                </button>
+                            </form>
+                        @endif
+                        <a href="{{ route('client.submissions.index') }}" style="display:inline-flex;align-items:center;gap:5px;font-size:11px;font-weight:600;color:#94a3b8;text-decoration:none;">
+                            <svg style="width:12px;height:12px;" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7"/>
+                            </svg>
+                            Back
+                        </a>
+                    </div>
                 </div>
-            </div>
-            <div style="display:flex;align-items:center;gap:8px;flex-wrap:wrap;">
-                @php
-                    $statusConfig = [
-                        'submitted'              => ['background:#fefce8;color:#854d0e;',  'Submitted'],
-                        'received'               => ['background:#eff6ff;color:#1e40af;',  'Received'],
-                        'assessing'              => ['background:#faf5ff;color:#6b21a8;',  'Under Assessment'],
-                        'accepted'               => ['background:#f0fdf4;color:#166534;',  'Accepted'],
-                        'rejected'               => ['background:#fef2f2;color:#991b1b;',  'Rejected'],
-                        'consent_to_proceed'     => ['background:#fff7ed;color:#9a3412;',  'Consent Required'],
-                        'testing'                => ['background:#eef2ff;color:#3730a3;',  'In Testing'],
-                        'awaiting_authorisation' => ['background:#fffbeb;color:#92400e;',  'Awaiting Sign-off'],
-                        'authorised'             => ['background:#f0fdfa;color:#065f46;',  'Authorised'],
-                        'completed'              => ['background:#f0fdf4;color:#166534;',  'Completed'],
-                        'cancelled'              => ['background:#f8fafc;color:#6b7280;',  'Cancelled'],
-                    ];
-                    $sc     = $statusConfig[$submission->status][0] ?? 'background:#f8fafc;color:#6b7280;';
-                    $slabel = $statusConfig[$submission->status][1] ?? ucfirst($submission->status);
-                @endphp
-                <span style="display:inline-flex;align-items:center;border-radius:999px;padding:3px 14px;font-size:10px;font-weight:700;{{ $sc }}">
-                    {{ $slabel }}
-                </span>
-                @if($submission->isEditable())
-                    <a href="{{ route('client.submissions.edit', $submission->id) }}"
-                       style="border:1px solid #e2e8f0;color:#374151;padding:7px 14px;border-radius:3px;font-size:12px;background:#fff;text-decoration:none;font-weight:600;display:inline-flex;align-items:center;gap:5px;">
-                        <svg style="width:12px;height:12px;" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"/>
-                        </svg>
-                        Edit
-                    </a>
-                @endif
-                @if($submission->isCancellable())
-                    <form method="POST" action="{{ route('client.submissions.destroy', $submission->id) }}"
-                          onsubmit="return confirm('Cancel this submission?')" style="margin:0;">
-                        @csrf @method('DELETE')
-                        <button type="submit"
-                                style="border:1px solid #fca5a5;color:#dc2626;padding:7px 14px;border-radius:3px;font-size:12px;background:#fff;font-weight:600;cursor:pointer;">
-                            Cancel Submission
-                        </button>
-                    </form>
-                @endif
             </div>
         </div>
     </x-slot>
+
+    @push('styles')
+    <style>
+        .page-hdr { padding: 0 !important; }
+        .page-hdr-inner { max-width: 100% !important; padding: 0 !important; }
+        .app-main { padding-left: 0 !important; padding-right: 0 !important;
+                    padding-top: 0 !important; max-width: 100% !important; }
+    </style>
+    @endpush
 
     @php
         // ── Shared lookups ──────────────────────────────────────────────────────
@@ -129,7 +148,7 @@
     @endphp
 
     <div style="background:#f1f5f9;min-height:100vh;padding:52px 0 56px;">
-        <div style="max-width:80rem;margin:0 auto;padding:0 2rem;">
+        <div style="max-width:80rem;margin:0 auto;padding:0 2rem;display:flex;flex-direction:column;gap:24px;">
 
             {{-- ── Flash Messages ─────────────────────────────────────────────── --}}
             @if(session('success'))
