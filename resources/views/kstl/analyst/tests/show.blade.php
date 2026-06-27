@@ -273,15 +273,22 @@
                                         <x-input-error for="result_value" class="mt-1"/>
                                     </div>
                                     <div>
+                                        @php
+                                            $defaultUnit = \App\Models\Kstl\SampleTest::TEST_UNITS[$test->test_key] ?? '';
+                                            $savedUnit   = old('result_unit', $test->result_unit ?? $defaultUnit);
+                                            $unitOptions = ['CFU/g','CFU/mL','MPN/100mL','mg/kg','%','µS/cm','pH units','aw'];
+                                        @endphp
                                         <label style="display:block; font-size:13px; font-weight:600; color:#1a2f4e; margin-bottom:6px;">
                                             Unit
                                         </label>
-                                        <x-input type="text"
-                                                 name="result_unit"
-                                                 value="{{ old('result_unit', $test->result_unit) }}"
-                                                 class="w-full"
-                                                 placeholder="e.g. mg/kg, CFU/g, pH units"/>
-                                        <p style="font-size:11px; color:#94a3b8; margin:4px 0 0;">Leave blank if not applicable</p>
+                                        <select name="result_unit"
+                                                style="width:100%; border:1px solid #e2e8f0; border-radius:3px; padding:8px 12px; font-size:13px; color:#1a2f4e; background:#fff; outline:none; box-sizing:border-box; height:38px;">
+                                            <option value="">— none —</option>
+                                            @foreach($unitOptions as $u)
+                                                <option value="{{ $u }}" @selected($savedUnit === $u)>{{ $u }}</option>
+                                            @endforeach
+                                        </select>
+                                        <p style="font-size:11px; color:#94a3b8; margin:4px 0 0;">Select the measurement unit</p>
                                         <x-input-error for="result_unit" class="mt-1"/>
                                     </div>
                                 </div>

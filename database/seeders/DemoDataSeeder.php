@@ -587,7 +587,8 @@ class DemoDataSeeder extends Seeder
     private function fakeUnit(string $key): ?string
     {
         return match(true) {
-            in_array($key, ['total_coliforms', 'e_coli', 'e_coli_coliform', 'enterococci', 'staph_aureus', 'apc', 'yeast_mold']) => 'CFU/g',
+            in_array($key, ['total_coliforms', 'e_coli', 'e_coli_coliform', 'enterococci', 'faecal_coliforms', 'staph_aureus', 'apc', 'yeast_mold', 'salmonella_spp', 'listeria_mono', 'listeria_spp']) => 'CFU/g',
+            in_array($key, ['e_coli_colilert', 'enterococci_enterolert']) => 'MPN/100mL',
             $key === 'histamine'    => 'mg/kg',
             $key === 'moisture'     => '%',
             $key === 'conductivity' => 'µS/cm',

@@ -104,6 +104,27 @@ class SampleTest extends Model
         'water_activity'         => 'chemical',
     ];
 
+    const TEST_UNITS = [
+        'total_coliforms'        => 'CFU/g',
+        'e_coli'                 => 'CFU/g',
+        'enterococci'            => 'CFU/g',
+        'faecal_coliforms'       => 'CFU/g',
+        'yeast_mold'             => 'CFU/g',
+        'apc'                    => 'CFU/g',
+        'e_coli_coliform'        => 'CFU/g',
+        'staph_aureus'           => 'CFU/g',
+        'salmonella_spp'         => 'CFU/g',
+        'listeria_mono'          => 'CFU/g',
+        'listeria_spp'           => 'CFU/g',
+        'e_coli_colilert'        => 'MPN/100mL',
+        'enterococci_enterolert' => 'MPN/100mL',
+        'histamine'              => 'mg/kg',
+        'moisture'               => '%',
+        'ph'                     => '',
+        'conductivity'           => 'µS/cm',
+        'water_activity'         => '',
+    ];
+
     // ── SOP reference codes per test ───────────────────────────────
     const TEST_SOPS = [
         'total_coliforms'        => 'MSOP01',
