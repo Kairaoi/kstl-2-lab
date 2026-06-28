@@ -149,9 +149,6 @@
                     <a href="{{ url('/dashboard') }}" class="gn-cta">Dashboard</a>
                 @else
                     <a href="{{ route('login') }}" class="gn-link">Sign In</a>
-                    @if(Route::has('register'))
-                        <a href="{{ route('register') }}" class="gn-cta">Register</a>
-                    @endif
                 @endauth
             </div>
         @endif

@@ -177,6 +177,7 @@ class ClientController extends Controller
 
                 // Transport method (Schedule 1: Frozen / Chill / Fresh)
                 'transport_method'      => ['required', 'in:frozen,chilled'],
+                'transport_detail'      => ['nullable', 'string', 'max:100'],
 
                 // Special instructions
                 'priority'              => ['nullable', 'in:routine,urgent'],
@@ -221,6 +222,7 @@ class ClientController extends Controller
                     'tests_other'           => $mergedOther ? implode('; ', $mergedOther) : null,
                     'sample_items'          => $sampleItemsData ?: null,
                     'transport_method'      => $validated['transport_method'],
+                    'transport_detail'      => $validated['transport_detail']      ?? null,
                     'priority'              => $validated['priority']              ?? 'routine',
                     'special_instructions'  => $validated['special_instructions']  ?? null,
                     'results_required_by'   => $validated['results_required_by']   ?? null,
@@ -324,7 +326,9 @@ class ClientController extends Controller
             'reference'     => $submission->reference_number,
         ]);
 
-        return view('kstl.client.submissions.edit', compact('client', 'submission'));
+        $firstSample = $submission->samples()->orderBy('created_at')->first();
+
+        return view('kstl.client.submissions.edit', compact('client', 'submission', 'firstSample'));
     }
 
     public function submissionsUpdate(Request $request, string $id)
@@ -352,11 +356,13 @@ class ClientController extends Controller
                 'sample_quantity'       => ['nullable', 'numeric', 'min:0'],
                 'sample_quantity_unit'  => ['nullable', 'in:g,kg,ml,L'],
                 'collected_at'          => ['required', 'date', 'before_or_equal:today'],
+                'delivered_at'          => ['nullable', 'date'],
                 'collection_location'   => ['nullable', 'string', 'max:255'],
                 'tests_requested'       => ['nullable', 'array'],
                 'tests_requested.*'     => ['string'],
                 'tests_other'           => ['nullable', 'string', 'max:1000'],
                 'transport_method'      => ['required', 'in:frozen,chilled'],
+                'transport_detail'      => ['nullable', 'string', 'max:100'],
                 'priority'              => ['nullable', 'in:routine,urgent'],
                 'special_instructions'  => ['nullable', 'string', 'max:2000'],
                 'results_required_by'   => ['nullable', 'date', 'after:today'],

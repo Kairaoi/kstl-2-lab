@@ -234,37 +234,43 @@
                                         <x-input-error for="client_reference" class="mt-1"/>
                                     </div>
 
-                                    <div style="display:grid; grid-template-columns:1fr 1fr; gap:16px;">
-                                        <div>
-                                            <x-label for="collected_at" value="Collection Date *"/>
-                                            <x-input id="collected_at" type="date" name="collected_at"
-                                                     value="{{ old('collected_at') }}"
-                                                     class="mt-1 block w-full"
-                                                     max="{{ date('Y-m-d') }}"/>
-                                            <x-input-error for="collected_at" class="mt-1"/>
-                                        </div>
-                                        <div>
-                                            <x-label for="delivered_at" value="Delivery Date"/>
-                                            <x-input id="delivered_at" type="date" name="delivered_at"
-                                                     value="{{ old('delivered_at') }}"
-                                                     class="mt-1 block w-full"/>
-                                            <x-input-error for="delivered_at" class="mt-1"/>
+                                    <div style="background:#f0f4f8; border:1px solid #cbd5e1; border-left:4px solid var(--gov-navy); border-radius:4px; padding:16px;">
+                                        <div style="display:grid; grid-template-columns:1fr 1fr; gap:16px;">
+                                            <div>
+                                                <x-label for="collected_at" value="Collection Date *"/>
+                                                <p style="font-size:11px; color:var(--gov-muted); margin:3px 0 10px;">The date the samples were collected. Cannot be a future date.</p>
+                                                <x-input id="collected_at" type="date" name="collected_at"
+                                                         value="{{ old('collected_at') }}"
+                                                         class="block w-full"
+                                                         max="{{ date('Y-m-d') }}"/>
+                                                <x-input-error for="collected_at" class="mt-1"/>
+                                            </div>
+                                            <div>
+                                                <x-label for="delivered_at" value="Delivery Date"/>
+                                                <p style="font-size:11px; color:var(--gov-muted); margin:3px 0 10px;">The date samples will arrive at the laboratory (optional).</p>
+                                                <x-input id="delivered_at" type="date" name="delivered_at"
+                                                         value="{{ old('delivered_at') }}"
+                                                         class="block w-full"/>
+                                                <x-input-error for="delivered_at" class="mt-1"/>
+                                            </div>
                                         </div>
                                     </div>
 
-                                    <div>
+                                    <div style="background:#f0f4f8; border:1px solid #cbd5e1; border-left:4px solid var(--gov-navy); border-radius:4px; padding:16px;">
                                         <x-label for="collection_location" value="Collection Location"/>
+                                        <p style="font-size:11px; color:var(--gov-muted); margin:3px 0 10px;">Where the samples were collected (e.g. South Tarawa Lagoon, Betio Harbour).</p>
                                         <x-input id="collection_location" type="text" name="collection_location"
                                                  value="{{ old('collection_location') }}"
-                                                 class="mt-1 block w-full"
+                                                 class="block w-full"
                                                  placeholder="e.g. South Tarawa Lagoon"/>
                                         <x-input-error for="collection_location" class="mt-1"/>
                                     </div>
 
-                                    <div>
+                                    <div style="background:#f0f4f8; border:1px solid #cbd5e1; border-left:4px solid var(--gov-navy); border-radius:4px; padding:16px;">
                                         <x-label for="sample_description" value="Notes (optional)"/>
+                                        <p style="font-size:11px; color:var(--gov-muted); margin:3px 0 10px;">Any general observations, handling conditions, or context the laboratory should know.</p>
                                         <textarea id="sample_description" name="sample_description" rows="2"
-                                                  style="margin-top:4px; width:100%; border:1px solid #d1d5db; border-radius:3px; padding:8px 12px; font-size:13px; color:#1f2937; box-sizing:border-box; resize:vertical;"
+                                                  style="width:100%; border:1px solid #d1d5db; border-radius:3px; padding:8px 12px; font-size:13px; color:#1f2937; box-sizing:border-box; resize:vertical;"
                                                   placeholder="Any general notes about the collection or samples...">{{ old('sample_description') }}</textarea>
                                         <x-input-error for="sample_description" class="mt-1"/>
                                     </div>
@@ -494,9 +500,10 @@
                                 </div>
                                 <div style="padding:24px; display:flex; flex-direction:column; gap:20px;">
 
-                                    <div>
+                                    <div style="background:#f0f4f8; border:1px solid #cbd5e1; border-left:4px solid var(--gov-navy); border-radius:4px; padding:16px;">
                                         <x-label value="Priority *"/>
-                                        <div style="display:flex; gap:20px; flex-wrap:wrap; margin-top:8px;">
+                                        <p style="font-size:11px; color:var(--gov-muted); margin:3px 0 10px;">Routine submissions are processed within standard timeframes. Urgent requests are prioritised and attract additional fees.</p>
+                                        <div style="display:flex; gap:20px; flex-wrap:wrap;">
                                             @foreach(['routine' => 'Routine', 'urgent' => 'Urgent'] as $value => $label)
                                                 <label style="display:flex; align-items:center; gap:8px; cursor:pointer; font-size:13px; color:var(--gov-text);">
                                                     <input type="radio" name="priority" value="{{ $value }}"
@@ -509,7 +516,8 @@
                                         <x-input-error for="priority" class="mt-1"/>
                                     </div>
 
-                                    <div x-data="{ method: '{{ old('transport_method', 'chilled') }}' }">
+                                    <div style="background:#f0f4f8; border:1px solid #cbd5e1; border-left:4px solid var(--gov-navy); border-radius:4px; padding:16px;"
+                                         x-data="{ method: '{{ old('transport_method', 'chilled') }}' }">
                                         <x-label value="Sample Transport Method *"/>
                                         <p style="font-size:11px; color:var(--gov-muted); margin:3px 0 10px;">Select the temperature category, then specify the exact transport method.</p>
                                         <div style="display:flex; gap:20px; flex-wrap:wrap; margin-bottom:12px;">
@@ -547,22 +555,23 @@
                                         <x-input-error for="transport_detail" class="mt-1"/>
                                     </div>
 
-                                    <div>
+                                    <div style="background:#f0f4f8; border:1px solid #cbd5e1; border-left:4px solid var(--gov-navy); border-radius:4px; padding:16px;">
                                         <x-label for="special_instructions" value="Additional Notes"/>
+                                        <p style="font-size:11px; color:var(--gov-muted); margin:3px 0 10px;">Special handling, storage conditions, or any other instructions for the laboratory team.</p>
                                         <textarea id="special_instructions" name="special_instructions" rows="3"
-                                                  style="margin-top:4px; width:100%; border:1px solid #d1d5db; border-radius:3px; padding:8px 12px; font-size:13px; color:#1f2937; box-sizing:border-box; resize:vertical;"
+                                                  style="width:100%; border:1px solid #d1d5db; border-radius:3px; padding:8px 12px; font-size:13px; color:#1f2937; box-sizing:border-box; resize:vertical;"
                                                   placeholder="Any other instructions for the lab team...">{{ old('special_instructions') }}</textarea>
                                         <x-input-error for="special_instructions" class="mt-1"/>
                                     </div>
 
-                                    <div>
+                                    <div style="background:#f0f4f8; border:1px solid #cbd5e1; border-left:4px solid var(--gov-navy); border-radius:4px; padding:16px;">
                                         <x-label for="results_required_by" value="Results Required By"/>
+                                        <p style="font-size:11px; color:var(--gov-muted); margin:3px 0 10px;">Leave blank if there is no specific deadline. Urgent requests attract additional fees.</p>
                                         <x-input id="results_required_by" type="date" name="results_required_by"
                                                  value="{{ old('results_required_by') }}"
-                                                 class="mt-1 block"
+                                                 class="block"
                                                  style="width:50%;"
                                                  min="{{ date('Y-m-d', strtotime('+1 day')) }}"/>
-                                        <p style="font-size:11px; color:var(--gov-muted); margin:4px 0 0;">Leave blank if no specific deadline. Urgent requests attract additional fees.</p>
                                         <x-input-error for="results_required_by" class="mt-1"/>
                                     </div>
 

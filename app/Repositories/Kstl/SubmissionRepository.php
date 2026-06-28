@@ -126,6 +126,7 @@ class SubmissionRepository extends BaseRepository
             'sample_quantity'       => $input['sample_quantity']       ?? $submission->sample_quantity,
             'sample_quantity_unit'  => $input['sample_quantity_unit']  ?? $submission->sample_quantity_unit,
             'collected_at'          => $input['collected_at']          ?? $submission->collected_at,
+            'delivered_at'          => array_key_exists('delivered_at', $input) ? ($input['delivered_at'] ?: null) : $submission->delivered_at,
             'collection_location'   => $input['collection_location']   ?? $submission->collection_location,
             'tests_requested'       => $input['tests_requested']       ?? $submission->tests_requested,
             'tests_other'           => $input['tests_other']           ?? $submission->tests_other,
