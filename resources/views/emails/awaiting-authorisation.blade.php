@@ -1,4 +1,4 @@
-<!DOCTYPE html>
+﻿<!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="UTF-8">
@@ -78,7 +78,7 @@
             </div>
 
             <p style="font-size: 13px; color: #6b7280; text-align: center;">
-                Log in to the KSTL Director portal to review all test results and authorise or query the analyst.
+                Log in to the KSTL Director to review all test results and authorise or query the analyst.
             </p>
         </div>
         <div class="footer">

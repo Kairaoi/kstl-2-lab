@@ -1,4 +1,4 @@
-<x-guest-layout>
+﻿<x-guest-layout>
 <link rel="preconnect" href="https://fonts.bunny.net">
 <link href="https://fonts.bunny.net/css?family=noto-serif:400,400i,600,700|noto-sans:300,400,500,600" rel="stylesheet">
 
@@ -381,7 +381,7 @@ footer{
         </div>
         <span class="gt-gov"><strong>Government of Kiribati</strong> — Ministry of Fisheries and Ocean Resources</span>
     </div>
-    <span class="gt-right">Official government portal</span>
+    <span class="gt-right">Official government</span>
 </div>
 
 {{-- NAV --}}
@@ -393,14 +393,13 @@ footer{
             </svg>
         </div>
         <div class="nb-text">
-            <div class="nb-main">Seafood Laboratory Portal</div>
+            <div class="nb-main">Seafood Laboratory</div>
             <div class="nb-sub">Kiribati Seafood Toxicology Laboratory · LIMS</div>
         </div>
     </a>
     <div style="display:flex;align-items:center;gap:14px">
         <div class="nav-sep"></div>
         <span class="nav-ministry">Ministry of Fisheries &amp; Ocean Resources</span>
-        <span class="nav-mict">Developed with MICT DTO Division &middot; Tarawa</span>
     </div>
     @if(Route::has('login'))
     <div class="nav-right">
@@ -408,9 +407,6 @@ footer{
             <a href="{{ url('/dashboard') }}" class="nav-cta">Dashboard</a>
         @else
             <a href="{{ route('login') }}" class="nav-in">Sign in</a>
-            @if(Route::has('register'))
-            <a href="{{ route('register') }}" class="nav-cta">Register</a>
-            @endif
         @endauth
     </div>
     @endif
@@ -430,10 +426,10 @@ footer{
                         Official Laboratory Management System
                     </div>
                     <h1 class="ph-h1">
-                        Kiribati Seafood Toxicology<br>Laboratory Portal
+                        Kiribati Seafood Toxicology<br>Laboratory
                     </h1>
                     <p class="ph-sub">
-                        Submit seafood samples for testing, track laboratory analysis and download certified toxicology reports through this official government portal.
+                        Submit seafood samples for testing, track laboratory analysis and download certified toxicology reports through this official government.
                     </p>
                 </div>
                 <div class="ph-right">
@@ -454,10 +450,6 @@ footer{
                                 <svg width="12" height="12" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M17 8l4 4m0 0l-4 4m4-4H3"/></svg>
                             </a>
                         @else
-                            <a href="{{ route('register') }}" class="phb-p">
-                                Create Account
-                                <svg width="12" height="12" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M17 8l4 4m0 0l-4 4m4-4H3"/></svg>
-                            </a>
                             <a href="{{ route('login') }}" class="phb-s">Sign In</a>
                         @endauth
                     </div>
@@ -470,7 +462,7 @@ footer{
                     <svg viewBox="0 0 24 24" stroke-width="1.5"><path stroke-linecap="round" stroke-linejoin="round" d="M11.25 11.25l.041-.02a.75.75 0 011.063.852l-.708 2.836a.75.75 0 001.063.853l.041-.021M21 12a9 9 0 11-18 0 9 9 0 0118 0zm-9-3.75h.008v.008H12V8.25z"/></svg>
                 </div>
                 <div class="nb-text">
-                    <strong>Who should use this portal:</strong> Seafood exporters, vessel owners, aquaculture operators and public health partners requiring toxicology testing under Kiribati fisheries regulations. Laboratory staff access the full management system after logging in.
+                    <strong>Who should use this:</strong> Seafood exporters, vessel owners, aquaculture operators and public health partners requiring toxicology testing under Kiribati fisheries regulations. Laboratory staff access the full management system after logging in.
                 </div>
             </div>
 
@@ -485,25 +477,18 @@ footer{
                 <div class="ac ac-1">
                     <div class="ac-step">Option 01</div>
                     <h3 class="ac-h">Create a client account</h3>
-                    <p class="ac-p">Register your organisation on the portal. You will need your company name, address, responsible officer details and contact information before you begin.</p>
+                    <p class="ac-p">Register your organisation on the. You will need your company name, address, responsible officer details and contact information before you begin.</p>
                     <p class="ac-note">Required once. Your account remains active for all future submissions.</p>
                     <div class="ac-foot">
-                        @guest
-                            @if(Route::has('register'))
-                            <a href="{{ route('register') }}" class="btn-navy">
-                                Begin registration
-                                <svg width="11" height="11" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M17 8l4 4m0 0l-4 4m4-4H3"/></svg>
-                            </a>
-                            @endif
-                        @else
+                        @auth
                             <span class="pill pill-green">✓ Registered</span>
-                        @endguest
+                        @endauth
                     </div>
                 </div>
                 <div class="ac ac-2">
                     <div class="ac-step">Option 02</div>
                     <h3 class="ac-h">Submit a Schedule 1 form</h3>
-                    <p class="ac-p">Lodge a new testing request for your samples. The portal will guide you through species information, sampling date, quantity, transport method and testing requirements.</p>
+                    <p class="ac-p">Lodge a new testing request for your samples. The will guide you through species information, sampling date, quantity, transport method and testing requirements.</p>
                     <p class="ac-note">Estimated completion time: 5–10 minutes per submission.</p>
                     <div class="ac-foot">
                         @auth
@@ -544,7 +529,7 @@ footer{
                 <div class="process-head">
                     <div>
                         <div class="prch-title">What happens after you submit</div>
-                        <div class="prch-sub">Internal laboratory stages — visible to you through the portal at each step</div>
+                        <div class="prch-sub">Internal laboratory stages — visible to you through the at each step</div>
                     </div>
                     <div class="prch-pills">
                         <span class="pill pill-green">● Completed</span>
@@ -567,12 +552,10 @@ footer{
                     @endforeach
                 </div>
                 <div class="process-foot">
-                    <p class="pf-note">You can return to this portal at any stage to view progress. You do not need to contact the laboratory directly — all status updates appear in your dashboard.</p>
+                    <p class="pf-note">You can return to this at any stage to view progress. You do not need to contact the laboratory directly — all status updates appear in your dashboard.</p>
                     <div class="pf-actions">
                         @auth
                             <a href="{{ url('/dashboard') }}" class="btn-line">Open dashboard</a>
-                        @else
-                            <a href="{{ route('register') }}" class="btn-navy">Register now</a>
                         @endauth
                     </div>
                 </div>

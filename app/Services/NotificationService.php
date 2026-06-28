@@ -4,6 +4,7 @@ namespace App\Services;
 
 use App\Mail\AwaitingAuthorisationMail;
 use App\Mail\InvoiceIssuedMail;
+use App\Mail\QueryAnalystMail;
 use App\Mail\ResultsReadyMail;
 use App\Models\Kstl\Invoice;
 use App\Models\Kstl\Result;
@@ -145,6 +146,72 @@ class NotificationService
                 Log::error('[NOTIFY] awaiting_authorisation FAILED', [
                     'submission_id' => $submission->id,
                     'director_id'   => $director->id,
+                    'error'         => $e->getMessage(),
+                ]);
+            }
+        }
+    }
+
+    /**
+     * Notify analyst(s) the Director has queried their test(s).
+     * Called after Director flags tests via queryAnalyst().
+     */
+    public function notifyAnalystQueried(Submission $submission, array $testIds, string $queryNote, bool $postAuthorisation = false): void
+    {
+        // Collect unique analysts assigned to the flagged tests
+        $analysts = \App\Models\Kstl\SampleTest::whereIn('id', $testIds)
+            ->with('assignedTo')
+            ->get()
+            ->pluck('assignedTo')
+            ->filter()
+            ->unique('id');
+
+        // Fall back to all users with analyst role if no tests have an assigned analyst
+        if ($analysts->isEmpty()) {
+            $analysts = User::role('analyst')->get();
+        }
+
+        if ($analysts->isEmpty()) {
+            Log::warning('[NOTIFY] No analysts found — query_analyst skipped', [
+                'submission_id' => $submission->id,
+            ]);
+            return;
+        }
+
+        $testLabels = \App\Models\Kstl\SampleTest::whereIn('id', $testIds)
+            ->get()
+            ->map(fn($t) => $t->getDisplayLabel())
+            ->values()
+            ->all();
+
+        $submission->loadMissing('client');
+
+        foreach ($analysts as $analyst) {
+            try {
+                Mail::to($analyst->email)->send(
+                    new QueryAnalystMail($submission, $queryNote, $testLabels, $postAuthorisation)
+                );
+
+                $suffix = $postAuthorisation ? ' (post-authorisation)' : '';
+                $this->createInAppNotification(
+                    userId:     $analyst->id,
+                    type:       'director_query',
+                    subject:    "Director query{$suffix} — {$submission->reference_number}",
+                    message:    "The Director has returned " . count($testIds) . " test(s) for {$submission->reference_number} ({$submission->client->company_name}) with a query. Open your test queue to review and resubmit.",
+                    notifiable: $submission,
+                );
+
+                Log::info('[NOTIFY] query_analyst sent', [
+                    'submission_id'    => $submission->id,
+                    'analyst_id'       => $analyst->id,
+                    'email'            => $analyst->email,
+                    'post_auth'        => $postAuthorisation,
+                ]);
+
+            } catch (\Exception $e) {
+                Log::error('[NOTIFY] query_analyst FAILED', [
+                    'submission_id' => $submission->id,
+                    'analyst_id'    => $analyst->id,
                     'error'         => $e->getMessage(),
                 ]);
             }

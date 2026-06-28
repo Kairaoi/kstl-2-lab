@@ -1,4 +1,4 @@
-<!DOCTYPE html>
+﻿<!DOCTYPE html>
 <html lang="{{ str_replace('_', '-', app()->getLocale()) }}">
 <head>
     <meta charset="utf-8">
@@ -127,7 +127,7 @@
             </div>
             <span class="gt-gov"><strong>Government of Kiribati</strong> &mdash; Ministry of Fisheries &amp; Ocean Resources</span>
         </div>
-        <span class="gt-right">Official portal</span>
+        <span class="gt-right">Official</span>
     </div>
     @endif
 
@@ -139,7 +139,7 @@
                 <img src="{{ asset('images/mfor-logo.png') }}" alt="MFOR">
             </div>
             <div>
-                <div class="gb-main">KSTL Portal</div>
+                <div class="gb-main">KSTL</div>
                 <div class="gb-sub">Kiribati Seafood Toxicology Laboratory &middot; LIMS</div>
             </div>
         </a>

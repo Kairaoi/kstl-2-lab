@@ -9,6 +9,7 @@ use App\Models\Kstl\Submission;
 use App\Repositories\Kstl\ClientRepository;
 use App\Repositories\Kstl\SampleRepository;
 use App\Repositories\Kstl\SampleTestRepository;
+use Barryvdh\DomPDF\Facade\Pdf;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Log;
 
@@ -91,5 +92,42 @@ class ClientResultController extends Controller
 
         return view('kstl.client.results.show',
             compact('submission', 'result', 'samples', 'testsBySample', 'client', 'user'));
+    }
+
+    public function pdf(string $submissionId)
+    {
+        $user   = Auth::user();
+        $client = $this->clientRepo->findByUserId($user->id);
+
+        abort_if(! $client, 403);
+
+        $submission = Submission::where('id', $submissionId)
+            ->where('client_id', $client->id)
+            ->whereIn('status', [
+                Submission::STATUS_AUTHORISED,
+                Submission::STATUS_COMPLETED,
+            ])
+            ->with(['result.authorisedBy', 'samples', 'invoice'])
+            ->firstOrFail();
+
+        $invoice = $submission->invoice;
+        abort_if(! $invoice || (! $invoice->isPaid() && ! $invoice->isWaived()), 403);
+
+        $result  = $submission->result;
+        $samples = $submission->samples;
+
+        $testsBySample = [];
+        foreach ($samples as $sample) {
+            $testsBySample[$sample->id] = SampleTest::where('sample_id', $sample->id)
+                ->orderBy('test_category')
+                ->orderBy('test_key')
+                ->get();
+        }
+
+        $pdf = Pdf::loadView('kstl.client.results.pdf',
+                compact('submission', 'result', 'samples', 'testsBySample', 'client', 'user'))
+            ->setPaper('a4', 'portrait');
+
+        return $pdf->download('CoA-' . $submission->reference_number . '.pdf');
     }
 }

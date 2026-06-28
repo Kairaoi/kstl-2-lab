@@ -1,4 +1,4 @@
-{{-- resources/views/navigation-menu.blade.php --}}
+﻿{{-- resources/views/navigation-menu.blade.php --}}
 {{-- Styled to match the KSTL government design system (navy / gold) --}}
 
 <style>
@@ -168,7 +168,7 @@
                 <img src="{{ asset('images/mfor-logo.png') }}" alt="MFOR">
             </div>
             <div>
-                <div class="an-main">KSTL Portal</div>
+                <div class="an-main">KSTL</div>
                 <div class="an-sub">Kiribati Seafood Toxicology Laboratory &middot; LIMS</div>
             </div>
         </a>

@@ -67,8 +67,16 @@ class AnalystController extends Controller
 
         $history = $historyQuery->get();
 
+        // All flagged tests across the lab — fetched independently so the
+        // director-query alert shows even when the tests aren't assigned to
+        // the currently logged-in analyst.
+        $flaggedTests = SampleTest::where('status', SampleTest::STATUS_FLAGGED)
+            ->with(['sample.submission.client', 'assignedTo'])
+            ->orderByDesc('updated_at')
+            ->get();
+
         return view('kstl.analyst.dashboard',
-            compact('queue', 'counts', 'activeSubmissions', 'history', 'search'));
+            compact('queue', 'counts', 'activeSubmissions', 'history', 'search', 'flaggedTests'));
     }
 
     // ── Test queue (all tests) ─────────────────────────────────────
@@ -126,6 +134,18 @@ class AnalystController extends Controller
             'flag'             => ['nullable', 'boolean'],
         ]);
 
+        // When the analyst responds to a Director query the form shows only their
+        // own notes (Director query blocks are stripped in the blade). Re-append
+        // the Director query blocks so they are preserved in the database.
+        if ($existing->status === SampleTest::STATUS_FLAGGED) {
+            $stored = $existing->result_notes ?? '';
+            preg_match_all('/\[Director query\].*/s', $stored, $dqBlocks);
+            if (!empty($dqBlocks[0])) {
+                $directorSuffix = "\n\n" . implode('', $dqBlocks[0]);
+                $validated['result_notes'] = rtrim($validated['result_notes'] ?? '') . $directorSuffix;
+            }
+        }
+
         Log::info('Saving test result', [
             'test_id'          => $id,
             'result_qualifier' => $validated['result_qualifier'],
@@ -146,15 +166,18 @@ class AnalystController extends Controller
                 ->count();
 
             if ($incompleteSamples === 0) {
+                $fromStatus = $submission->status;
+
                 $this->submissionRepo->updateStatus(
                     $submission->id,
                     Submission::STATUS_AWAITING_AUTHORISATION
                 );
 
-                // Audit log
+                // Audit log — use actual previous status (may be testing or authorised
+                // when responding to a director query on an already-authorised submission)
                 $this->auditService->logStatusChange(
                     $submission->fresh(),
-                    Submission::STATUS_TESTING,
+                    $fromStatus,
                     Submission::STATUS_AWAITING_AUTHORISATION
                 );
 
@@ -321,6 +344,13 @@ class AnalystController extends Controller
     // authorised/completed. Used to lock result editing and attachments.
     private function testIsLocked(SampleTest $test): bool
     {
+        // A flagged test has been explicitly returned by the Director for
+        // analyst action — it must always be editable, regardless of the
+        // submission's current status.
+        if ($test->status === SampleTest::STATUS_FLAGGED) {
+            return false;
+        }
+
         if ($test->status === SampleTest::STATUS_COMPLETED) {
             return true;
         }

@@ -1,15 +1,15 @@
-{{-- resources/views/kstl/analyst/results/show.blade.php --}}
+﻿{{-- resources/views/kstl/analyst/results/show.blade.php --}}
 
 <x-app-layout>
     <x-slot name="header">
-        <div style="position:relative;overflow:hidden;background:linear-gradient(135deg,#0f2240 0%,#1a2f4e 60%,#1e3a5f 100%);">
+        <div style="position:relative;overflow:hidden;background:linear-gradient(135deg,#0f2240 0%,#1a2f4e 60%,#1e3a5f 100%);margin:-1px;">
             <div style="height:3px;background:linear-gradient(90deg,#1a2f4e,#b8922a 30%,#b8922a 70%,#1a2f4e);"></div>
             <div style="max-width:80rem;margin:0 auto;padding:28px 2rem 32px;">
                 <div style="display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:16px;">
                     <div style="display:flex;align-items:center;gap:20px;">
                         <img src="{{ asset('images/mfor-logo.png') }}" alt="MFOR" style="filter:brightness(0) invert(1);opacity:.92;width:56px;height:56px;flex-shrink:0;">
                         <div>
-                            <p style="font-size:9px;font-weight:700;letter-spacing:.18em;text-transform:uppercase;color:#b8922a;margin:0 0 4px;">Analyst Portal</p>
+                            <p style="font-size:9px;font-weight:700;letter-spacing:.18em;text-transform:uppercase;color:#b8922a;margin:0 0 4px;">Analyst</p>
                             <h1 style="font-family:'Georgia',serif;font-size:22px;font-weight:700;color:#fff;margin:0 0 6px;line-height:1.2;">{{ $submission->reference_number }}</h1>
                             <p style="font-size:12px;color:#94a3b8;margin:0;">{{ $submission->client->company_name ?? '' }}</p>
                         </div>
@@ -36,7 +36,7 @@
 
     @push('styles')
     <style>
-        .page-hdr { padding: 0 !important; }
+        .page-hdr { padding: 0 !important; position: static !important; }
         .page-hdr-inner { max-width: 100% !important; padding: 0 !important; }
         .app-main { padding-left:0 !important; padding-right:0 !important; padding-top:0 !important; max-width:100% !important; }
 
@@ -48,7 +48,7 @@
     </style>
     @endpush
 
-    <div style="background:#f1f5f9;min-height:100vh;padding:52px 0 56px;">
+    <div style="background:#f1f5f9;min-height:100vh;padding:0 0 56px;">
         <div style="max-width:80rem;margin:0 auto;padding:0 2rem;">
 
             {{-- Read-only notice --}}
@@ -297,7 +297,7 @@
                         <div style="text-align:right;flex-shrink:0;">
                             <p style="font-size:9px;font-weight:600;letter-spacing:.08em;text-transform:uppercase;color:#94a3b8;margin:0 0 4px;">Document Ref.</p>
                             <p style="font-family:monospace;font-size:13px;color:#374151;margin:0 0 4px;">{{ $submission->reference_number }}</p>
-                            <p style="font-size:11px;color:#94a3b8;margin:0;">STLD &middot; Official Portal</p>
+                            <p style="font-size:11px;color:#94a3b8;margin:0;">STLD &middot; Official</p>
                         </div>
                     </div>
                 </div>

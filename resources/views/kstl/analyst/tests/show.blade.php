@@ -23,7 +23,7 @@
 
     @push('styles')
     <style>
-    .page-hdr { padding: 0 !important; }
+    .page-hdr { padding: 0 !important; position: static !important; }
     .page-hdr-inner { max-width: 100% !important; padding: 0 !important; }
     .app-main { padding-left:0 !important; padding-right:0 !important; padding-top:0 !important; max-width:100% !important; }
     .at-meta-label { letter-spacing:.1em; text-transform:uppercase; font-size:9px; color:#94a3b8; font-weight:700; }
@@ -34,35 +34,66 @@
     </style>
     @endpush
 
-    <div style="background:#f1f5f9; min-height:100vh; padding:52px 0 56px;">
+    <div style="background:#f1f5f9; min-height:100vh; padding:0 0 56px;">
         <div style="max-width:80rem; margin:0 auto; padding:0 2rem;">
 
-            {{-- Director query banner (only when the director has explicitly queried) --}}
-            @php
-                $directorQueryNote = null;
-                if ($test->status === 'flagged' && $test->result_notes) {
-                    preg_match('/\[Director query\]\s*(.+?)(?=\n\n[^\[]|$)/s', $test->result_notes, $dqm);
-                    $directorQueryNote = isset($dqm[1]) ? trim($dqm[1]) : null;
-                }
-            @endphp
-            @if($directorQueryNote)
-                <div style="background:#fffbeb; border:1px solid #fcd34d; border-left:4px solid #d97706; border-radius:4px; padding:16px 20px; margin-bottom:24px;">
-                    <div style="display:flex; align-items:flex-start; gap:12px;">
-                        <svg style="width:18px; height:18px; flex-shrink:0; margin-top:2px;" fill="none" stroke="#d97706" viewBox="0 0 24 24">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01M10.29 3.86L1.82 18a2 2 0 001.71 3h16.94a2 2 0 001.71-3L13.71 3.86a2 2 0 00-3.42 0z"/>
-                        </svg>
-                        <div style="flex:1;">
-                            <p style="font-size:11px; font-weight:700; color:#92400e; letter-spacing:.1em; text-transform:uppercase; margin:0 0 4px;">Returned — Action Required</p>
-                            <p style="font-size:12.5px; color:#92400e; margin:0 0 12px;">
-                                The Director has returned this test. Review the query below, amend your result as needed, and save to resubmit for authorisation.
+            {{-- ── Director query / flagged banner ── --}}
+            @if($test->status === 'flagged')
+                @php
+                    // Extract the most recent [Director query] note from result_notes
+                    $directorQueryNote = null;
+                    if ($test->result_notes) {
+                        // Collect ALL director query blocks (there may be multiple rounds)
+                        preg_match_all('/\[Director query\]\s*(.*?)(?=\n\n\[Director query\]|$)/s', $test->result_notes, $allMatches);
+                        if (!empty($allMatches[1])) {
+                            // Show the most recent query (last one)
+                            $directorQueryNote = trim(end($allMatches[1]));
+                        }
+                    }
+                    $hasDirectorQuery = !empty($directorQueryNote);
+                @endphp
+
+                @if($hasDirectorQuery)
+                    {{-- Director sent an explicit query back to the analyst --}}
+                    <div style="background:#fef2f2; border:1px solid #fca5a5; border-radius:4px; overflow:hidden; margin-bottom:24px;">
+                        <div style="background:#dc2626; padding:12px 20px; display:flex; align-items:center; gap:10px;">
+                            <svg style="width:18px; height:18px; flex-shrink:0;" fill="none" stroke="#fff" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M12 9v2m0 4h.01M10.29 3.86L1.82 18a2 2 0 001.71 3h16.94a2 2 0 001.71-3L13.71 3.86a2 2 0 00-3.42 0z"/>
+                            </svg>
+                            <p style="font-size:13px; font-weight:700; color:#fff; margin:0; letter-spacing:.02em;">
+                                Director Query — Action Required
                             </p>
-                            <div style="background:#fff; border:1px solid #fcd34d; border-radius:4px; padding:12px 16px;">
-                                <p style="font-size:9px; font-weight:700; letter-spacing:.12em; text-transform:uppercase; color:#92400e; margin:0 0 6px;">Director's Query</p>
-                                <p style="font-size:13px; color:#1a2f4e; line-height:1.6; margin:0;">{{ $directorQueryNote }}</p>
+                        </div>
+                        <div style="padding:16px 20px;">
+                            <p style="font-size:12px; color:#991b1b; margin:0 0 14px;">
+                                The Laboratory Director has returned this test for clarification.
+                                Read the query carefully, amend your result if needed, then click <strong>Save Result</strong> to resubmit for authorisation.
+                            </p>
+                            <div style="background:#fff; border:2px solid #dc2626; border-radius:4px; padding:14px 18px;">
+                                <p style="font-size:9px; font-weight:700; letter-spacing:.14em; text-transform:uppercase; color:#dc2626; margin:0 0 8px;">
+                                    Director's Query
+                                </p>
+                                <p style="font-size:14px; color:#1a2f4e; line-height:1.7; margin:0; white-space:pre-line;">{{ $directorQueryNote }}</p>
                             </div>
                         </div>
                     </div>
-                </div>
+                @else
+                    {{-- Analyst-flagged (awaiting Director review) --}}
+                    <div style="background:#fffbeb; border:1px solid #fcd34d; border-left:4px solid #d97706; border-radius:4px; padding:14px 20px; margin-bottom:24px; display:flex; align-items:flex-start; gap:12px;">
+                        <svg style="width:18px; height:18px; flex-shrink:0; margin-top:1px;" fill="none" stroke="#d97706" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 21v-4m0 0V5a2 2 0 012-2h6.5l1 1H21l-3 6 3 6h-8.5l-1-1H5a2 2 0 00-2 2z"/>
+                        </svg>
+                        <div>
+                            <p style="font-size:12.5px; font-weight:700; color:#92400e; margin:0 0 4px;">
+                                Flagged for Director Review
+                            </p>
+                            <p style="font-size:12px; color:#b45309; margin:0;">
+                                You marked this test for Director attention. The Director has not yet sent a query back.
+                                Once the Director responds, their query will appear here and you will be notified.
+                            </p>
+                        </div>
+                    </div>
+                @endif
             @endif
 
             <div style="display:grid; grid-template-columns:1fr 2fr; gap:20px; align-items:start;">
@@ -216,6 +247,17 @@
                             <p style="font-size:11px; color:#94a3b8; margin:4px 0 0;">Record the result for this test. All fields except qualifier are optional.</p>
                         </div>
 
+                        @php
+                            // Strip [Director query] blocks before pre-filling textarea —
+                            // the Director's query is shown in the banner above, not editable here.
+                            $analystOwnNotes = $test->result_notes ?? '';
+                            if ($test->status === 'flagged' && $analystOwnNotes !== '') {
+                                // Everything before the first \n\n[Director query] is the analyst's notes
+                                $analystOwnNotes = preg_replace('/\n*\[Director query\].*/s', '', $analystOwnNotes);
+                                $analystOwnNotes = trim($analystOwnNotes);
+                            }
+                        @endphp
+
                         <form method="POST"
                               id="result-form"
                               action="{{ route('analyst.tests.result', $test->id) }}"
@@ -297,14 +339,16 @@
                                 <div>
                                     <label style="display:block; font-size:13px; font-weight:600; color:#1a2f4e; margin-bottom:6px;">
                                         Result Notes
-                                        @if($test->status === 'flagged')
-                                            <span style="margin-left:6px; font-size:11px; font-weight:400; color:#d97706;">(includes the Director's query)</span>
-                                        @endif
                                     </label>
                                     <textarea name="result_notes"
                                               rows="3"
                                               style="width:100%; border:1px solid #e2e8f0; border-radius:3px; padding:8px 12px; font-size:13px; color:#1a2f4e; outline:none; resize:vertical; box-sizing:border-box;"
-                                              placeholder="Additional observations, instrument readings, methodology notes...">{{ old('result_notes', $test->result_notes) }}</textarea>
+                                              placeholder="Additional observations, instrument readings, methodology notes...">{{ old('result_notes', $analystOwnNotes) }}</textarea>
+                                    @if($test->status === 'flagged')
+                                        <p style="font-size:11px; color:#64748b; margin:4px 0 0;">
+                                            Enter your response or amended observations. The Director's query above is preserved automatically.
+                                        </p>
+                                    @endif
                                     <x-input-error for="result_notes" class="mt-1"/>
                                 </div>
 
@@ -370,7 +414,7 @@
             qualifier : '{{ old("result_qualifier", $test->result_qualifier ?? "") }}',
             value     : @json(old('result_value', $test->result_value ?? '')),
             unit      : @json(old('result_unit',  $test->result_unit  ?? '')),
-            notes     : @json(old('result_notes', $test->result_notes ?? '')),
+            notes     : @json(old('result_notes', $analystOwnNotes)),
             flagged   : {{ (old('flag') !== null ? (bool)old('flag') : ($test->status === 'flagged')) ? 'true' : 'false' }},
         };
 

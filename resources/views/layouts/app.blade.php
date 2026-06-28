@@ -1,4 +1,4 @@
-<!DOCTYPE html>
+﻿<!DOCTYPE html>
 <html lang="{{ str_replace('_', '-', app()->getLocale()) }}">
 <head>
     <meta charset="utf-8">
@@ -138,7 +138,7 @@
             </div>
             <span class="gt-gov"><strong>Government of Kiribati</strong> &mdash; Ministry of Fisheries &amp; Ocean Resources</span>
         </div>
-        <span class="gt-right">Official portal</span>
+        <span class="gt-right">Official</span>
     </div>
 
     {{-- Fixed nav (your existing navigation partial) --}}

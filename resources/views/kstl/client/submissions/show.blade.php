@@ -27,7 +27,7 @@
                         <img src="{{ asset('images/mfor-logo.png') }}" alt="Ministry of Fisheries &amp; Ocean Resources" style="width:56px;height:56px;object-fit:contain;filter:brightness(0) invert(1);opacity:.92;">
                         <div>
                             <p style="font-size:8.5px;font-weight:700;letter-spacing:.22em;text-transform:uppercase;color:#b8922a;margin-bottom:5px;">
-                                Client Portal &nbsp;·&nbsp; My Submissions
+                                Client &nbsp;·&nbsp; My Submissions
                             </p>
                             <h1 style="font-family:'Georgia',serif;font-size:22px;font-weight:700;color:#ffffff;line-height:1.2;margin:0;">
                                 {{ $submission->reference_number }}
@@ -74,7 +74,7 @@
 
     @push('styles')
     <style>
-        .page-hdr { padding: 0 !important; }
+        .page-hdr { padding: 0 !important; position: static !important; }
         .page-hdr-inner { max-width: 100% !important; padding: 0 !important; }
         .app-main { padding-left: 0 !important; padding-right: 0 !important;
                     padding-top: 0 !important; max-width: 100% !important; }
@@ -147,7 +147,7 @@
         $isCancelled     = in_array($submission->status, ['cancelled']);
     @endphp
 
-    <div style="background:#f1f5f9;min-height:100vh;padding:52px 0 56px;">
+    <div style="background:#f1f5f9;min-height:100vh;padding:0 0 56px;">
         <div style="max-width:80rem;margin:0 auto;padding:0 2rem;display:flex;flex-direction:column;gap:24px;">
 
             {{-- ── Flash Messages ─────────────────────────────────────────────── --}}

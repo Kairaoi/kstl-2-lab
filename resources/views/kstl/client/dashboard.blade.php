@@ -1,8 +1,8 @@
-{{-- resources/views/kstl/client/dashboard.blade.php --}}
+﻿{{-- resources/views/kstl/client/dashboard.blade.php --}}
 
 <x-app-layout>
     <x-slot name="header">
-        {{-- Government portal hero banner --}}
+        {{-- Government hero banner --}}
         <div style="background:linear-gradient(135deg,#0f2240 0%,#1a2f4e 60%,#1e3a5f 100%); margin:-1px; padding:28px 2rem; position:relative; overflow:hidden;">
             {{-- Subtle pattern overlay --}}
             <div style="position:absolute;inset:0;opacity:.04;background-image:repeating-linear-gradient(45deg,#fff 0,#fff 1px,transparent 0,transparent 50%);background-size:12px 12px;pointer-events:none;"></div>
@@ -19,7 +19,7 @@
 
                     <div>
                         <p style="font-size:8.5px;font-weight:700;letter-spacing:.22em;text-transform:uppercase;color:#b8922a;margin-bottom:5px;">
-                            Client Portal &nbsp;·&nbsp; Seafood Toxicology Laboratory
+                            Client &nbsp;·&nbsp; Seafood Toxicology Laboratory
                         </p>
                         <h1 style="font-family:'Georgia',serif;font-size:22px;font-weight:700;color:#ffffff;line-height:1.2;margin:0;">
                             Welcome back, {{ $user->first_name }}
@@ -49,7 +49,7 @@
     @push('styles')
     <style>
         /* Remove page-hdr centering so the hero spans the full nav width */
-        .page-hdr { padding: 0 !important; }
+        .page-hdr { padding: 0 !important; position: static !important; }
         .page-hdr-inner { max-width: 100% !important; padding: 0 !important; }
         /* Remove app-main padding — dashboard handles its own layout */
         .app-main { padding-left: 0 !important; padding-right: 0 !important;
@@ -175,7 +175,7 @@
     </style>
     @endpush
 
-    <div style="background:#f1f5f9;min-height:100vh;padding:52px 0 56px;">
+    <div style="background:#f1f5f9;min-height:100vh;padding:0 0 56px;">
         <div style="max-width:80rem;margin:0 auto;padding:0 2rem;display:flex;flex-direction:column;gap:24px;">
 
             {{-- ── Flash messages ─────────────────────────────────────────────── --}}
@@ -241,7 +241,7 @@
                     </svg>
                     <div style="flex:1;">
                         <p style="font-size:13px;font-weight:700;color:#92400e;">Step 2 of 2 — Sign the Service Agreement</p>
-                        <p style="font-size:12px;color:#b45309;margin-top:3px;">Your company details are saved. Sign the agreement to unlock full portal access.</p>
+                        <p style="font-size:12px;color:#b45309;margin-top:3px;">Your company details are saved. Sign the agreement to unlock full access.</p>
                     </div>
                     <a href="{{ route('client.agreement.show') }}"
                        style="flex-shrink:0;display:inline-flex;align-items:center;gap:6px;background:#d97706;color:#fff;padding:8px 18px;border-radius:3px;font-size:12px;font-weight:600;text-decoration:none;">

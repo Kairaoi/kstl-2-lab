@@ -1,4 +1,4 @@
-<!DOCTYPE html>
+﻿<!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="UTF-8">
@@ -38,7 +38,7 @@
 
             <h2>Dear Director,</h2>
 
-            <p>A complaint has been submitted through the KSTL client portal. Please review and respond within 5 working days.</p>
+            <p>A complaint has been submitted through the KSTL client. Please review and respond within 5 working days.</p>
 
             <div style="margin-bottom: 24px;">
                 <div class="detail-row">

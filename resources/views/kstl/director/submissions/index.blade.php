@@ -17,7 +17,7 @@
         </div>
     </x-slot>
 
-    <div style="background:#f1f5f9;min-height:100vh;padding:52px 0 56px;">
+    <div style="background:#f1f5f9;min-height:100vh;padding:0 0 56px;">
         <div style="max-width:80rem;margin:0 auto;padding:0 2rem;">
 
             {{-- ── Status Summary Bar ──────────────────────────────── --}}

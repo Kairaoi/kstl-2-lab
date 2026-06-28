@@ -1,4 +1,4 @@
-{{-- resources/views/kstl/analyst/dashboard.blade.php --}}
+﻿{{-- resources/views/kstl/analyst/dashboard.blade.php --}}
 
 <x-app-layout>
     <x-slot name="header">
@@ -19,7 +19,7 @@
                              style="filter:brightness(0) invert(1); opacity:.92; width:56px; height:56px; flex-shrink:0;">
                         <div>
                             <p style="font-size:10px; font-weight:700; letter-spacing:.18em; text-transform:uppercase; color:#b8922a; margin:0 0 4px;">
-                                Analyst Portal
+                                Analyst
                             </p>
                             <h1 style="font-family:'Georgia',serif; font-size:24px; font-weight:700; color:#ffffff; margin:0; letter-spacing:.01em;">
                                 {{ $user->first_name ?? auth()->user()->first_name ?? 'Analyst' }}
@@ -50,7 +50,7 @@
 
     @push('styles')
     <style>
-    .page-hdr { padding: 0 !important; }
+    .page-hdr { padding: 0 !important; position: static !important; }
     .page-hdr-inner { max-width: 100% !important; padding: 0 !important; }
     .app-main { padding-left:0 !important; padding-right:0 !important; padding-top:0 !important; max-width:100% !important; }
 
@@ -91,13 +91,79 @@
     </style>
     @endpush
 
-    <div style="background:#f1f5f9; min-height:100vh; padding:52px 0 56px;">
+    <div style="background:#f1f5f9; min-height:100vh; padding:0 0 56px;">
         <div style="max-width:80rem; margin:0 auto; padding:0 2rem; display:flex; flex-direction:column; gap:24px;">
 
             <x-kstl.flash />
 
+            {{-- ── Director Query Alert — uses $flaggedTests fetched globally ── --}}
+            @if($flaggedTests->isNotEmpty())
+                <div style="background:#fff; border:1px solid #fca5a5; border-radius:4px; overflow:hidden; margin-top:24px;">
+                    {{-- Alert header --}}
+                    <div style="background:#fef2f2; border-bottom:2px solid #dc2626; padding:14px 20px; display:flex; align-items:center; gap:14px;">
+                        <div style="flex-shrink:0; width:36px; height:36px; background:#dc2626; border-radius:50%; display:flex; align-items:center; justify-content:center;">
+                            <svg style="width:18px; height:18px;" fill="none" stroke="#fff" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M12 9v2m0 4h.01M10.29 3.86L1.82 18a2 2 0 001.71 3h16.94a2 2 0 001.71-3L13.71 3.86a2 2 0 00-3.42 0z"/>
+                            </svg>
+                        </div>
+                        <div>
+                            <p style="font-size:14px; font-weight:700; color:#991b1b; margin:0 0 3px;">
+                                Director Query — Action Required
+                            </p>
+                            <p style="font-size:12px; color:#b91c1c; margin:0;">
+                                {{ $flaggedTests->count() }} test{{ $flaggedTests->count() > 1 ? 's have' : ' has' }} been returned by the Director for clarification.
+                                Review each query below, update the result, and save to resubmit for authorisation.
+                            </p>
+                        </div>
+                    </div>
+
+                    {{-- Each flagged test with the Director's query visible inline --}}
+                    @foreach($flaggedTests as $flaggedTest)
+                        @php
+                            preg_match('/\[Director query\]\s*(.+?)(?=\n\n\[|$)/s', $flaggedTest->result_notes ?? '', $dqm);
+                            $directorQuery = isset($dqm[1]) ? trim($dqm[1]) : null;
+                        @endphp
+                        <div style="padding:16px 20px; border-bottom:1px solid #fee2e2;">
+                            <div style="display:flex; align-items:flex-start; justify-content:space-between; gap:16px; flex-wrap:wrap;">
+                                <div style="min-width:0;">
+                                    <p style="font-size:13px; font-weight:700; color:#1a2f4e; margin:0 0 3px;">
+                                        {{ $flaggedTest->getDisplayLabel() }}
+                                    </p>
+                                    <p style="font-size:11px; color:#6b7280; margin:0;">
+                                        <span style="font-family:monospace; font-weight:600;">{{ $flaggedTest->sample->submission->reference_number ?? '—' }}</span>
+                                        &nbsp;&middot;&nbsp; {{ $flaggedTest->sample->submission->client->company_name ?? '—' }}
+                                        &nbsp;&middot;&nbsp; Sample: {{ $flaggedTest->sample->common_name ?? '—' }}
+                                        @if($flaggedTest->assignedTo)
+                                            &nbsp;&middot;&nbsp; Assigned to: {{ $flaggedTest->assignedTo->name }}
+                                        @endif
+                                    </p>
+                                </div>
+                                <a href="{{ route('analyst.tests.show', $flaggedTest->id) }}"
+                                   style="flex-shrink:0; display:inline-flex; align-items:center; gap:6px; padding:8px 16px; background:#dc2626; color:#fff; border-radius:3px; font-size:12px; font-weight:700; text-decoration:none; white-space:nowrap;">
+                                    <svg style="width:13px; height:13px;" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M15.232 5.232l3.536 3.536M9 13l6.586-6.586a2 2 0 012.828 2.828L11.828 15.828a4 4 0 01-2.828 1.172H7v-2a4 4 0 011.172-2.828z"/>
+                                    </svg>
+                                    Review &amp; Respond
+                                </a>
+                            </div>
+
+                            {{-- Director's query text shown inline so the analyst sees it immediately --}}
+                            <div style="margin-top:10px; background:#fffbeb; border:1px solid #fcd34d; border-left:4px solid #d97706; border-radius:3px; padding:10px 14px;">
+                                <p style="font-size:9px; font-weight:700; letter-spacing:.12em; text-transform:uppercase; color:#92400e; margin:0 0 5px;">Director's Query</p>
+                                @if($directorQuery)
+                                    <p style="font-size:13px; color:#1a2f4e; line-height:1.6; margin:0;">{{ $directorQuery }}</p>
+                                @else
+                                    <p style="font-size:12px; color:#92400e; font-style:italic; margin:0;">Open the test to read the Director's full query and respond.</p>
+                                @endif
+                            </div>
+                        </div>
+                    @endforeach
+                </div>
+            @endif
+            @php $flaggedGroups = $activeSubmissions->filter(fn($g) => ($g['flagged'] ?? 0) > 0); @endphp
+
             {{-- ── Summary Cards ─────────────────────────────────── --}}
-            <div style="margin-top:24px;">
+            <div style="margin-top:{{ $flaggedGroups->isNotEmpty() ? '20px' : '24px' }};">
                 <p class="gov-section-label">Test Overview</p>
                 <div style="display:grid; grid-template-columns:repeat(4,1fr); gap:16px;">
                     <a href="{{ route('analyst.tests.index') }}" class="gov-stat" style="border-left:4px solid #d97706;">
@@ -120,8 +186,8 @@
 
                     <a href="{{ route('analyst.tests.index') }}" class="gov-stat" style="border-left:4px solid #dc2626;">
                         <p class="gov-stat-label">Flagged</p>
-                        <p class="gov-stat-num">{{ $counts['flagged'] ?? 0 }}</p>
-                        <p class="gov-stat-sub">Needs review</p>
+                        <p class="gov-stat-num" style="{{ ($counts['flagged'] ?? 0) > 0 ? 'color:#dc2626;' : '' }}">{{ $counts['flagged'] ?? 0 }}</p>
+                        <p class="gov-stat-sub">{{ ($counts['flagged'] ?? 0) > 0 ? 'Director query — act now' : 'None pending' }}</p>
                     </a>
                 </div>
             </div>
@@ -159,43 +225,6 @@
                 </div>
             @endif
 
-            {{-- ── Flagged for clarification (surfaced near the top) ───── --}}
-            @php
-                $flaggedGroups = $activeSubmissions->filter(fn($g) => ($g['flagged'] ?? 0) > 0);
-            @endphp
-            @if($flaggedGroups->isNotEmpty())
-                <div style="background:#fffbeb; border:1px solid #fcd34d; border-left:4px solid #d97706; border-radius:4px; padding:16px 20px;">
-                    <div style="display:flex; align-items:flex-start; gap:12px;">
-                        <svg style="width:18px; height:18px; flex-shrink:0; margin-top:2px;" fill="none" stroke="#d97706" viewBox="0 0 24 24">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 21v-4m0 0V5a2 2 0 012-2h6.5l1 1H21l-3 6 3 6h-8.5l-1-1H5a2 2 0 00-2 2z"/>
-                        </svg>
-                        <div style="flex:1;">
-                            <p style="font-size:13px; font-weight:700; color:#92400e; margin:0 0 8px;">
-                                {{ $flaggedGroups->sum('flagged') }} test{{ $flaggedGroups->sum('flagged') > 1 ? 's' : '' }}
-                                flagged for clarification — these need your attention
-                            </p>
-                            <div style="display:flex; flex-direction:column; gap:6px;">
-                                @foreach($flaggedGroups as $g)
-                                    @php $firstFlagged = $g['tests']->firstWhere('status', 'flagged'); @endphp
-                                    <div style="display:flex; align-items:center; justify-content:space-between;">
-                                        <span style="font-size:12.5px; color:#92400e;">
-                                            <span style="font-family:monospace; font-weight:600;">{{ $g['submission']->reference_number }}</span>
-                                            — {{ $g['submission']->client->company_name ?? '?' }}
-                                            <span style="display:inline-flex; align-items:center; margin-left:8px; padding:1px 8px; background:#fef3c7; color:#92400e; border-radius:20px; font-size:11px;">{{ $g['flagged'] }} flagged</span>
-                                        </span>
-                                        @if($firstFlagged)
-                                            <a href="{{ route('analyst.tests.show', $firstFlagged->id) }}"
-                                               style="font-size:11px; font-weight:600; color:#d97706; text-decoration:none;">
-                                                Review &rarr;
-                                            </a>
-                                        @endif
-                                    </div>
-                                @endforeach
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            @endif
 
             {{-- ── My Tests (Grouped by Submission) ──────────────────── --}}
             @php
@@ -314,12 +343,18 @@
                                             </thead>
                                             <tbody>
                                                 @foreach($tests as $i => $test)
-                                                    <tr style="background:{{ $i % 2 === 0 ? '#fff' : '#f8fafc' }}; border-bottom:1px solid #f1f5f9;">
+                                                    @php $rowIsFlagged = $test->status === 'flagged'; @endphp
+                                                    <tr style="background:{{ $rowIsFlagged ? '#fff5f5' : ($i % 2 === 0 ? '#fff' : '#f8fafc') }}; border-bottom:1px solid {{ $rowIsFlagged ? '#fecaca' : '#f1f5f9' }}; {{ $rowIsFlagged ? 'border-left:3px solid #dc2626;' : '' }}">
                                                         <td style="padding:10px 16px; font-size:12.5px;">
                                                             <a href="{{ route('analyst.tests.show', $test->id) }}"
-                                                               style="font-weight:600; color:#1a2f4e; text-decoration:none;">
+                                                               style="font-weight:600; color:{{ $rowIsFlagged ? '#dc2626' : '#1a2f4e' }}; text-decoration:none;">
                                                                 {{ $test->getDisplayLabel() }}
                                                             </a>
+                                                            @if($rowIsFlagged)
+                                                                <span style="display:inline-block; margin-left:6px; font-size:10px; font-weight:700; color:#dc2626; background:#fef2f2; border:1px solid #fca5a5; border-radius:3px; padding:1px 6px; letter-spacing:.04em;">
+                                                                    DIRECTOR QUERY
+                                                                </span>
+                                                            @endif
                                                         </td>
                                                         <td style="padding:10px 16px; font-size:12.5px; color:#475569;">
                                                             <p style="font-weight:600; margin:0;">{{ $test->sample->common_name }}</p>

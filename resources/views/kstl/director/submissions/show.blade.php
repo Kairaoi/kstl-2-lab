@@ -67,7 +67,7 @@
     </style>
     @endpush
 
-    <div style="background:#f1f5f9;min-height:100vh;padding:52px 0 56px;">
+    <div style="background:#f1f5f9;min-height:100vh;padding:0 0 56px;">
         <div style="max-width:80rem;margin:0 auto;padding:0 2rem;" class="space-y-5"
              x-data="{
                 selectedTests: [],
@@ -259,11 +259,9 @@
                             <table style="width:100%;border-collapse:collapse;">
                                 <thead>
                                     <tr style="background:#1a2f4e;">
-                                        @if(!$existingResult)
-                                            <th style="padding:9px 12px;width:36px;">
-                                                <span class="sr-only">Select for query</span>
-                                            </th>
-                                        @endif
+                                        <th style="padding:9px 12px;width:36px;">
+                                            <span class="sr-only">Select for query</span>
+                                        </th>
                                         <th style="text-align:left;padding:9px 16px;font-size:9px;font-weight:700;letter-spacing:.12em;text-transform:uppercase;color:#e2e8f0;">Test</th>
                                         <th style="text-align:left;padding:9px 16px;font-size:9px;font-weight:700;letter-spacing:.12em;text-transform:uppercase;color:#e2e8f0;">Result</th>
                                         <th style="text-align:left;padding:9px 16px;font-size:9px;font-weight:700;letter-spacing:.12em;text-transform:uppercase;color:#e2e8f0;">Value</th>
@@ -285,21 +283,20 @@
                                         @endphp
                                         <tr style="{{ $rowStyle }}border-bottom:1px solid #f1f5f9;">
 
-                                            {{-- Select checkbox (for query analyst) --}}
-                                            @if(!$existingResult)
-                                                <td class="px-4 py-3 text-center">
-                                                    @if(!$isDone)
-                                                        <input type="checkbox"
-                                                               :value="'{{ $test->id }}'"
-                                                               x-model="selectedTests"
-                                                               class="rounded text-amber-600 focus:ring-amber-500">
-                                                    @else
-                                                        <svg class="w-4 h-4 text-green-500 mx-auto" fill="currentColor" viewBox="0 0 20 20">
-                                                            <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.857-9.809a.75.75 0 00-1.214-.882l-3.483 4.79-1.88-1.88a.75.75 0 10-1.06 1.061l2.5 2.5a.75.75 0 001.137-.089l4-5.5z" clip-rule="evenodd"/>
-                                                        </svg>
-                                                    @endif
-                                                </td>
-                                            @endif
+                                            {{-- Select checkbox — always visible so Director can query at any stage --}}
+                                            <td class="px-4 py-3 text-center">
+                                                @if(!$existingResult && $isDone)
+                                                    {{-- pre-auth: already authorised individually — show tick --}}
+                                                    <svg class="w-4 h-4 text-green-500 mx-auto" fill="currentColor" viewBox="0 0 20 20">
+                                                        <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.857-9.809a.75.75 0 00-1.214-.882l-3.483 4.79-1.88-1.88a.75.75 0 10-1.06 1.061l2.5 2.5a.75.75 0 001.137-.089l4-5.5z" clip-rule="evenodd"/>
+                                                    </svg>
+                                                @else
+                                                    <input type="checkbox"
+                                                           :value="'{{ $test->id }}'"
+                                                           x-model="selectedTests"
+                                                           class="rounded text-amber-600 focus:ring-amber-500">
+                                                @endif
+                                            </td>
 
                                             {{-- Test name --}}
                                             <td class="px-4 py-3">
@@ -352,10 +349,15 @@
                                                 @endif
                                             </td>
 
-                                            {{-- Notes (highlightable) --}}
+                                            {{-- Notes (highlightable) — strip [Director query] blocks for display --}}
+                                            @php
+                                                $displayNotes = $test->result_notes
+                                                    ? trim(preg_replace('/\n*\[Director query\].*/s', '', $test->result_notes))
+                                                    : '';
+                                            @endphp
                                             <td class="px-4 py-3 text-xs text-gray-500 max-w-xs highlightable"
                                                 data-hl-cell="test-{{ $test->id }}-notes">
-                                                {{ $test->result_notes ? \Illuminate\Support\Str::limit($test->result_notes, 80) : '—' }}
+                                                {{ $displayNotes ? \Illuminate\Support\Str::limit($displayNotes, 80) : '—' }}
                                             </td>
 
                                             {{-- Analyst --}}
@@ -649,6 +651,51 @@
                        style="display:inline-flex;align-items:center;gap:6px;padding:8px 18px;background:#1a2f4e;color:#fff;border-radius:3px;font-size:12px;font-weight:600;text-decoration:none;white-space:nowrap;">
                         View Internal Report &rarr;
                     </a>
+                </div>
+
+                {{-- ── Post-Authorization Query Panel ──────────────────── --}}
+                {{-- Visible only when the Director ticks one or more tests in the table above --}}
+                <div style="background:#fff;border:1px solid #fbbf24;border-radius:4px;overflow:hidden;"
+                     x-show="selectedTests.length > 0"
+                     x-cloak>
+                    <div style="padding:14px 20px;border-bottom:2px solid #d97706;background:#fffbeb;display:flex;align-items:center;gap:12px;">
+                        <svg style="width:18px;height:18px;flex-shrink:0;" fill="none" stroke="#d97706" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01M10.29 3.86L1.82 18a2 2 0 001.71 3h16.94a2 2 0 001.71-3L13.71 3.86a2 2 0 00-3.42 0z"/>
+                        </svg>
+                        <div>
+                            <p style="font-family:'Georgia',serif;font-size:15px;font-weight:700;color:#92400e;margin:0;">Post-Authorisation Query</p>
+                            <p style="font-size:11px;color:#b45309;margin:4px 0 0;">
+                                <span x-text="selectedTests.length"></span> test(s) selected. Sending this query will withdraw the current authorisation and return the submission to the analyst for clarification.
+                            </p>
+                        </div>
+                    </div>
+                    <form method="POST"
+                          action="{{ route('director.submissions.query', $submission->id) }}">
+                        @csrf
+                        <template x-for="testId in selectedTests" :key="testId">
+                            <input type="hidden" name="test_ids[]" :value="testId">
+                        </template>
+                        <div style="padding:16px 20px;">
+                            <label style="display:block;font-size:9px;font-weight:700;letter-spacing:.14em;text-transform:uppercase;color:#9ca3af;margin-bottom:8px;">
+                                Query / Concern <span style="color:#ef4444;">*</span>
+                            </label>
+                            <textarea name="query_notes" rows="4" required
+                                      style="width:100%;border:1px solid #fbbf24;border-radius:3px;padding:9px 12px;font-size:12.5px;color:#374151;resize:vertical;box-sizing:border-box;outline:none;"
+                                      placeholder="Describe what needs clarification from the analyst. The authorisation will be withdrawn and the analyst notified by email."></textarea>
+                        </div>
+                        <div style="padding:12px 20px;border-top:1px solid #fef3c7;background:#fffbeb;display:flex;align-items:center;justify-content:space-between;">
+                            <p style="font-size:11px;color:#b45309;margin:0;">
+                                The analyst will receive an email and in-app notification immediately.
+                            </p>
+                            <button type="submit"
+                                    style="display:inline-flex;align-items:center;gap:6px;padding:8px 18px;background:#b8922a;color:#fff;border-radius:3px;font-size:12px;font-weight:600;border:none;cursor:pointer;">
+                                <svg style="width:13px;height:13px;" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8.228 9c.549-1.165 2.03-2 3.772-2 2.21 0 4 1.343 4 3 0 1.4-1.278 2.575-3.006 2.907-.542.104-.994.54-.994 1.093m0 3h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/>
+                                </svg>
+                                Send Post-Authorisation Query
+                            </button>
+                        </div>
+                    </form>
                 </div>
             @endif
 

@@ -2,7 +2,7 @@
 
 <x-app-layout>
     <x-slot name="header">
-        <div style="position:relative;overflow:hidden;background:linear-gradient(135deg,#0f2240 0%,#1a2f4e 60%,#1e3a5f 100%);">
+        <div style="position:relative;overflow:hidden;background:linear-gradient(135deg,#0f2240 0%,#1a2f4e 60%,#1e3a5f 100%);margin:-1px;">
             <div style="height:3px;background:linear-gradient(90deg,#1a2f4e,#dc2626 30%,#dc2626 70%,#1a2f4e);"></div>
             <div style="max-width:80rem;margin:0 auto;padding:28px 2rem 32px;">
                 <div style="display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:16px;">
@@ -27,13 +27,13 @@
 
     @push('styles')
     <style>
-        .page-hdr { padding: 0 !important; }
+        .page-hdr { padding: 0 !important; position: static !important; }
         .page-hdr-inner { max-width: 100% !important; padding: 0 !important; }
         .app-main { padding-left:0 !important; padding-right:0 !important; padding-top:0 !important; max-width:100% !important; }
     </style>
     @endpush
 
-    <div style="background:#f1f5f9;min-height:100vh;padding:52px 0 56px;">
+    <div style="background:#f1f5f9;min-height:100vh;padding:0 0 56px;">
         <div style="max-width:72rem;margin:0 auto;padding:0 2rem;">
 
             {{-- Intro banner --}}

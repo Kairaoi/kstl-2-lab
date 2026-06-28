@@ -1,4 +1,4 @@
-{{-- resources/views/kstl/client/results/show.blade.php --}}
+﻿{{-- resources/views/kstl/client/results/show.blade.php --}}
 
 <x-app-layout>
     <x-slot name="header">
@@ -12,7 +12,7 @@
                          style="width:56px;height:56px;object-fit:contain;filter:brightness(0) invert(1);opacity:.92;">
                     <div>
                         <p style="font-size:8.5px;font-weight:700;letter-spacing:.22em;text-transform:uppercase;color:#b8922a;margin-bottom:5px;">
-                            Client Portal &nbsp;·&nbsp; Seafood Toxicology Laboratory
+                            Client &nbsp;·&nbsp; Seafood Toxicology Laboratory
                         </p>
                         <h1 style="font-family:'Georgia',serif;font-size:22px;font-weight:700;color:#ffffff;line-height:1.2;margin:0;">
                             Certificate of Analysis
@@ -30,14 +30,14 @@
                         </svg>
                         Back to Results
                     </a>
-                    <button onclick="window.print()"
-                            style="display:inline-flex;align-items:center;gap:6px;background:rgba(255,255,255,.1);border:1px solid rgba(255,255,255,.2);color:#e2e8f0;padding:7px 16px;border-radius:3px;font-size:11px;font-weight:600;cursor:pointer;">
+                    <a href="{{ route('client.results.pdf', $submission->id) }}"
+                       style="display:inline-flex;align-items:center;gap:6px;background:rgba(255,255,255,.1);border:1px solid rgba(255,255,255,.2);color:#e2e8f0;padding:7px 16px;border-radius:3px;font-size:11px;font-weight:600;text-decoration:none;">
                         <svg style="width:13px;height:13px;" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                                  d="M17 17h2a2 2 0 002-2v-4a2 2 0 00-2-2H5a2 2 0 00-2 2v4a2 2 0 002 2h2m2 4h6a2 2 0 002-2v-4a2 2 0 00-2-2H9a2 2 0 00-2 2v4a2 2 0 002 2zm8-12V5a2 2 0 00-2-2H9a2 2 0 00-2 2v4h10z"/>
+                                  d="M12 10v6m0 0l-3-3m3 3l3-3m2 8H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"/>
                         </svg>
-                        Print / Save PDF
-                    </button>
+                        Download PDF
+                    </a>
                 </div>
             </div>
         </div>
@@ -45,7 +45,7 @@
 
     @push('styles')
     <style>
-        .page-hdr { padding: 0 !important; }
+        .page-hdr { padding: 0 !important; position: static !important; }
         .page-hdr-inner { max-width: 100% !important; padding: 0 !important; }
         .app-main { padding-left: 0 !important; padding-right: 0 !important;
                     padding-top: 0 !important; max-width: 100% !important; }
@@ -222,7 +222,7 @@
     </style>
     @endpush
 
-    <div class="coa-wrap" style="padding:52px 0 56px; margin-top:24px;">
+    <div class="coa-wrap" style="padding:0 0 56px; margin-top:24px;">
         <div class="max-w-5xl mx-auto px-4">
             <div class="coa-paper">
                 <div class="coa-inner">
@@ -245,7 +245,7 @@
                         {{-- Contact --}}
                         <div class="coa-lh-contact">
                             <strong>Seafood Toxicology Laboratory</strong><br>
-                            National Fisheries, Tarawa,<br>Kiribati<br>
+                            Ministry of Fisheries and Ocean Resources,<br>Tarawa, Kiribati<br>
                             t. +686 [Your Number]<br>
                             e. stld@fisheries.gov.ki<br>
                             w. stld.fisheries.gov.ki

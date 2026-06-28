@@ -1,4 +1,4 @@
-<!DOCTYPE html>
+﻿<!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="UTF-8">
@@ -184,7 +184,7 @@
                 If you choose to <strong>cancel</strong>: no testing will be carried out and you are welcome
                 to submit a fresh sample at any time.<br><br>
                 If you have questions, contact us at <strong>{{ config('mail.from.address') }}</strong>
-                or log in to your client portal to review this submission.
+                or log in to your client to review this submission.
             </div>
 
         </div>

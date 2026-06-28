@@ -78,7 +78,10 @@ class DirectorController extends Controller
             $testsBySample[$sample->id] = $tests;
         }
 
-        $existingResult = $this->resultRepo->findBySubmissionId($id);
+        $resultRecord   = $this->resultRepo->findBySubmissionId($id);
+        // After a post-auth query the Result row exists but is cleared (authorised_at = null).
+        // Treat it as non-existent for UI purposes so the Director can re-authorise.
+        $existingResult = ($resultRecord && $resultRecord->authorised_at) ? $resultRecord : null;
 
         return view('kstl.director.submissions.show',
             compact('submission', 'samples', 'testsBySample', 'existingResult'));
@@ -260,45 +263,81 @@ class DirectorController extends Controller
     {
         $submission = $this->submissionRepo->getById($id);
 
-        // A submission can only be queried while it is awaiting authorisation.
-        if ($submission->status !== Submission::STATUS_AWAITING_AUTHORISATION) {
+        $allowedStatuses = [
+            Submission::STATUS_AWAITING_AUTHORISATION,
+            Submission::STATUS_AUTHORISED,
+        ];
+
+        if (! in_array($submission->status, $allowedStatuses, true)) {
             return redirect()->back()
-                ->with('error', 'This submission can no longer be queried — it is not awaiting authorisation.');
+                ->with('error', 'This submission cannot be queried in its current state.');
         }
 
         $validated = $request->validate([
-            'test_ids'     => ['required', 'array', 'min:1'],
-            'test_ids.*'   => ['string'],
-            'query_notes'  => ['required', 'string', 'max:1000'],
+            'test_ids'    => ['required', 'array', 'min:1'],
+            'test_ids.*'  => ['string'],
+            'query_notes' => ['required', 'string', 'max:1000'],
         ]);
 
-        DB::transaction(function () use ($validated, $id) {
+        $fromStatus       = $submission->status;
+        $postAuthorisation = $fromStatus === Submission::STATUS_AUTHORISED;
+
+        DB::transaction(function () use ($validated, $id, $postAuthorisation, $submission) {
             foreach ($validated['test_ids'] as $testId) {
                 $test = $this->testRepo->getById($testId);
                 $test->update([
-                    'status'       => SampleTest::STATUS_FLAGGED,
-                    'result_notes' => ($test->result_notes ? $test->result_notes . "\n\n" : '')
+                    'status'                 => SampleTest::STATUS_FLAGGED,
+                    // Clear any per-test director decision so it must be re-reviewed
+                    'director_outcome'       => null,
+                    'director_authorised_at' => null,
+                    'director_authorised_by' => null,
+                    'result_notes'           => ($test->result_notes ? $test->result_notes . "\n\n" : '')
                         . '[Director query] ' . $validated['query_notes'],
                 ]);
+            }
+
+            // If the submission was already authorised, withdraw the authorisation
+            // so the Director must re-approve once the analyst responds.
+            if ($postAuthorisation) {
+                $result = $this->resultRepo->findBySubmissionId($submission->id);
+                if ($result) {
+                    $result->update([
+                        'authorised_at'      => null,
+                        'authorised_by'      => null,
+                        'overall_outcome'    => null,
+                        'client_notified_at' => null,
+                    ]);
+                }
             }
 
             $this->submissionRepo->updateStatus($id, Submission::STATUS_TESTING);
         });
 
         $submission = $this->submissionRepo->getById($id);
+
         $this->auditService->logStatusChange(
             $submission,
-            Submission::STATUS_AWAITING_AUTHORISATION,
+            $fromStatus,
             Submission::STATUS_TESTING
         );
 
+        // Notify the analyst by email and in-app notification
+        $this->notifyService->notifyAnalystQueried(
+            $submission,
+            $validated['test_ids'],
+            $validated['query_notes'],
+            $postAuthorisation,
+        );
+
         Log::info('Director queried analyst', [
-            'submission_id' => $id,
-            'test_count'    => count($validated['test_ids']),
-            'director_id'   => Auth::id(),
+            'submission_id'    => $id,
+            'test_count'       => count($validated['test_ids']),
+            'from_status'      => $fromStatus,
+            'post_auth'        => $postAuthorisation,
+            'director_id'      => Auth::id(),
         ]);
 
-        return redirect()->route('director.dashboard')
+        return redirect()->route('director.submissions.show', $id)
             ->with('warning', "Query sent. {$submission->reference_number} returned to analyst for clarification.");
     }
 

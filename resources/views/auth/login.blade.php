@@ -1,4 +1,4 @@
-<x-guest-layout>
+﻿<x-guest-layout>
 <style>
     .login-wrap {
         min-height: calc(100vh - 99px);
@@ -134,7 +134,7 @@
 
         {{-- Header --}}
         <div class="login-header">
-            <div class="lh-kicker"><span class="lh-dot"></span>Official Portal</div>
+            <div class="lh-kicker"><span class="lh-dot"></span>Official</div>
             <div class="lh-title">Sign In</div>
             <div class="lh-sub">Kiribati Seafood Toxicology Laboratory &middot; LIMS</div>
         </div>
@@ -198,11 +198,6 @@
             </form>
         </div>
 
-        @if (Route::has('register'))
-            <div class="login-register">
-                Don't have an account? <a href="{{ route('register') }}">Register here</a>
-            </div>
-        @endif
 
     </div>
 </div>

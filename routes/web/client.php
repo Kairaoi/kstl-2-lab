@@ -79,6 +79,8 @@ Route::middleware([
         ->name('results.index');
     Route::get('/results/{submission}', [ClientResultController::class, 'show'])
         ->name('results.show');
+    Route::get('/results/{submission}/pdf', [ClientResultController::class, 'pdf'])
+        ->name('results.pdf');
     Route::get('/results/{result}/download', [ClientController::class, 'resultsDownload'])
         ->name('results.download');
 

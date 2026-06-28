@@ -1,4 +1,4 @@
-<!DOCTYPE html>
+﻿<!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="UTF-8">
@@ -92,7 +92,7 @@
             </div>
 
             <div class="note">
-                Log in to the KSTL portal to view your complete test results, download your report,
+                Log in to the KSTL to view your complete test results, download your report,
                 and check your invoice. Contact us at <strong>{{ config('mail.from.address') }}</strong>
                 if you have any questions.
             </div>

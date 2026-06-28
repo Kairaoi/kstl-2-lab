@@ -15,17 +15,20 @@ class ResultRepository extends BaseRepository
     }
 
     /**
-     * Create the authorised result record for a submission.
+     * Create or update the authorised result record for a submission.
+     * updateOrCreate handles re-authorisation after a post-auth query clears the row.
      */
     public function authorise(string $submissionId, array $input): Result
     {
-        $result = $this->model->create([
-            'submission_id'      => $submissionId,
-            'authorised_by'      => Auth::id(),
-            'overall_outcome'    => $input['overall_outcome'],
-            'director_comments'  => $input['director_comments'] ?? null,
-            'authorised_at'      => now(),
-        ]);
+        $result = $this->model->updateOrCreate(
+            ['submission_id'  => $submissionId],
+            [
+                'authorised_by'     => Auth::id(),
+                'overall_outcome'   => $input['overall_outcome'],
+                'director_comments' => $input['director_comments'] ?? null,
+                'authorised_at'     => now(),
+            ]
+        );
 
         Log::info('Result authorised by Director', [
             'result_id'       => $result->id,

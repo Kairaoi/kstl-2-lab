@@ -1,4 +1,4 @@
-{{-- resources/views/kstl/client/submissions/create.blade.php --}}
+﻿{{-- resources/views/kstl/client/submissions/create.blade.php --}}
 
 <x-app-layout>
     <x-slot name="header">
@@ -11,7 +11,7 @@
                         <img src="{{ asset('images/mfor-logo.png') }}" alt="Ministry of Fisheries &amp; Ocean Resources" style="width:56px;height:56px;object-fit:contain;filter:brightness(0) invert(1);opacity:.92;">
                         <div>
                             <p style="font-size:8.5px;font-weight:700;letter-spacing:.22em;text-transform:uppercase;color:#b8922a;margin-bottom:5px;">
-                                Client Portal &nbsp;·&nbsp; Seafood Toxicology Laboratory
+                                Client &nbsp;·&nbsp; Seafood Toxicology Laboratory
                             </p>
                             <h1 style="font-family:'Georgia',serif;font-size:22px;font-weight:700;color:#ffffff;line-height:1.2;margin:0;">
                                 New Sample Submission
@@ -34,10 +34,11 @@
 
     @push('styles')
     <style>
-        .page-hdr { padding: 0 !important; }
+        .page-hdr { padding: 0 !important; position: static !important; }
         .page-hdr-inner { max-width: 100% !important; padding: 0 !important; }
         .app-main { padding-left: 0 !important; padding-right: 0 !important;
                     padding-top: 0 !important; max-width: 100% !important; }
+        [x-cloak] { display: none !important; }
         :root {
             --gov-navy:   #1a2f4e;
             --gov-gold:   #b8922a;
@@ -106,7 +107,7 @@
     </style>
     @endpush
 
-    <div style="background:#f1f5f9; min-height:100vh; padding:36px 0 64px;">
+    <div style="background:#f1f5f9; min-height:100vh; padding:0 0 56px;">
         <div style="max-width:72rem; margin:0 auto; padding:0 2rem;">
 
             {{-- Validation Errors --}}
@@ -128,10 +129,11 @@
 
             {{-- Draft restore banner --}}
             <div x-show="hasDraft"
+                 x-cloak
                  x-transition:enter="transition ease-out duration-200"
                  x-transition:enter-start="opacity-0 -translate-y-2"
                  x-transition:enter-end="opacity-100 translate-y-0"
-                 style="display:none; margin-bottom:20px; background:#fff; border:1px solid var(--gov-border); border-left:4px solid var(--gov-gold); border-radius:4px; padding:14px 18px; display:flex; align-items:center; justify-content:space-between; gap:16px;">
+                 style="margin-bottom:20px; background:#fff; border:1px solid var(--gov-border); border-left:4px solid var(--gov-gold); border-radius:4px; padding:14px 18px; display:flex; align-items:center; justify-content:space-between; gap:16px;">
                 <div style="display:flex; align-items:center; gap:10px;">
                     <svg style="width:16px;height:16px;color:#b8922a;flex-shrink:0;" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7H5a2 2 0 00-2 2v9a2 2 0 002 2h14a2 2 0 002-2V9a2 2 0 00-2-2h-3m-1 4l-3 3m0 0l-3-3m3 3V4"/>

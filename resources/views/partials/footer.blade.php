@@ -1,4 +1,4 @@
-{{-- Seafood Toxicology Laboratory — Footer Component (Routes Removed) --}}
+﻿{{-- Seafood Toxicology Laboratory — Footer Component (Routes Removed) --}}
 <style>
     .stld-footer {
         font-family: 'DM Sans', sans-serif;
@@ -231,7 +231,7 @@
                     </svg>
                     <div class="brand-name">
                         Seafood Toxicology<br>Laboratory
-                        <span>STLD · Official Portal</span>
+                        <span>STLD · Official</span>
                     </div>
                 </div>
                 <p class="brand-desc">
@@ -280,7 +280,7 @@
                     <div class="contact-text">
                         <strong>Address</strong>
                         Seafood Toxicology Laboratory<br>
-                        National Fisheries Division
+                        Ministry of Fisheries and Ocean Resources
                     </div>
                 </div>
                 <div class="contact-item">

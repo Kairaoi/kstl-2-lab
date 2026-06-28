@@ -1,21 +1,25 @@
 ﻿{{-- resources/views/kstl/client/notifications/create.blade.php --}}
 <x-app-layout>
     <x-slot name="header">
-        <div style="position:relative;overflow:hidden;background:linear-gradient(135deg,#0f2240 0%,#1a2f4e 60%,#1e3a5f 100%);">
-            <div style="height:3px;background:linear-gradient(90deg,#1a2f4e,#b8922a 30%,#b8922a 70%,#1a2f4e);"></div>
-            <div style="max-width:80rem;margin:0 auto;padding:28px 2rem 32px;">
-                <div style="display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:16px;">
-                    <div style="display:flex;align-items:center;gap:20px;">
-                        <img src="{{ asset('images/mfor-logo.png') }}" alt="MFOR" style="filter:brightness(0) invert(1);opacity:.92;width:56px;height:56px;flex-shrink:0;">
+        <div style="position:relative;overflow:hidden;background:linear-gradient(135deg,#0f2240 0%,#1a2f4e 60%,#1e3a5f 100%);margin:-1px;">
+            <div style="position:absolute;inset:0;opacity:.04;background-image:repeating-linear-gradient(45deg,#fff 0,#fff 1px,transparent 0,transparent 50%);background-size:12px 12px;pointer-events:none;"></div>
+            <div style="position:absolute;top:0;left:0;right:0;height:3px;background:linear-gradient(90deg,#1a2f4e,#b8922a 30%,#b8922a 70%,#1a2f4e);"></div>
+            <div style="max-width:80rem;margin:0 auto;padding:28px 2rem;">
+                <div style="display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:16px;position:relative;">
+                    <div style="display:flex;align-items:center;gap:18px;">
+                        <img src="{{ asset('images/mfor-logo.png') }}" alt="Ministry of Fisheries &amp; Ocean Resources" style="width:56px;height:56px;object-fit:contain;filter:brightness(0) invert(1);opacity:.92;">
                         <div>
-                            <p style="font-size:9px;font-weight:700;letter-spacing:.18em;text-transform:uppercase;color:#b8922a;margin:0 0 4px;">Administration</p>
-                            <h1 style="font-family:'Georgia',serif;font-size:22px;font-weight:700;color:#fff;margin:0 0 6px;line-height:1.2;">Create Notification</h1>
-                            <p style="font-size:12px;color:#94a3b8;margin:0;">Compose and send a notification to a client</p>
+                            <p style="font-size:8.5px;font-weight:700;letter-spacing:.22em;text-transform:uppercase;color:#b8922a;margin-bottom:5px;">Client &nbsp;·&nbsp; Seafood Toxicology Laboratory</p>
+                            <h1 style="font-family:'Georgia',serif;font-size:22px;font-weight:700;color:#fff;margin:0;line-height:1.2;">Create Notification</h1>
+                            <p style="font-size:11px;color:#94a3b8;margin-top:4px;">Compose and send a notification to a client</p>
                         </div>
                     </div>
                     <div style="display:flex;align-items:center;gap:10px;flex-wrap:wrap;">
-                        <a href="{{ route('client.notifications.index') }}" style="display:inline-flex;align-items:center;gap:8px;padding:8px 20px;background:#fff;color:#1a2f4e;font-size:12px;font-weight:700;letter-spacing:.06em;border:1px solid rgba(255,255,255,.5);border-radius:3px;text-decoration:none;">
-                            &larr; All Notifications
+                        <a href="{{ route('client.notifications.index') }}" style="display:inline-flex;align-items:center;gap:5px;font-size:11px;font-weight:600;color:#94a3b8;text-decoration:none;">
+                            <svg style="width:12px;height:12px;" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7"/>
+                            </svg>
+                            All Notifications
                         </a>
                     </div>
                 </div>
@@ -25,13 +29,13 @@
 
     @push('styles')
     <style>
-        .page-hdr { padding: 0 !important; }
+        .page-hdr { padding: 0 !important; position: static !important; }
         .page-hdr-inner { max-width: 100% !important; padding: 0 !important; }
         .app-main { padding-left:0 !important; padding-right:0 !important; padding-top:0 !important; max-width:100% !important; }
     </style>
     @endpush
 
-    <div style="background:#f1f5f9;min-height:100vh;padding:52px 0 56px;">
+    <div style="background:#f1f5f9;min-height:100vh;padding:0 0 56px;">
         <div style="max-width:56rem;margin:0 auto;padding:0 2rem;">
 
             @if(session('success'))
@@ -110,7 +114,7 @@
                                 </label>
                                 <textarea name="message" rows="6" required
                                           style="width:100%;padding:8px 12px;border:1px solid #cbd5e1;border-radius:3px;font-size:13px;color:#1e293b;background:#fff;resize:vertical;box-sizing:border-box;">{{ old('message') }}</textarea>
-                                <p style="font-size:11px;color:#94a3b8;margin:4px 0 0;">This message will appear in the client's portal notification centre.</p>
+                                <p style="font-size:11px;color:#94a3b8;margin:4px 0 0;">This message will appear in the client's notification centre.</p>
                             </div>
 
                         </div>
