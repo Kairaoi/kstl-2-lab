@@ -8,6 +8,7 @@ use App\Repositories\Kstl\SampleRepository;
 use App\Repositories\Kstl\SampleAssessmentRepository;
 use App\Models\Kstl\Submission;
 use App\Models\Kstl\Sample;
+use App\Services\NotificationService;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
@@ -21,6 +22,7 @@ class ReceptionController extends Controller
         protected SubmissionRepository       $submissionRepo,
         protected SampleRepository           $sampleRepo,
         protected SampleAssessmentRepository $assessmentRepo,
+        protected NotificationService        $notificationService,
     ) {}
 
     // ── Dashboard — pending submissions queue ──────────────────────
@@ -99,6 +101,9 @@ class ReceptionController extends Controller
             'received_by'   => Auth::id(),
             'sample_count'  => count($validated['samples']),
         ]);
+
+        // Notify client their samples have arrived at the lab
+        $this->notificationService->notifyClientSamplesReceived($submission->fresh());
 
         return redirect()->route('reception.submissions.assess', $submission->id)
             ->with('success', 'Submission received. Please complete the sample assessment.');

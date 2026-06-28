@@ -34,12 +34,13 @@ class NotificationService
         try {
             Mail::to($email)->send(new ResultsReadyMail($submission, $result));
 
-            // Record in-app notification
+            // Record in-app notification — wording is intentionally neutral; outcome
+            // is communicated through the formal Certificate of Analysis, not here.
             $this->createInAppNotification(
                 userId:           $client->user->id,
                 type:             'results_ready',
-                subject:          "Your results are ready — {$submission->reference_number}",
-                message:          "The Director has authorised your test results. Overall outcome: " . ucfirst($result->overall_outcome) . ".",
+                subject:          "Laboratory assessment complete — {$submission->reference_number}",
+                message:          "The laboratory has completed the review of your submitted samples for {$submission->reference_number}. A formal report will be provided to you. Please contact the laboratory if you have any questions.",
                 notifiable:       $submission,
             );
 
@@ -296,6 +297,44 @@ class NotificationService
                     'error'        => $e->getMessage(),
                 ]);
             }
+        }
+    }
+
+    /**
+     * Notify client their samples have been physically received by reception.
+     * Called when reception marks a submission as received.
+     */
+    public function notifyClientSamplesReceived(Submission $submission): void
+    {
+        $client = $submission->client()->with('user')->first();
+        $email  = $client?->user?->email;
+
+        if (! $email) {
+            Log::warning('[NOTIFY] No email for client — samples_received skipped', [
+                'submission_id' => $submission->id,
+            ]);
+            return;
+        }
+
+        try {
+            $this->createInAppNotification(
+                userId:     $client->user->id,
+                type:       'samples_received',
+                subject:    "Your samples have been received — {$submission->reference_number}",
+                message:    "Your samples for submission {$submission->reference_number} have been received and logged by our reception team. The assessment process has begun. We will notify you when the next stage is complete.",
+                notifiable: $submission,
+            );
+
+            Log::info('[NOTIFY] samples_received sent to client', [
+                'submission_id' => $submission->id,
+                'client_id'     => $client->id,
+            ]);
+
+        } catch (\Exception $e) {
+            Log::error('[NOTIFY] samples_received FAILED', [
+                'submission_id' => $submission->id,
+                'error'         => $e->getMessage(),
+            ]);
         }
     }
 
