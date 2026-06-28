@@ -24,10 +24,30 @@
     </x-slot>
 
     @push('styles')
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/intl-tel-input@23/build/css/intlTelInput.css">
     <style>
         .page-hdr { padding: 0 !important; position: static !important; }
         .page-hdr-inner { max-width: 100% !important; padding: 0 !important; }
         .app-main { padding-left:0 !important; padding-right:0 !important; padding-top:0 !important; max-width:100% !important; }
+        /* Fit iti widget to our input style */
+        .iti { width: 100%; }
+        .iti__tel-input {
+            width: 100%;
+            padding: 8px 12px;
+            border: 1px solid #cbd5e1;
+            border-radius: 3px;
+            font-size: 13px;
+            color: #1e293b;
+            background: #fff;
+            box-sizing: border-box;
+        }
+        .iti__tel-input:focus {
+            outline: none;
+            border-color: #0d9488;
+            box-shadow: 0 0 0 2px rgba(13,148,136,.15);
+        }
+        /* company phone is 50% wide */
+        #company_phone_wrap { width: 50%; }
     </style>
     @endpush
 
@@ -41,7 +61,7 @@
                     {{-- Step 1 --}}
                     <div style="display:flex;align-items:center;gap:10px;">
                         <div style="width:32px;height:32px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:11px;font-weight:700;{{ $client ? 'background:#16a34a;color:#fff;' : 'background:#1a2f4e;color:#fff;' }}">
-                            {{ $client ? 'âœ“' : '1' }}
+                            {!! $client ? '&#10003;' : '1' !!}
                         </div>
                         <span style="font-size:13px;font-weight:600;{{ $client ? 'color:#16a34a;' : 'color:#1a2f4e;' }}">
                             Company Details
@@ -53,7 +73,7 @@
                     {{-- Step 2 --}}
                     <div style="display:flex;align-items:center;gap:10px;">
                         <div style="width:32px;height:32px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:11px;font-weight:700;{{ $client && $client->service_agreement_signed_at ? 'background:#16a34a;color:#fff;' : 'background:#e2e8f0;color:#64748b;' }}">
-                            {{ $client && $client->service_agreement_signed_at ? 'âœ“' : '2' }}
+                            {!! $client && $client->service_agreement_signed_at ? '&#10003;' : '2' !!}
                         </div>
                         <span style="font-size:13px;font-weight:600;color:#64748b;">
                             Sign Agreement
@@ -142,12 +162,14 @@
 
                             <div>
                                 <label for="company_phone" style="display:block;font-size:11px;font-weight:700;letter-spacing:.08em;text-transform:uppercase;color:#475569;margin-bottom:6px;">Company Phone</label>
-                                <input id="company_phone"
-                                       type="tel"
-                                       name="company_phone"
-                                       value="{{ old('company_phone', $client?->company_phone) }}"
-                                       style="width:50%;padding:8px 12px;border:1px solid #cbd5e1;border-radius:3px;font-size:13px;color:#1e293b;background:#fff;box-sizing:border-box;"
-                                       placeholder="+686 12345">
+                                <div id="company_phone_wrap">
+                                    <input id="company_phone"
+                                           type="tel"
+                                           data-iti
+                                           value="{{ old('company_phone', $client?->company_phone) }}"
+                                           placeholder="12345">
+                                    <input type="hidden" name="company_phone" id="company_phone_full">
+                                </div>
                                 @error('company_phone')<p style="margin:4px 0 0;font-size:12px;color:#dc2626;">{{ $message }}</p>@enderror
                             </div>
 
@@ -197,10 +219,10 @@
                                     <label for="responsible_officer_phone" style="display:block;font-size:11px;font-weight:700;letter-spacing:.08em;text-transform:uppercase;color:#475569;margin-bottom:6px;">Phone</label>
                                     <input id="responsible_officer_phone"
                                            type="tel"
-                                           name="responsible_officer_phone"
+                                           data-iti
                                            value="{{ old('responsible_officer_phone', $client?->responsible_officer_phone) }}"
-                                           style="width:100%;padding:8px 12px;border:1px solid #cbd5e1;border-radius:3px;font-size:13px;color:#1e293b;background:#fff;box-sizing:border-box;"
-                                           placeholder="+686 12345">
+                                           placeholder="12345">
+                                    <input type="hidden" name="responsible_officer_phone" id="responsible_officer_phone_full">
                                     @error('responsible_officer_phone')<p style="margin:4px 0 0;font-size:12px;color:#dc2626;">{{ $message }}</p>@enderror
                                 </div>
                             </div>
@@ -229,4 +251,45 @@
             </form>
         </div>
     </div>
+@push('scripts')
+<script src="https://cdn.jsdelivr.net/npm/intl-tel-input@23/build/js/intlTelInput.min.js"></script>
+<script>
+document.addEventListener('DOMContentLoaded', function () {
+    const itiOptions = {
+        initialCountry: 'ki',
+        separateDialCode: true,
+        preferredCountries: ['ki', 'au', 'nz', 'fj'],
+        loadUtils: () => import('https://cdn.jsdelivr.net/npm/intl-tel-input@23/build/js/utils.js'),
+    };
+
+    // Pairs of [visible input, hidden full-number input]
+    const pairs = [
+        ['company_phone',            'company_phone_full'],
+        ['responsible_officer_phone','responsible_officer_phone_full'],
+    ];
+
+    pairs.forEach(([visId, hidId]) => {
+        const visEl = document.getElementById(visId);
+        const hidEl = document.getElementById(hidId);
+        if (!visEl || !hidEl) return;
+
+        // Strip dial code from stored value so the visible input shows just the local number
+        const stored = visEl.value.trim();
+
+        const iti = window.intlTelInput(visEl, itiOptions);
+
+        // If there's a stored E.164 value (starts with +), let the library parse it
+        if (stored.startsWith('+')) {
+            iti.setNumber(stored);
+        }
+
+        // On form submit, copy full E.164 number into the hidden field
+        visEl.closest('form').addEventListener('submit', function () {
+            hidEl.value = iti.getNumber();
+        });
+    });
+});
+</script>
+@endpush
+
 </x-app-layout>

@@ -41,6 +41,8 @@ Route::middleware([
         ->name('agreement.sign');
     Route::get('/agreement/download', [ClientController::class, 'agreementDownload'])
         ->name('agreement.download');
+    Route::get('/agreement/preview', [ClientController::class, 'agreementPreview'])
+        ->name('agreement.preview');
 
     // ── Submissions ────────────────────────────────────────────────────────
     Route::get('/submissions', [ClientController::class, 'submissionsIndex'])

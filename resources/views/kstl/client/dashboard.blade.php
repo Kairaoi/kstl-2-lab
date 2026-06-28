@@ -454,7 +454,8 @@
                                         Download PDF
                                     </a>
                                     <span style="color:#e2e8f0;">|</span>
-                                    <a href="{{ route('client.agreement.show') }}"
+                                    <a href="{{ route('client.agreement.preview') }}"
+                                       target="_blank"
                                        style="font-size:11px;color:#6b7280;text-decoration:none;">View Agreement</a>
                                 </div>
 

@@ -1244,4 +1244,21 @@ public function agreementDownload(Request $request)
     return $pdf->download($filename);
 }
 
+public function agreementPreview(Request $request)
+{
+    $user   = Auth::user();
+    $client = $this->clientRepo->findByUserId($user->id);
+
+    if (! $client) {
+        abort(404);
+    }
+
+    $pdf = Pdf::loadView('kstl.client.agreement.pdf', compact('user', 'client'))
+        ->setPaper('a4', 'portrait');
+
+    $filename = 'KSTL-Service-Agreement-' . str_replace(' ', '-', $client->company_name) . '.pdf';
+
+    return $pdf->stream($filename);
+}
+
 }

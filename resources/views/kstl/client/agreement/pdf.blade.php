@@ -90,12 +90,15 @@
             border-radius: 3px;
             padding: 8px;
             background: #fff;
-            min-height: 70px;
+            height: 90px;
+            overflow: hidden;
             margin-top: 8px;
+            display: flex;
+            align-items: center;
         }
 
         .sig-image-box img {
-            max-height: 70px;
+            max-height: 74px;
             max-width: 100%;
         }
 
@@ -268,17 +271,13 @@
                     </div>
                     <div class="sig-field">
                         <p class="sig-label">Signature</p>
-                        <div class="sig-image-box" style="min-height:55px; color:#aaa; font-size:10px; padding-top:18px;">
+                        <div class="sig-image-box">
                         @if($client->director_signature_data)
-                            <div class="sig-image-box">
-                                <img src="{{ $client->director_signature_data }}" alt="Director signature" style="max-height:70px;"/>
-                            </div>
+                            <img src="{{ $client->director_signature_data }}" alt="Director signature"/>
                         @else
-                            <div class="sig-image-box" style="min-height:55px; color:#aaa; font-size:10px; padding-top:18px;">
-                                Awaiting Director countersignature
-                            </div>
+                            <span style="color:#aaa; font-size:10px;">Awaiting Director countersignature</span>
                         @endif
-                    </div>
+                        </div>
                     <div class="sig-field">
                         <p class="sig-label">Date</p>
                         <p class="sig-value">{{ $client->director_signed_at ? $client->director_signed_at->format('d F Y') : '—' }}</p>
@@ -307,8 +306,8 @@
                                      alt="Signature of {{ $client->responsible_officer_name }}"/>
                             </div>
                         @else
-                            <div class="sig-image-box" style="color:#aaa; font-size:10px; padding-top:18px;">
-                                Digital signature on file
+                            <div class="sig-image-box">
+                                <span style="color:#aaa; font-size:10px;">Digital signature on file</span>
                             </div>
                         @endif
                     </div>
