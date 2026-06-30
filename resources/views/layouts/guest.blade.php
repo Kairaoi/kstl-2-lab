@@ -48,7 +48,6 @@
         .gt-left { display: flex; align-items: center; gap: 9px; }
         .gt-emblem {
             width: 22px; height: 22px;
-            border: 1px solid rgba(255,255,255,.2); border-radius: 50%;
             display: flex; align-items: center; justify-content: center;
         }
         .gt-emblem svg { width: 11px; height: 11px; stroke: rgba(255,255,255,.6); fill: none; }

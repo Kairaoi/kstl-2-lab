@@ -47,8 +47,6 @@ body{font-family:'Noto Sans',sans-serif;font-weight:400;background:var(--bg);col
 .gt-left{display:flex;align-items:center;gap:10px}
 .gt-emblem{
     width:28px;height:28px;
-    border:1px solid rgba(255,255,255,.2);
-    border-radius:50%;
     display:flex;align-items:center;justify-content:center;
 }
 .gt-emblem svg{width:14px;height:14px;stroke:rgba(255,255,255,.7)}
@@ -68,8 +66,6 @@ nav{
 .nav-brand{display:flex;align-items:center;gap:14px;text-decoration:none}
 .nb-crest{
     width:42px;height:42px;
-    background:var(--navy);
-    border-radius:4px;
     display:flex;align-items:center;justify-content:center;
     flex-shrink:0;
 }
