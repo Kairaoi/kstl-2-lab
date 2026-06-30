@@ -233,26 +233,6 @@
                             <label class="ef-label">Tests Requested</label>
                             <p class="ef-hint">Select all tests required for this sample.</p>
 
-                            {{-- Seafood / Microbiological --}}
-                            <p style="font-size:10px;font-weight:700;letter-spacing:.1em;text-transform:uppercase;color:var(--gov-navy);margin:0 0 6px;">Seafood — Microbiological</p>
-                            <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:6px;margin-bottom:14px;">
-                                @foreach([
-                                    'e_coli_coliform' => 'E. coli &amp; Coliform',
-                                    'staph_aureus'    => 'Staph. aureus',
-                                    'apc'             => 'APC (Aerobic Plate Count)',
-                                    'yeast_mold'      => 'Yeast &amp; Mould',
-                                    'salmonella_spp'  => 'Salmonella species',
-                                    'listeria_spp'    => 'Listeria species',
-                                    'clostridium'     => 'Clostridium',
-                                ] as $tv => $tl)
-                                    <label class="test-label">
-                                        <input type="checkbox" name="tests_requested[]" value="{{ $tv }}"
-                                               {{ in_array($tv, old('tests_requested', $testsRequested) ?? []) ? 'checked' : '' }}>
-                                        <span style="line-height:1.3;">{!! $tl !!}</span>
-                                    </label>
-                                @endforeach
-                            </div>
-
                             {{-- Water Testing --}}
                             <p style="font-size:10px;font-weight:700;letter-spacing:.1em;text-transform:uppercase;color:#0369a1;margin:0 0 6px;">Water Testing</p>
                             <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:6px;margin-bottom:14px;">
@@ -266,6 +246,25 @@
                                                style="accent-color:#0369a1;"
                                                {{ in_array($tv, old('tests_requested', $testsRequested) ?? []) ? 'checked' : '' }}>
                                         <span style="line-height:1.3;">{{ $tl }}</span>
+                                    </label>
+                                @endforeach
+                            </div>
+
+                            {{-- Microbiology --}}
+                            <p style="font-size:10px;font-weight:700;letter-spacing:.1em;text-transform:uppercase;color:var(--gov-navy);margin:0 0 6px;">Microbiology</p>
+                            <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:6px;margin-bottom:14px;">
+                                @foreach([
+                                    'e_coli_coliform' => 'E. coli &amp; Coliform',
+                                    'staph_aureus'    => 'Staph. aureus',
+                                    'apc'             => 'APC (Aerobic Plate Count)',
+                                    'yeast_mold'      => 'Yeast &amp; Mould',
+                                    'salmonella_spp'  => 'Salmonella species',
+                                    'listeria_spp'    => 'Listeria species',
+                                ] as $tv => $tl)
+                                    <label class="test-label">
+                                        <input type="checkbox" name="tests_requested[]" value="{{ $tv }}"
+                                               {{ in_array($tv, old('tests_requested', $testsRequested) ?? []) ? 'checked' : '' }}>
+                                        <span style="line-height:1.3;">{!! $tl !!}</span>
                                     </label>
                                 @endforeach
                             </div>
@@ -290,7 +289,6 @@
                             <p style="font-size:10px;font-weight:700;letter-spacing:.1em;text-transform:uppercase;color:#7c3aed;margin:0 0 6px;">Physical</p>
                             <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:6px;margin-bottom:14px;">
                                 @foreach([
-                                    'temperature'    => 'Temperature',
                                     'ph'             => 'pH',
                                     'conductivity'   => 'Conductivity',
                                     'water_activity' => 'Water Activity',
