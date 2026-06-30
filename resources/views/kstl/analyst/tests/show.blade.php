@@ -199,6 +199,14 @@
 
                 {{-- ── Right: Result Form ──────────────────────────── --}}
                 <div style="display:flex; flex-direction:column; gap:16px;">
+                    @php
+                        // Always compute before the locked/unlocked branch so @push('scripts') can use it.
+                        $analystOwnNotes = $test->result_notes ?? '';
+                        if ($test->status === 'flagged' && $analystOwnNotes !== '') {
+                            $analystOwnNotes = preg_replace('/\n*\[Director query\].*/s', '', $analystOwnNotes);
+                            $analystOwnNotes = trim($analystOwnNotes);
+                        }
+                    @endphp
                     @if(($locked ?? false) || $test->status === 'completed')
                         {{-- ── LOCKED: read-only finalised result (audit view) ── --}}
                         <div style="background:#fff; border:1px solid #e2e8f0; border-radius:4px; overflow:hidden;">
@@ -246,17 +254,6 @@
                             <h3 class="at-section-heading">Enter Test Result</h3>
                             <p style="font-size:11px; color:#94a3b8; margin:4px 0 0;">Record the result for this test. All fields except qualifier are optional.</p>
                         </div>
-
-                        @php
-                            // Strip [Director query] blocks before pre-filling textarea —
-                            // the Director's query is shown in the banner above, not editable here.
-                            $analystOwnNotes = $test->result_notes ?? '';
-                            if ($test->status === 'flagged' && $analystOwnNotes !== '') {
-                                // Everything before the first \n\n[Director query] is the analyst's notes
-                                $analystOwnNotes = preg_replace('/\n*\[Director query\].*/s', '', $analystOwnNotes);
-                                $analystOwnNotes = trim($analystOwnNotes);
-                            }
-                        @endphp
 
                         <form method="POST"
                               id="result-form"
