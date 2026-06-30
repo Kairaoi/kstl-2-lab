@@ -43,11 +43,47 @@
                 </div>
             @endif
 
-            <div style="background:#fff; border:1px solid #e2e8f0; border-radius:4px; overflow:hidden;">
-                <div style="padding:16px 20px; border-bottom:1px solid #e2e8f0; display:flex; align-items:center; justify-content:space-between;">
-                    <div>
-                        <h3 style="font-family:'Georgia',serif; font-size:15px; font-weight:700; color:#1a2f4e; border-bottom:2px solid #b8922a; padding-bottom:8px; margin:0 0 4px; display:inline-block;">All Tests</h3>
-                        <p style="font-size:11px; color:#94a3b8; margin:4px 0 0;">{{ $queue->count() }} total</p>
+            @php
+                $countAll     = $queue->count();
+                $countPending = $queue->whereIn('status', ['queued', 'in_progress'])->count();
+                $countFlagged = $queue->where('status', 'flagged')->count();
+                $countDone    = $queue->where('status', 'completed')->count();
+            @endphp
+
+            <div x-data="{ tab: 'all' }" style="background:#fff; border:1px solid #e2e8f0; border-radius:4px; overflow:hidden;">
+
+                {{-- Header --}}
+                <div style="padding:16px 20px 0; border-bottom:1px solid #e2e8f0;">
+                    <div style="display:flex; align-items:center; justify-content:space-between; margin-bottom:12px;">
+                        <div>
+                            <h3 style="font-family:'Georgia',serif; font-size:15px; font-weight:700; color:#1a2f4e; margin:0;">Tests</h3>
+                            <p style="font-size:11px; color:#94a3b8; margin:3px 0 0;">{{ $countAll }} total</p>
+                        </div>
+                    </div>
+                    {{-- Tab bar --}}
+                    <div style="display:flex; gap:0; overflow-x:auto;">
+                        @php
+                            $tabs = [
+                                ['key' => 'all',     'label' => 'All',         'count' => $countAll,     'danger' => false],
+                                ['key' => 'pending', 'label' => 'In Progress', 'count' => $countPending, 'danger' => false],
+                                ['key' => 'flagged', 'label' => 'Flagged',     'count' => $countFlagged, 'danger' => true],
+                                ['key' => 'done',    'label' => 'Completed',   'count' => $countDone,    'danger' => false],
+                            ];
+                        @endphp
+                        @foreach($tabs as $t)
+                            <button type="button"
+                                    @click="tab = '{{ $t['key'] }}'"
+                                    :style="tab === '{{ $t['key'] }}' ? 'border-bottom:2px solid #b8922a; color:#1a2f4e; font-weight:700;' : 'border-bottom:2px solid transparent; color:#64748b; font-weight:500;'"
+                                    style="display:inline-flex; align-items:center; gap:7px; padding:10px 18px; font-size:12.5px; background:none; border:none; border-top:none; border-left:none; border-right:none; cursor:pointer; white-space:nowrap; transition:color .15s;">
+                                {{ $t['label'] }}
+                                @if($t['count'] > 0)
+                                    <span :style="tab === '{{ $t['key'] }}' ? '{{ $t['danger'] ? 'background:#dc2626; color:#fff;' : 'background:#1a2f4e; color:#fff;' }}' : '{{ $t['danger'] ? 'background:#fee2e2; color:#dc2626;' : 'background:#f1f5f9; color:#64748b;' }}'"
+                                          style="display:inline-flex; align-items:center; justify-content:center; min-width:20px; height:18px; padding:0 6px; border-radius:20px; font-size:10px; font-weight:700; transition:background .15s;">
+                                        {{ $t['count'] }}
+                                    </span>
+                                @endif
+                            </button>
+                        @endforeach
                     </div>
                 </div>
 
@@ -61,14 +97,27 @@
                     </div>
                 @else
                     @php
-                        // Group tests by submission
                         $grouped = $queue->groupBy(function($test) {
                             return $test->sample->submission->id;
                         });
                     @endphp
 
+                    {{-- Empty state per tab --}}
+                    <div x-show="
+                        (tab === 'pending' && {{ $countPending === 0 ? 'true' : 'false' }}) ||
+                        (tab === 'flagged' && {{ $countFlagged === 0 ? 'true' : 'false' }}) ||
+                        (tab === 'done'    && {{ $countDone    === 0 ? 'true' : 'false' }})"
+                         style="display:none; padding:48px 20px; text-align:center;">
+                        <p style="font-size:13px; font-weight:600; color:#94a3b8; margin:0;">No tests in this category</p>
+                    </div>
+
                     <div>
                         @foreach($grouped as $submissionId => $tests)
+                            @php
+                                $hasPending  = $tests->whereIn('status', ['queued', 'in_progress'])->count() > 0;
+                                $hasFlagged  = $tests->where('status', 'flagged')->count() > 0;
+                                $hasCompleted = $tests->where('status', 'completed')->count() > 0;
+                            @endphp
                             @php
                                 $submission = $tests->first()->sample->submission;
                                 $client = $submission->client;
@@ -78,7 +127,15 @@
                                 $flaggedCount = $tests->where('status', 'flagged')->count();
                             @endphp
 
-                            <div style="border-bottom:1px solid #f1f5f9; padding:16px 20px;" x-data="{ open: true }">
+                            <div style="border-bottom:1px solid #f1f5f9; padding:16px 20px;"
+                                 x-data="{ open: true }"
+                                 x-show="tab === 'all'
+                                     || (tab === 'pending' && $el.dataset.hasPending === '1')
+                                     || (tab === 'flagged' && $el.dataset.hasFlagged === '1')
+                                     || (tab === 'done'    && $el.dataset.hasDone    === '1')"
+                                 data-has-pending="{{ $hasPending  ? '1' : '0' }}"
+                                 data-has-flagged="{{ $hasFlagged  ? '1' : '0' }}"
+                                 data-has-done="{{ $hasCompleted ? '1' : '0' }}">
                                 {{-- Submission header --}}
                                 <div style="display:flex; align-items:center; justify-content:space-between; cursor:pointer; margin-bottom:12px;"
                                      @click="open = !open">
