@@ -54,7 +54,7 @@
         .coa-wrap  { background: #eef2f7; }
         .coa-paper {
             background: #ffffff;
-            max-width: 860px;
+            max-width: 1200px;
             margin: 0 auto;
             border: 1px solid #c9d1d9;
             border-radius: 6px;
@@ -223,7 +223,7 @@
     @endpush
 
     <div class="coa-wrap" style="padding:0 0 56px; margin-top:24px;">
-        <div class="max-w-5xl mx-auto px-4">
+        <div style="max-width:1240px;margin:0 auto;padding:0 20px;">
             <div class="coa-paper">
                 <div class="coa-inner">
 
