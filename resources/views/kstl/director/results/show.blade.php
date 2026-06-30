@@ -47,7 +47,7 @@
         /* ── Base ──────────────────────────────────────────────── */
         .coa-wrap  { background: #eef2f7; }
         .coa-paper {
-            background: #ffffff; max-width: 860px; margin: 0 auto;
+            background: #ffffff; max-width: 1200px; margin: 0 auto;
             border: 1px solid #c9d1d9; border-radius: 6px;
             box-shadow: 0 4px 32px rgba(0,0,0,.12); overflow: hidden;
         }
@@ -191,7 +191,7 @@
     </div>
 
     <div class="coa-wrap" style="padding:24px 0 56px;">
-        <div class="max-w-5xl mx-auto px-4">
+        <div style="max-width:1240px;margin:0 auto;padding:0 20px;">
             <div class="coa-paper">
                 <div class="coa-inner">
 
