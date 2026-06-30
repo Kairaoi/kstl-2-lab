@@ -233,34 +233,33 @@
                             <label class="ef-label">Tests Requested</label>
                             <p class="ef-hint">Select all tests required for this sample.</p>
 
-                            <p style="font-size:10px;font-weight:700;letter-spacing:.1em;text-transform:uppercase;color:var(--gov-navy);margin:0 0 6px;">Microbiological</p>
+                            {{-- Seafood / Microbiological --}}
+                            <p style="font-size:10px;font-weight:700;letter-spacing:.1em;text-transform:uppercase;color:var(--gov-navy);margin:0 0 6px;">Seafood — Microbiological</p>
                             <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:6px;margin-bottom:14px;">
                                 @foreach([
-                                    'total_coliforms'  => 'Total Coliforms',
-                                    'e_coli'           => 'E. coli',
-                                    'enterococci'      => 'Enterococci',
-                                    'faecal_coliforms' => 'Faecal Coliforms',
-                                    'yeast_mold'       => 'Yeast & Mould',
-                                    'apc'              => 'APC (Aerobic Plate Count)',
-                                    'e_coli_coliform'  => 'E. coli & Coliform',
-                                    'staph_aureus'     => 'Staphylococcus aureus',
-                                    'salmonella_spp'   => 'Salmonella species',
-                                    'listeria_mono'    => 'Listeria monocytogenes',
-                                    'listeria_spp'     => 'Listeria species',
+                                    'e_coli_coliform' => 'E. coli &amp; Coliform',
+                                    'staph_aureus'    => 'Staph. aureus',
+                                    'apc'             => 'APC (Aerobic Plate Count)',
+                                    'yeast_mold'      => 'Yeast &amp; Mould',
+                                    'salmonella_spp'  => 'Salmonella species',
+                                    'listeria_spp'    => 'Listeria species',
+                                    'clostridium'     => 'Clostridium',
                                 ] as $tv => $tl)
                                     <label class="test-label">
                                         <input type="checkbox" name="tests_requested[]" value="{{ $tv }}"
                                                {{ in_array($tv, old('tests_requested', $testsRequested) ?? []) ? 'checked' : '' }}>
-                                        <span style="line-height:1.3;">{{ $tl }}</span>
+                                        <span style="line-height:1.3;">{!! $tl !!}</span>
                                     </label>
                                 @endforeach
                             </div>
 
+                            {{-- Water Testing --}}
                             <p style="font-size:10px;font-weight:700;letter-spacing:.1em;text-transform:uppercase;color:#0369a1;margin:0 0 6px;">Water Testing</p>
                             <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:6px;margin-bottom:14px;">
                                 @foreach([
-                                    'e_coli_colilert'        => 'E. coli (Colilert)',
-                                    'enterococci_enterolert' => 'Enterococci (Enterolert)',
+                                    'e_coli_colilert'         => 'E. coli (Colilert)',
+                                    'total_coliform_colilert' => 'Total Coliform (Colilert)',
+                                    'enterococci_enterolert'  => 'Enterococci (Enterolert)',
                                 ] as $tv => $tl)
                                     <label class="test-label" style="border-color:#bae6fd;">
                                         <input type="checkbox" name="tests_requested[]" value="{{ $tv }}"
@@ -271,18 +270,34 @@
                                 @endforeach
                             </div>
 
+                            {{-- Chemical --}}
                             <p style="font-size:10px;font-weight:700;letter-spacing:.1em;text-transform:uppercase;color:#b8922a;margin:0 0 6px;">Chemical</p>
                             <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:6px;margin-bottom:14px;">
                                 @foreach([
-                                    'moisture'       => 'Moisture Content',
-                                    'histamine'      => 'ELISA Histamine Rapid Kit',
-                                    'ph'             => 'pH',
-                                    'conductivity'   => 'Conductivity',
-                                    'water_activity' => 'Water Activity',
+                                    'histamine' => 'Histamine',
+                                    'moisture'  => 'Moisture',
                                 ] as $tv => $tl)
                                     <label class="test-label" style="border-color:#fde68a;">
                                         <input type="checkbox" name="tests_requested[]" value="{{ $tv }}"
                                                style="accent-color:#b8922a;"
+                                               {{ in_array($tv, old('tests_requested', $testsRequested) ?? []) ? 'checked' : '' }}>
+                                        <span style="line-height:1.3;">{{ $tl }}</span>
+                                    </label>
+                                @endforeach
+                            </div>
+
+                            {{-- Physical --}}
+                            <p style="font-size:10px;font-weight:700;letter-spacing:.1em;text-transform:uppercase;color:#7c3aed;margin:0 0 6px;">Physical</p>
+                            <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:6px;margin-bottom:14px;">
+                                @foreach([
+                                    'temperature'    => 'Temperature',
+                                    'ph'             => 'pH',
+                                    'conductivity'   => 'Conductivity',
+                                    'water_activity' => 'Water Activity',
+                                ] as $tv => $tl)
+                                    <label class="test-label" style="border-color:#ddd6fe;">
+                                        <input type="checkbox" name="tests_requested[]" value="{{ $tv }}"
+                                               style="accent-color:#7c3aed;"
                                                {{ in_array($tv, old('tests_requested', $testsRequested) ?? []) ? 'checked' : '' }}>
                                         <span style="line-height:1.3;">{{ $tl }}</span>
                                     </label>

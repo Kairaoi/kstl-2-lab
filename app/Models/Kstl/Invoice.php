@@ -53,20 +53,64 @@ class Invoice extends Model
     const STATUS_OVERDUE = 'overdue';
     const STATUS_WAIVED  = 'waived';
 
-    // ── Price list from Schedule 2 ─────────────────────────────────
+    // ── Standard prices (AUD) ─────────────────────────────────────
     const TEST_PRICES = [
-        'total_coliforms' => 100.00,
-        'e_coli'          => 100.00,
-        'enterococci'     => 100.00,
-        'e_coli_coliform' => 65.00,
-        'staph_aureus'    => 65.00,
-        'apc'             => 50.00,
-        'yeast_mold'      => 50.00,
-        'histamine'       => 85.00,
-        'ph'              => 50.00,
-        'conductivity'    => 50.00,
-        'water_activity'  => 50.00,
-        'moisture'        => 50.00,
+        // Water testing
+        'e_coli_colilert'         => 65.00,
+        'total_coliform_colilert' => 65.00,
+        'enterococci_enterolert'  => 50.00,
+        // Microbiological — seafood
+        'e_coli_coliform'         => 90.00,
+        'staph_aureus'            => 70.00,
+        'apc'                     => 70.00,
+        'yeast_mold'              => 70.00,
+        'salmonella_spp'          => 75.00,
+        'listeria_spp'            => 75.00,
+        'clostridium'             => 60.00,
+        // Chemical
+        'histamine'               => 90.00,
+        'moisture'                => 50.00,
+        // Physical
+        'temperature'             => 35.00,
+        'ph'                      => 35.00,
+        'conductivity'            => 35.00,
+        'water_activity'          => 35.00,
+        // Legacy keys (kept for existing invoices)
+        'total_coliforms'         => 65.00,
+        'e_coli'                  => 65.00,
+        'enterococci'             => 50.00,
+        'faecal_coliforms'        => 50.00,
+        'listeria_mono'           => 75.00,
+    ];
+
+    // ── Urgent prices (AUD) ───────────────────────────────────────
+    const TEST_PRICES_URGENT = [
+        // Water testing
+        'e_coli_colilert'         => 100.00,
+        'total_coliform_colilert' => 100.00,
+        'enterococci_enterolert'  =>  80.00,
+        // Microbiological — seafood
+        'e_coli_coliform'         => 110.00,
+        'staph_aureus'            =>  90.00,
+        'apc'                     =>  90.00,
+        'yeast_mold'              =>  80.00,
+        'salmonella_spp'          => 100.00,
+        'listeria_spp'            => 100.00,
+        'clostridium'             => 100.00,
+        // Chemical
+        'histamine'               => 130.00,
+        'moisture'                => 100.00,
+        // Physical
+        'temperature'             =>  50.00,
+        'ph'                      =>  50.00,
+        'conductivity'            =>  50.00,
+        'water_activity'          =>  50.00,
+        // Legacy keys
+        'total_coliforms'         => 100.00,
+        'e_coli'                  => 100.00,
+        'enterococci'             =>  80.00,
+        'faecal_coliforms'        =>  80.00,
+        'listeria_mono'           => 100.00,
     ];
 
     // ── Relationships ──────────────────────────────────────────────

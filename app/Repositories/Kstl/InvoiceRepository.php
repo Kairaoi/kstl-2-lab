@@ -63,9 +63,12 @@ class InvoiceRepository extends BaseRepository
             ]);
 
             // Create line items from tests
+            $isUrgent  = $submission->priority === 'urgent';
+            $priceList = $isUrgent ? Invoice::TEST_PRICES_URGENT : Invoice::TEST_PRICES;
+
             $total = 0;
             foreach ($tests as $test) {
-                $price = Invoice::TEST_PRICES[$test->test_key] ?? 0;
+                $price = $priceList[$test->test_key] ?? Invoice::TEST_PRICES[$test->test_key] ?? 0;
                 $label = SampleTest::TEST_LABELS[$test->test_key]
                     ?? str_replace('_', ' ', ucfirst($test->test_key));
                 $cat   = SampleTest::TEST_CATEGORIES[$test->test_key] ?? null;
@@ -130,10 +133,13 @@ class InvoiceRepository extends BaseRepository
                 'total_amount_aud' => 0,
             ]);
 
+            $isUrgent  = $submission->priority === 'urgent';
+            $priceList = $isUrgent ? Invoice::TEST_PRICES_URGENT : Invoice::TEST_PRICES;
+
             $total = 0;
             foreach ($items as $sampleItem) {
                 foreach ($sampleItem['tests'] ?? [] as $testKey) {
-                    $price = Invoice::TEST_PRICES[$testKey] ?? 0;
+                    $price = $priceList[$testKey] ?? Invoice::TEST_PRICES[$testKey] ?? 0;
                     $label = SampleTest::TEST_LABELS[$testKey]
                         ?? str_replace('_', ' ', ucfirst($testKey));
                     $cat   = SampleTest::TEST_CATEGORIES[$testKey] ?? null;
