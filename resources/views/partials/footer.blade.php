@@ -321,7 +321,7 @@
             </div>
         </div>
         <div class="footer-mict">
-            Developed in partnership with <strong>MICT DTO Division</strong> &middot; Tarawa, Gilbert Islands
+            <span style="font-family:monospace;letter-spacing:-.02em;">&lt;/&gt;</span> Developed by the <strong>Digital Transformation Office</strong> &mdash; Government of Kiribati
         </div>
     </div><!-- /.footer-inner -->
 </footer>
