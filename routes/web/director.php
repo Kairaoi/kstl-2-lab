@@ -35,6 +35,9 @@ Route::middleware([
     Route::get('/results/{id}', [DirectorController::class, 'resultShow'])
         ->name('results.show');
 
+    Route::get('/results/{id}/pdf', [DirectorController::class, 'resultPdf'])
+        ->name('results.pdf');
+
     // ── Test supporting documents (review, read-only) ─────────────
     Route::get('/attachments/{attachment}/download', [DirectorController::class, 'downloadAttachment'])
         ->name('attachments.download');

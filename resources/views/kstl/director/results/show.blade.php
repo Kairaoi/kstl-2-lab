@@ -19,10 +19,14 @@
                         <span style="display:inline-flex;align-items:center;padding:5px 14px;background:#fee2e2;color:#991b1b;border:1px solid #fca5a5;border-radius:3px;font-size:11px;font-weight:700;letter-spacing:.06em;">
                             INTERNAL &mdash; NOT FOR CLIENT
                         </span>
-                        <button onclick="window.print()"
-                                style="display:inline-flex;align-items:center;gap:8px;padding:8px 20px;background:#fff;color:#1a2f4e;font-size:12px;font-weight:700;letter-spacing:.06em;border:1px solid #1a2f4e;border-radius:3px;cursor:pointer;">
-                            Print / Save PDF
-                        </button>
+                        <a href="{{ route('director.results.pdf', $submission->id) }}"
+                           style="display:inline-flex;align-items:center;gap:6px;background:rgba(255,255,255,.1);border:1px solid rgba(255,255,255,.2);color:#e2e8f0;padding:8px 20px;border-radius:3px;font-size:12px;font-weight:700;letter-spacing:.06em;text-decoration:none;">
+                            <svg style="width:13px;height:13px;flex-shrink:0;" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                      d="M12 10v6m0 0l-3-3m3 3l3-3m2 8H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"/>
+                            </svg>
+                            Download PDF
+                        </a>
                         <a href="{{ route('director.submissions.show', $submission->id) }}"
                            style="display:inline-flex;align-items:center;gap:8px;padding:8px 20px;background:#fff;color:#1a2f4e;font-size:12px;font-weight:700;letter-spacing:.06em;border:1px solid #fff;border-radius:3px;text-decoration:none;">
                             &larr; Back

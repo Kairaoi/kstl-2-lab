@@ -606,6 +606,22 @@ class DirectorController extends Controller
         return view('kstl.director.results.show', compact('submission', 'result'));
     }
 
+    // ── Internal result PDF download (director only) ────────────────
+    public function resultPdf(string $id)
+    {
+        $submission = $this->submissionRepo->getById($id);
+        $submission->loadMissing(['client.user', 'samples.sampleTests.assignedTo', 'result.authorisedBy']);
+
+        $result = $submission->result ?? $this->resultRepo->findBySubmissionId($id);
+
+        $pdf = \Barryvdh\DomPDF\Facade\Pdf::loadView(
+            'kstl.director.results.pdf',
+            compact('submission', 'result')
+        )->setPaper('a4', 'portrait');
+
+        return $pdf->download('KSTL-Internal-' . $submission->reference_number . '.pdf');
+    }
+
     // ── All submissions pipeline (full process view) ────────────────
     public function submissionsIndex(Request $request)
     {
