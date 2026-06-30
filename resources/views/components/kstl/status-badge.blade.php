@@ -18,7 +18,7 @@
         // ── Sample-test status ──
         'queued'                 => ['Queued',           'bg-yellow-50 text-yellow-700 ring-yellow-600/20'],
         'in_progress'            => ['In Progress',      'bg-blue-50 text-blue-700 ring-blue-600/20'],
-        'flagged'                => ['Return',            'bg-amber-100 text-amber-800 ring-amber-600/30'],
+        'flagged'                => ['Queried',           'bg-amber-100 text-amber-800 ring-amber-600/30'],
     ];
 
     [$label, $classes] = $map[$status]
