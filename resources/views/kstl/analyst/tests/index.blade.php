@@ -131,14 +131,11 @@
                                 $flaggedCount = $tests->where('status', 'flagged')->count();
                             @endphp
 
-                            {{-- Filter wrapper: x-show lives here (no x-data so parent tab scope is used) --}}
+                            {{-- Filter wrapper: PHP booleans baked in so only 'tab' is reactive --}}
                             <div x-show="tab === 'all'
-                                     || (tab === 'pending' && $el.dataset.hasPending === '1')
-                                     || (tab === 'flagged' && $el.dataset.hasFlagged === '1')
-                                     || (tab === 'done'    && $el.dataset.hasDone    === '1')"
-                                 data-has-pending="{{ $hasPending  ? '1' : '0' }}"
-                                 data-has-flagged="{{ $hasFlagged  ? '1' : '0' }}"
-                                 data-has-done="{{ $hasCompleted ? '1' : '0' }}">
+                                     || (tab === 'pending' && {{ $hasPending  ? 'true' : 'false' }})
+                                     || (tab === 'flagged' && {{ $hasFlagged  ? 'true' : 'false' }})
+                                     || (tab === 'done'    && {{ $hasCompleted ? 'true' : 'false' }})">
                             {{-- Collapsible: own x-data scope for open/close --}}
                             <div style="border-bottom:1px solid #f1f5f9; padding:16px 20px;"
                                  x-data="{ open: true }">
