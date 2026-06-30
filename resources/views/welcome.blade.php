@@ -41,16 +41,16 @@ body{font-family:'Noto Sans',sans-serif;font-weight:400;background:var(--bg);col
 .gov-top{
     background:var(--navy);
     padding:0 2rem;
-    height:44px;
+    height:52px;
     display:flex;align-items:center;justify-content:space-between;
 }
-.gt-left{display:flex;align-items:center;gap:10px}
+.gt-left{display:flex;align-items:center;gap:12px}
 .gt-emblem{
-    width:28px;height:28px;
+    width:40px;height:40px;
     display:flex;align-items:center;justify-content:center;
 }
-.gt-emblem svg{width:14px;height:14px;stroke:rgba(255,255,255,.7)}
-.gt-gov{font-size:11px;font-weight:500;color:rgba(255,255,255,.6);letter-spacing:.04em}
+.gt-emblem svg{width:20px;height:20px;stroke:rgba(255,255,255,.7)}
+.gt-gov{font-size:13px;font-weight:500;color:rgba(255,255,255,.6);letter-spacing:.04em}
 .gt-gov strong{font-weight:600;color:rgba(255,255,255,.85)}
 .gt-right{font-size:10px;color:rgba(255,255,255,.35);letter-spacing:.06em;text-transform:uppercase}
 
@@ -371,7 +371,7 @@ footer{
 <div class="gov-top">
     <div class="gt-left">
         <div class="gt-emblem">
-            <img src="{{ asset('images/Kiribati_National_Emblem.png') }}" alt="Coat of Arms" style="width:22px;height:22px;object-fit:contain;">
+            <img src="{{ asset('images/Kiribati_National_Emblem.png') }}" alt="Coat of Arms" style="width:38px;height:38px;object-fit:contain;">
         </div>
         <span class="gt-gov"><strong>Government of Kiribati</strong> — Ministry of Fisheries and Ocean Resources</span>
     </div>

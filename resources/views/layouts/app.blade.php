@@ -48,24 +48,24 @@
         /* ── GOV TOP BAR ── */
         .gov-top {
             background: var(--navy);
-            padding: 0 2rem; height: 36px;
+            padding: 0 2rem; height: 48px;
             display: flex; align-items: center; justify-content: space-between;
             position: fixed; top: 5px; left: 0; width: 100%; z-index: 59;
         }
-        .gt-left { display: flex; align-items: center; gap: 9px; }
+        .gt-left { display: flex; align-items: center; gap: 12px; }
         .gt-emblem {
-            width: 22px; height: 22px;
+            width: 38px; height: 38px;
             display: flex; align-items: center; justify-content: center;
         }
-        .gt-emblem svg { width: 11px; height: 11px; stroke: rgba(255,255,255,.6); fill: none; }
-        .gt-gov { font-size: 10px; color: rgba(255,255,255,.5); letter-spacing: .03em; }
+        .gt-emblem svg { width: 20px; height: 20px; stroke: rgba(255,255,255,.6); fill: none; }
+        .gt-gov { font-size: 13px; color: rgba(255,255,255,.5); letter-spacing: .03em; }
         .gt-gov strong { font-weight: 600; color: rgba(255,255,255,.8); }
         .gt-right { font-size: 10px; color: rgba(255,255,255,.3); letter-spacing: .06em; text-transform: uppercase; }
 
         /* ── FIXED HEADER OFFSET ── */
-        /* gov-stripe(5px) + gov-top(36px) + nav(58px) = 99px */
-        .header-offset { height: 99px; }
-        .header-with-page { height: 99px; } /* when page header also present */
+        /* gov-stripe(5px) + gov-top(48px) + nav(58px) = 111px */
+        .header-offset { height: 111px; }
+        .header-with-page { height: 111px; } /* when page header also present */
 
         /* ── PROFESSIONAL TABLE (keep existing) ── */
         .professional-table { width:100%;border-collapse:collapse;margin:1rem 0;background:white;border-radius:8px;overflow:hidden;box-shadow:0 1px 3px rgba(0,0,0,.1); }
@@ -83,7 +83,7 @@
             background: var(--surface);
             border-bottom: 1px solid var(--border);
             padding: .8rem 2rem;
-            position: fixed; top: 99px; left: 0; width: 100%; z-index: 48;
+            position: fixed; top: 111px; left: 0; width: 100%; z-index: 48;
             box-shadow: 0 1px 4px rgba(11,32,64,.05);
         }
         .page-hdr-inner { max-width: 80rem; margin: 0 auto; }
@@ -131,7 +131,7 @@
     <div class="gov-top">
         <div class="gt-left">
             <div class="gt-emblem">
-                <img src="{{ asset('images/Kiribati_National_Emblem.png') }}" alt="Coat of Arms" style="width:22px;height:22px;object-fit:contain;">
+                <img src="{{ asset('images/Kiribati_National_Emblem.png') }}" alt="Coat of Arms" style="width:38px;height:38px;object-fit:contain;">
             </div>
             <span class="gt-gov"><strong>Government of Kiribati</strong> &mdash; Ministry of Fisheries &amp; Ocean Resources</span>
         </div>
@@ -139,7 +139,7 @@
     </div>
 
     {{-- Fixed nav (your existing navigation partial) --}}
-    <div class="fixed w-full z-50" style="top:41px">
+    <div class="fixed w-full z-50" style="top:53px">
         @include('navigation-menu')
     </div>
 

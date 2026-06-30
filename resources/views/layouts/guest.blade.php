@@ -47,7 +47,7 @@
         }
         .gt-left { display: flex; align-items: center; gap: 9px; }
         .gt-emblem {
-            width: 22px; height: 22px;
+            width: 38px; height: 38px;
             display: flex; align-items: center; justify-content: center;
         }
         .gt-emblem svg { width: 11px; height: 11px; stroke: rgba(255,255,255,.6); fill: none; }
@@ -120,7 +120,7 @@
     <div class="gov-top">
         <div class="gt-left">
             <div class="gt-emblem">
-                <img src="{{ asset('images/Kiribati_National_Emblem.png') }}" alt="Coat of Arms" style="width:22px;height:22px;object-fit:contain;">
+                <img src="{{ asset('images/Kiribati_National_Emblem.png') }}" alt="Coat of Arms" style="width:38px;height:38px;object-fit:contain;">
             </div>
             <span class="gt-gov"><strong>Government of Kiribati</strong> &mdash; Ministry of Fisheries &amp; Ocean Resources</span>
         </div>
