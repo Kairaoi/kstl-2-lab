@@ -154,7 +154,7 @@
                           border: 1.5px solid #0d9488; border-radius: 6px; padding: 6px 14px; }
         .coa-auth-pill svg { width: 14px; height: 14px; stroke: #0d9488; fill: none; }
         .coa-auth-pill p { font-size: 11px; font-weight: 700; color: #0d9488; }
-        .coa-sig-name   { font-family: 'Georgia', serif; font-size: 19px;
+        .coa-sig-name   { font-family: 'Georgia', serif; font-size: 14px;
                           font-weight: 700; color: #1a2f4e; text-align: right; }
         .coa-sig-line   { border-top: 1px solid #9ca3af; margin-bottom: 6px; }
         .coa-sig-role   { font-size: 9.5px; color: #9ca3af; text-align: right; }

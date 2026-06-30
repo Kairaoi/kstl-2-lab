@@ -303,7 +303,7 @@
     .sig-line { border-top: 1px solid #9ca3af; margin-bottom: 5px; width: 200px; }
     .sig-name {
         font-family: 'DejaVu Serif', Georgia, serif;
-        font-size: 16px;
+        font-size: 13px;
         font-weight: 700;
         color: #1a2f4e;
         text-align: right;
