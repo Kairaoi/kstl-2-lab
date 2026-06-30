@@ -156,14 +156,12 @@
                                 </div>
 
                                 {{-- Director's query text --}}
+                                @if($directorQuery)
                                 <div style="margin-top:10px; background:#fffbeb; border:1px solid #fcd34d; border-left:4px solid #d97706; border-radius:3px; padding:10px 14px;">
                                     <p style="font-size:9px; font-weight:700; letter-spacing:.12em; text-transform:uppercase; color:#92400e; margin:0 0 5px;">Director's Query</p>
-                                    @if($directorQuery)
-                                        <p style="font-size:13px; color:#1a2f4e; line-height:1.6; margin:0;">{{ $directorQuery }}</p>
-                                    @else
-                                        <p style="font-size:12px; color:#92400e; font-style:italic; margin:0;">Open the test to read the Director's full query and respond.</p>
-                                    @endif
+                                    <p style="font-size:13px; color:#1a2f4e; line-height:1.6; margin:0;">{{ $directorQuery }}</p>
                                 </div>
+                                @endif
                             </div>
                         @endforeach
                     </div>

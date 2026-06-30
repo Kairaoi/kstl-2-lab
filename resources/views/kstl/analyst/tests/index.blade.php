@@ -285,16 +285,10 @@
                                                         </td>
                                                         <td style="padding:10px 16px;">
                                                             <x-kstl.status-badge :status="$test->status" />
-                                                            @if($test->status === 'flagged')
+                                                            @if($directorQuery)
                                                                 <div style="margin-top:6px; background:#fffbeb; border-left:3px solid #d97706; border-radius:2px; padding:5px 8px; max-width:200px;">
                                                                     <p style="font-size:9px; font-weight:700; letter-spacing:.08em; text-transform:uppercase; color:#92400e; margin:0 0 3px;">Director's Query</p>
-                                                                    <p style="font-size:11px; color:#1a2f4e; line-height:1.5; margin:0;">
-                                                                        @if($directorQuery)
-                                                                            {{ Str::limit($directorQuery, 90) }}
-                                                                        @else
-                                                                            <span style="font-style:italic; color:#92400e;">Open test to view query</span>
-                                                                        @endif
-                                                                    </p>
+                                                                    <p style="font-size:11px; color:#1a2f4e; line-height:1.5; margin:0;">{{ Str::limit($directorQuery, 90) }}</p>
                                                                 </div>
                                                             @endif
                                                         </td>
