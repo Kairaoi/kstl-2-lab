@@ -61,7 +61,7 @@
                         </div>
                     </div>
                     {{-- Tab bar --}}
-                    <div style="display:flex; gap:0; overflow-x:auto;">
+                    <div style="display:flex; overflow-x:auto; margin-top:4px;">
                         @php
                             $tabs = [
                                 ['key' => 'all',     'label' => 'All',         'count' => $countAll,     'danger' => false],
@@ -73,12 +73,16 @@
                         @foreach($tabs as $t)
                             <button type="button"
                                     @click="tab = '{{ $t['key'] }}'"
-                                    :style="tab === '{{ $t['key'] }}' ? 'border-bottom:2px solid #b8922a; color:#1a2f4e; font-weight:700;' : 'border-bottom:2px solid transparent; color:#64748b; font-weight:500;'"
-                                    style="display:inline-flex; align-items:center; gap:7px; padding:10px 18px; font-size:12.5px; background:none; border:none; border-top:none; border-left:none; border-right:none; cursor:pointer; white-space:nowrap; transition:color .15s;">
+                                    style="display:inline-flex; align-items:center; gap:7px; padding:9px 20px; font-size:12.5px; background:none; border:0; border-bottom:3px solid transparent; cursor:pointer; white-space:nowrap; transition:color .15s, border-color .15s; outline:none; margin-right:4px;"
+                                    :style="tab === '{{ $t['key'] }}'
+                                        ? 'border-bottom-color:#b8922a; color:#1a2f4e; font-weight:700;'
+                                        : 'color:#64748b; font-weight:500;'">
                                 {{ $t['label'] }}
                                 @if($t['count'] > 0)
-                                    <span :style="tab === '{{ $t['key'] }}' ? '{{ $t['danger'] ? 'background:#dc2626; color:#fff;' : 'background:#1a2f4e; color:#fff;' }}' : '{{ $t['danger'] ? 'background:#fee2e2; color:#dc2626;' : 'background:#f1f5f9; color:#64748b;' }}'"
-                                          style="display:inline-flex; align-items:center; justify-content:center; min-width:20px; height:18px; padding:0 6px; border-radius:20px; font-size:10px; font-weight:700; transition:background .15s;">
+                                    <span style="display:inline-flex; align-items:center; justify-content:center; min-width:20px; height:18px; padding:0 6px; border-radius:20px; font-size:10px; font-weight:700; transition:background .15s, color .15s;"
+                                          :style="tab === '{{ $t['key'] }}'
+                                              ? '{{ $t['danger'] ? 'background:#dc2626; color:#fff;' : 'background:#1a2f4e; color:#fff;' }}'
+                                              : '{{ $t['danger'] && $t['count'] > 0 ? 'background:#fee2e2; color:#dc2626;' : 'background:#f1f5f9; color:#64748b;' }}'">
                                         {{ $t['count'] }}
                                     </span>
                                 @endif
