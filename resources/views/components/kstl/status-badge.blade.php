@@ -1,4 +1,4 @@
-@props(['status'])
+@props(['status', 'label' => null])
 
 @php
     $map = [
@@ -18,13 +18,15 @@
         // ── Sample-test status ──
         'queued'                 => ['Queued',           'bg-yellow-50 text-yellow-700 ring-yellow-600/20'],
         'in_progress'            => ['In Progress',      'bg-blue-50 text-blue-700 ring-blue-600/20'],
-        'flagged'                => ['Director Query',    'bg-amber-100 text-amber-800 ring-amber-600/30'],
+        'flagged'                => ['Director Query',   'bg-amber-100 text-amber-800 ring-amber-600/30'],
     ];
 
-    [$label, $classes] = $map[$status]
+    [$defaultLabel, $classes] = $map[$status]
         ?? [ucfirst(str_replace('_', ' ', $status)), 'bg-gray-50 text-gray-500 ring-gray-500/20'];
+
+    $displayLabel = $label ?? $defaultLabel;
 @endphp
 
 <span class="inline-flex items-center px-2 py-1 rounded-full text-xs font-medium ring-1 ring-inset {{ $classes }}">
-    {{ $label }}
+    {{ $displayLabel }}
 </span>

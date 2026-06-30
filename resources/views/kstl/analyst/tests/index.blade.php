@@ -284,7 +284,9 @@
                                                             {{ $test->assignedTo?->name ?? '—' }}
                                                         </td>
                                                         <td style="padding:10px 16px;">
-                                                            <x-kstl.status-badge :status="$test->status" />
+                                                            <x-kstl.status-badge
+                                                                :status="$test->status"
+                                                                :label="$test->status === 'flagged' ? ($directorQuery ? 'Director Query' : 'Returned') : null" />
                                                             @if($directorQuery)
                                                                 <div style="margin-top:6px; background:#fffbeb; border-left:3px solid #d97706; border-radius:2px; padding:5px 8px; max-width:200px;">
                                                                     <p style="font-size:9px; font-weight:700; letter-spacing:.08em; text-transform:uppercase; color:#92400e; margin:0 0 3px;">Director's Query</p>

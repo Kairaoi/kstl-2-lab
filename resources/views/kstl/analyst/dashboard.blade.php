@@ -350,7 +350,14 @@
                                             </thead>
                                             <tbody>
                                                 @foreach($tests as $i => $test)
-                                                    @php $rowIsFlagged = $test->status === 'flagged'; @endphp
+                                                    @php
+                                                        $rowIsFlagged = $test->status === 'flagged';
+                                                        $dqSnippet = null;
+                                                        if ($rowIsFlagged && $test->result_notes) {
+                                                            preg_match('/\[Director query\]\s*(.+?)(?=\n\n|$)/s', $test->result_notes, $dqm2);
+                                                            $dqSnippet = isset($dqm2[1]) ? trim($dqm2[1]) : null;
+                                                        }
+                                                    @endphp
                                                     <tr style="background:{{ $rowIsFlagged ? '#fff5f5' : ($i % 2 === 0 ? '#fff' : '#f8fafc') }}; border-bottom:1px solid {{ $rowIsFlagged ? '#fecaca' : '#f1f5f9' }}; {{ $rowIsFlagged ? 'border-left:3px solid #dc2626;' : '' }}">
                                                         <td style="padding:10px 16px; font-size:12.5px;">
                                                             <a href="{{ route('analyst.tests.show', $test->id) }}"
@@ -376,7 +383,9 @@
                                                             </span>
                                                         </td>
                                                         <td style="padding:10px 16px;">
-                                                            <x-kstl.status-badge :status="$test->status" />
+                                                            <x-kstl.status-badge
+                                                                :status="$test->status"
+                                                                :label="$rowIsFlagged ? ($dqSnippet ? 'Director Query' : 'Returned') : null" />
                                                         </td>
                                                         <td style="padding:10px 16px; font-size:12.5px;">
                                                             @if($test->status === 'completed' || $test->status === 'flagged')
