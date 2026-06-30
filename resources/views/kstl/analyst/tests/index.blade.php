@@ -52,40 +52,42 @@
 
             <div x-data="{ tab: 'all' }" style="background:#fff; border:1px solid #e2e8f0; border-radius:4px; overflow:hidden;">
 
-                {{-- Header --}}
+                {{-- Header + Tab bar --}}
                 <div style="padding:16px 20px 0; border-bottom:1px solid #e2e8f0;">
-                    <div style="display:flex; align-items:center; justify-content:space-between; margin-bottom:12px;">
+                    <div style="display:flex; align-items:center; justify-content:space-between; flex-wrap:wrap; gap:8px; margin-bottom:14px;">
                         <div>
                             <h3 style="font-family:'Georgia',serif; font-size:15px; font-weight:700; color:#1a2f4e; margin:0;">Tests</h3>
                             <p style="font-size:11px; color:#94a3b8; margin:3px 0 0;">{{ $countAll }} total</p>
                         </div>
                     </div>
-                    {{-- Tab bar --}}
-                    <div style="display:flex; overflow-x:auto; margin-top:4px;">
-                        @php
-                            $tabs = [
-                                ['key' => 'all',     'label' => 'All',         'count' => $countAll,     'danger' => false],
-                                ['key' => 'pending', 'label' => 'In Progress', 'count' => $countPending, 'danger' => false],
-                                ['key' => 'flagged', 'label' => 'Flagged',     'count' => $countFlagged, 'danger' => true],
-                                ['key' => 'done',    'label' => 'Completed',   'count' => $countDone,    'danger' => false],
-                            ];
-                        @endphp
+
+                    @php
+                        $tabs = [
+                            ['key' => 'all',     'label' => 'All',         'count' => $countAll,     'danger' => false],
+                            ['key' => 'pending', 'label' => 'In Progress', 'count' => $countPending, 'danger' => false],
+                            ['key' => 'flagged', 'label' => 'Flagged',     'count' => $countFlagged, 'danger' => $countFlagged > 0],
+                            ['key' => 'done',    'label' => 'Completed',   'count' => $countDone,    'danger' => false],
+                        ];
+                    @endphp
+
+                    {{-- Tab nav --}}
+                    <div role="tablist" style="display:flex; flex-direction:row; flex-wrap:nowrap; align-items:flex-end; gap:0; overflow-x:auto;">
                         @foreach($tabs as $t)
                             <button type="button"
+                                    role="tab"
                                     @click="tab = '{{ $t['key'] }}'"
-                                    style="display:inline-flex; align-items:center; gap:7px; padding:9px 20px; font-size:12.5px; background:none; border:0; border-bottom:3px solid transparent; cursor:pointer; white-space:nowrap; transition:color .15s, border-color .15s; outline:none; margin-right:4px;"
+                                    :aria-selected="tab === '{{ $t['key'] }}'"
+                                    style="flex-shrink:0; display:inline-flex; align-items:center; gap:6px; padding:8px 16px 10px; font-size:12.5px; line-height:1; background:none; border:none; border-bottom:3px solid transparent; cursor:pointer; white-space:nowrap; outline:none; transition:color .15s, border-color .15s;"
                                     :style="tab === '{{ $t['key'] }}'
                                         ? 'border-bottom-color:#b8922a; color:#1a2f4e; font-weight:700;'
-                                        : 'color:#64748b; font-weight:500;'">
+                                        : 'border-bottom-color:transparent; color:#94a3b8; font-weight:500;'">
                                 {{ $t['label'] }}
-                                @if($t['count'] > 0)
-                                    <span style="display:inline-flex; align-items:center; justify-content:center; min-width:20px; height:18px; padding:0 6px; border-radius:20px; font-size:10px; font-weight:700; transition:background .15s, color .15s;"
-                                          :style="tab === '{{ $t['key'] }}'
-                                              ? '{{ $t['danger'] ? 'background:#dc2626; color:#fff;' : 'background:#1a2f4e; color:#fff;' }}'
-                                              : '{{ $t['danger'] && $t['count'] > 0 ? 'background:#fee2e2; color:#dc2626;' : 'background:#f1f5f9; color:#64748b;' }}'">
-                                        {{ $t['count'] }}
-                                    </span>
-                                @endif
+                                <span style="display:inline-flex; align-items:center; justify-content:center; min-width:18px; height:17px; padding:0 5px; border-radius:10px; font-size:10px; font-weight:700; transition:background .15s, color .15s;"
+                                      :style="tab === '{{ $t['key'] }}'
+                                          ? '{{ $t['danger'] ? 'background:#dc2626;color:#fff;' : 'background:#1a2f4e;color:#fff;' }}'
+                                          : '{{ $t['danger'] ? 'background:#fee2e2;color:#dc2626;' : 'background:#f1f5f9;color:#94a3b8;' }}'">
+                                    {{ $t['count'] }}
+                                </span>
                             </button>
                         @endforeach
                     </div>
