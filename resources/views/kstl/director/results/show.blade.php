@@ -209,9 +209,9 @@
                         <div class="coa-lh-contact">
                             <strong>Seafood Toxicology Laboratory</strong><br>
                             Ministry of Fisheries and Ocean Resources,<br>Tarawa, Kiribati<br>
-                            t. +686 [Your Number]<br>
-                            e. stld@fisheries.gov.ki<br>
-                            w. stld.fisheries.gov.ki
+                            t. +686 75021099<br>
+                            e. stld@mfor.gov.ki<br>
+                            w. stld.mfor.gov.ki
                         </div>
                     </div>
 
@@ -620,7 +620,7 @@
                 <div class="coa-doc-strip">
                     <p class="ref">{{ $submission->reference_number }} &nbsp;·&nbsp; INTERNAL REPORT</p>
                     <p>INTERNAL — CONFIDENTIAL. Director use only. Not for client distribution.</p>
-                    <p>Kiribati Seafood Toxicology Laboratory &nbsp;·&nbsp; stld.fisheries.gov.ki</p>
+                    <p>Kiribati Seafood Toxicology Laboratory &nbsp;·&nbsp; stld.mfor.gov.ki</p>
                 </div>
 
             </div>{{-- /coa-paper --}}

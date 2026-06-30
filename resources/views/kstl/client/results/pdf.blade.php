@@ -332,9 +332,9 @@
                 <td style="width:200px; vertical-align:top; text-align:right; font-size:9px; color:#6b7280; line-height:1.75;">
                     <strong style="color:#374151;">Seafood Toxicology Laboratory</strong><br>
                     Ministry of Fisheries and Ocean Resources,<br>Tarawa, Kiribati<br>
-                    t. +686 [Your Number]<br>
-                    e. stld@fisheries.gov.ki<br>
-                    w. stld.fisheries.gov.ki
+                    t. +686 75021099<br>
+                    e. stld@mfor.gov.ki<br>
+                    w. stld.mfor.gov.ki
                 </td>
             </tr>
         </table>
@@ -545,7 +545,7 @@
         <tr>
             <td class="ref">{{ $submission->reference_number }} &nbsp;&bull;&nbsp; FINAL REPORT</td>
             <td style="text-align:center; font-size:8px; color:#93c5fd;">Results are confidential and intended solely for the submitting client.</td>
-            <td class="right" style="font-size:8px; color:#93c5fd;">Kiribati Seafood Toxicology Laboratory &nbsp;&bull;&nbsp; stld.fisheries.gov.ki</td>
+            <td class="right" style="font-size:8px; color:#93c5fd;">Kiribati Seafood Toxicology Laboratory &nbsp;&bull;&nbsp; stld.mfor.gov.ki</td>
         </tr>
     </table>
 

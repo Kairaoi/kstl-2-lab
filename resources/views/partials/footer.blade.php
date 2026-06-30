@@ -289,7 +289,7 @@
                     </svg>
                     <div class="contact-text">
                         <strong>Phone</strong>
-                        +686 [Your Number]
+                        +686 75021099
                     </div>
                 </div>
                 <div class="contact-item">
@@ -299,7 +299,7 @@
                     </svg>
                     <div class="contact-text">
                         <strong>Email</strong>
-                        stld@fisheries.gov.ki
+                        stld@mfor.gov.ki
                     </div>
                 </div>
                 <div class="hours-pill">
