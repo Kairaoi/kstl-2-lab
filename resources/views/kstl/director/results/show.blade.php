@@ -63,15 +63,10 @@
                 <div style="padding:24px 32px;border-bottom:3px double #1a2f4e;background:linear-gradient(180deg,#fbfaf8 0%,#ffffff 100%);">
                     <div style="display:flex;align-items:flex-start;justify-content:space-between;gap:24px;">
                         <div style="display:flex;align-items:flex-start;gap:16px;">
-                            <div style="width:54px;height:54px;border-radius:50%;border:2px solid #b8922a;display:flex;align-items:center;justify-content:center;flex-shrink:0;">
-                                <svg viewBox="0 0 24 24" style="width:28px;height:28px;stroke:#1a2f4e;fill:none;" stroke-width="1.5">
-                                    <path stroke-linecap="round" stroke-linejoin="round" d="M3.75 21h16.5M4.5 3h15M5.25 3v18m13.5-18v18M9 6.75h1.5m-1.5 3h1.5m-1.5 3h1.5m3-6H15m-1.5 3H15m-1.5 3H15M9 21v-3.375c0-.621.504-1.125 1.125-1.125h3.75c.621 0 1.125.504 1.125 1.125V21"/>
-                                </svg>
-                            </div>
+                            <img src="{{ asset('images/mfor-logo.png') }}" alt="MFOR" style="width:64px;height:64px;object-fit:contain;flex-shrink:0;">
                             <div>
                                 <p style="font-size:9px;font-weight:700;letter-spacing:.18em;text-transform:uppercase;color:#b8922a;margin:0 0 4px;">Government of Kiribati &middot; Ministry of Fisheries &amp; Ocean Resources</p>
-                                <h1 style="font-family:'Georgia',serif;font-size:20px;font-weight:700;color:#1a2f4e;margin:0 0 6px;">Kiribati Seafood Toxicology Laboratory</h1>
-                                <img src="{{ asset('images/mfor-logo.png') }}" alt="MFOR" style="height:24px;object-fit:contain;object-position:left;">
+                                <h1 style="font-family:'Georgia',serif;font-size:20px;font-weight:700;color:#1a2f4e;margin:0;">Kiribati Seafood Toxicology Laboratory</h1>
                             </div>
                         </div>
                         <div style="text-align:right;flex-shrink:0;">
