@@ -127,15 +127,17 @@
                                 $flaggedCount = $tests->where('status', 'flagged')->count();
                             @endphp
 
-                            <div style="border-bottom:1px solid #f1f5f9; padding:16px 20px;"
-                                 x-data="{ open: true }"
-                                 x-show="tab === 'all'
+                            {{-- Filter wrapper: x-show lives here (no x-data so parent tab scope is used) --}}
+                            <div x-show="tab === 'all'
                                      || (tab === 'pending' && $el.dataset.hasPending === '1')
                                      || (tab === 'flagged' && $el.dataset.hasFlagged === '1')
                                      || (tab === 'done'    && $el.dataset.hasDone    === '1')"
                                  data-has-pending="{{ $hasPending  ? '1' : '0' }}"
                                  data-has-flagged="{{ $hasFlagged  ? '1' : '0' }}"
                                  data-has-done="{{ $hasCompleted ? '1' : '0' }}">
+                            {{-- Collapsible: own x-data scope for open/close --}}
+                            <div style="border-bottom:1px solid #f1f5f9; padding:16px 20px;"
+                                 x-data="{ open: true }">
                                 {{-- Submission header --}}
                                 <div style="display:flex; align-items:center; justify-content:space-between; cursor:pointer; margin-bottom:12px;"
                                      @click="open = !open">
@@ -541,7 +543,8 @@
                                         </table>
                                     </div>
                                 </div>
-                            </div>
+                            </div>{{-- end collapsible --}}
+                            </div>{{-- end filter wrapper --}}
                         @endforeach
                     </div>
                 @endif
