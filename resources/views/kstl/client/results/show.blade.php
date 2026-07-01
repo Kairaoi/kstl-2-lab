@@ -468,21 +468,7 @@
 
                     {{-- ────────── Signature footer ────────── --}}
                     <div class="coa-foot">
-                        <div>
-                            @if($result?->authorised_at)
-                                <div class="coa-auth-pill">
-                                    <svg viewBox="0 0 24 24" stroke-width="2.5">
-                                        <path stroke-linecap="round" stroke-linejoin="round"
-                                              d="M9 12.75L11.25 15 15 9.75M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/>
-                                    </svg>
-                                    <p>Authorisation Status: Authorised</p>
-                                </div>
-                            @else
-                                <div class="coa-auth-pill" style="border-color:#d1d5db;">
-                                    <p style="color:#9ca3af;">Authorisation Status: Pending</p>
-                                </div>
-                            @endif
-                        </div>
+                        <div></div>
 
                         @if($result?->authorised_at)
                             <div style="min-width:220px;">

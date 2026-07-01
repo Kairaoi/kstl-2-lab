@@ -659,13 +659,7 @@
         <table class="sig-footer">
             <tr>
                 <td style="vertical-align:bottom;">
-                    @if($result?->authorised_at)
-                        <div class="auth-box">
-                            <div class="auth-label">&#10003; Authorisation Status: Authorised</div>
-                        </div>
-                    @else
-                        <div style="font-size:10px; color:#9ca3af;">Authorisation Status: Pending</div>
-                    @endif
+                    {{-- Authorisation Status removed --}}
                 </td>
                 <td style="text-align:right; vertical-align:bottom;">
                     @if($result?->authorised_at)
