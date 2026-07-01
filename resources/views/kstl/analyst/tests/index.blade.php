@@ -45,7 +45,8 @@
 
             @php
                 $countAll          = $queue->count();
-                $countPending      = $queue->whereIn('status', ['queued', 'in_progress'])->count();
+                $countNew          = $queue->where('status', 'queued')->count();
+                $countPending      = $queue->where('status', 'in_progress')->count();
                 $countFlagged      = $queue->where('status', 'flagged')->count();
                 $countDone         = $queue->where('status', 'completed')->count();
                 $countDirQuery     = $queue->filter(fn($t) =>
@@ -68,6 +69,7 @@
                     @php
                         $tabs = [
                             ['key' => 'all',       'label' => 'All',            'count' => $countAll,      'danger' => false],
+                            ['key' => 'new',       'label' => 'New',            'count' => $countNew,      'danger' => false],
                             ['key' => 'pending',   'label' => 'In Progress',    'count' => $countPending,  'danger' => false],
                             ['key' => 'dirquery',  'label' => 'Director Query', 'count' => $countDirQuery, 'danger' => $countDirQuery > 0],
                             ['key' => 'flagged',   'label' => 'Flagged',        'count' => $countFlagged,  'danger' => false],
@@ -151,6 +153,7 @@
 
                     {{-- Empty state per tab --}}
                     <div x-show="
+                        (tab === 'new'      && {{ $countNew      === 0 ? 'true' : 'false' }}) ||
                         (tab === 'pending'  && {{ $countPending  === 0 ? 'true' : 'false' }}) ||
                         (tab === 'dirquery' && {{ $countDirQuery === 0 ? 'true' : 'false' }}) ||
                         (tab === 'flagged'  && {{ $countFlagged  === 0 ? 'true' : 'false' }}) ||
@@ -169,7 +172,8 @@
                                 $progress     = $totalCount > 0 ? round(($completedCount / $totalCount) * 100) : 0;
                                 $flaggedCount = $tests->where('status', 'flagged')->count();
 
-                                $hasPending   = $tests->whereIn('status', ['queued', 'in_progress'])->count() > 0;
+                                $hasNew       = $tests->where('status', 'queued')->count() > 0;
+                                $hasPending   = $tests->where('status', 'in_progress')->count() > 0;
                                 $hasFlagged   = $tests->where('status', 'flagged')->count() > 0;
                                 $hasCompleted = $tests->where('status', 'completed')->count() > 0;
                                 $hasDirQuery  = $tests->filter(fn($t) =>
@@ -194,6 +198,7 @@
                             {{-- Filter wrapper --}}
                             <div x-show="
                                     (tab === 'all'
+                                     || (tab === 'new'      && {{ $hasNew       ? 'true' : 'false' }})
                                      || (tab === 'pending'  && {{ $hasPending   ? 'true' : 'false' }})
                                      || (tab === 'dirquery' && {{ $hasDirQuery  ? 'true' : 'false' }})
                                      || (tab === 'flagged'  && {{ $hasFlagged   ? 'true' : 'false' }})
