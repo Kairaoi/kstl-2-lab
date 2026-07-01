@@ -304,6 +304,7 @@
                     </a>
                 </div>
 
+                @php $totalGroups = $activeSorted->count(); $initialShow = 5; @endphp
                 @if($activeSubmissions->isEmpty())
                     <div style="padding:48px 20px; text-align:center;">
                         <svg style="width:40px; height:40px; margin:0 auto 12px;" fill="none" stroke="#e2e8f0" viewBox="0 0 24 24">
@@ -313,7 +314,7 @@
                         <p style="font-size:11px; color:#cbd5e1; margin:4px 0 0;">Tests you work on will appear here.</p>
                     </div>
                 @else
-                    <div>
+                    <div x-data="{ showAll: false }">
                         @foreach($activeSorted as $group)
                             @php
                                 $submission  = $group['submission'];
@@ -323,7 +324,8 @@
                                 $flagged     = $group['flagged'];
                                 $progress    = $total > 0 ? round(($done / $total) * 100) : 0;
                             @endphp
-                            <div style="border-bottom:1px solid #f1f5f9; padding:16px 20px;" x-data="{ open: true }">
+                            <div x-show="showAll || {{ $loop->index < $initialShow ? 'true' : 'false' }}"
+                                 style="border-bottom:1px solid #f1f5f9; padding:16px 20px;" x-data="{ open: true }">
 
                                 {{-- Submission header row --}}
                                 <div style="display:flex; align-items:center; justify-content:space-between; cursor:pointer;"
@@ -477,6 +479,21 @@
                                 </div>
                             </div>
                         @endforeach
+
+                        {{-- Show more / show less footer --}}
+                        @if($totalGroups > $initialShow)
+                        <div style="padding:14px 20px; border-top:1px solid #f1f5f9; text-align:center;">
+                            <button type="button" @click="showAll = !showAll"
+                                    style="display:inline-flex; align-items:center; gap:6px; font-size:12px; font-weight:600; color:#1a2f4e; background:#f8fafc; border:1px solid #e2e8f0; padding:7px 18px; border-radius:3px; cursor:pointer;">
+                                <svg :style="{ transform: showAll ? 'rotate(180deg)' : 'none' }"
+                                     style="width:14px; height:14px; transition:transform .2s;"
+                                     fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M19 9l-7 7-7-7"/>
+                                </svg>
+                                <span x-text="showAll ? 'Show less' : 'Show {{ $totalGroups - $initialShow }} more submission{{ ($totalGroups - $initialShow) > 1 ? 's' : '' }}'"></span>
+                            </button>
+                        </div>
+                        @endif
                     </div>
                 @endif
             </div>
