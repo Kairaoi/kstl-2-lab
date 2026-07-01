@@ -229,10 +229,10 @@
 
                     {{-- ────────── Letterhead ────────── --}}
                     <div class="coa-lh">
-                        {{-- MFOR logo --}}
+                        {{-- Coat of Arms --}}
                         <div style="flex-shrink:0;">
-                            <img src="{{ asset('images/mfor-logo.png') }}"
-                                 alt="Ministry of Fisheries &amp; Ocean Resources"
+                            <img src="{{ asset('images/Kiribati_National_Emblem.png') }}"
+                                 alt="Coat of Arms"
                                  style="width:72px; height:72px; object-fit:contain;">
                         </div>
 
@@ -242,13 +242,18 @@
                             <h1 class="coa-lab-name">Kiribati Seafood Toxicology Laboratory</h1>
                         </div>
 
-                        {{-- Contact --}}
-                        <div class="coa-lh-contact">
-                            <strong>Seafood Toxicology Laboratory</strong><br>
-                            Ministry of Fisheries and Ocean Resources,<br>Tarawa, Kiribati<br>
-                            t. +686 75021099<br>
-                            e. stld@mfor.gov.ki<br>
-                            w. stld.mfor.gov.ki
+                        {{-- Contact + MFOR logo --}}
+                        <div class="coa-lh-contact" style="display:flex; align-items:flex-start; gap:12px;">
+                            <div style="text-align:right;">
+                                <strong>Seafood Toxicology Laboratory</strong><br>
+                                Ministry of Fisheries and Ocean Resources,<br>Tarawa, Kiribati<br>
+                                t. +686 75021099<br>
+                                e. stld@mfor.gov.ki<br>
+                                w. stld.mfor.gov.ki
+                            </div>
+                            <img src="{{ asset('images/mfor-logo.png') }}"
+                                 alt="MFOR"
+                                 style="flex-shrink:0; width:40px; height:40px; object-fit:contain;">
                         </div>
                     </div>
 
