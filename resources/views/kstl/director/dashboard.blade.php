@@ -330,16 +330,38 @@
                 {{-- Authorisation History panel --}}
                 <div style="background:#fff;border:1px solid #e2e8f0;border-radius:4px;overflow:hidden;" id="flagged-section"
                      x-data="historyPanel()">
-                    <div class="gov-card-hdr" style="display:flex;align-items:center;justify-content:space-between;gap:12px;">
+                    <div class="gov-card-hdr">
                         <h3>Authorisation History</h3>
-                        @if($history->isNotEmpty())
-                            <input type="text"
-                                   x-model="histSearch"
-                                   placeholder="Search reference or client…"
-                                   style="padding:5px 10px;border:1px solid #e2e8f0;border-radius:3px;font-size:11px;color:#1e293b;outline:none;width:180px;"
-                                   @click.stop>
-                        @endif
                     </div>
+
+                    {{-- Filter bar --}}
+                    @if($history->isNotEmpty())
+                    <div style="padding:10px 16px;background:#f8fafc;border-bottom:1px solid #e2e8f0;display:flex;gap:8px;flex-wrap:wrap;align-items:center;">
+                        <input type="text"
+                               x-model="histSearch"
+                               placeholder="Search reference or client…"
+                               style="flex:1;min-width:140px;padding:6px 10px;border:1px solid #e2e8f0;border-radius:3px;font-size:11px;color:#1e293b;outline:none;">
+                        <select x-model="histOutcome"
+                                style="padding:6px 10px;border:1px solid #e2e8f0;border-radius:3px;font-size:11px;color:#1e293b;background:#fff;outline:none;cursor:pointer;">
+                            <option value="">All outcomes</option>
+                            <option value="pass">Pass</option>
+                            <option value="fail">Fail</option>
+                        </select>
+                        <select x-model="histPeriod"
+                                style="padding:6px 10px;border:1px solid #e2e8f0;border-radius:3px;font-size:11px;color:#1e293b;background:#fff;outline:none;cursor:pointer;">
+                            <option value="">All time</option>
+                            <option value="week">This week</option>
+                            <option value="month">This month</option>
+                            <option value="year">This year</option>
+                        </select>
+                        <button type="button"
+                                x-show="histSearch !== '' || histOutcome !== '' || histPeriod !== ''"
+                                @click="histSearch = ''; histOutcome = ''; histPeriod = '';"
+                                style="padding:6px 10px;border:1px solid #e2e8f0;border-radius:3px;font-size:11px;color:#64748b;background:#fff;cursor:pointer;">
+                            Clear
+                        </button>
+                    </div>
+                    @endif
 
                     @if($history->isEmpty())
                         <div style="padding:40px 20px;text-align:center;">
@@ -350,13 +372,23 @@
                         <div style="max-height:400px;overflow-y:auto;">
                             @foreach($history->take(20) as $submission)
                                 @php
-                                    $outcome  = $submission->result->overall_outcome ?? '';
-                                    $refLower = strtolower($submission->reference_number);
-                                    $nameLower = strtolower($submission->client->user->name);
-                                    $compLower = strtolower($submission->client->company_name);
+                                    $outcome     = $submission->result->overall_outcome ?? '';
+                                    $refLower    = strtolower($submission->reference_number);
+                                    $nameLower   = strtolower($submission->client->user->name);
+                                    $compLower   = strtolower($submission->client->company_name);
+                                    $periodBucket = match(true) {
+                                        $submission->updated_at >= now()->startOfWeek()  => 'week',
+                                        $submission->updated_at >= now()->startOfMonth() => 'month',
+                                        $submission->updated_at >= now()->startOfYear()  => 'year',
+                                        default => 'older',
+                                    };
                                 @endphp
                                 <div style="padding:12px 20px;border-bottom:1px solid #f1f5f9;"
-                                     x-show="histSearch === '' || '{{ $refLower }}'.includes(histSearch.toLowerCase()) || '{{ $nameLower }}'.includes(histSearch.toLowerCase()) || '{{ $compLower }}'.includes(histSearch.toLowerCase()) || '{{ $outcome }}'.includes(histSearch.toLowerCase())">
+                                     x-show="
+                                        (histSearch === '' || '{{ $refLower }}'.includes(histSearch.toLowerCase()) || '{{ $nameLower }}'.includes(histSearch.toLowerCase()) || '{{ $compLower }}'.includes(histSearch.toLowerCase()) || '{{ $outcome }}'.includes(histSearch.toLowerCase())) &&
+                                        (histOutcome === '' || histOutcome === '{{ $outcome }}') &&
+                                        (histPeriod === '' || (histPeriod === 'week' && '{{ $periodBucket }}' === 'week') || (histPeriod === 'month' && ['week','month'].includes('{{ $periodBucket }}')) || (histPeriod === 'year' && ['week','month','year'].includes('{{ $periodBucket }}')))
+                                     ">
                                     <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:4px;">
                                         <div style="display:flex;align-items:center;gap:8px;">
                                             <span style="font-family:monospace;font-size:12px;font-weight:700;color:#1a2f4e;">{{ $submission->reference_number }}</span>
@@ -381,9 +413,9 @@
                                     </a>
                                 </div>
                             @endforeach
-                            <div x-show="histSearch !== '' && !hasMatches"
+                            <div x-show="(histSearch !== '' || histOutcome !== '' || histPeriod !== '') && !hasMatches"
                                  style="padding:24px;text-align:center;font-size:12px;color:#9ca3af;">
-                                No results match your search.
+                                No results match your filters.
                             </div>
                         </div>
                     @endif
@@ -406,12 +438,19 @@
 
     @php
         $historyRows = $history->take(20)->map(fn($s) => [
-            'key' => implode(' ', [
+            'key'     => implode(' ', [
                 strtolower($s->reference_number),
                 strtolower($s->client->user->name),
                 strtolower($s->client->company_name),
                 strtolower($s->result->overall_outcome ?? ''),
             ]),
+            'outcome' => $s->result->overall_outcome ?? '',
+            'period'  => match(true) {
+                $s->updated_at >= now()->startOfWeek()  => 'week',
+                $s->updated_at >= now()->startOfMonth() => 'month',
+                $s->updated_at >= now()->startOfYear()  => 'year',
+                default => 'older',
+            },
         ])->values();
     @endphp
     <script>
@@ -419,11 +458,20 @@
 
         function historyPanel() {
             return {
-                histSearch: '',
+                histSearch:  '',
+                histOutcome: '',
+                histPeriod:  '',
                 get hasMatches() {
-                    if (!this.histSearch) return true;
                     const q = this.histSearch.toLowerCase();
-                    return _historyRows.some(r => r.key.includes(q));
+                    return _historyRows.some(r => {
+                        const textOk    = !q || r.key.includes(q);
+                        const outcomeOk = !this.histOutcome || r.outcome === this.histOutcome;
+                        const periodOk  = !this.histPeriod  ||
+                            (this.histPeriod === 'week'  && r.period === 'week') ||
+                            (this.histPeriod === 'month' && ['week','month'].includes(r.period)) ||
+                            (this.histPeriod === 'year'  && ['week','month','year'].includes(r.period));
+                        return textOk && outcomeOk && periodOk;
+                    });
                 },
             };
         }
