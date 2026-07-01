@@ -216,7 +216,7 @@
                                 Ministry of Fisheries and Ocean Resources,<br>Tarawa, Kiribati<br>
                                 t. +686 75021099<br>
                                 e. stld@mfor.gov.ki<br>
-                                w. stld.mfor.gov.ki
+                                w. kstl.mfor.gov.ki
                             </div>
                         </div>
                     </div>
@@ -442,7 +442,7 @@
                 <div class="coa-doc-strip">
                     <p class="ref">{{ $submission->reference_number }} &nbsp;·&nbsp; FINAL REPORT</p>
                     <p>Results are confidential and intended solely for the submitting client.</p>
-                    <p>Kiribati Seafood Toxicology Laboratory &nbsp;·&nbsp; stld.mfor.gov.ki</p>
+                    <p>Kiribati Seafood Toxicology Laboratory &nbsp;·&nbsp; kstl.mfor.gov.ki</p>
                 </div>
 
             </div>{{-- /coa-paper --}}
