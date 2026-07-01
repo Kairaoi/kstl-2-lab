@@ -358,7 +358,7 @@
                             </td>
                             <td style="width:44px; vertical-align:top; padding-left:8px; text-align:right;">
                                 <img src="{{ public_path('images/mfor-logo.png') }}"
-                                     alt="MFOR" style="width:36px; height:36px;">
+                                     alt="MFOR" style="width:64px; height:64px;">
                             </td>
                         </tr>
                     </table>

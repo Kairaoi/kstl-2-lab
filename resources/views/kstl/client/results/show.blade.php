@@ -253,7 +253,7 @@
                             </div>
                             <img src="{{ asset('images/mfor-logo.png') }}"
                                  alt="MFOR"
-                                 style="flex-shrink:0; width:40px; height:40px; object-fit:contain;">
+                                 style="flex-shrink:0; width:72px; height:72px; object-fit:contain;">
                         </div>
                     </div>
 
