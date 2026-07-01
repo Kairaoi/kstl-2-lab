@@ -54,7 +54,7 @@
                 )->count();
             @endphp
 
-            <div x-data="{ tab: 'all' }" style="background:#fff; border:1px solid #e2e8f0; border-radius:4px; overflow:hidden;">
+            <div x-data="{ tab: 'all', search: '', category: '' }" style="background:#fff; border:1px solid #e2e8f0; border-radius:4px; overflow:hidden;">
 
                 {{-- Header + Tab bar --}}
                 <div style="padding:16px 20px 0; border-bottom:1px solid #e2e8f0;">
@@ -98,6 +98,42 @@
                     </div>
                 </div>
 
+                {{-- Search + filter toolbar --}}
+                <div style="padding:12px 20px; border-bottom:1px solid #f1f5f9; background:#fafbfc; display:flex; align-items:center; gap:10px; flex-wrap:wrap;">
+                    {{-- Search --}}
+                    <div style="flex:1; min-width:200px; position:relative;">
+                        <svg style="position:absolute; left:10px; top:50%; transform:translateY(-50%); width:14px; height:14px; color:#94a3b8; pointer-events:none;" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-4.35-4.35M17 11A6 6 0 115 11a6 6 0 0112 0z"/>
+                        </svg>
+                        <input type="text"
+                               x-model.debounce.200ms="search"
+                               placeholder="Search by reference, client, sample or test…"
+                               style="width:100%; padding:7px 10px 7px 32px; font-size:12.5px; border:1px solid #e2e8f0; border-radius:3px; outline:none; color:#1a2f4e; box-sizing:border-box; background:#fff;"
+                               @focus="$el.style.borderColor='#1a2f4e'"
+                               @blur="$el.style.borderColor='#e2e8f0'">
+                    </div>
+                    {{-- Category filter --}}
+                    <select x-model="category"
+                            style="padding:7px 28px 7px 10px; font-size:12.5px; border:1px solid #e2e8f0; border-radius:3px; outline:none; color:#1a2f4e; background:#fff; cursor:pointer; appearance:none; background-image:url(\"data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 24 24' fill='none' stroke='%2394a3b8' stroke-width='2'%3E%3Cpath d='M19 9l-7 7-7-7'/%3E%3C/svg%3E\"); background-repeat:no-repeat; background-position:right 8px center;">
+                        <option value="">All categories</option>
+                        <option value="microbiological">Microbiological</option>
+                        <option value="chemical">Chemical</option>
+                        <option value="physical">Physical</option>
+                        <option value="water">Water</option>
+                    </select>
+                    {{-- Clear button --}}
+                    <button type="button"
+                            x-show="search !== '' || category !== ''"
+                            x-transition
+                            @click="search = ''; category = ''"
+                            style="display:inline-flex; align-items:center; gap:5px; padding:7px 12px; font-size:12px; font-weight:600; color:#64748b; background:#fff; border:1px solid #e2e8f0; border-radius:3px; cursor:pointer; white-space:nowrap;">
+                        <svg style="width:12px; height:12px;" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M6 18L18 6M6 6l12 12"/>
+                        </svg>
+                        Clear
+                    </button>
+                </div>
+
                 @if($queue->isEmpty())
                     <div style="padding:64px 20px; text-align:center;">
                         <svg style="width:40px; height:40px; margin:0 auto 12px;" fill="none" stroke="#e2e8f0" viewBox="0 0 24 24">
@@ -126,29 +162,44 @@
                     <div>
                         @foreach($grouped as $submissionId => $tests)
                             @php
-                                $hasPending    = $tests->whereIn('status', ['queued', 'in_progress'])->count() > 0;
-                                $hasFlagged    = $tests->where('status', 'flagged')->count() > 0;
-                                $hasCompleted  = $tests->where('status', 'completed')->count() > 0;
-                                $hasDirQuery   = $tests->filter(fn($t) =>
+                                $submission   = $tests->first()->sample->submission;
+                                $client       = $submission->client;
+                                $completedCount = $tests->whereIn('status', ['completed', 'flagged'])->count();
+                                $totalCount   = $tests->count();
+                                $progress     = $totalCount > 0 ? round(($completedCount / $totalCount) * 100) : 0;
+                                $flaggedCount = $tests->where('status', 'flagged')->count();
+
+                                $hasPending   = $tests->whereIn('status', ['queued', 'in_progress'])->count() > 0;
+                                $hasFlagged   = $tests->where('status', 'flagged')->count() > 0;
+                                $hasCompleted = $tests->where('status', 'completed')->count() > 0;
+                                $hasDirQuery  = $tests->filter(fn($t) =>
                                     $t->status === 'flagged' && $t->result_notes &&
                                     preg_match('/\[Director query\]/i', $t->result_notes)
                                 )->count() > 0;
-                            @endphp
-                            @php
-                                $submission = $tests->first()->sample->submission;
-                                $client = $submission->client;
-                                $completedCount = $tests->whereIn('status', ['completed', 'flagged'])->count();
-                                $totalCount = $tests->count();
-                                $progress = $totalCount > 0 ? round(($completedCount / $totalCount) * 100) : 0;
-                                $flaggedCount = $tests->where('status', 'flagged')->count();
+
+                                // Searchable text for this group (lowercased for case-insensitive match)
+                                $searchIndex = strtolower(implode(' ', array_filter([
+                                    $submission->reference_number,
+                                    $client->company_name ?? '',
+                                    $client->responsible_officer_name ?? ($client->user->name ?? ''),
+                                    $tests->map(fn($t) => $t->getDisplayLabel())->join(' '),
+                                    $tests->map(fn($t) => $t->sample->common_name ?? '')->join(' '),
+                                    $tests->map(fn($t) => $t->assignedTo?->name ?? '')->join(' '),
+                                ])));
+
+                                // Unique categories in this group for filtering
+                                $catIndex = $tests->map(fn($t) => strtolower($t->getDisplayCategory()))->unique()->join(',');
                             @endphp
 
-                            {{-- Filter wrapper: PHP booleans baked in so only 'tab' is reactive --}}
-                            <div x-show="tab === 'all'
+                            {{-- Filter wrapper --}}
+                            <div x-show="
+                                    (tab === 'all'
                                      || (tab === 'pending'  && {{ $hasPending   ? 'true' : 'false' }})
                                      || (tab === 'dirquery' && {{ $hasDirQuery  ? 'true' : 'false' }})
                                      || (tab === 'flagged'  && {{ $hasFlagged   ? 'true' : 'false' }})
-                                     || (tab === 'done'     && {{ $hasCompleted ? 'true' : 'false' }})">
+                                     || (tab === 'done'     && {{ $hasCompleted ? 'true' : 'false' }}))
+                                    && (search === '' || '{{ $searchIndex }}'.includes(search.toLowerCase()))
+                                    && (category === '' || '{{ $catIndex }}'.split(',').includes(category))"
                             {{-- Collapsible: own x-data scope for open/close --}}
                             <div style="border-bottom:1px solid #f1f5f9; padding:16px 20px;"
                                  x-data="{ open: true }">
