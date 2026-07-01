@@ -156,7 +156,7 @@
         .coa-auth-pill p { font-size: 11px; font-weight: 700; color: #0d9488; }
         .coa-sig-name   { font-family: 'Georgia', serif; font-size: 14px;
                           font-weight: 700; color: #1a2f4e; text-align: right; }
-        .coa-sig-line   { border-top: 1px solid #9ca3af; margin-bottom: 6px; }
+        .coa-sig-line   { border-top: none; margin-bottom: 6px; padding-top: 48px; }
         .coa-sig-role   { font-size: 9.5px; color: #9ca3af; text-align: right; }
 
         /* ── Document footer strip ──────────────────────────────── */

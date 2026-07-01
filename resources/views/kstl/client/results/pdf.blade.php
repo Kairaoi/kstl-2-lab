@@ -282,7 +282,7 @@
         display: inline-block;
     }
     .auth-label { font-size: 10px; font-weight: 700; color: #0d9488; }
-    .sig-line { border-top: 1px solid #9ca3af; margin-bottom: 5px; width: 200px; }
+    .sig-line { border-top: none; margin-bottom: 5px; padding-top: 48px; width: 200px; }
     .sig-name {
         font-family: 'DejaVu Serif', Georgia, serif;
         font-size: 13px;
