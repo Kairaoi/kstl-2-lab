@@ -329,11 +329,7 @@
 
                 {{-- Authorisation History panel --}}
                 <div style="background:#fff;border:1px solid #e2e8f0;border-radius:4px;overflow:hidden;" id="flagged-section"
-                     x-data="{ histSearch: '', get hasMatches() {
-                         if (!this.histSearch) return true;
-                         const q = this.histSearch.toLowerCase();
-                         return @json($history->take(20)->map(fn($s) => strtolower($s->reference_number . ' ' . $s->client->user->name . ' ' . $s->client->company_name . ' ' . ($s->result->overall_outcome ?? ''))))->some(v => v.includes(q));
-                     } }">
+                     x-data="historyPanel()">
                     <div class="gov-card-hdr" style="display:flex;align-items:center;justify-content:space-between;gap:12px;">
                         <h3>Authorisation History</h3>
                         @if($history->isNotEmpty())
@@ -409,6 +405,28 @@
     </div>
 
     <script>
+        const _historyRows = @json(
+            $history->take(20)->map(fn($s) => [
+                'key' => implode(' ', [
+                    strtolower($s->reference_number),
+                    strtolower($s->client->user->name),
+                    strtolower($s->client->company_name),
+                    strtolower($s->result->overall_outcome ?? ''),
+                ]),
+            ])->values()
+        );
+
+        function historyPanel() {
+            return {
+                histSearch: '',
+                get hasMatches() {
+                    if (!this.histSearch) return true;
+                    const q = this.histSearch.toLowerCase();
+                    return _historyRows.some(r => r.key.includes(q));
+                },
+            };
+        }
+
         function searchByReference() {
             const reference = document.querySelector('[x-model="reference"]').value.trim();
 
