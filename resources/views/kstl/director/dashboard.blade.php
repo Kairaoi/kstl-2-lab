@@ -121,6 +121,46 @@
                 </div>
             </div>
 
+            {{-- ── Pending Payment Verification Alert ────────────────── --}}
+            @if($pending_payments->isNotEmpty())
+            <div style="background:#f0fdf4;border:1px solid #86efac;border-left:4px solid #16a34a;border-radius:4px;overflow:hidden;">
+                <div style="padding:16px 20px;display:flex;align-items:flex-start;justify-content:space-between;gap:16px;flex-wrap:wrap;">
+                    <div style="display:flex;align-items:flex-start;gap:14px;">
+                        <div style="flex-shrink:0;width:36px;height:36px;border-radius:50%;background:#dcfce7;display:flex;align-items:center;justify-content:center;">
+                            <svg style="width:18px;height:18px;color:#16a34a;" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 9V7a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2m2 4h10a2 2 0 002-2v-6a2 2 0 00-2-2H9a2 2 0 00-2 2v6a2 2 0 002 2zm7-5a2 2 0 11-4 0 2 2 0 014 0z"/>
+                            </svg>
+                        </div>
+                        <div>
+                            <p style="font-size:13px;font-weight:700;color:#166534;margin:0 0 6px;">
+                                {{ $pending_payments->count() }} Payment{{ $pending_payments->count() > 1 ? 's' : '' }} Awaiting Your Verification
+                            </p>
+                            <div style="display:flex;flex-direction:column;gap:4px;">
+                                @foreach($pending_payments as $inv)
+                                <div style="display:flex;align-items:center;gap:10px;flex-wrap:wrap;">
+                                    <span style="font-family:monospace;font-size:11px;font-weight:700;color:#166534;">{{ $inv->invoice_number }}</span>
+                                    <span style="font-size:11px;color:#166534;">{{ $inv->bill_to_company }}</span>
+                                    <span style="font-size:11px;color:#166534;">— TT Ref: <strong>{{ $inv->payment_submitted_reference }}</strong></span>
+                                    @if($inv->payment_submitted_at)
+                                        <span style="font-size:10px;color:#15803d;">{{ $inv->payment_submitted_at->diffForHumans() }}</span>
+                                    @endif
+                                    <a href="{{ route('director.invoices.show', $inv->id) }}"
+                                       style="font-size:11px;font-weight:700;color:#15803d;text-decoration:underline;">
+                                        Verify &rsaquo;
+                                    </a>
+                                </div>
+                                @endforeach
+                            </div>
+                        </div>
+                    </div>
+                    <a href="{{ route('director.invoices.index') }}"
+                       style="background:#16a34a;color:#fff;padding:8px 18px;border-radius:3px;font-size:12px;font-weight:600;text-decoration:none;white-space:nowrap;flex-shrink:0;">
+                        View All Invoices
+                    </a>
+                </div>
+            </div>
+            @endif
+
             {{-- ── Stat cards ─────────────────────────────────────────── --}}
             <div style="margin-top:24px;">
                 <p class="gov-section-label">Laboratory Overview</p>
@@ -207,46 +247,6 @@
                     @endif
                 </div>
             </div>
-
-            {{-- ── Pending Payment Verification Alert ────────────────── --}}
-            @if($pending_payments->isNotEmpty())
-            <div style="background:#f0fdf4;border:1px solid #86efac;border-left:4px solid #16a34a;border-radius:4px;overflow:hidden;">
-                <div style="padding:16px 20px;display:flex;align-items:flex-start;justify-content:space-between;gap:16px;flex-wrap:wrap;">
-                    <div style="display:flex;align-items:flex-start;gap:14px;">
-                        <div style="flex-shrink:0;width:36px;height:36px;border-radius:50%;background:#dcfce7;display:flex;align-items:center;justify-content:center;">
-                            <svg style="width:18px;height:18px;color:#16a34a;" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 9V7a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2m2 4h10a2 2 0 002-2v-6a2 2 0 00-2-2H9a2 2 0 00-2 2v6a2 2 0 002 2zm7-5a2 2 0 11-4 0 2 2 0 014 0z"/>
-                            </svg>
-                        </div>
-                        <div>
-                            <p style="font-size:13px;font-weight:700;color:#166534;margin:0 0 6px;">
-                                {{ $pending_payments->count() }} Payment{{ $pending_payments->count() > 1 ? 's' : '' }} Awaiting Your Verification
-                            </p>
-                            <div style="display:flex;flex-direction:column;gap:4px;">
-                                @foreach($pending_payments as $inv)
-                                <div style="display:flex;align-items:center;gap:10px;flex-wrap:wrap;">
-                                    <span style="font-family:monospace;font-size:11px;font-weight:700;color:#166534;">{{ $inv->invoice_number }}</span>
-                                    <span style="font-size:11px;color:#166534;">{{ $inv->bill_to_company }}</span>
-                                    <span style="font-size:11px;color:#166534;">— TT Ref: <strong>{{ $inv->payment_submitted_reference }}</strong></span>
-                                    @if($inv->payment_submitted_at)
-                                        <span style="font-size:10px;color:#4ade80;">{{ $inv->payment_submitted_at->diffForHumans() }}</span>
-                                    @endif
-                                    <a href="{{ route('director.invoices.show', $inv->id) }}"
-                                       style="font-size:11px;font-weight:700;color:#15803d;text-decoration:underline;">
-                                        Verify &rsaquo;
-                                    </a>
-                                </div>
-                                @endforeach
-                            </div>
-                        </div>
-                    </div>
-                    <a href="{{ route('director.invoices.index') }}"
-                       style="background:#16a34a;color:#fff;padding:8px 18px;border-radius:3px;font-size:12px;font-weight:600;text-decoration:none;white-space:nowrap;flex-shrink:0;">
-                        View All Invoices
-                    </a>
-                </div>
-            </div>
-            @endif
 
             {{-- ── Service Agreements Alert ───────────────────────────── --}}
             @if(isset($unsigned_agreements) && $unsigned_agreements > 0)
