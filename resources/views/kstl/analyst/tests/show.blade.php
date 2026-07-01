@@ -359,12 +359,20 @@
                     {{-- ── Supporting Files (shown for both active and locked) ── --}}
                     @include('kstl.analyst.tests._attachments', ['test' => $test, 'locked' => ($locked ?? false)])
 
-                    {{-- ── Flag for Director Review + Save (placed after Supporting Files) ── --}}
+                    {{-- ── Actions panel (placed after Supporting Files) ── --}}
                     @unless(($locked ?? false) || $test->status === 'completed')
                         <div style="background:#fff; border:1px solid #e2e8f0; border-radius:4px; overflow:hidden;">
                             <div style="padding:20px;">
-                                <div style="background:#fffbeb; border:1px solid #fcd34d; border-radius:4px; padding:14px 16px;">
-                                    <label style="display:flex; align-items:flex-start; gap:10px; cursor:pointer;">
+                                @if($directorQueryNote)
+                                    {{-- Responding to director query — show submit response info, hide re-flag --}}
+                                    <div style="background:#f0fdf4; border:1px solid #86efac; border-left:4px solid #16a34a; border-radius:4px; padding:14px 16px;">
+                                        <p style="font-size:13px; font-weight:600; color:#15803d; margin:0 0 4px;">Submit Response to Director</p>
+                                        <p style="font-size:11px; color:#166534; margin:0;">
+                                            Saving will mark this test complete and send your response back for Director review.
+                                            If you still need to re-flag, tick the option below.
+                                        </p>
+                                    </div>
+                                    <label style="display:flex; align-items:flex-start; gap:10px; cursor:pointer; margin-top:12px;">
                                         <input type="checkbox"
                                                name="flag"
                                                value="1"
@@ -372,13 +380,31 @@
                                                x-model="flagged"
                                                style="margin-top:2px; accent-color:#d97706;"/>
                                         <div>
-                                            <p style="font-size:13px; font-weight:600; color:#92400e; margin:0;">Flag for Director Review</p>
-                                            <p style="font-size:11px; color:#b45309; margin:3px 0 0;">
-                                                Check this if the result is anomalous, exceeds limits, or requires Director attention before authorisation.
+                                            <p style="font-size:12px; font-weight:600; color:#92400e; margin:0;">Re-flag for Director (keep open)</p>
+                                            <p style="font-size:11px; color:#b45309; margin:2px 0 0;">
+                                                Tick only if the issue requires further back-and-forth. Leave unticked to close this query.
                                             </p>
                                         </div>
                                     </label>
-                                </div>
+                                @else
+                                    {{-- Normal save — show standard flag checkbox --}}
+                                    <div style="background:#fffbeb; border:1px solid #fcd34d; border-radius:4px; padding:14px 16px;">
+                                        <label style="display:flex; align-items:flex-start; gap:10px; cursor:pointer;">
+                                            <input type="checkbox"
+                                                   name="flag"
+                                                   value="1"
+                                                   form="result-form"
+                                                   x-model="flagged"
+                                                   style="margin-top:2px; accent-color:#d97706;"/>
+                                            <div>
+                                                <p style="font-size:13px; font-weight:600; color:#92400e; margin:0;">Flag for Director Review</p>
+                                                <p style="font-size:11px; color:#b45309; margin:3px 0 0;">
+                                                    Check this if the result is anomalous, exceeds limits, or requires Director attention before authorisation.
+                                                </p>
+                                            </div>
+                                        </label>
+                                    </div>
+                                @endif
                             </div>
                             {{-- Actions --}}
                             <div style="padding:14px 20px; border-top:1px solid #e2e8f0; display:flex; align-items:center; justify-content:space-between; background:#f8fafc;">
@@ -388,11 +414,12 @@
                                 </a>
                                 <button type="submit"
                                         form="result-form"
-                                        style="display:inline-flex; align-items:center; gap:8px; padding:9px 24px; background:#1a2f4e; color:#fff; font-size:13px; font-weight:600; border:none; border-radius:3px; cursor:pointer;">
+                                        style="display:inline-flex; align-items:center; gap:8px; padding:9px 24px; font-size:13px; font-weight:600; border:none; border-radius:3px; cursor:pointer;"
+                                        :style="flagged ? 'background:#d97706; color:#fff;' : 'background:#1a2f4e; color:#fff;'">
                                     <svg style="width:16px; height:16px;" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"/>
                                     </svg>
-                                    Save Result
+                                    <span x-text="flagged ? 'Save &amp; Keep Flagged' : '{{ $directorQueryNote ? 'Submit Response' : 'Save Result' }}'"></span>
                                 </button>
                             </div>
                         </div>
@@ -412,7 +439,9 @@
             value     : @json(old('result_value', $test->result_value ?? '')),
             unit      : @json(old('result_unit',  $test->result_unit  ?? '')),
             notes     : @json(old('result_notes', $analystOwnNotes)),
-            flagged   : {{ (old('flag') !== null ? (bool)old('flag') : ($test->status === 'flagged')) ? 'true' : 'false' }},
+            // Pre-check only when analyst originally flagged (no director query present).
+            // When responding to a director query, default to unchecked so saving submits response.
+            flagged   : {{ (old('flag') !== null ? (bool)old('flag') : ($test->status === 'flagged' && !$directorQueryNote)) ? 'true' : 'false' }},
         };
 
         return {
