@@ -98,8 +98,19 @@
 
             {{-- ── Director Query Alert — uses $flaggedTests fetched globally ── --}}
             @if($flaggedTests->isNotEmpty())
-                <div x-data="{ open: false }" style="background:#fff; border:1px solid #fca5a5; border-radius:4px; overflow:hidden; margin-top:24px;">
-                    {{-- Alert header — clicking toggles the list --}}
+                @php
+                    // Split into tests with a written query vs tests just returned without one
+                    $testsWithQuery  = $flaggedTests->filter(function($t) {
+                        if (!$t->result_notes) return false;
+                        preg_match('/\[Director query\]\s*(.+?)(?=\n\n\[|$)/s', $t->result_notes, $m);
+                        return isset($m[1]) && trim($m[1]) !== '';
+                    });
+                    $testsReturned   = $flaggedTests->diff($testsWithQuery);
+                @endphp
+
+                {{-- Panel A: tests with an actual written query --}}
+                @if($testsWithQuery->isNotEmpty())
+                <div x-data="{ open: true }" style="background:#fff; border:1px solid #fca5a5; border-radius:4px; overflow:hidden; margin-top:24px;">
                     <button type="button" @click="open = !open"
                             style="width:100%; background:#fef2f2; border:none; border-bottom:2px solid #dc2626; padding:14px 20px; display:flex; align-items:center; gap:14px; cursor:pointer; text-align:left;">
                         <div style="flex-shrink:0; width:36px; height:36px; background:#dc2626; border-radius:50%; display:flex; align-items:center; justify-content:center;">
@@ -108,25 +119,20 @@
                             </svg>
                         </div>
                         <div style="flex:1; min-width:0;">
-                            <p style="font-size:14px; font-weight:700; color:#991b1b; margin:0 0 3px;">
-                                Director Query — Action Required
-                            </p>
+                            <p style="font-size:14px; font-weight:700; color:#991b1b; margin:0 0 3px;">Director Query — Action Required</p>
                             <p style="font-size:12px; color:#b91c1c; margin:0;">
-                                {{ $flaggedTests->count() }} test{{ $flaggedTests->count() > 1 ? 's have' : ' has' }} been returned for clarification.
+                                {{ $testsWithQuery->count() }} test{{ $testsWithQuery->count() > 1 ? 's have' : ' has' }} a written query from the Director.
                                 <span x-text="open ? 'Click to collapse.' : 'Click to review.'"></span>
                             </p>
                         </div>
-                        {{-- Chevron --}}
                         <svg :style="{ transform: open ? 'rotate(180deg)' : 'none' }"
                              style="flex-shrink:0; width:18px; height:18px; color:#dc2626; transition:transform .2s;"
                              fill="none" stroke="currentColor" viewBox="0 0 24 24">
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M19 9l-7 7-7-7"/>
                         </svg>
                     </button>
-
-                    {{-- Collapsible list --}}
-                    <div x-show="open" x-transition:enter="transition ease-out duration-200" x-transition:enter-start="opacity-0 -translate-y-1" x-transition:enter-end="opacity-100 translate-y-0" x-transition:leave="transition ease-in duration-150" x-transition:leave-start="opacity-100" x-transition:leave-end="opacity-0">
-                        @foreach($flaggedTests as $flaggedTest)
+                    <div x-show="open" x-transition>
+                        @foreach($testsWithQuery as $flaggedTest)
                             @php
                                 preg_match('/\[Director query\]\s*(.+?)(?=\n\n\[|$)/s', $flaggedTest->result_notes ?? '', $dqm);
                                 $directorQuery = isset($dqm[1]) ? trim($dqm[1]) : null;
@@ -134,9 +140,7 @@
                             <div style="padding:16px 20px; border-bottom:1px solid #fee2e2;">
                                 <div style="display:flex; align-items:flex-start; justify-content:space-between; gap:16px; flex-wrap:wrap;">
                                     <div style="min-width:0;">
-                                        <p style="font-size:13px; font-weight:700; color:#1a2f4e; margin:0 0 3px;">
-                                            {{ $flaggedTest->getDisplayLabel() }}
-                                        </p>
+                                        <p style="font-size:13px; font-weight:700; color:#1a2f4e; margin:0 0 3px;">{{ $flaggedTest->getDisplayLabel() }}</p>
                                         <p style="font-size:11px; color:#6b7280; margin:0;">
                                             <span style="font-family:monospace; font-weight:600;">{{ $flaggedTest->sample->submission->reference_number ?? '—' }}</span>
                                             &nbsp;&middot;&nbsp; {{ $flaggedTest->sample->submission->client->company_name ?? '—' }}
@@ -154,8 +158,6 @@
                                         Review &amp; Respond
                                     </a>
                                 </div>
-
-                                {{-- Director's query text --}}
                                 @if($directorQuery)
                                 <div style="margin-top:10px; background:#fffbeb; border:1px solid #fcd34d; border-left:4px solid #d97706; border-radius:3px; padding:10px 14px;">
                                     <p style="font-size:9px; font-weight:700; letter-spacing:.12em; text-transform:uppercase; color:#92400e; margin:0 0 5px;">Director's Query</p>
@@ -166,6 +168,54 @@
                         @endforeach
                     </div>
                 </div>
+                @endif
+
+                {{-- Panel B: tests returned by director without a written query --}}
+                @if($testsReturned->isNotEmpty())
+                <div x-data="{ open: false }" style="background:#fff; border:1px solid #fed7aa; border-radius:4px; overflow:hidden; margin-top:12px;">
+                    <button type="button" @click="open = !open"
+                            style="width:100%; background:#fff7ed; border:none; border-bottom:1px solid #fed7aa; padding:12px 20px; display:flex; align-items:center; gap:14px; cursor:pointer; text-align:left;">
+                        <div style="flex-shrink:0; width:30px; height:30px; background:#f97316; border-radius:50%; display:flex; align-items:center; justify-content:center;">
+                            <svg style="width:14px; height:14px;" fill="none" stroke="#fff" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M3 10h10a8 8 0 018 8v2M3 10l6 6m-6-6l6-6"/>
+                            </svg>
+                        </div>
+                        <div style="flex:1; min-width:0;">
+                            <p style="font-size:13px; font-weight:700; color:#92400e; margin:0 0 2px;">Returned — No Query Written</p>
+                            <p style="font-size:11px; color:#b45309; margin:0;">
+                                {{ $testsReturned->count() }} test{{ $testsReturned->count() > 1 ? 's were' : ' was' }} returned by the Director without a specific query.
+                                <span x-text="open ? 'Click to collapse.' : 'Click to view.'"></span>
+                            </p>
+                        </div>
+                        <svg :style="{ transform: open ? 'rotate(180deg)' : 'none' }"
+                             style="flex-shrink:0; width:16px; height:16px; color:#f97316; transition:transform .2s;"
+                             fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M19 9l-7 7-7-7"/>
+                        </svg>
+                    </button>
+                    <div x-show="open" x-transition>
+                        @foreach($testsReturned as $flaggedTest)
+                            <div style="padding:14px 20px; border-bottom:1px solid #ffedd5; display:flex; align-items:center; justify-content:space-between; gap:16px; flex-wrap:wrap;">
+                                <div style="min-width:0;">
+                                    <p style="font-size:13px; font-weight:700; color:#1a2f4e; margin:0 0 2px;">{{ $flaggedTest->getDisplayLabel() }}</p>
+                                    <p style="font-size:11px; color:#6b7280; margin:0;">
+                                        <span style="font-family:monospace; font-weight:600;">{{ $flaggedTest->sample->submission->reference_number ?? '—' }}</span>
+                                        &nbsp;&middot;&nbsp; {{ $flaggedTest->sample->submission->client->company_name ?? '—' }}
+                                        &nbsp;&middot;&nbsp; Sample: {{ $flaggedTest->sample->common_name ?? '—' }}
+                                        @if($flaggedTest->assignedTo)
+                                            &nbsp;&middot;&nbsp; Assigned to: {{ $flaggedTest->assignedTo->name }}
+                                        @endif
+                                    </p>
+                                </div>
+                                <a href="{{ route('analyst.tests.show', $flaggedTest->id) }}"
+                                   style="flex-shrink:0; display:inline-flex; align-items:center; gap:6px; padding:7px 14px; background:#fff7ed; color:#c2410c; border:1px solid #fed7aa; border-radius:3px; font-size:12px; font-weight:700; text-decoration:none; white-space:nowrap;">
+                                    Review
+                                </a>
+                            </div>
+                        @endforeach
+                    </div>
+                </div>
+                @endif
             @endif
             @php $flaggedGroups = $activeSubmissions->filter(fn($g) => ($g['flagged'] ?? 0) > 0); @endphp
 
