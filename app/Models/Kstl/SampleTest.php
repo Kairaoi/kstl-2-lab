@@ -153,7 +153,7 @@ class SampleTest extends Model
         'apc'                        => 'MSOP06',
         'yeast_mold'                 => 'MSOP08',
         'salmonella_spp'             => 'MSOP10',
-        'listeria_spp'               => 'MSOP11.B',
+        'listeria_spp'               => 'MSOP11',
         'clostridium'                => 'MSOP12',
         'total_coliforms'            => 'MSOP01',
         'e_coli'                     => 'MSOP01',

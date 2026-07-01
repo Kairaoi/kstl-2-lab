@@ -23,7 +23,7 @@ class SopDocumentsSeeder extends Seeder
             ['reference_code' => 'MSOP09',   'title' => 'E. coli / Coliform (Rapid)',          'subcategory' => 'microbiological'],
             ['reference_code' => 'MSOP10',   'title' => 'Salmonella Species',                  'subcategory' => 'microbiological'],
             ['reference_code' => 'MSOP11.A', 'title' => 'Listeria monocytogenes',              'subcategory' => 'microbiological'],
-            ['reference_code' => 'MSOP11.B', 'title' => 'Listeria Species',                    'subcategory' => 'microbiological'],
+            ['reference_code' => 'MSOP11',   'title' => 'Listeria Species',                    'subcategory' => 'microbiological'],
             // Chemical
             ['reference_code' => 'CHMSOP01', 'title' => 'Moisture Content',                    'subcategory' => 'chemical'],
             ['reference_code' => 'CHMSOP02', 'title' => 'ELISA Histamine Rapid Kit',           'subcategory' => 'chemical'],
