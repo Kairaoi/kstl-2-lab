@@ -24,7 +24,7 @@ class WelcomeNotification extends Notification
             ->line('Your account has been created by the lab director.')
             ->line('**Email:** ' . $notifiable->email)
             ->line('**Temporary Password:** ' . $this->temporaryPassword)
-            ->action('Log In Now', url('/admin/login'))
+            ->action('Log In Now', url('/login'))
             ->line('Please log in and change your password immediately.')
             ->line('If you have any issues, contact the lab reception.');
     }
