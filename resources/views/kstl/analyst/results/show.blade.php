@@ -199,20 +199,25 @@
                     {{-- ────────── Letterhead ────────── --}}
                     <div class="coa-lh">
                         <div style="flex-shrink:0;">
-                            <img src="{{ asset('images/mfor-logo.png') }}"
-                                 alt="Ministry of Fisheries &amp; Ocean Resources"
+                            <img src="{{ asset('images/Kiribati_National_Emblem.png') }}"
+                                 alt="Coat of Arms"
                                  style="width:72px;height:72px;object-fit:contain;">
                         </div>
                         <div class="coa-lh-body">
                             <p class="coa-org-line">Government of Kiribati &nbsp;·&nbsp; Ministry of Fisheries &amp; Ocean Resources</p>
                             <h1 class="coa-lab-name">Kiribati Seafood Toxicology Laboratory</h1>
                         </div>
-                        <div class="coa-lh-contact">
-                            <strong>Seafood Toxicology Laboratory</strong><br>
-                            Ministry of Fisheries and Ocean Resources,<br>Tarawa, Kiribati<br>
-                            t. +686 75021099<br>
-                            e. stld@mfor.gov.ki<br>
-                            w. stld.mfor.gov.ki
+                        <div class="coa-lh-contact" style="display:flex; align-items:flex-start; gap:12px;">
+                            <img src="{{ asset('images/mfor-logo.png') }}"
+                                 alt="MFOR"
+                                 style="flex-shrink:0; width:72px; height:72px; object-fit:contain;">
+                            <div style="text-align:right;">
+                                <strong>Seafood Toxicology Laboratory</strong><br>
+                                Ministry of Fisheries and Ocean Resources,<br>Tarawa, Kiribati<br>
+                                t. +686 75021099<br>
+                                e. stld@mfor.gov.ki<br>
+                                w. stld.mfor.gov.ki
+                            </div>
                         </div>
                     </div>
 
