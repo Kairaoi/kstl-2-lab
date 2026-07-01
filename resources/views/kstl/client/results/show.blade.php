@@ -244,6 +244,9 @@
 
                         {{-- Contact + MFOR logo --}}
                         <div class="coa-lh-contact" style="display:flex; align-items:flex-start; gap:12px;">
+                            <img src="{{ asset('images/mfor-logo.png') }}"
+                                 alt="MFOR"
+                                 style="flex-shrink:0; width:72px; height:72px; object-fit:contain;">
                             <div style="text-align:right;">
                                 <strong>Seafood Toxicology Laboratory</strong><br>
                                 Ministry of Fisheries and Ocean Resources,<br>Tarawa, Kiribati<br>
@@ -251,9 +254,6 @@
                                 e. stld@mfor.gov.ki<br>
                                 w. stld.mfor.gov.ki
                             </div>
-                            <img src="{{ asset('images/mfor-logo.png') }}"
-                                 alt="MFOR"
-                                 style="flex-shrink:0; width:72px; height:72px; object-fit:contain;">
                         </div>
                     </div>
 
