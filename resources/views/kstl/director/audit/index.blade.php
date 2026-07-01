@@ -176,7 +176,7 @@
                                                         style="background:none;border:none;cursor:pointer;color:#cbd5e1;padding:0;"
                                                         :style="open ? 'color:#1a2f4e;' : ''"
                                                         :title="open ? 'Hide detail' : 'Show detail'">
-                                                    <svg style="width:16px;height:16px;transition:transform .2s;" :style="open ? 'transform:rotate(180deg)' : ''"
+                                                    <svg style="width:16px;height:16px;transition:transform .2s;" :style="{ transform: open ? 'rotate(180deg)' : 'none' }"
                                                          fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"/>
                                                     </svg>

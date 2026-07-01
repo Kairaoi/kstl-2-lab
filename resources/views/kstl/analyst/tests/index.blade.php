@@ -288,7 +288,7 @@
 
                                         {{-- Chevron --}}
                                         <svg style="width:16px; height:16px; color:#94a3b8; transition:transform .2s;"
-                                             :style="open ? 'transform:rotate(180deg)' : ''"
+                                             :style="{ transform: open ? 'rotate(180deg)' : 'none' }"
                                              fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"/>
                                         </svg>
