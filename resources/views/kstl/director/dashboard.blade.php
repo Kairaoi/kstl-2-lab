@@ -404,17 +404,18 @@
         </div>
     </div>
 
+    @php
+        $historyRows = $history->take(20)->map(fn($s) => [
+            'key' => implode(' ', [
+                strtolower($s->reference_number),
+                strtolower($s->client->user->name),
+                strtolower($s->client->company_name),
+                strtolower($s->result->overall_outcome ?? ''),
+            ]),
+        ])->values();
+    @endphp
     <script>
-        const _historyRows = @json(
-            $history->take(20)->map(fn($s) => [
-                'key' => implode(' ', [
-                    strtolower($s->reference_number),
-                    strtolower($s->client->user->name),
-                    strtolower($s->client->company_name),
-                    strtolower($s->result->overall_outcome ?? ''),
-                ]),
-            ])->values()
-        );
+        const _historyRows = @json($historyRows);
 
         function historyPanel() {
             return {
