@@ -233,11 +233,13 @@
                     ->whereNull('read_at')
                     ->count();
 
-                $bellRoute = auth()->user()->hasAnyRole(['director','admin','super_admin'])
-                    ? route('director.complaints.index')
-                    : (auth()->user()->hasRole('auditor')
-                        ? route('reports.index')
-                        : route('client.notifications.index'));
+                $bellRoute = match(true) {
+                    auth()->user()->hasAnyRole(['director','admin','super_admin']) => route('director.notifications.index'),
+                    auth()->user()->hasRole('analyst')   => route('analyst.notifications.index'),
+                    auth()->user()->hasRole('reception')  => route('reception.notifications.index'),
+                    auth()->user()->hasRole('auditor')    => route('reports.index'),
+                    default                               => route('client.notifications.index'),
+                };
             @endphp
             <a href="{{ $bellRoute }}" class="an-bell" title="Notifications">
                 <svg fill="none" stroke="currentColor" viewBox="0 0 24 24">

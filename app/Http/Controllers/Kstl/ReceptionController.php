@@ -255,6 +255,16 @@ class ReceptionController extends Controller
             'sent_by'       => Auth::id(),
         ]);
 
+        // Notify analysts new tests are waiting
+        try {
+            $this->notificationService->notifyAnalystNewTests($submission->fresh());
+        } catch (\Throwable $e) {
+            Log::warning('Analyst notification failed after sendToTesting', [
+                'submission_id' => $submission->id,
+                'error'         => $e->getMessage(),
+            ]);
+        }
+
         return redirect()->route('reception.dashboard')
             ->with('success', "Submission {$submission->reference_number} sent to testing queue.");
     }
@@ -341,5 +351,52 @@ class ReceptionController extends Controller
 
         return redirect()->back()
             ->with('success', 'Client decision recorded.');
+    }
+
+    // ── Notifications ─────────────────────────────────────────────
+
+    public function notificationsIndex(Request $request)
+    {
+        $user = Auth::user();
+
+        \DB::table('notifications')
+            ->where('notifiable_type', 'App\\Models\\User')
+            ->where('notifiable_id', $user->id)
+            ->whereNull('read_at')
+            ->update(['read_at' => now()]);
+
+        $notifications = \DB::table('notifications')
+            ->where('notifiable_type', 'App\\Models\\User')
+            ->where('notifiable_id', $user->id)
+            ->orderByDesc('created_at')
+            ->paginate(20);
+
+        return view('kstl.reception.notifications.index', compact('notifications'));
+    }
+
+    public function notificationMarkRead(Request $request, string $id)
+    {
+        $user = Auth::user();
+
+        \DB::table('notifications')
+            ->where('id', $id)
+            ->where('notifiable_type', 'App\\Models\\User')
+            ->where('notifiable_id', $user->id)
+            ->update(['read_at' => now()]);
+
+        return back()->with('success', 'Notification marked as read.');
+    }
+
+    public function notificationMarkAllRead(Request $request)
+    {
+        $user = Auth::user();
+
+        \DB::table('notifications')
+            ->where('notifiable_type', 'App\\Models\\User')
+            ->where('notifiable_id', $user->id)
+            ->whereNull('read_at')
+            ->update(['read_at' => now()]);
+
+        return back()->with('success', 'All notifications marked as read.');
     }
 }

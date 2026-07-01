@@ -39,4 +39,12 @@ Route::middleware([
     Route::get('/results/{submission}', [AnalystController::class, 'resultsShow'])
         ->name('results.show');
 
+    // ── Notifications ──────────────────────────────────────────────
+    Route::get('/notifications', [AnalystController::class, 'notificationsIndex'])
+        ->name('notifications.index');
+    Route::post('/notifications/{id}/read', [AnalystController::class, 'notificationMarkRead'])
+        ->name('notifications.read');
+    Route::post('/notifications/read-all', [AnalystController::class, 'notificationMarkAllRead'])
+        ->name('notifications.read-all');
+
 });

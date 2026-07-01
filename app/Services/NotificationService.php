@@ -339,6 +339,90 @@ class NotificationService
     }
 
     /**
+     * Notify reception staff a new submission has been lodged by a client.
+     * Called immediately after a client creates a submission.
+     */
+    public function notifyReceptionNewSubmission(Submission $submission): void
+    {
+        $receptionUsers = User::role('reception')->get();
+
+        if ($receptionUsers->isEmpty()) {
+            Log::warning('[NOTIFY] No reception users — new_submission skipped', [
+                'submission_id' => $submission->id,
+            ]);
+            return;
+        }
+
+        $submission->loadMissing('client');
+
+        foreach ($receptionUsers as $staff) {
+            try {
+                $this->createInAppNotification(
+                    userId:     $staff->id,
+                    type:       'new_submission',
+                    subject:    "New submission received — {$submission->reference_number}",
+                    message:    "{$submission->client->company_name} has submitted a new sample request ({$submission->reference_number}). Please review and process the submission.",
+                    notifiable: $submission,
+                );
+
+                Log::info('[NOTIFY] new_submission sent to reception', [
+                    'submission_id' => $submission->id,
+                    'staff_id'      => $staff->id,
+                ]);
+
+            } catch (\Exception $e) {
+                Log::error('[NOTIFY] new_submission FAILED', [
+                    'submission_id' => $submission->id,
+                    'staff_id'      => $staff->id,
+                    'error'         => $e->getMessage(),
+                ]);
+            }
+        }
+    }
+
+    /**
+     * Notify analysts new tests have been queued for a submission.
+     * Called when reception sends a submission to the testing queue.
+     */
+    public function notifyAnalystNewTests(Submission $submission): void
+    {
+        $analysts = User::role('analyst')->get();
+
+        if ($analysts->isEmpty()) {
+            Log::warning('[NOTIFY] No analysts — new_tests_queued skipped', [
+                'submission_id' => $submission->id,
+            ]);
+            return;
+        }
+
+        $submission->loadMissing('client');
+
+        foreach ($analysts as $analyst) {
+            try {
+                $this->createInAppNotification(
+                    userId:     $analyst->id,
+                    type:       'new_tests_queued',
+                    subject:    "New tests queued — {$submission->reference_number}",
+                    message:    "Tests for {$submission->reference_number} ({$submission->client->company_name}) have been added to your queue. Open the test queue to begin analysis.",
+                    notifiable: $submission,
+                );
+
+                Log::info('[NOTIFY] new_tests_queued sent to analyst', [
+                    'submission_id' => $submission->id,
+                    'analyst_id'    => $analyst->id,
+                ]);
+
+            } catch (\Exception $e) {
+                Log::error('[NOTIFY] new_tests_queued FAILED', [
+                    'submission_id' => $submission->id,
+                    'analyst_id'    => $analyst->id,
+                    'error'         => $e->getMessage(),
+                ]);
+            }
+        }
+    }
+
+    /**
      * Create an in-app notification record.
      */
     private function createInAppNotification(

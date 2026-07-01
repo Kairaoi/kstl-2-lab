@@ -37,4 +37,12 @@ Route::middleware([
     Route::post('/submissions/{id}/send-to-testing', [ReceptionController::class, 'sendToTesting'])
         ->name('submissions.send-to-testing');
 
+    // ── Notifications ──────────────────────────────────────────────
+    Route::get('/notifications', [ReceptionController::class, 'notificationsIndex'])
+        ->name('notifications.index');
+    Route::post('/notifications/{id}/read', [ReceptionController::class, 'notificationMarkRead'])
+        ->name('notifications.read');
+    Route::post('/notifications/read-all', [ReceptionController::class, 'notificationMarkAllRead'])
+        ->name('notifications.read-all');
+
 });

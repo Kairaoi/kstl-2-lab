@@ -77,6 +77,14 @@ Route::middleware([
         ->name('agreements.download');
 
 
+    // ── Notifications ─────────────────────────────────────────────────────
+    Route::get('/notifications', [DirectorController::class, 'notificationsIndex'])
+        ->name('notifications.index');
+    Route::post('/notifications/{id}/read', [DirectorController::class, 'notificationMarkRead'])
+        ->name('notifications.read');
+    Route::post('/notifications/read-all', [DirectorController::class, 'notificationMarkAllRead'])
+        ->name('notifications.read-all');
+
     // ── Audit Log ─────────────────────────────────────────────────────────
     Route::get('/audit', [DirectorController::class, 'auditIndex'])
         ->name('audit.index');

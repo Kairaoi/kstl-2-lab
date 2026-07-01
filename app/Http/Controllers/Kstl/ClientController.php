@@ -16,6 +16,7 @@ use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Validation\ValidationException;
 use App\Services\AuditService;
+use App\Services\NotificationService;
 
 class ClientController extends Controller
 {
@@ -24,6 +25,7 @@ class ClientController extends Controller
         protected SubmissionRepository $submissionRepo,
         protected InvoiceRepository    $invoiceRepo,
         protected AuditService         $auditService,
+        protected NotificationService  $notifyService,
     ) {}
     // ── Dashboard ──────────────────────────────────────────────────────────────
 
@@ -242,6 +244,16 @@ class ClientController extends Controller
             ]);
 
             $this->auditService->logSubmissionCreated($submission);
+
+            // Notify reception staff a new submission has arrived
+            try {
+                $this->notifyService->notifyReceptionNewSubmission($submission->fresh());
+            } catch (\Throwable $e) {
+                Log::warning('Reception notification failed after submission', [
+                    'submission_id' => $submission->id,
+                    'error'         => $e->getMessage(),
+                ]);
+            }
 
             // Auto-generate invoice immediately on submission
             try {

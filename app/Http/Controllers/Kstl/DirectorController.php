@@ -676,4 +676,51 @@ class DirectorController extends Controller
 
         return view('kstl.director.audit.index', compact('logs'));
     }
+
+    // ── Notifications ─────────────────────────────────────────────
+
+    public function notificationsIndex(Request $request)
+    {
+        $user = Auth::user();
+
+        \DB::table('notifications')
+            ->where('notifiable_type', 'App\\Models\\User')
+            ->where('notifiable_id', $user->id)
+            ->whereNull('read_at')
+            ->update(['read_at' => now()]);
+
+        $notifications = \DB::table('notifications')
+            ->where('notifiable_type', 'App\\Models\\User')
+            ->where('notifiable_id', $user->id)
+            ->orderByDesc('created_at')
+            ->paginate(20);
+
+        return view('kstl.director.notifications.index', compact('notifications'));
+    }
+
+    public function notificationMarkRead(Request $request, string $id)
+    {
+        $user = Auth::user();
+
+        \DB::table('notifications')
+            ->where('id', $id)
+            ->where('notifiable_type', 'App\\Models\\User')
+            ->where('notifiable_id', $user->id)
+            ->update(['read_at' => now()]);
+
+        return back()->with('success', 'Notification marked as read.');
+    }
+
+    public function notificationMarkAllRead(Request $request)
+    {
+        $user = Auth::user();
+
+        \DB::table('notifications')
+            ->where('notifiable_type', 'App\\Models\\User')
+            ->where('notifiable_id', $user->id)
+            ->whereNull('read_at')
+            ->update(['read_at' => now()]);
+
+        return back()->with('success', 'All notifications marked as read.');
+    }
 }
