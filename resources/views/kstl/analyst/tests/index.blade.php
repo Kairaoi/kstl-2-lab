@@ -44,10 +44,14 @@
             @endif
 
             @php
-                $countAll     = $queue->count();
-                $countPending = $queue->whereIn('status', ['queued', 'in_progress'])->count();
-                $countFlagged = $queue->where('status', 'flagged')->count();
-                $countDone    = $queue->where('status', 'completed')->count();
+                $countAll          = $queue->count();
+                $countPending      = $queue->whereIn('status', ['queued', 'in_progress'])->count();
+                $countFlagged      = $queue->where('status', 'flagged')->count();
+                $countDone         = $queue->where('status', 'completed')->count();
+                $countDirQuery     = $queue->filter(fn($t) =>
+                    $t->status === 'flagged' && $t->result_notes &&
+                    preg_match('/\[Director query\]/i', $t->result_notes)
+                )->count();
             @endphp
 
             <div x-data="{ tab: 'all' }" style="background:#fff; border:1px solid #e2e8f0; border-radius:4px; overflow:hidden;">
@@ -63,10 +67,11 @@
 
                     @php
                         $tabs = [
-                            ['key' => 'all',     'label' => 'All',         'count' => $countAll,     'danger' => false],
-                            ['key' => 'pending', 'label' => 'In Progress', 'count' => $countPending, 'danger' => false],
-                            ['key' => 'flagged', 'label' => 'Flagged',     'count' => $countFlagged, 'danger' => $countFlagged > 0],
-                            ['key' => 'done',    'label' => 'Completed',   'count' => $countDone,    'danger' => false],
+                            ['key' => 'all',       'label' => 'All',            'count' => $countAll,      'danger' => false],
+                            ['key' => 'pending',   'label' => 'In Progress',    'count' => $countPending,  'danger' => false],
+                            ['key' => 'dirquery',  'label' => 'Director Query', 'count' => $countDirQuery, 'danger' => $countDirQuery > 0],
+                            ['key' => 'flagged',   'label' => 'Flagged',        'count' => $countFlagged,  'danger' => false],
+                            ['key' => 'done',      'label' => 'Completed',      'count' => $countDone,     'danger' => false],
                         ];
                     @endphp
 
@@ -110,9 +115,10 @@
 
                     {{-- Empty state per tab --}}
                     <div x-show="
-                        (tab === 'pending' && {{ $countPending === 0 ? 'true' : 'false' }}) ||
-                        (tab === 'flagged' && {{ $countFlagged === 0 ? 'true' : 'false' }}) ||
-                        (tab === 'done'    && {{ $countDone    === 0 ? 'true' : 'false' }})"
+                        (tab === 'pending'  && {{ $countPending  === 0 ? 'true' : 'false' }}) ||
+                        (tab === 'dirquery' && {{ $countDirQuery === 0 ? 'true' : 'false' }}) ||
+                        (tab === 'flagged'  && {{ $countFlagged  === 0 ? 'true' : 'false' }}) ||
+                        (tab === 'done'     && {{ $countDone     === 0 ? 'true' : 'false' }})"
                          style="display:none; padding:48px 20px; text-align:center;">
                         <p style="font-size:13px; font-weight:600; color:#94a3b8; margin:0;">No tests in this category</p>
                     </div>
@@ -120,9 +126,13 @@
                     <div>
                         @foreach($grouped as $submissionId => $tests)
                             @php
-                                $hasPending  = $tests->whereIn('status', ['queued', 'in_progress'])->count() > 0;
-                                $hasFlagged  = $tests->where('status', 'flagged')->count() > 0;
-                                $hasCompleted = $tests->where('status', 'completed')->count() > 0;
+                                $hasPending    = $tests->whereIn('status', ['queued', 'in_progress'])->count() > 0;
+                                $hasFlagged    = $tests->where('status', 'flagged')->count() > 0;
+                                $hasCompleted  = $tests->where('status', 'completed')->count() > 0;
+                                $hasDirQuery   = $tests->filter(fn($t) =>
+                                    $t->status === 'flagged' && $t->result_notes &&
+                                    preg_match('/\[Director query\]/i', $t->result_notes)
+                                )->count() > 0;
                             @endphp
                             @php
                                 $submission = $tests->first()->sample->submission;
@@ -135,9 +145,10 @@
 
                             {{-- Filter wrapper: PHP booleans baked in so only 'tab' is reactive --}}
                             <div x-show="tab === 'all'
-                                     || (tab === 'pending' && {{ $hasPending  ? 'true' : 'false' }})
-                                     || (tab === 'flagged' && {{ $hasFlagged  ? 'true' : 'false' }})
-                                     || (tab === 'done'    && {{ $hasCompleted ? 'true' : 'false' }})">
+                                     || (tab === 'pending'  && {{ $hasPending   ? 'true' : 'false' }})
+                                     || (tab === 'dirquery' && {{ $hasDirQuery  ? 'true' : 'false' }})
+                                     || (tab === 'flagged'  && {{ $hasFlagged   ? 'true' : 'false' }})
+                                     || (tab === 'done'     && {{ $hasCompleted ? 'true' : 'false' }})">
                             {{-- Collapsible: own x-data scope for open/close --}}
                             <div style="border-bottom:1px solid #f1f5f9; padding:16px 20px;"
                                  x-data="{ open: true }">
