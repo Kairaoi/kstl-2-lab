@@ -208,6 +208,46 @@
                 </div>
             </div>
 
+            {{-- ── Pending Payment Verification Alert ────────────────── --}}
+            @if($pending_payments->isNotEmpty())
+            <div style="background:#f0fdf4;border:1px solid #86efac;border-left:4px solid #16a34a;border-radius:4px;overflow:hidden;">
+                <div style="padding:16px 20px;display:flex;align-items:flex-start;justify-content:space-between;gap:16px;flex-wrap:wrap;">
+                    <div style="display:flex;align-items:flex-start;gap:14px;">
+                        <div style="flex-shrink:0;width:36px;height:36px;border-radius:50%;background:#dcfce7;display:flex;align-items:center;justify-content:center;">
+                            <svg style="width:18px;height:18px;color:#16a34a;" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 9V7a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2m2 4h10a2 2 0 002-2v-6a2 2 0 00-2-2H9a2 2 0 00-2 2v6a2 2 0 002 2zm7-5a2 2 0 11-4 0 2 2 0 014 0z"/>
+                            </svg>
+                        </div>
+                        <div>
+                            <p style="font-size:13px;font-weight:700;color:#166534;margin:0 0 6px;">
+                                {{ $pending_payments->count() }} Payment{{ $pending_payments->count() > 1 ? 's' : '' }} Awaiting Your Verification
+                            </p>
+                            <div style="display:flex;flex-direction:column;gap:4px;">
+                                @foreach($pending_payments as $inv)
+                                <div style="display:flex;align-items:center;gap:10px;flex-wrap:wrap;">
+                                    <span style="font-family:monospace;font-size:11px;font-weight:700;color:#166534;">{{ $inv->invoice_number }}</span>
+                                    <span style="font-size:11px;color:#166534;">{{ $inv->bill_to_company }}</span>
+                                    <span style="font-size:11px;color:#166534;">— TT Ref: <strong>{{ $inv->payment_submitted_reference }}</strong></span>
+                                    @if($inv->payment_submitted_at)
+                                        <span style="font-size:10px;color:#4ade80;">{{ $inv->payment_submitted_at->diffForHumans() }}</span>
+                                    @endif
+                                    <a href="{{ route('director.invoices.show', $inv->id) }}"
+                                       style="font-size:11px;font-weight:700;color:#15803d;text-decoration:underline;">
+                                        Verify &rsaquo;
+                                    </a>
+                                </div>
+                                @endforeach
+                            </div>
+                        </div>
+                    </div>
+                    <a href="{{ route('director.invoices.index') }}"
+                       style="background:#16a34a;color:#fff;padding:8px 18px;border-radius:3px;font-size:12px;font-weight:600;text-decoration:none;white-space:nowrap;flex-shrink:0;">
+                        View All Invoices
+                    </a>
+                </div>
+            </div>
+            @endif
+
             {{-- ── Service Agreements Alert ───────────────────────────── --}}
             @if(isset($unsigned_agreements) && $unsigned_agreements > 0)
             <div style="background:#fffbeb;border:1px solid #fbbf24;border-left:4px solid #b8922a;border-radius:4px;padding:18px 20px;display:flex;align-items:flex-start;justify-content:space-between;gap:16px;flex-wrap:wrap;">
@@ -288,9 +328,21 @@
                 </div>
 
                 {{-- Authorisation History panel --}}
-                <div style="background:#fff;border:1px solid #e2e8f0;border-radius:4px;overflow:hidden;" id="flagged-section">
-                    <div class="gov-card-hdr">
+                <div style="background:#fff;border:1px solid #e2e8f0;border-radius:4px;overflow:hidden;" id="flagged-section"
+                     x-data="{ histSearch: '', get hasMatches() {
+                         if (!this.histSearch) return true;
+                         const q = this.histSearch.toLowerCase();
+                         return @json($history->take(20)->map(fn($s) => strtolower($s->reference_number . ' ' . $s->client->user->name . ' ' . $s->client->company_name . ' ' . ($s->result->overall_outcome ?? ''))))->some(v => v.includes(q));
+                     } }">
+                    <div class="gov-card-hdr" style="display:flex;align-items:center;justify-content:space-between;gap:12px;">
                         <h3>Authorisation History</h3>
+                        @if($history->isNotEmpty())
+                            <input type="text"
+                                   x-model="histSearch"
+                                   placeholder="Search reference or client…"
+                                   style="padding:5px 10px;border:1px solid #e2e8f0;border-radius:3px;font-size:11px;color:#1e293b;outline:none;width:180px;"
+                                   @click.stop>
+                        @endif
                     </div>
 
                     @if($history->isEmpty())
@@ -301,7 +353,14 @@
                     @else
                         <div style="max-height:400px;overflow-y:auto;">
                             @foreach($history->take(20) as $submission)
-                                <div style="padding:12px 20px;border-bottom:1px solid #f1f5f9;">
+                                @php
+                                    $outcome  = $submission->result->overall_outcome ?? '';
+                                    $refLower = strtolower($submission->reference_number);
+                                    $nameLower = strtolower($submission->client->user->name);
+                                    $compLower = strtolower($submission->client->company_name);
+                                @endphp
+                                <div style="padding:12px 20px;border-bottom:1px solid #f1f5f9;"
+                                     x-show="histSearch === '' || '{{ $refLower }}'.includes(histSearch.toLowerCase()) || '{{ $nameLower }}'.includes(histSearch.toLowerCase()) || '{{ $compLower }}'.includes(histSearch.toLowerCase()) || '{{ $outcome }}'.includes(histSearch.toLowerCase())">
                                     <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:4px;">
                                         <div style="display:flex;align-items:center;gap:8px;">
                                             <span style="font-family:monospace;font-size:12px;font-weight:700;color:#1a2f4e;">{{ $submission->reference_number }}</span>
@@ -326,6 +385,10 @@
                                     </a>
                                 </div>
                             @endforeach
+                            <div x-show="histSearch !== '' && !hasMatches"
+                                 style="padding:24px;text-align:center;font-size:12px;color:#9ca3af;">
+                                No results match your search.
+                            </div>
                         </div>
                     @endif
                 </div>

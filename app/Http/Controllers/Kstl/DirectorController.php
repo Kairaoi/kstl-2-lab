@@ -60,8 +60,15 @@ class DirectorController extends Controller
         // Unpaid + overdue invoices
         $unpaid_invoices = \App\Models\Kstl\Invoice::whereIn('payment_status', ['unpaid', 'overdue'])->count();
 
+        // Invoices where client has submitted TT reference but director hasn't confirmed payment
+        $pending_payments = \App\Models\Kstl\Invoice::with(['submission.client.user'])
+            ->whereNotNull('payment_submitted_reference')
+            ->whereNotIn('payment_status', ['paid', 'waived'])
+            ->orderBy('payment_submitted_at')
+            ->get();
+
         return view('kstl.director.dashboard',
-            compact('pending', 'flagged', 'authorised_today', 'history', 'unsigned_agreements', 'unpaid_invoices'));
+            compact('pending', 'flagged', 'authorised_today', 'history', 'unsigned_agreements', 'unpaid_invoices', 'pending_payments'));
     }
 
     // ── Show submission for review ─────────────────────────────────
