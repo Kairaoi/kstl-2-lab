@@ -430,7 +430,7 @@
                                                         </td>
                                                         <td style="padding:10px 16px;">
                                                             @php $cat = $test->getDisplayCategory(); @endphp
-                                                            <span style="display:inline-flex; padding:2px 8px; font-size:10px; font-weight:600; border-radius:20px; text-transform:capitalize; background:{{ $cat === 'microbiological' ? '#f5f3ff' : '#eff6ff' }}; color:{{ $cat === 'microbiological' ? '#7c3aed' : '#1d4ed8' }};">
+                                                            <span style="display:inline-flex; padding:2px 8px; font-size:10px; font-weight:600; border-radius:20px; text-transform:capitalize; background:{{ $cat === 'microbiology' ? '#f5f3ff' : '#eff6ff' }}; color:{{ $cat === 'microbiology' ? '#7c3aed' : '#1d4ed8' }};">
                                                                 {{ $cat }}
                                                             </span>
                                                         </td>

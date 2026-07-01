@@ -119,7 +119,7 @@
                     <select x-model="category"
                             style="padding:7px 28px 7px 10px; font-size:12.5px; border:1px solid #e2e8f0; border-radius:3px; outline:none; color:#1a2f4e; background:#fff; cursor:pointer; appearance:none; background-image:url(\"data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 24 24' fill='none' stroke='%2394a3b8' stroke-width='2'%3E%3Cpath d='M19 9l-7 7-7-7'/%3E%3C/svg%3E\"); background-repeat:no-repeat; background-position:right 8px center;">
                         <option value="">All categories</option>
-                        <option value="microbiological">Microbiological</option>
+                        <option value="microbiology">Microbiology</option>
                         <option value="chemical">Chemical</option>
                         <option value="physical">Physical</option>
                         <option value="water">Water</option>
@@ -340,7 +340,7 @@
                                                         </td>
                                                         <td style="padding:10px 16px;">
                                                             @php $cat = $test->getDisplayCategory(); @endphp
-                                                            <span style="display:inline-flex; padding:2px 8px; font-size:10px; font-weight:600; border-radius:20px; text-transform:capitalize; background:{{ $cat === 'microbiological' ? '#f5f3ff' : '#eff6ff' }}; color:{{ $cat === 'microbiological' ? '#7c3aed' : '#1d4ed8' }};">
+                                                            <span style="display:inline-flex; padding:2px 8px; font-size:10px; font-weight:600; border-radius:20px; text-transform:capitalize; background:{{ $cat === 'microbiology' ? '#f5f3ff' : '#eff6ff' }}; color:{{ $cat === 'microbiology' ? '#7c3aed' : '#1d4ed8' }};">
                                                                 {{ $cat }}
                                                             </span>
                                                         </td>

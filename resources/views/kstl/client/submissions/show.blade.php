@@ -472,7 +472,7 @@
                             @endif
                         </div>
                         @if(count($microTests))
-                            <p style="font-size:10px;font-weight:700;color:#7c3aed;margin:0 0 6px;text-transform:uppercase;letter-spacing:.06em;">Microbiological</p>
+                            <p style="font-size:10px;font-weight:700;color:#7c3aed;margin:0 0 6px;text-transform:uppercase;letter-spacing:.06em;">Microbiology</p>
                             <div style="display:flex;flex-wrap:wrap;gap:5px;margin-bottom:12px;">
                                 @foreach($microTests as $t)
                                     <span style="display:inline-flex;padding:2px 10px;font-size:10px;background:#faf5ff;color:#6b21a8;border-radius:999px;font-weight:600;">{{ $testLabels[$t] ?? $t }}</span>

@@ -91,7 +91,7 @@
                                     <div style="min-width:0;">
                                         <p style="font-size:13px;font-weight:600;color:#1e293b;margin:0 0 6px;">{{ $test->getDisplayLabel() }}</p>
                                         <div style="display:flex;flex-wrap:wrap;align-items:center;gap:12px;margin-bottom:6px;">
-                                            <span style="display:inline-flex;padding:2px 8px;border-radius:9999px;font-size:11px;font-weight:600;{{ $test->getDisplayCategory() === 'microbiological' ? 'background:#f3e8ff;color:#6b21a8;' : 'background:#dbeafe;color:#1e40af;' }}">
+                                            <span style="display:inline-flex;padding:2px 8px;border-radius:9999px;font-size:11px;font-weight:600;{{ $test->getDisplayCategory() === 'microbiology' ? 'background:#f3e8ff;color:#6b21a8;' : 'background:#dbeafe;color:#1e40af;' }}">
                                                 {{ $test->getDisplayCategory() }}
                                             </span>
                                             @if($test->result_value)

@@ -302,7 +302,7 @@
                                             <td class="px-4 py-3">
                                                 <p class="font-medium text-gray-800 text-xs">{{ $test->getDisplayLabel() }}</p>
                                                 <span class="inline-flex px-1.5 py-0.5 text-xs rounded capitalize mt-0.5
-                                                    {{ $test->getDisplayCategory() === 'microbiological' ? 'bg-purple-50 text-purple-600' : 'bg-blue-50 text-blue-600' }}">
+                                                    {{ $test->getDisplayCategory() === 'microbiology' ? 'bg-purple-50 text-purple-600' : 'bg-blue-50 text-blue-600' }}">
                                                     {{ $test->getDisplayCategory() }}
                                                 </span>
                                             </td>

@@ -78,7 +78,7 @@
                         <p style="margin:0 0 10px;">The Laboratory agrees to provide testing services for seafood and/or water samples, including but not limited to:</p>
 
                         <div style="margin-bottom:12px;">
-                            <p style="font-weight:700;color:#1a2f4e;margin:0 0 8px;">Microbiological Analysis</p>
+                            <p style="font-weight:700;color:#1a2f4e;margin:0 0 8px;">Microbiology Analysis</p>
                             <div style="margin-left:16px;">
                                 <p style="font-weight:600;margin:0 0 4px;">1. Water Samples (Colilert &amp; Enterolert):</p>
                                 <ul style="margin:0 0 10px;padding-left:20px;">

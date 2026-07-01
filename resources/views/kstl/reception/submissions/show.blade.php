@@ -216,7 +216,7 @@
 
                     <div style="display:grid;grid-template-columns:1fr 1fr;gap:24px;">
                         <div>
-                            <p style="font-size:10px;font-weight:600;letter-spacing:.07em;text-transform:uppercase;color:#64748b;margin:0 0 8px;">Microbiological</p>
+                            <p style="font-size:10px;font-weight:600;letter-spacing:.07em;text-transform:uppercase;color:#64748b;margin:0 0 8px;">Microbiology</p>
                             @if(count($micro))
                                 <div style="display:flex;flex-wrap:wrap;gap:6px;">
                                     @foreach($micro as $t)

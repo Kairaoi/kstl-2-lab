@@ -195,7 +195,8 @@ class SampleTest extends Model
 
     public function getDisplayCategory(): string
     {
-        return self::TEST_CATEGORIES[$this->test_key] ?? $this->test_category ?? 'other';
+        $raw = self::TEST_CATEGORIES[$this->test_key] ?? $this->test_category ?? 'other';
+        return $raw === 'microbiological' ? 'microbiology' : $raw;
     }
 
     public function isQueued(): bool      { return $this->status === self::STATUS_QUEUED; }

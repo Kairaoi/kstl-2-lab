@@ -175,7 +175,7 @@
     <h2>2. Scope of Services</h2>
     <p>The Laboratory agrees to provide testing services for seafood and/or water samples, including but not limited to:</p>
 
-    <p class="sub-label">Microbiological Analysis</p>
+    <p class="sub-label">Microbiology Analysis</p>
     <p style="margin-left:10px; margin-bottom:3px;"><strong>1. Water Samples (Colilert &amp; Enterolert):</strong></p>
     <ul style="margin-left:24px;">
         <li>Total Coliforms</li>
