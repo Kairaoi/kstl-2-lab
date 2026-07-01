@@ -204,7 +204,7 @@
                                      || (tab === 'flagged'  && {{ $hasFlagged   ? 'true' : 'false' }})
                                      || (tab === 'done'     && {{ $hasCompleted ? 'true' : 'false' }}))
                                     && (search === '' || '{{ $searchIndex }}'.includes(search.toLowerCase()))
-                                    && (category === '' || '{{ $catIndex }}'.split(',').includes(category))"
+                                    && (category === '' || '{{ $catIndex }}'.split(',').includes(category))">
                             {{-- Collapsible: own x-data scope for open/close --}}
                             <div style="border-bottom:1px solid #f1f5f9; padding:16px 20px;"
                                  x-data="{ open: true }">
