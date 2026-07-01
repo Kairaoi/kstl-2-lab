@@ -55,7 +55,8 @@
                 )->count();
             @endphp
 
-            <div x-data="{ tab: 'all', search: '', category: '' }" style="background:#fff; border:1px solid #e2e8f0; border-radius:4px; overflow:hidden;">
+            @php $totalGroups = $queue->groupBy(fn($t) => $t->sample->submission->id)->count(); @endphp
+            <div x-data="{ tab: 'all', search: '', category: '', showAll: false }" style="background:#fff; border:1px solid #e2e8f0; border-radius:4px; overflow:hidden;">
 
                 {{-- Header + Tab bar --}}
                 <div style="padding:16px 20px 0; border-bottom:1px solid #e2e8f0;">
@@ -82,7 +83,7 @@
                         @foreach($tabs as $t)
                             <button type="button"
                                     role="tab"
-                                    @click="tab = '{{ $t['key'] }}'"
+                                    @click="tab = '{{ $t['key'] }}'; showAll = false"
                                     :aria-selected="tab === '{{ $t['key'] }}'"
                                     style="flex-shrink:0; display:inline-flex; align-items:center; gap:6px; padding:8px 16px 10px; font-size:12.5px; line-height:1; background:none; border:none; border-bottom:3px solid transparent; cursor:pointer; white-space:nowrap; outline:none; transition:color .15s, border-color .15s;"
                                     :style="tab === '{{ $t['key'] }}'
@@ -164,6 +165,7 @@
 
                     <div>
                         @foreach($grouped as $submissionId => $tests)
+                            @php $groupIndex = $loop->index; @endphp
                             @php
                                 $submission   = $tests->first()->sample->submission;
                                 $client       = $submission->client;
@@ -197,7 +199,8 @@
 
                             {{-- Filter wrapper --}}
                             <div x-show="
-                                    (tab === 'all'
+                                    (showAll || tab !== 'all' || search !== '' || category !== '' || {{ $groupIndex < 5 ? 'true' : 'false' }})
+                                    && (tab === 'all'
                                      || (tab === 'new'      && {{ $hasNew       ? 'true' : 'false' }})
                                      || (tab === 'pending'  && {{ $hasPending   ? 'true' : 'false' }})
                                      || (tab === 'dirquery' && {{ $hasDirQuery  ? 'true' : 'false' }})
@@ -618,6 +621,22 @@
                             </div>{{-- end collapsible --}}
                             </div>{{-- end filter wrapper --}}
                         @endforeach
+
+                        {{-- Show more / less footer (only on All tab, when > 5 groups) --}}
+                        @if($totalGroups > 5)
+                        <div x-show="tab === 'all' && search === '' && category === ''"
+                             style="padding:14px 20px; border-top:1px solid #f1f5f9; text-align:center;">
+                            <button type="button" @click="showAll = !showAll"
+                                    style="display:inline-flex; align-items:center; gap:6px; font-size:12px; font-weight:600; color:#1a2f4e; background:#f8fafc; border:1px solid #e2e8f0; padding:7px 18px; border-radius:3px; cursor:pointer;">
+                                <svg :style="{ transform: showAll ? 'rotate(180deg)' : 'none' }"
+                                     style="width:14px; height:14px; transition:transform .2s;"
+                                     fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M19 9l-7 7-7-7"/>
+                                </svg>
+                                <span x-text="showAll ? 'Show less' : 'Show {{ $totalGroups - 5 }} more submission{{ ($totalGroups - 5) !== 1 ? 's' : '' }}'"></span>
+                            </button>
+                        </div>
+                        @endif
                     </div>
                 @endif
             </div>
