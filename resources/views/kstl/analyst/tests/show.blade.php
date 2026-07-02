@@ -38,20 +38,20 @@
         <div style="max-width:80rem; margin:0 auto; padding:0 2rem;">
 
             {{-- ── Director query / flagged banner ── --}}
-            @if($test->status === 'flagged')
-                @php
-                    // Extract the most recent [Director query] note from result_notes
-                    $directorQueryNote = null;
-                    if ($test->result_notes) {
-                        // Collect ALL director query blocks (there may be multiple rounds)
-                        preg_match_all('/\[Director query\]\s*(.*?)(?=\n\n\[Director query\]|$)/s', $test->result_notes, $allMatches);
-                        if (!empty($allMatches[1])) {
-                            // Show the most recent query (last one)
-                            $directorQueryNote = trim(end($allMatches[1]));
-                        }
+            @php
+                // Extract the most recent [Director query] note from result_notes.
+                // Defined here (outside the flagged conditional) so it is always
+                // available to the save panel further down the page.
+                $directorQueryNote = null;
+                if ($test->result_notes) {
+                    preg_match_all('/\[Director query\]\s*(.*?)(?=\n\n\[Director query\]|$)/s', $test->result_notes, $allMatches);
+                    if (!empty($allMatches[1])) {
+                        $directorQueryNote = trim(end($allMatches[1]));
                     }
-                    $hasDirectorQuery = !empty($directorQueryNote);
-                @endphp
+                }
+                $hasDirectorQuery = !empty($directorQueryNote);
+            @endphp
+            @if($test->status === 'flagged')
 
                 @if($hasDirectorQuery)
                     {{-- Director sent an explicit query back to the analyst --}}
