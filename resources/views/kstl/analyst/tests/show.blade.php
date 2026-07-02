@@ -414,12 +414,12 @@
                                 </a>
                                 <button type="submit"
                                         form="result-form"
-                                        style="display:inline-flex; align-items:center; gap:8px; padding:9px 24px; font-size:13px; font-weight:600; border:none; border-radius:3px; cursor:pointer;"
+                                        style="display:inline-flex; align-items:center; gap:8px; padding:9px 24px; font-size:13px; font-weight:600; border:none; border-radius:3px; cursor:pointer; background:#1a2f4e; color:#fff;"
                                         :style="flagged ? 'background:#d97706; color:#fff;' : 'background:#1a2f4e; color:#fff;'">
                                     <svg style="width:16px; height:16px;" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"/>
                                     </svg>
-                                    <span x-text="flagged ? 'Save &amp; Keep Flagged' : '{{ $directorQueryNote ? 'Submit Response' : 'Save Result' }}'"></span>
+                                    <span x-text="flagged ? 'Save &amp; Keep Flagged' : '{{ $directorQueryNote ? 'Submit Response' : 'Save Result' }}'">{{ $directorQueryNote ? 'Submit Response' : 'Save Result' }}</span>
                                 </button>
                             </div>
                         </div>
