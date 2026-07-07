@@ -315,7 +315,7 @@
                                         @php
                                             $defaultUnit = \App\Models\Kstl\SampleTest::TEST_UNITS[$test->test_key] ?? '';
                                             $savedUnit   = old('result_unit', $test->result_unit ?? $defaultUnit);
-                                            $unitOptions = ['CFU/g','CFU/mL','MPN/100mL','mg/kg','%','µS/cm','pH units','aw'];
+                                            $unitOptions = ['CFU/g','CFU/mL','MPN/100mL','mg/kg','%','ppm','pH units','aw'];
                                         @endphp
                                         <label style="display:block; font-size:13px; font-weight:600; color:#1a2f4e; margin-bottom:6px;">
                                             Unit
