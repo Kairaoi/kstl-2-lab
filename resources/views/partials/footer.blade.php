@@ -238,10 +238,6 @@
                     Providing accurate, timely, and reliable seafood safety testing to protect public health
                     and support fisheries compliance with national and international standards.
                 </p>
-                <div class="iso-badge">
-                    <div class="iso-dot"></div>
-                    Official Laboratory Information Management System
-                </div>
             </div>
 
             {{-- Services Column --}}

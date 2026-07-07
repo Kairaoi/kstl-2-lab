@@ -415,7 +415,7 @@ footer{
                 <div class="ph-left">
                     <div class="ph-kicker">
                         <span class="pk-dot"></span>
-                        Official Laboratory Management System
+                        Official Laboratory Information Management System
                     </div>
                     <h1 class="ph-h1">
                         Kiribati Seafood Toxicology<br>Laboratory
