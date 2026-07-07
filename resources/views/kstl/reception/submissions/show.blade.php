@@ -147,6 +147,9 @@
                                                     @if(!empty($item['scientific_name']))
                                                         <p style="color:#94a3b8;font-style:italic;margin:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;">{{ $item['scientific_name'] }}</p>
                                                     @endif
+                                                    @if(!empty($item['client_sample_ref']))
+                                                        <p style="color:#64748b;font-size:11px;margin:2px 0 0;">Client ref: <span style="font-family:monospace;font-weight:600;">{{ $item['client_sample_ref'] }}</span></p>
+                                                    @endif
                                                 </div>
                                             </div>
                                             <div style="text-align:right;flex-shrink:0;color:#64748b;">
@@ -321,6 +324,12 @@
                                                    x-model="row.scientific_name"
                                                    placeholder="e.g. Thunnus albacares"
                                                    style="width:100%;padding:8px 12px;border:1px solid #cbd5e1;border-radius:3px;font-size:13px;color:#1e293b;background:#fff;box-sizing:border-box;"/>
+                                        </div>
+
+                                        {{-- Client Sample Reference (read-only) --}}
+                                        <div x-show="row.client_sample_ref" style="grid-column:1/-1;">
+                                            <label style="display:block;font-size:11px;font-weight:700;letter-spacing:.08em;text-transform:uppercase;color:#475569;margin-bottom:6px;">Client's Sample Reference</label>
+                                            <div style="padding:8px 12px;border:1px solid #e2e8f0;border-radius:3px;background:#f8fafc;font-size:13px;color:#475569;font-family:monospace;" x-text="row.client_sample_ref"></div>
                                         </div>
 
                                         {{-- Sampling Date --}}
@@ -845,12 +854,13 @@
                     $unit = $unit ?: $legacyUnit;
                 }
                 return [
-                    'common_name'     => $name,
-                    'scientific_name' => $sci,
-                    'sampling_date'   => $collectedDate,
-                    'quantity'        => $qty,
-                    'quantity_unit'   => $unit,
-                    'notes'           => $idx === 0 ? $clientNote : '',
+                    'common_name'       => $name,
+                    'scientific_name'   => $sci,
+                    'client_sample_ref' => $item['client_sample_ref'] ?? '',
+                    'sampling_date'     => $collectedDate,
+                    'quantity'          => $qty,
+                    'quantity_unit'     => $unit,
+                    'notes'             => $idx === 0 ? $clientNote : '',
                 ];
             }, $items, array_keys($items));
         } else {
