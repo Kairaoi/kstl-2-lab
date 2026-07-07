@@ -170,6 +170,7 @@ class ClientController extends Controller
                 'sample_items.*.scientific_name'     => ['nullable', 'string', 'max:255'],
                 'sample_items.*.type'                => ['nullable', 'in:fish,shellfish,seaweed,water,sediment,other'],
                 'sample_items.*.ref'                 => ['nullable', 'string', 'max:100'],
+                'sample_items.*.client_sample_ref'   => ['nullable', 'string', 'max:150'],
                 'sample_items.*.qty'                 => ['nullable', 'numeric', 'min:0'],
                 'sample_items.*.unit'                => ['nullable', 'in:g,kg,ml,L'],
                 'sample_items.*.tests'               => ['nullable', 'array'],

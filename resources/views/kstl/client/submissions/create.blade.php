@@ -312,7 +312,7 @@
                                             </div>
 
                                             {{-- Name row --}}
-                                            <div style="display:grid; grid-template-columns:1fr 1fr; gap:12px;">
+                                            <div style="display:grid; grid-template-columns:1fr 1fr 1fr; gap:12px;">
                                                 <div>
                                                     <label style="display:block; font-size:12px; font-weight:600; color:var(--gov-text); margin-bottom:4px;">Common Name *</label>
                                                     <input type="text"
@@ -328,6 +328,14 @@
                                                            x-model="item.scientific_name"
                                                            style="width:100%; border:1px solid #d1d5db; border-radius:3px; padding:7px 11px; font-size:13px; color:#1f2937; box-sizing:border-box;"
                                                            placeholder="e.g. Thunnus albacares"/>
+                                                </div>
+                                                <div>
+                                                    <label style="display:block; font-size:12px; font-weight:600; color:var(--gov-text); margin-bottom:4px;">Your Sample Reference</label>
+                                                    <input type="text"
+                                                           :name="`sample_items[${index}][client_sample_ref]`"
+                                                           x-model="item.client_sample_ref"
+                                                           style="width:100%; border:1px solid #d1d5db; border-radius:3px; padding:7px 11px; font-size:13px; color:#1f2937; box-sizing:border-box;"
+                                                           placeholder="e.g. BATCH-001"/>
                                                 </div>
                                             </div>
 
@@ -711,7 +719,7 @@
     </div>
 
     @php
-        $blankSample = ['name' => '', 'scientific_name' => '', 'type' => '', 'type_notes' => '', 'ref' => 'S-001', 'qty' => '', 'unit' => 'kg', 'tests' => [], 'tests_other' => ''];
+        $blankSample = ['name' => '', 'scientific_name' => '', 'client_sample_ref' => '', 'type' => '', 'type_notes' => '', 'ref' => 'S-001', 'qty' => '', 'unit' => 'kg', 'tests' => [], 'tests_other' => ''];
         $rawItems = old('sample_items', [$blankSample]);
         $defaultSampleItems = array_map(fn($i) => array_merge($blankSample, $i), $rawItems);
     @endphp
