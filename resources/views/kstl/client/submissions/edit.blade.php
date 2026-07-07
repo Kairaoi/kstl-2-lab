@@ -80,8 +80,9 @@
         $transportMethod = old('transport_method', $submission->transport_method ?? 'chilled');
         $transportDetail = old('transport_detail', $submission->transport_detail ?? '');
 
-        $sampleName    = old('sample_name',         $submission->sample_name        ?? ($firstItem['name']            ?? ($firstSample?->common_name      ?? '')));
-        $sciName       = old('scientific_name',      $submission->scientific_name     ?? ($firstItem['scientific_name'] ?? ($firstSample?->scientific_name   ?? '')));
+        $sampleName       = old('sample_name',          $submission->sample_name         ?? ($firstItem['name']               ?? ($firstSample?->common_name    ?? '')));
+        $sciName          = old('scientific_name',       $submission->scientific_name      ?? ($firstItem['scientific_name']    ?? ($firstSample?->scientific_name ?? '')));
+        $clientSampleRef  = old('client_sample_ref',    $firstItem['client_sample_ref']  ?? '');
         $sampleType    = old('sample_type',          $submission->sample_type         ?? ($firstItem['type']            ?? ''));
         $sampleQty     = old('sample_quantity',      $submission->sample_quantity     ?? ($firstItem['qty']             ?? ($firstSample?->quantity          ?? '')));
         $sampleQtyUnit = old('sample_quantity_unit', $submission->sample_quantity_unit ?? ($firstItem['unit']           ?? ($firstSample?->quantity_unit     ?? 'kg')));
@@ -175,7 +176,7 @@
                     <div class="section-body">
 
                         <div class="ef-card">
-                            <div style="display:grid;grid-template-columns:1fr 1fr;gap:16px;">
+                            <div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:16px;">
                                 <div>
                                     <label for="sample_name" class="ef-label">Common Name *</label>
                                     <p class="ef-hint">The common name of the sample (e.g. Yellowfin Tuna).</p>
@@ -191,6 +192,14 @@
                                            value="{{ $sciName }}"
                                            class="ef-input" placeholder="e.g. Thunnus albacares">
                                     @error('scientific_name')<p class="ef-err">{{ $message }}</p>@enderror
+                                </div>
+                                <div>
+                                    <label for="client_sample_ref" class="ef-label">Your Sample Reference</label>
+                                    <p class="ef-hint">Your organisation's internal reference for this sample (optional).</p>
+                                    <input id="client_sample_ref" type="text" name="client_sample_ref"
+                                           value="{{ $clientSampleRef }}"
+                                           class="ef-input" placeholder="e.g. BATCH-001">
+                                    @error('client_sample_ref')<p class="ef-err">{{ $message }}</p>@enderror
                                 </div>
                             </div>
                         </div>

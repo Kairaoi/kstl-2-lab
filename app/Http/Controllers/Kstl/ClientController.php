@@ -364,6 +364,7 @@ class ClientController extends Controller
             $validated = $request->validate([
                 'sample_name'           => ['required', 'string', 'max:255'],
                 'scientific_name'       => ['nullable', 'string', 'max:255'],
+                'client_sample_ref'     => ['nullable', 'string', 'max:150'],
                 'sample_description'    => ['nullable', 'string', 'max:2000'],
                 'sample_type'           => ['nullable', 'in:fish,shellfish,seaweed,water,sediment,other'],
                 'sample_quantity'       => ['nullable', 'numeric', 'min:0'],
@@ -382,6 +383,14 @@ class ClientController extends Controller
                 'submitter_name'        => ['required', 'string', 'max:255'],
                 'submitter_designation' => ['nullable', 'string', 'max:255'],
             ]);
+
+            // Persist client_sample_ref into sample_items[0] so it survives round-trips
+            $sampleItems = $submission->sample_items ?? [];
+            if (!empty($sampleItems)) {
+                $sampleItems[0]['client_sample_ref'] = $validated['client_sample_ref'] ?? '';
+                $validated['sample_items'] = $sampleItems;
+            }
+            unset($validated['client_sample_ref']);
 
             DB::transaction(function () use ($validated, $submission) {
                 $this->submissionRepo->updateById($submission->id, $validated);
