@@ -240,7 +240,7 @@
                 </p>
                 <div class="iso-badge">
                     <div class="iso-dot"></div>
-                    ISO 17025 Accredited
+                    Official Laboratory Information Management System
                 </div>
             </div>
 
@@ -248,9 +248,8 @@
             <div class="footer-col">
                 <h4>Services</h4>
                 <ul>
-                    <li><a href="#">Submit a Sample</a></li>
                     <li><a href="#">Microbiology Testing</a></li>
-                    <li><a href="#">Food Chemistry Testing</a></li>
+                    <li><a href="#">Chemical Testing</a></li>
                     <li><a href="#">Urgent Requests</a></li>
                     <li><a href="#">View Test Results</a></li>
                     <li><a href="#">Service Agreement</a></li>

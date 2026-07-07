@@ -454,14 +454,14 @@ footer{
                     <svg viewBox="0 0 24 24" stroke-width="1.5"><path stroke-linecap="round" stroke-linejoin="round" d="M11.25 11.25l.041-.02a.75.75 0 011.063.852l-.708 2.836a.75.75 0 001.063.853l.041-.021M21 12a9 9 0 11-18 0 9 9 0 0118 0zm-9-3.75h.008v.008H12V8.25z"/></svg>
                 </div>
                 <div class="nb-text">
-                    <strong>Who should use this:</strong> Seafood exporters, vessel owners, aquaculture operators and public health partners requiring toxicology testing under Kiribati fisheries regulations. Laboratory staff access the full management system after logging in.
+                    <strong>Who should use this:</strong> Seafood exporters, vessel owners, aquaculture operators and public health partners requiring microbiology and chemical testing under Kiribati fisheries regulations. Laboratory staff access the full management system after logging in.
                 </div>
             </div>
 
             {{-- SECTION 1 --}}
             <div class="sec-div" style="margin-top:2rem">
                 <span class="sd-label">Select an option</span>
-                <span class="sd-ref">Form ref: Schedule 1 · KSTL-APP-001</span>
+                <span class="sd-ref">KSTL-APP-001</span>
             </div>
 
             {{-- ACTION CARDS --}}
@@ -479,7 +479,7 @@ footer{
                 </div>
                 <div class="ac ac-2">
                     <div class="ac-step">Option 02</div>
-                    <h3 class="ac-h">Submit a Schedule 1 form</h3>
+                    <h3 class="ac-h">Submit a sample request</h3>
                     <p class="ac-p">Lodge a new testing request for your samples. The will guide you through species information, sampling date, quantity, transport method and testing requirements.</p>
                     <p class="ac-note">Estimated completion time: 5–10 minutes per submission.</p>
                     <div class="ac-foot">
