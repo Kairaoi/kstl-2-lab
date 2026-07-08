@@ -444,16 +444,19 @@
                     <th>Common Name</th>
                     <th>Scientific Name</th>
                     <th>Sample Code</th>
+                    <th>Client Reference</th>
                     <th>Qty</th>
                 </tr>
             </thead>
             <tbody>
                 @foreach($submission->samples as $i => $s)
+                    @php $clientRef = $submission->sample_items[$i]['client_sample_ref'] ?? ''; @endphp
                     <tr class="{{ $i % 2 === 1 ? 'even' : '' }}">
                         <td style="color:#94a3b8; font-family:'DejaVu Sans Mono',monospace; font-size:9.5px;">{{ $i + 1 }}</td>
                         <td style="font-weight:600; color:#1e293b;">{{ $s->common_name ?? '—' }}</td>
                         <td style="font-style:italic; color:#64748b;">{{ $s->scientific_name ?? '—' }}</td>
                         <td style="font-family:'DejaVu Sans Mono',monospace; font-size:9.5px; color:#64748b;">{{ $s->sample_code }}</td>
+                        <td style="font-family:'DejaVu Sans Mono',monospace; font-size:9.5px; color:#64748b;">{{ $clientRef ?: '—' }}</td>
                         <td style="color:#64748b;">{{ $s->quantity ?? '—' }} {{ $s->quantity_unit ?? '' }}</td>
                     </tr>
                 @endforeach
