@@ -42,12 +42,16 @@
     .an-right { display: flex; align-items: center; gap: 6px; }
 
     /* Bell */
+    .an-bell-wrap {
+        position: relative;
+    }
     .an-bell {
         position: relative;
         width: 34px; height: 34px; border-radius: 50%;
         display: flex; align-items: center; justify-content: center;
         color: var(--muted); text-decoration: none;
         transition: background .15s, color .15s;
+        cursor: pointer;
     }
     .an-bell:hover { background: var(--bg); color: var(--navy); }
     .an-bell svg { width: 16px; height: 16px; }
@@ -60,6 +64,41 @@
         display: flex; align-items: center; justify-content: center;
         border: 1.5px solid var(--surface);
     }
+    /* Bell dropdown */
+    .an-bell-drop {
+        display: none;
+        position: absolute; top: calc(100% + 6px); right: 0;
+        width: 320px;
+        background: #fff;
+        border: 1px solid #e2e8f0;
+        border-radius: 8px;
+        box-shadow: 0 8px 24px rgba(0,0,0,.12);
+        z-index: 9999;
+        overflow: hidden;
+    }
+    .an-bell-wrap:hover .an-bell-drop { display: block; }
+    .an-bell-drop-hdr {
+        padding: 10px 14px;
+        background: #1a2f4e;
+        display: flex; align-items: center; justify-content: space-between;
+    }
+    .an-bell-drop-hdr span { font-size: 11px; font-weight: 700; color: #fff; letter-spacing: .06em; text-transform: uppercase; }
+    .an-bell-drop-hdr a  { font-size: 10px; color: #93c5fd; text-decoration: none; }
+    .an-bell-drop-hdr a:hover { color: #fff; }
+    .an-bell-drop-item {
+        padding: 10px 14px;
+        border-bottom: 1px solid #f1f5f9;
+        display: flex; gap: 10px; align-items: flex-start;
+    }
+    .an-bell-drop-item:last-child { border-bottom: none; }
+    .an-bell-drop-dot {
+        width: 7px; height: 7px; border-radius: 50%;
+        background: #1a2f4e; flex-shrink: 0; margin-top: 4px;
+    }
+    .an-bell-drop-dot.read { background: #cbd5e1; }
+    .an-bell-drop-title { font-size: 12px; font-weight: 600; color: #1e293b; margin: 0 0 2px; line-height: 1.3; }
+    .an-bell-drop-time  { font-size: 10px; color: #94a3b8; margin: 0; }
+    .an-bell-drop-empty { padding: 20px 14px; text-align: center; font-size: 12px; color: #94a3b8; }
 
     /* User dropdown trigger */
     .an-user-btn {
@@ -239,15 +278,50 @@
                     auth()->user()->hasRole('auditor')    => route('reports.index'),
                     default                               => route('client.notifications.index'),
                 };
+
+                $recentNotifs = \DB::table('notifications')
+                    ->where('notifiable_type', 'App\Models\User')
+                    ->where('notifiable_id', auth()->id())
+                    ->orderByDesc('created_at')
+                    ->limit(5)
+                    ->get()
+                    ->map(fn($n) => [
+                        'read'    => !is_null($n->read_at),
+                        'title'   => json_decode($n->data, true)['subject'] ?? json_decode($n->data, true)['title'] ?? 'Notification',
+                        'time'    => \Carbon\Carbon::parse($n->created_at)->diffForHumans(),
+                    ]);
             @endphp
-            <a href="{{ $bellRoute }}" class="an-bell" title="Notifications">
-                <svg fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.8" d="M15 17h5l-1.405-1.405A2.032 2.032 0 0118 14.158V11a6.002 6.002 0 00-4-5.659V5a2 2 0 10-4 0v.341C7.67 6.165 6 8.388 6 11v3.159c0 .538-.214 1.055-.595 1.436L4 17h5m6 0v1a3 3 0 11-6 0v-1m6 0H9"/>
-                </svg>
-                @if($unreadCount > 0)
-                    <span class="an-bell-badge">{{ $unreadCount > 9 ? '9+' : $unreadCount }}</span>
-                @endif
-            </a>
+            <div class="an-bell-wrap">
+                <a href="{{ $bellRoute }}" class="an-bell" title="Notifications">
+                    <svg fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.8" d="M15 17h5l-1.405-1.405A2.032 2.032 0 0118 14.158V11a6.002 6.002 0 00-4-5.659V5a2 2 0 10-4 0v.341C7.67 6.165 6 8.388 6 11v3.159c0 .538-.214 1.055-.595 1.436L4 17h5m6 0v1a3 3 0 11-6 0v-1m6 0H9"/>
+                    </svg>
+                    @if($unreadCount > 0)
+                        <span class="an-bell-badge">{{ $unreadCount > 9 ? '9+' : $unreadCount }}</span>
+                    @endif
+                </a>
+
+                {{-- Hover dropdown --}}
+                <div class="an-bell-drop">
+                    <div class="an-bell-drop-hdr">
+                        <span>Notifications{{ $unreadCount > 0 ? " ({$unreadCount} new)" : '' }}</span>
+                        <a href="{{ $bellRoute }}">View all &rarr;</a>
+                    </div>
+                    @if($recentNotifs->isEmpty())
+                        <p class="an-bell-drop-empty">No notifications yet.</p>
+                    @else
+                        @foreach($recentNotifs as $n)
+                            <div class="an-bell-drop-item">
+                                <div class="an-bell-drop-dot {{ $n['read'] ? 'read' : '' }}"></div>
+                                <div>
+                                    <p class="an-bell-drop-title">{{ $n['title'] }}</p>
+                                    <p class="an-bell-drop-time">{{ $n['time'] }}</p>
+                                </div>
+                            </div>
+                        @endforeach
+                    @endif
+                </div>
+            </div>
             @endauth
 
             {{-- User dropdown --}}
