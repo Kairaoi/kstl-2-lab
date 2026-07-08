@@ -277,10 +277,6 @@
                             <p style="font-size:10.5px; color:#6b7280;">{{ $submission->client->user->email }}</p>
                         </div>
                         <div class="coa-for-block" style="text-align:right;">
-                            @if($submission->client_reference)
-                                <p style="font-size:8px; font-weight:700; letter-spacing:.14em; text-transform:uppercase; color:#9ca3af; margin-bottom:2px;">Client Reference</p>
-                                <p style="font-family:'Courier New',monospace; font-size:13px; font-weight:700; color:#111827; margin-bottom:8px;">{{ $submission->client_reference }}</p>
-                            @endif
                             <p style="font-size:8px; font-weight:700; letter-spacing:.14em; text-transform:uppercase; color:#9ca3af; margin-bottom:3px;">KSTL Reference</p>
                             <p style="font-family:'Courier New',monospace; font-size:14px; font-weight:700; color:#1d4ed8;">{{ $submission->reference_number }}</p>
                         </div>

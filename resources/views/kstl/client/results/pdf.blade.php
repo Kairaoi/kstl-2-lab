@@ -370,10 +370,6 @@
                     <div class="for-email">{{ $submission->client->user->email }}</div>
                 </td>
                 <td style="width:45%; text-align:right;">
-                    @if($submission->client_reference)
-                        <div class="for-label">Client Reference</div>
-                        <div style="font-family:'DejaVu Sans Mono',monospace; font-size:12px; font-weight:700; color:#111827; margin-bottom:6px;">{{ $submission->client_reference }}</div>
-                    @endif
                     <div class="for-label">KSTL Reference</div>
                     <div class="ref-code">{{ $submission->reference_number }}</div>
                 </td>
@@ -388,6 +384,10 @@
                     <div class="meta-val">{{ $result?->authorised_at?->format('d M Y') ?? now()->format('d M Y') }}</div>
                 </td>
                 <td>
+                    @if($submission->client_reference)
+                        <div class="meta-key">Client Reference</div>
+                        <div style="font-family:'DejaVu Sans Mono',monospace; font-size:12px; font-weight:700; color:#111827; margin-bottom:6px;">{{ $submission->client_reference }}</div>
+                    @endif
                     <div class="meta-key">KSTL Reference</div>
                     <div style="font-family:'DejaVu Sans Mono',monospace; font-size:12px; font-weight:700; color:#111827;">{{ $submission->reference_number }}</div>
                 </td>
