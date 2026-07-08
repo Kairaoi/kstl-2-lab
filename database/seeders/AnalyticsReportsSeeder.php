@@ -445,7 +445,7 @@ class AnalyticsReportsSeeder extends Seeder
                     JOIN clients c   ON c.id  = s.client_id
                     JOIN samples sm  ON sm.submission_id = s.id
                     JOIN sample_tests st ON st.sample_id = sm.id
-                    WHERE st.status = 'completed'
+                    WHERE st.status IN ('completed', 'flagged')
                       AND s.deleted_at IS NULL
                       AND (NULLIF(:start_date,         '') IS NULL OR s.collected_at      >= :start_date)
                       AND (NULLIF(:end_date,           '') IS NULL OR s.collected_at      <= :end_date)
