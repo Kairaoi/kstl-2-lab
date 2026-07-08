@@ -213,7 +213,6 @@
                 <a href="{{ route('director.dashboard') }}"       class="an-link {{ request()->routeIs('director.submissions.*') ? 'active' : '' }}">Authorisations</a>
                 <a href="{{ route('director.invoices.index') }}"  class="an-link {{ request()->routeIs('director.invoices.*')    ? 'active' : '' }}">Invoices</a>
                 <a href="{{ route('director.agreements.index') }}" class="an-link {{ request()->routeIs('director.agreements.*') ? 'active' : '' }}">Agreements</a>
-                <a href="{{ route('director.complaints.index') }}" class="an-link {{ request()->routeIs('director.complaints.*') ? 'active' : '' }}">Complaints</a>
                 <a href="{{ route('staff.documents.index') }}"    class="an-link {{ request()->routeIs('staff.documents.*')       ? 'active' : '' }}">Documents</a>
                 <a href="{{ route('reports.index') }}"            class="an-link {{ request()->routeIs('reports.*')              ? 'active' : '' }}">Analytics</a>
             @endrole
@@ -335,7 +334,6 @@
             <a href="{{ route('director.dashboard') }}"       class="an-mob-link {{ request()->routeIs('director.submissions.*') ? 'active' : '' }}">Authorisations</a>
             <a href="{{ route('director.invoices.index') }}"  class="an-mob-link {{ request()->routeIs('director.invoices.*')   ? 'active' : '' }}">Invoices</a>
             <a href="{{ route('director.agreements.index') }}" class="an-mob-link {{ request()->routeIs('director.agreements.*') ? 'active' : '' }}">Agreements</a>
-            <a href="{{ route('director.complaints.index') }}" class="an-mob-link {{ request()->routeIs('director.complaints.*') ? 'active' : '' }}">Complaints</a>
             <a href="{{ route('staff.documents.index') }}"    class="an-mob-link {{ request()->routeIs('staff.documents.*')     ? 'active' : '' }}">Documents</a>
             <a href="{{ route('reports.index') }}"            class="an-mob-link {{ request()->routeIs('reports.*')             ? 'active' : '' }}">Analytics</a>
         @endrole
