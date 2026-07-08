@@ -183,8 +183,8 @@
                        class="gov-stat" style="border-left-color:#dc2626;">
                         <div class="gov-stat-label">Flagged Tests</div>
                         <p class="gov-stat-num">{{ $flagged }}</p>
-                        <p class="gov-stat-sub" style="{{ $flagged > 0 ? 'color:#dc2626;' : 'color:#0d9488;' }}">
-                            {{ $flagged > 0 ? 'Needs immediate review' : 'No issues flagged' }}
+                        <p class="gov-stat-sub" style="color:#0d9488;">
+                            {{ $flagged > 0 ? '' : 'No issues flagged' }}
                         </p>
                     </a>
 
