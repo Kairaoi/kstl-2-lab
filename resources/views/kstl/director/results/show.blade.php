@@ -309,16 +309,19 @@
                                     <th style="padding:8px 12px;text-align:left;font-size:9px;font-weight:700;letter-spacing:.12em;text-transform:uppercase;color:#6b7280;">Common Name</th>
                                     <th style="padding:8px 12px;text-align:left;font-size:9px;font-weight:700;letter-spacing:.12em;text-transform:uppercase;color:#6b7280;">Scientific Name</th>
                                     <th style="padding:8px 12px;text-align:left;font-size:9px;font-weight:700;letter-spacing:.12em;text-transform:uppercase;color:#6b7280;">Sample Code</th>
+                                    <th style="padding:8px 12px;text-align:left;font-size:9px;font-weight:700;letter-spacing:.12em;text-transform:uppercase;color:#6b7280;">Client Reference</th>
                                     <th style="padding:8px 12px;text-align:left;font-size:9px;font-weight:700;letter-spacing:.12em;text-transform:uppercase;color:#6b7280;">Qty</th>
                                 </tr>
                             </thead>
                             <tbody>
                                 @foreach($submission->samples as $i => $s)
+                                    @php $clientRef = $submission->sample_items[$i]['client_sample_ref'] ?? ''; @endphp
                                     <tr style="border-bottom:1px solid #f1f5f9;{{ $loop->even ? 'background:#f8fafc;' : '' }}">
                                         <td style="padding:8px 12px;color:#94a3b8;font-family:'Courier New',monospace;font-size:11px;">{{ $i + 1 }}</td>
                                         <td style="padding:8px 12px;font-weight:600;color:#1e293b;">{{ $s->common_name ?? '—' }}</td>
                                         <td style="padding:8px 12px;font-style:italic;color:#64748b;">{{ $s->scientific_name ?? '—' }}</td>
                                         <td style="padding:8px 12px;font-family:'Courier New',monospace;font-size:11px;color:#64748b;">{{ $s->sample_code }}</td>
+                                        <td style="padding:8px 12px;font-family:'Courier New',monospace;font-size:11px;color:#64748b;">{{ $clientRef ?: '—' }}</td>
                                         <td style="padding:8px 12px;color:#64748b;">{{ $s->quantity ?? '—' }} {{ $s->quantity_unit ?? '' }}</td>
                                     </tr>
                                 @endforeach
