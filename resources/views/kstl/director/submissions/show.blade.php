@@ -654,7 +654,8 @@
                 </div>
 
                 {{-- ── Post-Authorization Query Panel ──────────────────── --}}
-                {{-- Visible only when the Director ticks one or more tests in the table above --}}
+                {{-- Only available before authorisation --}}
+                @if($submission->status !== 'authorised')
                 <div style="background:#fff;border:1px solid #fbbf24;border-radius:4px;overflow:hidden;"
                      x-show="selectedTests.length > 0"
                      x-cloak>
@@ -697,6 +698,8 @@
                         </div>
                     </form>
                 </div>
+                @endif
+
             @endif
 
             {{-- ── Generate Invoice (if authorised) ──────────────── --}}
