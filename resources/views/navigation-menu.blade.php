@@ -279,17 +279,30 @@
                     default                               => route('client.notifications.index'),
                 };
 
+                $notifReadRouteName = match(true) {
+                    auth()->user()->hasAnyRole(['director','admin','super_admin']) => 'director.notifications.read',
+                    auth()->user()->hasRole('analyst')                             => 'analyst.notifications.read',
+                    auth()->user()->hasRole('reception')                           => 'reception.notifications.read',
+                    default                                                        => 'client.notifications.read',
+                };
+
                 $recentNotifs = \DB::table('notifications')
                     ->where('notifiable_type', 'App\Models\User')
                     ->where('notifiable_id', auth()->id())
                     ->orderByDesc('created_at')
                     ->limit(5)
                     ->get()
-                    ->map(fn($n) => [
-                        'read'    => !is_null($n->read_at),
-                        'title'   => json_decode($n->data, true)['subject'] ?? json_decode($n->data, true)['title'] ?? 'Notification',
-                        'time'    => \Carbon\Carbon::parse($n->created_at)->diffForHumans(),
-                    ]);
+                    ->map(function($n) use ($notifReadRouteName) {
+                        $data = json_decode($n->data, true) ?? [];
+                        return [
+                            'id'       => $n->id,
+                            'read'     => !is_null($n->read_at),
+                            'title'    => $data['subject'] ?? $data['title'] ?? 'Notification',
+                            'message'  => $data['message'] ?? $data['body'] ?? '',
+                            'time'     => \Carbon\Carbon::parse($n->created_at)->diffForHumans(),
+                            'readUrl'  => route($notifReadRouteName, ['id' => $n->id]),
+                        ];
+                    });
             @endphp
             <div class="an-bell-wrap">
                 <a href="{{ $bellRoute }}" class="an-bell" title="Notifications">
@@ -311,12 +324,23 @@
                         <p class="an-bell-drop-empty">No notifications yet.</p>
                     @else
                         @foreach($recentNotifs as $n)
-                            <div class="an-bell-drop-item">
-                                <div class="an-bell-drop-dot {{ $n['read'] ? 'read' : '' }}"></div>
-                                <div>
+                            <div class="an-bell-drop-item"
+                                 x-data="{ open: false, read: {{ $n['read'] ? 'true' : 'false' }} }"
+                                 @click="open = !open; if (!read) { read = true; fetch('{{ $n['readUrl'] }}', { method: 'POST', headers: { 'X-CSRF-TOKEN': document.querySelector('meta[name=csrf-token]').content } }) }"
+                                 style="cursor:pointer;">
+                                <div class="an-bell-drop-dot" :class="read ? 'read' : ''"></div>
+                                <div style="flex:1;min-width:0;">
                                     <p class="an-bell-drop-title">{{ $n['title'] }}</p>
                                     <p class="an-bell-drop-time">{{ $n['time'] }}</p>
+                                    @if($n['message'])
+                                        <p x-show="open"
+                                           style="margin:6px 0 0;font-size:12px;color:#374151;line-height:1.5;border-top:1px solid #f1f5f9;padding-top:6px;display:none;">
+                                            {{ $n['message'] }}
+                                        </p>
+                                    @endif
                                 </div>
+                                <svg x-show="!open" style="width:12px;height:12px;flex-shrink:0;color:#94a3b8;margin-top:2px;" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"/></svg>
+                                <svg x-show="open"  style="width:12px;height:12px;flex-shrink:0;color:#94a3b8;margin-top:2px;display:none;" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 15l7-7 7 7"/></svg>
                             </div>
                         @endforeach
                     @endif
