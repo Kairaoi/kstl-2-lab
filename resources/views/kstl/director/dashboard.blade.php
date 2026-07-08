@@ -103,10 +103,6 @@
                            style="padding:4px 12px;background:#f1f5f9;border:1px solid #e2e8f0;border-radius:20px;font-size:11px;color:#1a2f4e;text-decoration:none;font-weight:600;">
                             Audit Log
                         </a>
-                        <a href="{{ route('director.complaints.index') }}"
-                           style="padding:4px 12px;background:#f1f5f9;border:1px solid #e2e8f0;border-radius:20px;font-size:11px;color:#1a2f4e;text-decoration:none;font-weight:600;">
-                            Complaints
-                        </a>
                         <a href="{{ route('director.submissions.index') }}"
                            style="padding:4px 12px;background:#f1f5f9;border:1px solid #e2e8f0;border-radius:20px;font-size:11px;color:#1a2f4e;text-decoration:none;font-weight:600;">
                             Pipeline

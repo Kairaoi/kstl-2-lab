@@ -11,7 +11,7 @@
                         <div>
                             <p style="font-size:9px;font-weight:700;letter-spacing:.18em;text-transform:uppercase;color:#b8922a;margin:0 0 4px;">Director</p>
                             <h1 style="font-family:'Georgia',serif;font-size:22px;font-weight:700;color:#fff;margin:0 0 6px;line-height:1.2;">Notifications</h1>
-                            <p style="font-size:12px;color:#94a3b8;margin:0;">Authorisations, payments, complaints, and lab updates</p>
+                            <p style="font-size:12px;color:#94a3b8;margin:0;">Authorisations, payments, and lab updates</p>
                         </div>
                     </div>
                     <div style="display:flex;align-items:center;gap:10px;flex-wrap:wrap;">

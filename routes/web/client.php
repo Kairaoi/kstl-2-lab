@@ -1,7 +1,6 @@
 <?php
 
 use App\Http\Controllers\Kstl\ClientController;
-use App\Http\Controllers\Kstl\ComplaintController;
 use Illuminate\Support\Facades\Route;
 
 
@@ -117,16 +116,6 @@ Route::middleware([
         ->name('notifications.read');
     Route::patch('/notifications/read-all', [ClientController::class, 'notificationMarkAllRead'])
         ->name('notifications.read-all');
-
-    // ── Complaints ────────────────────────────────────────────────────────
-    Route::get('/complaints', [ComplaintController::class, 'index'])
-        ->name('complaints.index');
-    Route::get('/complaints/create', [ComplaintController::class, 'create'])
-        ->name('complaints.create');
-    Route::post('/complaints', [ComplaintController::class, 'store'])
-        ->name('complaints.store');
-    Route::get('/complaints/{id}', [ComplaintController::class, 'show'])
-        ->name('complaints.show');
 
     // ── Profile ────────────────────────────────────────────────────────────
     Route::get('/profile', [ClientController::class, 'profileShow'])

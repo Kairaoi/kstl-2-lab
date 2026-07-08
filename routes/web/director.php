@@ -1,7 +1,6 @@
 <?php
 
 use App\Http\Controllers\Kstl\DirectorController;
-use App\Http\Controllers\Kstl\ComplaintController;
 use App\Http\Controllers\Kstl\InvoiceController;
 use Illuminate\Support\Facades\Route;
 
@@ -89,11 +88,4 @@ Route::middleware([
     Route::get('/audit', [DirectorController::class, 'auditIndex'])
         ->name('audit.index');
 
-    // ── Complaints ─────────────────────────────────────────────────────────
-    Route::get('/complaints', [ComplaintController::class, 'staffIndex'])
-        ->name('complaints.index');
-    Route::get('/complaints/{id}', [ComplaintController::class, 'staffShow'])
-        ->name('complaints.show');
-    Route::post('/complaints/{id}/respond', [ComplaintController::class, 'respond'])
-        ->name('complaints.respond');
 });
