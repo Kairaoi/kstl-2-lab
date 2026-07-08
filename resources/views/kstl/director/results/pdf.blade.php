@@ -444,7 +444,7 @@
                     <th>Common Name</th>
                     <th>Scientific Name</th>
                     <th>Sample Code</th>
-                    <th>Client Reference</th>
+                    <th>Client Sample Reference</th>
                     <th>Qty</th>
                 </tr>
             </thead>
